@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+SPDX-FileCopyrightText: 2022 Zextras <https://www.zextras.com>
+
+SPDX-License-Identifier: AGPL-3.0-only
+-->
+
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <artifactId>carbonio-user-management</artifactId>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <artifactId>jaxws-maven-plugin</artifactId>
+          <configuration>
+            <args>
+              <arg>-B-XautoNameResolution</arg>
+              <arg>-XadditionalHeaders</arg>
+            </args>
+            <sourceDestDir>${project.basedir}/soapclient/src/main/java</sourceDestDir>
+            <wsdlDirectory>${project.basedir}/soapclient/schemas/</wsdlDirectory>
+          </configuration>
+          <executions>
+            <execution>
+              <goals>
+                <goal>wsimport</goal>
+              </goals>
+            </execution>
+          </executions>
+          <groupId>org.codehaus.mojo</groupId>
+          <version>2.6</version>
+        </plugin>
+        <plugin>
+          <artifactId>openapi-generator-maven-plugin</artifactId>
+          <executions>
+            <execution>
+              <configuration>
+                <apiPackage>com.zextras.carbonio.user_management.generated</apiPackage>
+                <artifactId>carbonio-user-management-generated</artifactId>
+                <artifactVersion>0.2.0</artifactVersion>
+                <configOptions>
+                  <artifactDescription>User Management generated</artifactDescription>
+                  <librart>resteasy</librart>
+                  <serializationLibrary>jackson</serializationLibrary>
+                </configOptions>
+                <generateApiTests>false</generateApiTests>
+                <generatorName>jaxrs-resteasy</generatorName>
+                <groupId>com.zextras.carbonio.user_management</groupId>
+                <inputSpec>
+                  resources/user-management.yaml
+                </inputSpec>
+                <modelPackage>com.zextras.carbonio.user_management.generated.model</modelPackage>
+                <output>./</output>
+
+                <packageName>com.zextras.carbonio.user_management</packageName>
+              </configuration>
+              <goals>
+                <goal>generate</goal>
+              </goals>
+              <phase>
+                generate-sources
+              </phase>
+            </execution>
+          </executions>
+          <groupId>org.openapitools</groupId>
+          <version>5.2.1</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+  <dependencies>
+
+    <dependency>
+      <artifactId>jetty-server</artifactId>
+      <groupId>org.eclipse.jetty</groupId>
+      <version>${jetty-version}</version>
+    </dependency>
+
+    <dependency>
+      <artifactId>jetty-servlet</artifactId>
+      <groupId>org.eclipse.jetty</groupId>
+      <version>${jetty-version}</version>
+    </dependency>
+
+    <dependency>
+      <artifactId>jaxws-rt</artifactId>
+      <groupId>com.sun.xml.ws</groupId>
+      <version>2.3.1</version>
+    </dependency>
+
+    <dependency>
+      <artifactId>jaxb-impl</artifactId>
+      <groupId>com.sun.xml.bind</groupId>
+      <version>2.3.1</version>
+    </dependency>
+
+    <!-- Dependency necessary to resolve NoClassDefFound of com/sun/org/apache/xml/internal/resolver/CatalogManager -->
+    <dependency>
+      <artifactId>resolver</artifactId>
+      <groupId>com.sun.org.apache.xml.internal</groupId>
+      <version>20050927</version>
+    </dependency>
+
+    <dependency>
+      <artifactId>javaee-api</artifactId>
+      <groupId>javax</groupId>
+      <scope>provided</scope>
+      <version>${javaee-api.version}</version>
+    </dependency>
+
+    <dependency>
+      <artifactId>resteasy-core</artifactId>
+      <groupId>org.jboss.resteasy</groupId>
+      <version>${resteasy-version}</version>
+    </dependency>
+
+    <dependency>
+      <artifactId>jaxrs-api</artifactId>
+      <groupId>org.jboss.resteasy</groupId>
+      <version>${jaxrs-api.version}</version>
+    </dependency>
+
+    <dependency>
+      <artifactId>resteasy-multipart-provider</artifactId>
+      <groupId>org.jboss.resteasy</groupId>
+      <version>${resteasy-version}</version>
+    </dependency>
+
+    <dependency>
+      <artifactId>resteasy-validator-provider-11</artifactId>
+      <groupId>org.jboss.resteasy</groupId>
+      <version>${resteasy-validator.version}</version>
+    </dependency>
+
+
+    <dependency>
+      <artifactId>resteasy-jackson2-provider</artifactId>
+      <groupId>org.jboss.resteasy</groupId>
+      <version>${resteasy-version}</version>
+    </dependency>
+
+    <dependency>
+      <artifactId>resteasy-jaxb-provider</artifactId>
+      <groupId>org.jboss.resteasy</groupId>
+      <version>${resteasy-version}</version>
+    </dependency>
+
+    <dependency>
+      <artifactId>jackson-databind</artifactId>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <version>2.13.0</version>
+    </dependency>
+    <dependency>
+      <artifactId>jackson-core</artifactId>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <version>2.13.0</version>
+    </dependency>
+
+    <dependency>
+      <artifactId>jackson-annotations</artifactId>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <version>2.13.0</version>
+    </dependency>
+    <dependency>
+      <artifactId>jackson-jaxrs-json-provider</artifactId>
+      <groupId>com.fasterxml.jackson.jaxrs</groupId>
+      <version>2.11.3</version>
+    </dependency>
+
+    <dependency>
+      <artifactId>guice</artifactId>
+      <groupId>com.google.inject</groupId>
+      <version>${guice.version}</version>
+    </dependency>
+
+    <dependency>
+      <artifactId>resteasy-guice</artifactId>
+      <groupId>org.jboss.resteasy</groupId>
+      <version>${resteasy-version}</version>
+    </dependency>
+
+    <dependency>
+      <artifactId>swagger-annotations</artifactId>
+      <groupId>io.swagger</groupId>
+      <version>${swagger-core-version}</version>
+    </dependency>
+
+    <dependency>
+      <artifactId>swagger-jaxrs</artifactId>
+      <groupId>io.swagger</groupId>
+      <version>${swagger-core-version}</version>
+    </dependency>
+
+    <dependency>
+      <artifactId>javax.annotation-api</artifactId>
+      <groupId>javax.annotation</groupId>
+      <version>${javax-annotation-api.version}</version>
+    </dependency>
+
+    <dependency>
+      <artifactId>jackson-datatype-joda</artifactId>
+      <groupId>com.fasterxml.jackson.datatype</groupId>
+      <version>${jackson-version}</version>
+    </dependency>
+
+    <dependency>
+      <artifactId>joda-time</artifactId>
+      <groupId>joda-time</groupId>
+      <version>${joda-time.version}</version>
+    </dependency>
+
+    <!-- We are using an alpha package due to some vulnerabilities of the stable one -->
+    <dependency>
+      <artifactId>vavr</artifactId>
+      <groupId>io.vavr</groupId>
+      <version>1.0.0-alpha-4</version>
+    </dependency>
+
+    <dependency>
+      <artifactId>caffeine</artifactId>
+      <groupId>com.github.ben-manes.caffeine</groupId>
+      <version>3.0.5</version>
+    </dependency>
+
+  </dependencies>
+  <groupId>com.zextras.carbonio.user-management</groupId>
+  <modelVersion>4.0.0</modelVersion>
+  <modules>
+    <module>boot</module>
+    <module>core</module>
+    <module>generated</module>
+    <module>soapclient</module>
+  </modules>
+
+  <name>carbonio-user-management</name>
+
+  <packaging>pom</packaging>
+
+  <properties>
+    <guice.version>5.0.1</guice.version>
+    <jackson-databind-nullable-version>0.2.1</jackson-databind-nullable-version>
+    <jackson-databind-version>2.10.5.1</jackson-databind-version>
+
+    <jackson-version>2.11.2</jackson-version>
+    <jakarta-annotation-version>1.3.5</jakarta-annotation-version>
+    <javaee-api.version>7.0</javaee-api.version>
+    <javax-annotation-api.version>1.2</javax-annotation-api.version>
+    <javax-validation-api.version>1.1.0.Final</javax-validation-api.version>
+    <jaxrs-api.version>3.0.12.Final</jaxrs-api.version>
+    <jetty-version>10.0.6</jetty-version>
+    <joda-time.version>2.7</joda-time.version>
+    <junit-version>4.13</junit-version>
+    <junit-version>4.13.1</junit-version>
+    <maven-plugin-version>1.0.0</maven-plugin-version>
+    <maven.compiler.source>11</maven.compiler.source>
+    <maven.compiler.target>11</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <resteasy-jaxrs-version>2.2.1.GA</resteasy-jaxrs-version>
+    <resteasy-validator.version>3.6.3.SP1</resteasy-validator.version>
+    <resteasy-version>4.7.2.Final</resteasy-version>
+    <resteasy2-version>3.13.0.Final</resteasy2-version>
+    <servlet-api-version>2.5</servlet-api-version>
+    <slf4j-version>1.6.3</slf4j-version>
+    <swagger-annotations-version>1.5.22</swagger-annotations-version>
+    <swagger-core-version>1.5.22</swagger-core-version>
+    <threetenbp-version>2.9.10</threetenbp-version>
+
+  </properties>
+  <version>0.1.0</version>
+</project>

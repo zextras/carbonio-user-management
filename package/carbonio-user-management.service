@@ -1,0 +1,18 @@
+[Unit]
+Description=Carbonio User Management daemon
+Wants=network.target
+Requires=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/opt/zextras/common/bin/java -jar /usr/bin/carbonio/user-management/carbonio-user-management.jar
+User=carbonio-user-management
+Group=carbonio-user-management
+Restart=on-failure
+RestartSec=15
+TimeoutSec=60
+TimeoutStopSec=120
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,32 @@
+# SPDX-FileCopyrightText: 2022 Zextras <https://www.zextras.com>
+#
+# SPDX-License-Identifier: AGPL-3.0-only
+
+# Maven
+target/
+dist/
+.classpath
+.project                                                                                            
+.settings/                                                                                          
+boot/dependency-reduced-pom.xml
+boot/.classpath                                                                                     
+boot/.project                                                                                       
+boot/.settings/                                                                                     
+core/.classpath                                                                                     
+core/.project                                                                                       
+core/.settings/ 
+generated/.classpath                                                                                     
+generated/.project                                                                                       
+generated/.settings/ 
+
+
+# JetBrains IDE
+.idea/
+*.iml
+
+soapclient/src/main/java/https*
+soapclient/src/main/java/zimbra*
+generated/src
+generated/.openapi-generator/
+
+LICENSES

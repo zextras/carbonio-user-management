@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+SPDX-FileCopyrightText: 2022 Zextras <https://www.zextras.com>
+
+SPDX-License-Identifier: AGPL-3.0-only
+-->
+
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <artifactId>carbonio-user-management-boot</artifactId>
+  <build>
+    <finalName>carbonio-user-management-${parent.version}</finalName>
+
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>11</source>
+          <target>11</target>
+        </configuration>
+        <groupId>org.apache.maven.plugins</groupId>
+        <version>3.8.1</version>
+      </plugin>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <executions>
+          <execution>
+            <configuration>
+              <archive>
+                <manifest>
+                  <mainClass>
+                    com.zextras.carbonio.user_management.Boot
+                  </mainClass>
+                </manifest>
+              </archive>
+              <descriptorRefs>
+                <descriptorRef>jar-with-dependencies</descriptorRef>
+              </descriptorRefs>
+            </configuration>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <phase>package</phase>
+          </execution>
+        </executions>
+        <groupId>org.apache.maven.plugins</groupId>
+        <version>3.3.0</version>
+      </plugin>
+    </plugins>
+  </build>
+
+  <dependencies>
+
+    <dependency>
+      <artifactId>carbonio-user-management-core</artifactId>
+      <exclusions>
+        <exclusion>
+          <artifactId>jsr311-api</artifactId>
+          <groupId>javax.ws.rs</groupId>
+        </exclusion>
+      </exclusions>
+      <groupId>com.zextras.carbonio.user-management</groupId>
+
+      <version>0.1.0</version>
+    </dependency>
+
+    <!-- Jetty dependencies -->
+    <dependency>
+      <artifactId>jetty-server</artifactId>
+      <groupId>org.eclipse.jetty</groupId>
+      <version>${jetty-version}</version>
+    </dependency>
+
+    <dependency>
+      <artifactId>jetty-servlet</artifactId>
+      <groupId>org.eclipse.jetty</groupId>
+      <version>${jetty-version}</version>
+    </dependency>
+
+    <!-- Guice dependencies -->
+    <dependency>
+      <artifactId>guice</artifactId>
+      <groupId>com.google.inject</groupId>
+      <version>${guice.version}</version>
+    </dependency>
+
+    <!-- RestEasy dependencies -->
+    <dependency>
+      <artifactId>resteasy-guice</artifactId>
+      <groupId>org.jboss.resteasy</groupId>
+      <version>${resteasy-version}</version>
+    </dependency>
+
+    <dependency>
+      <artifactId>resteasy-servlet-initializer</artifactId>
+      <groupId>org.jboss.resteasy</groupId>
+      <version>${resteasy-version}</version>
+    </dependency>
+
+    <dependency>
+      <artifactId>jaxrs-api</artifactId>
+      <groupId>org.jboss.resteasy</groupId>
+      <version>${jaxrs-api.version}</version>
+    </dependency>
+
+  </dependencies>
+
+  <modelVersion>4.0.0</modelVersion>
+  <name>carbonio-user-management-boot</name>
+
+  <packaging>jar</packaging>
+
+  <parent>
+    <artifactId>carbonio-user-management</artifactId>
+    <groupId>com.zextras.carbonio.user-management</groupId>
+    <version>0.1.0</version>
+  </parent>
+
+  <properties>
+    <maven.compiler.source>11</maven.compiler.source>
+    <maven.compiler.target>11</maven.compiler.target>
+  </properties>
+
+</project>

@@ -1,0 +1,112 @@
+{
+  "Kind": "service-intentions",
+  "Name": "carbonio-user-management",
+  "Sources": [
+    {
+      "Name": "carbonio-files",
+      "Permissions": [
+        {
+          "Action": "allow",
+          "HTTP": {
+            "PathPrefix": "/auth/token/",
+            "Methods": [
+              "GET"
+            ]
+          }
+        },
+        {
+          "Action": "allow",
+          "HTTP": {
+            "PathPrefix": "/users/id/",
+            "Header": [
+              {
+                "Name": "Cookie",
+                "Present": true
+              }
+            ],
+            "Methods": [
+              "GET"
+            ]
+          }
+        },
+        {
+          "Action": "allow",
+          "HTTP": {
+            "PathPrefix": "/health/",
+            "Methods": [
+              "GET"
+            ]
+          }
+        },
+        {
+          "Action": "allow",
+          "HTTP": {
+            "PathPrefix": "/users/email/",
+            "Header": [
+              {
+                "Name": "Cookie",
+                "Present": true
+              }
+            ],
+            "Methods": [
+              "GET"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "Name": "carbonio-chats",
+      "Permissions": [
+        {
+          "Action": "allow",
+          "HTTP": {
+            "PathPrefix": "/auth/token/",
+            "Methods": [
+              "GET"
+            ]
+          }
+        },
+        {
+          "Action": "allow",
+          "HTTP": {
+            "PathPrefix": "/users/id/",
+            "Header": [
+              {
+                "Name": "Cookie",
+                "Present": true
+              }
+            ],
+            "Methods": [
+              "GET"
+            ]
+          }
+        },
+        {
+          "Action": "allow",
+          "HTTP": {
+            "PathPrefix": "/health/",
+            "Methods": [
+              "GET"
+            ]
+          }
+        },
+        {
+          "Action": "allow",
+          "HTTP": {
+            "PathPrefix": "/users/email/",
+            "Header": [
+              {
+                "Name": "Cookie",
+                "Present": true
+              }
+            ],
+            "Methods": [
+              "GET"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

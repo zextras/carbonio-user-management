@@ -1,0 +1,101 @@
+targets=(
+  "ubuntu"
+  "centos"
+)
+pkgname="carbonio-user-management"
+pkgver="0.1.1"
+pkgrel="1"
+pkgdesc="Carbonio User Management"
+pkgdesclong=(
+  "Carbonio User Management"
+)
+maintainer="Zextras <packages@zextras.com>"
+arch="amd64"
+section="admin"
+priority="optional"
+url="https://www.zextras.com/"
+license=("spdx:AGPL-3.0-only")
+depends=(
+  "service-discover"
+  "pending-setups"
+  "carbonio-openjdk"
+)
+sources=(
+  "carbonio-user-management"
+  "carbonio-user-management.hcl"
+  "carbonio-user-management.jar"
+  "carbonio-user-management.service"
+  "carbonio-user-management-sidecar.service"
+  "carbonio-user-management-setup.sh"
+  "config.properties"
+  "intentions.json"
+  "policies.json"
+  "service-protocol.json"
+)
+hashsums=(
+  "skip"
+  "skip"
+  "skip"
+  "skip"
+  "skip"
+  "skip"
+  "skip"
+  "skip"
+  "skip"
+  "skip"
+)
+backup=(
+    "/etc/zextras/service-discover/carbonio-user-management.hcl"
+    "/etc/carbonio/user-management/config.properties"
+)
+
+package() {
+  cd "${srcdir}"
+  install -Dm 755 carbonio-user-management "${pkgdir}/usr/bin/carbonio-user-management"
+  install -Dm 755 carbonio-user-management.jar "${pkgdir}/usr/bin/carbonio/user-management/carbonio-user-management.jar"
+  install -Dm 644 carbonio-user-management.service "${pkgdir}/lib/systemd/system/carbonio-user-management.service"
+  install -Dm 644 carbonio-user-management-sidecar.service "${pkgdir}/lib/systemd/system/carbonio-user-management-sidecar.service"
+  install -Dm 644 carbonio-user-management.hcl "${pkgdir}/etc/zextras/service-discover/carbonio-user-management.hcl"
+  install -Dm 644 carbonio-user-management-setup.sh "${pkgdir}/etc/zextras/pending-setups.d/carbonio-user-management.sh"
+  install -Dm 644 intentions.json "${pkgdir}/etc/carbonio/user-management/service-discover/intentions.json"
+  install -Dm 644 policies.json "${pkgdir}/etc/carbonio/user-management/service-discover/policies.json"
+  install -Dm 644 service-protocol.json "${pkgdir}/etc/carbonio/user-management/service-discover/service-protocol.json"
+  install -Dm 644 config.properties "${pkgdir}/etc/carbonio/user-management/config.properties"
+}
+
+postinst() {
+  getent group 'carbonio-user-management' >/dev/null ||
+    groupadd -r 'carbonio-user-management'
+  getent passwd 'carbonio-user-management' >/dev/null ||
+    useradd -r -M -g 'carbonio-user-management' -s /sbin/nologin 'carbonio-user-management'
+
+  if [ -d /run/systemd/system ]; then
+    systemctl daemon-reload >/dev/null 2>&1 || :
+    systemctl enable carbonio-user-management.service >/dev/null 2>&1 || :
+    systemctl enable carbonio-user-management-sidecar.service >/dev/null 2>&1 || :
+  fi
+
+  echo "======================================================"
+  echo "Carbonio User Management installed successfully!"
+  echo "You must run pending-setups to configure it correctly."
+  echo "======================================================"
+}
+
+prerm() {
+  if [ -d /run/systemd/system ]; then
+    systemctl --no-reload disable carbonio-user-management.service >/dev/null 2>&1 || :
+    systemctl --no-reload disable carbonio-user-management-sidecar.service >/dev/null 2>&1 || :
+    systemctl stop carbonio-user-management.service >/dev/null 2>&1 || :
+    systemctl stop carbonio-user-management-sidecar.service >/dev/null 2>&1 || :
+  fi
+}
+
+postrm() {
+  rm -Rf /etc/carbonio/user-management/
+  rm -f /etc/zextras/pending-setups.d/carbonio-user-management.sh
+  rm -f /etc/zextras/pending-setups.d/done/carbonio-user-management.sh
+
+  if [ -d /run/systemd/system ]; then
+    systemctl daemon-reload >/dev/null 2>&1 || :
+  fi
+}

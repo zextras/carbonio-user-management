@@ -1,0 +1,11 @@
+{
+  "name": "carbonio-user-management",
+  "description": "Zextras Carbonio User Management",
+  "build_dir": "/tmp/",
+  "output": "artifacts",
+  "projects": [
+    {
+      "name": "package"
+    }
+  ]
+}

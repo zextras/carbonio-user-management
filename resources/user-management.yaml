@@ -1,0 +1,171 @@
+# SPDX-FileCopyrightText: 2022 Zextras <https://www.zextras.com>
+#
+# SPDX-License-Identifier: AGPL-3.0-only
+
+openapi: 3.0.3
+info:
+  title: UserManagement API
+  description: UserManagement API
+  version: 0.1.0
+servers:
+  - url: 'https://example.com/services/user-management/'
+tags:
+  - name: User
+  - name: Auth
+  - name: Health
+paths:
+  /users/id/{userId}/:
+    get:
+      tags:
+        - User
+      summary: Gets the basic account info of the user using its id
+      operationId: getUserInfoById
+      parameters:
+        - in: header
+          name: Cookie
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: userId
+          description: The id of user to retrieve
+          required: true
+          schema:
+            type: string
+            format: UUID
+      responses:
+        '200':
+          $ref: '#/components/responses/200UserInfo'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+  /users/email/{userEmail}/:
+    get:
+      tags:
+        - User
+      summary: Gets the basic account info of the user using its email
+      operationId: getUserInfoByEmail
+      parameters:
+        - in: header
+          name: Cookie
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: userEmail
+          description: The email of the user to retrieve
+          required: true
+          schema:
+            type: string
+            format: email
+      responses:
+        '200':
+          $ref: '#/components/responses/200UserInfo'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+  /auth/token/{tokenId}:
+    get:
+      tags:
+        - Auth
+      summary: Validates an existing user token
+      operationId: authToken
+      parameters:
+        - in: path
+          name: tokenId
+          description: Auth token to validate
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/200UserId'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+  /health:
+    get:
+      tags:
+        - Health
+      summary: Check the service status
+      operationId: generalCheck
+      responses:
+        '204':
+          $ref: '#/components/responses/204NoContent'
+        '500':
+          $ref: '#/components/responses/500ServerError'
+  /health/ready:
+    get:
+      tags:
+        - Health
+      summary: Check the service readiness
+      operationId: readyCheck
+      responses:
+        '204':
+          $ref: '#/components/responses/204NoContent'
+        '500':
+          $ref: '#/components/responses/500ServerError'
+  /health/live:
+    get:
+      tags:
+        - Health
+      summary: Check the service liveness
+      operationId: liveCheck
+      security:
+        - cookieAuth: [ ]
+      responses:
+        '204':
+          $ref: '#/components/responses/204NoContent'
+        '500':
+          $ref: '#/components/responses/500ServerError'
+components:
+  responses:
+    200UserInfo:
+      description: Account info of the user
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UserInfo'
+    200UserId:
+      description: User id
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UserId'
+    204NoContent:
+      description: The service is up and running
+    400BadRequest:
+      description: The request was malformed
+    401Unauthorized:
+      description: The token is not valid
+    403Forbidden:
+      description: The access to the resource is denied
+    404NotFound:
+      description: The resource was not found
+    500ServerError:
+      description: The service is not available
+  schemas:
+    UserInfo:
+      type: object
+      properties:
+        id:
+          type: string
+          format: UUID
+        email:
+          type: string
+          format: email
+        fullName:
+          type: string
+        domain:
+          type: string
+    UserId:
+      type: object
+      properties:
+        userId:
+          type: string
+          format: UUID

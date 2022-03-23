@@ -1,0 +1,26 @@
+{
+  "key_prefix": [
+    {
+      "carbonio-user-management/": {
+        "policy": "read"
+      }
+    }
+  ],
+  "node_prefix": [
+    {
+      "": {
+        "policy": "read"
+      }
+    }
+  ],
+  "service": [
+    {
+      "carbonio-user-management": {
+        "policy": "write"
+      },
+      "carbonio-user-management-sidecar-proxy": {
+        "policy": "write"
+      }
+    }
+  ]
+}

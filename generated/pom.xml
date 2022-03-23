@@ -1,0 +1,158 @@
+<!--
+SPDX-FileCopyrightText: 2022 Zextras <https://www.zextras.com>
+
+SPDX-License-Identifier: AGPL-3.0-only
+-->
+
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <artifactId>carbonio-user-management-generated</artifactId>
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>11</source>
+          <target>11</target>
+        </configuration>
+        <groupId>org.apache.maven.plugins</groupId>
+        <version>3.6.1</version>
+      </plugin>
+      <plugin>
+        <artifactId>openapi-generator-maven-plugin</artifactId>
+        <groupId>org.openapitools</groupId>
+      </plugin>
+      <plugin>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <configuration>
+              <sources>
+                <source>
+                  src/gen/java
+                </source>
+              </sources>
+            </configuration>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <id>add-source</id>
+            <phase>generate-sources</phase>
+          </execution>
+        </executions>
+        <groupId>org.codehaus.mojo</groupId>
+        <version>1.9.1</version>
+      </plugin>
+    </plugins>
+    <sourceDirectory>src/main/java</sourceDirectory>
+  </build>
+  <dependencies>
+
+    <dependency>
+      <artifactId>javaee-api</artifactId>
+      <groupId>javax</groupId>
+      <scope>provided</scope>
+      <version>${javaee-api.version}</version>
+    </dependency>
+
+    <dependency>
+      <artifactId>jackson-databind</artifactId>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <version>2.13.0</version>
+    </dependency>
+
+    <dependency>
+      <artifactId>jackson-core</artifactId>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <version>2.13.0</version>
+    </dependency>
+
+    <dependency>
+      <artifactId>jackson-annotations</artifactId>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <version>2.13.0</version>
+    </dependency>
+    <dependency>
+      <artifactId>jackson-jaxrs-json-provider</artifactId>
+      <groupId>com.fasterxml.jackson.jaxrs</groupId>
+      <version>2.11.3</version>
+    </dependency>
+
+    <dependency>
+      <artifactId>resteasy-jaxb-provider</artifactId>
+      <groupId>org.jboss.resteasy</groupId>
+      <version>${resteasy-version}</version>
+    </dependency>
+    <dependency>
+      <artifactId>resteasy-core</artifactId>
+      <groupId>org.jboss.resteasy</groupId>
+      <version>${resteasy-version}</version>
+    </dependency>
+
+    <dependency>
+      <artifactId>jaxrs-api</artifactId>
+      <groupId>org.jboss.resteasy</groupId>
+      <version>${jaxrs-api.version}</version>
+    </dependency>
+
+    <dependency>
+      <artifactId>resteasy-multipart-provider</artifactId>
+      <groupId>org.jboss.resteasy</groupId>
+      <version>${resteasy-version}</version>
+    </dependency>
+
+    <dependency>
+      <artifactId>resteasy-validator-provider-11</artifactId>
+      <groupId>org.jboss.resteasy</groupId>
+      <version>${resteasy-validator.version}</version>
+    </dependency>
+
+    <dependency>
+      <artifactId>resteasy-jackson2-provider</artifactId>
+      <groupId>org.jboss.resteasy</groupId>
+      <version>${resteasy-version}</version>
+    </dependency>
+
+    <dependency>
+      <artifactId>swagger-annotations</artifactId>
+      <groupId>io.swagger</groupId>
+      <version>${swagger-core-version}</version>
+    </dependency>
+
+    <dependency>
+      <artifactId>swagger-jaxrs</artifactId>
+      <groupId>io.swagger</groupId>
+      <version>${swagger-core-version}</version>
+    </dependency>
+
+    <dependency>
+      <artifactId>javax.annotation-api</artifactId>
+      <groupId>javax.annotation</groupId>
+      <version>${javax-annotation-api.version}</version>
+    </dependency>
+
+    <dependency>
+      <artifactId>jackson-datatype-joda</artifactId>
+      <groupId>com.fasterxml.jackson.datatype</groupId>
+      <version>${jackson-version}</version>
+    </dependency>
+
+    <dependency>
+      <artifactId>joda-time</artifactId>
+      <groupId>joda-time</groupId>
+      <version>${joda-time.version}</version>
+    </dependency>
+
+  </dependencies>
+  <modelVersion>4.0.0</modelVersion>
+  <name>carbonio-user-management-generated</name>
+
+  <packaging>jar</packaging>
+  <parent>
+    <artifactId>carbonio-user-management</artifactId>
+    <groupId>com.zextras.carbonio.user-management</groupId>
+    <version>0.1.0</version>
+  </parent>
+  <version>0.1.0</version>
+</project>
