@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-SPDX-FileCopyrightText: 2022 Zextras <https://www.zextras.com>
+  SPDX-FileCopyrightText: 2022 Zextras <https://www.zextras.com>
 
-SPDX-License-Identifier: AGPL-3.0-only
--->
+  SPDX-License-Identifier: AGPL-3.0-only
+ -->
 
 <wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:svc="https://www.zextras.com/wsdl/ZimbraService.wsdl" xmlns:zimbraAccount="urn:zimbraAccount" xmlns:zimbraMail="urn:zimbraMail" xmlns:zimbraRepl="urn:zimbraRepl" xmlns:zimbraSync="urn:zimbraSync" xmlns:zimbraVoice="urn:zimbraVoice" xmlns:zimbraAdmin="urn:zimbraAdmin" xmlns:zimbraAdminExt="urn:zimbraAdminExt" xmlns:zimbra="urn:zimbra" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="https://www.zextras.com/wsdl/ZimbraService.wsdl" name="ZimbraService">
   <wsdl:types>
@@ -42,12 +42,6 @@ SPDX-License-Identifier: AGPL-3.0-only
   </wsdl:message>
   <wsdl:message name="AccountChangePasswordResponseMessage">
     <wsdl:part name="params" element="zimbraAccount:ChangePasswordResponse"/>
-  </wsdl:message>
-  <wsdl:message name="AccountCheckLicenseRequestMessage">
-    <wsdl:part name="params" element="zimbraAccount:CheckLicenseRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AccountCheckLicenseResponseMessage">
-    <wsdl:part name="params" element="zimbraAccount:CheckLicenseResponse"/>
   </wsdl:message>
   <wsdl:message name="AccountCheckRightsRequestMessage">
     <wsdl:part name="params" element="zimbraAccount:CheckRightsRequest"/>
@@ -528,6 +522,12 @@ SPDX-License-Identifier: AGPL-3.0-only
   </wsdl:message>
   <wsdl:message name="MailConvActionResponseMessage">
     <wsdl:part name="params" element="zimbraMail:ConvActionResponse"/>
+  </wsdl:message>
+  <wsdl:message name="MailCopyToFilesRequestMessage">
+    <wsdl:part name="params" element="zimbraMail:CopyToFilesRequest"/>
+  </wsdl:message>
+  <wsdl:message name="MailCopyToFilesResponseMessage">
+    <wsdl:part name="params" element="zimbraMail:CopyToFilesResponse"/>
   </wsdl:message>
   <wsdl:message name="MailCounterAppointmentRequestMessage">
     <wsdl:part name="params" element="zimbraMail:CounterAppointmentRequest"/>
@@ -1495,12 +1495,6 @@ SPDX-License-Identifier: AGPL-3.0-only
   <wsdl:message name="AdminAbortXMbxSearchResponseMessage">
     <wsdl:part name="params" element="zimbraAdmin:AbortXMbxSearchResponse"/>
   </wsdl:message>
-  <wsdl:message name="AdminActivateLicenseRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:ActivateLicenseRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminActivateLicenseResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:ActivateLicenseResponse"/>
-  </wsdl:message>
   <wsdl:message name="AdminAddAccountAliasRequestMessage">
     <wsdl:part name="params" element="zimbraAdmin:AddAccountAliasRequest"/>
   </wsdl:message>
@@ -1729,12 +1723,6 @@ SPDX-License-Identifier: AGPL-3.0-only
   <wsdl:message name="AdminCreateAddressListResponseMessage">
     <wsdl:part name="params" element="zimbraAdmin:CreateAddressListResponse"/>
   </wsdl:message>
-  <wsdl:message name="AdminCreateAlwaysOnClusterRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:CreateAlwaysOnClusterRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminCreateAlwaysOnClusterResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:CreateAlwaysOnClusterResponse"/>
-  </wsdl:message>
   <wsdl:message name="AdminCreateArchiveRequestMessage">
     <wsdl:part name="params" element="zimbraAdmin:CreateArchiveRequest"/>
   </wsdl:message>
@@ -1854,12 +1842,6 @@ SPDX-License-Identifier: AGPL-3.0-only
   </wsdl:message>
   <wsdl:message name="AdminDeleteAddressListResponseMessage">
     <wsdl:part name="params" element="zimbraAdmin:DeleteAddressListResponse"/>
-  </wsdl:message>
-  <wsdl:message name="AdminDeleteAlwaysOnClusterRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:DeleteAlwaysOnClusterRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminDeleteAlwaysOnClusterResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:DeleteAlwaysOnClusterResponse"/>
   </wsdl:message>
   <wsdl:message name="AdminDeleteCalendarResourceRequestMessage">
     <wsdl:part name="params" element="zimbraAdmin:DeleteCalendarResourceRequest"/>
@@ -2107,12 +2089,6 @@ SPDX-License-Identifier: AGPL-3.0-only
   <wsdl:message name="AdminGetAllAdminAccountsResponseMessage">
     <wsdl:part name="params" element="zimbraAdmin:GetAllAdminAccountsResponse"/>
   </wsdl:message>
-  <wsdl:message name="AdminGetAllAlwaysOnClustersRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:GetAllAlwaysOnClustersRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminGetAllAlwaysOnClustersResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:GetAllAlwaysOnClustersResponse"/>
-  </wsdl:message>
   <wsdl:message name="AdminGetAllCalendarResourcesRequestMessage">
     <wsdl:part name="params" element="zimbraAdmin:GetAllCalendarResourcesRequest"/>
   </wsdl:message>
@@ -2214,12 +2190,6 @@ SPDX-License-Identifier: AGPL-3.0-only
   </wsdl:message>
   <wsdl:message name="AdminGetAllZimletsResponseMessage">
     <wsdl:part name="params" element="zimbraAdmin:GetAllZimletsResponse"/>
-  </wsdl:message>
-  <wsdl:message name="AdminGetAlwaysOnClusterRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:GetAlwaysOnClusterRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminGetAlwaysOnClusterResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:GetAlwaysOnClusterResponse"/>
   </wsdl:message>
   <wsdl:message name="AdminGetApplianceHSMFSRequestMessage">
     <wsdl:part name="params" element="zimbraAdmin:GetApplianceHSMFSRequest"/>
@@ -2394,18 +2364,6 @@ SPDX-License-Identifier: AGPL-3.0-only
   </wsdl:message>
   <wsdl:message name="AdminGetLDAPEntriesResponseMessage">
     <wsdl:part name="params" element="zimbraAdmin:GetLDAPEntriesResponse"/>
-  </wsdl:message>
-  <wsdl:message name="AdminGetLicenseInfoRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:GetLicenseInfoRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminGetLicenseInfoResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:GetLicenseInfoResponse"/>
-  </wsdl:message>
-  <wsdl:message name="AdminGetLicenseRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:GetLicenseRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminGetLicenseResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:GetLicenseResponse"/>
   </wsdl:message>
   <wsdl:message name="AdminGetLoggerStatsRequestMessage">
     <wsdl:part name="params" element="zimbraAdmin:GetLoggerStatsRequest"/>
@@ -2599,12 +2557,6 @@ SPDX-License-Identifier: AGPL-3.0-only
   <wsdl:message name="AdminInstallCertResponseMessage">
     <wsdl:part name="params" element="zimbraAdmin:InstallCertResponse"/>
   </wsdl:message>
-  <wsdl:message name="AdminInstallLicenseRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:InstallLicenseRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminInstallLicenseResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:InstallLicenseResponse"/>
-  </wsdl:message>
   <wsdl:message name="AdminLockoutMailboxRequestMessage">
     <wsdl:part name="params" element="zimbraAdmin:LockoutMailboxRequest"/>
   </wsdl:message>
@@ -2646,12 +2598,6 @@ SPDX-License-Identifier: AGPL-3.0-only
   </wsdl:message>
   <wsdl:message name="AdminModifyAdminSavedSearchesResponseMessage">
     <wsdl:part name="params" element="zimbraAdmin:ModifyAdminSavedSearchesResponse"/>
-  </wsdl:message>
-  <wsdl:message name="AdminModifyAlwaysOnClusterRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:ModifyAlwaysOnClusterRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminModifyAlwaysOnClusterResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:ModifyAlwaysOnClusterResponse"/>
   </wsdl:message>
   <wsdl:message name="AdminModifyCalendarResourceRequestMessage">
     <wsdl:part name="params" element="zimbraAdmin:ModifyCalendarResourceRequest"/>
@@ -3169,10 +3115,6 @@ SPDX-License-Identifier: AGPL-3.0-only
       <wsdl:input message="svc:AdminAbortXMbxSearchRequestMessage"/>
       <wsdl:output message="svc:AdminAbortXMbxSearchResponseMessage"/>
     </wsdl:operation>
-    <wsdl:operation name="activateLicenseRequest">
-      <wsdl:input message="svc:AdminActivateLicenseRequestMessage"/>
-      <wsdl:output message="svc:AdminActivateLicenseResponseMessage"/>
-    </wsdl:operation>
     <wsdl:operation name="addAccountAliasRequest">
       <wsdl:input message="svc:AdminAddAccountAliasRequestMessage"/>
       <wsdl:output message="svc:AdminAddAccountAliasResponseMessage"/>
@@ -3325,10 +3267,6 @@ SPDX-License-Identifier: AGPL-3.0-only
       <wsdl:input message="svc:AdminCreateAddressListRequestMessage"/>
       <wsdl:output message="svc:AdminCreateAddressListResponseMessage"/>
     </wsdl:operation>
-    <wsdl:operation name="createAlwaysOnClusterRequest">
-      <wsdl:input message="svc:AdminCreateAlwaysOnClusterRequestMessage"/>
-      <wsdl:output message="svc:AdminCreateAlwaysOnClusterResponseMessage"/>
-    </wsdl:operation>
     <wsdl:operation name="createArchiveRequest">
       <wsdl:input message="svc:AdminCreateArchiveRequestMessage"/>
       <wsdl:output message="svc:AdminCreateArchiveResponseMessage"/>
@@ -3408,10 +3346,6 @@ SPDX-License-Identifier: AGPL-3.0-only
     <wsdl:operation name="deleteAddressListRequest">
       <wsdl:input message="svc:AdminDeleteAddressListRequestMessage"/>
       <wsdl:output message="svc:AdminDeleteAddressListResponseMessage"/>
-    </wsdl:operation>
-    <wsdl:operation name="deleteAlwaysOnClusterRequest">
-      <wsdl:input message="svc:AdminDeleteAlwaysOnClusterRequestMessage"/>
-      <wsdl:output message="svc:AdminDeleteAlwaysOnClusterResponseMessage"/>
     </wsdl:operation>
     <wsdl:operation name="deleteCalendarResourceRequest">
       <wsdl:input message="svc:AdminDeleteCalendarResourceRequestMessage"/>
@@ -3577,10 +3511,6 @@ SPDX-License-Identifier: AGPL-3.0-only
       <wsdl:input message="svc:AdminGetAllAdminAccountsRequestMessage"/>
       <wsdl:output message="svc:AdminGetAllAdminAccountsResponseMessage"/>
     </wsdl:operation>
-    <wsdl:operation name="getAllAlwaysOnClustersRequest">
-      <wsdl:input message="svc:AdminGetAllAlwaysOnClustersRequestMessage"/>
-      <wsdl:output message="svc:AdminGetAllAlwaysOnClustersResponseMessage"/>
-    </wsdl:operation>
     <wsdl:operation name="getAllCalendarResourcesRequest">
       <wsdl:input message="svc:AdminGetAllCalendarResourcesRequestMessage"/>
       <wsdl:output message="svc:AdminGetAllCalendarResourcesResponseMessage"/>
@@ -3648,10 +3578,6 @@ SPDX-License-Identifier: AGPL-3.0-only
     <wsdl:operation name="getAllZimletsRequest">
       <wsdl:input message="svc:AdminGetAllZimletsRequestMessage"/>
       <wsdl:output message="svc:AdminGetAllZimletsResponseMessage"/>
-    </wsdl:operation>
-    <wsdl:operation name="getAlwaysOnClusterRequest">
-      <wsdl:input message="svc:AdminGetAlwaysOnClusterRequestMessage"/>
-      <wsdl:output message="svc:AdminGetAlwaysOnClusterResponseMessage"/>
     </wsdl:operation>
     <wsdl:operation name="getApplianceHSMFSRequest">
       <wsdl:input message="svc:AdminGetApplianceHSMFSRequestMessage"/>
@@ -3768,14 +3694,6 @@ SPDX-License-Identifier: AGPL-3.0-only
     <wsdl:operation name="getLDAPEntriesRequest">
       <wsdl:input message="svc:AdminGetLDAPEntriesRequestMessage"/>
       <wsdl:output message="svc:AdminGetLDAPEntriesResponseMessage"/>
-    </wsdl:operation>
-    <wsdl:operation name="getLicenseInfoRequest">
-      <wsdl:input message="svc:AdminGetLicenseInfoRequestMessage"/>
-      <wsdl:output message="svc:AdminGetLicenseInfoResponseMessage"/>
-    </wsdl:operation>
-    <wsdl:operation name="getLicenseRequest">
-      <wsdl:input message="svc:AdminGetLicenseRequestMessage"/>
-      <wsdl:output message="svc:AdminGetLicenseResponseMessage"/>
     </wsdl:operation>
     <wsdl:operation name="getLoggerStatsRequest">
       <wsdl:input message="svc:AdminGetLoggerStatsRequestMessage"/>
@@ -3905,10 +3823,6 @@ SPDX-License-Identifier: AGPL-3.0-only
       <wsdl:input message="svc:AdminInstallCertRequestMessage"/>
       <wsdl:output message="svc:AdminInstallCertResponseMessage"/>
     </wsdl:operation>
-    <wsdl:operation name="installLicenseRequest">
-      <wsdl:input message="svc:AdminInstallLicenseRequestMessage"/>
-      <wsdl:output message="svc:AdminInstallLicenseResponseMessage"/>
-    </wsdl:operation>
     <wsdl:operation name="lockoutMailboxRequest">
       <wsdl:input message="svc:AdminLockoutMailboxRequestMessage"/>
       <wsdl:output message="svc:AdminLockoutMailboxResponseMessage"/>
@@ -3936,10 +3850,6 @@ SPDX-License-Identifier: AGPL-3.0-only
     <wsdl:operation name="modifyAdminSavedSearchesRequest">
       <wsdl:input message="svc:AdminModifyAdminSavedSearchesRequestMessage"/>
       <wsdl:output message="svc:AdminModifyAdminSavedSearchesResponseMessage"/>
-    </wsdl:operation>
-    <wsdl:operation name="modifyAlwaysOnClusterRequest">
-      <wsdl:input message="svc:AdminModifyAlwaysOnClusterRequestMessage"/>
-      <wsdl:output message="svc:AdminModifyAlwaysOnClusterResponseMessage"/>
     </wsdl:operation>
     <wsdl:operation name="modifyCalendarResourceRequest">
       <wsdl:input message="svc:AdminModifyCalendarResourceRequestMessage"/>
@@ -4295,10 +4205,6 @@ SPDX-License-Identifier: AGPL-3.0-only
       <wsdl:input message="svc:AccountChangePasswordRequestMessage"/>
       <wsdl:output message="svc:AccountChangePasswordResponseMessage"/>
     </wsdl:operation>
-    <wsdl:operation name="checkLicenseRequest">
-      <wsdl:input message="svc:AccountCheckLicenseRequestMessage"/>
-      <wsdl:output message="svc:AccountCheckLicenseResponseMessage"/>
-    </wsdl:operation>
     <wsdl:operation name="checkRightsRequest">
       <wsdl:input message="svc:AccountCheckRightsRequestMessage"/>
       <wsdl:output message="svc:AccountCheckRightsResponseMessage"/>
@@ -4618,6 +4524,10 @@ SPDX-License-Identifier: AGPL-3.0-only
     <wsdl:operation name="convActionRequest">
       <wsdl:input message="svc:MailConvActionRequestMessage"/>
       <wsdl:output message="svc:MailConvActionResponseMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="copyToFilesRequest">
+      <wsdl:input message="svc:MailCopyToFilesRequestMessage"/>
+      <wsdl:output message="svc:MailCopyToFilesResponseMessage"/>
     </wsdl:operation>
     <wsdl:operation name="counterAppointmentRequest">
       <wsdl:input message="svc:MailCounterAppointmentRequestMessage"/>
@@ -5278,16 +5188,6 @@ SPDX-License-Identifier: AGPL-3.0-only
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="activateLicenseRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/ActivateLicense" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="addAccountAliasRequest">
       <soap:operation soapAction="urn:zimbraAdmin/AddAccountAlias" style="document"/>
       <wsdl:input>
@@ -5668,16 +5568,6 @@ SPDX-License-Identifier: AGPL-3.0-only
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="createAlwaysOnClusterRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/CreateAlwaysOnCluster" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="createArchiveRequest">
       <soap:operation soapAction="urn:zimbraAdmin/CreateArchive" style="document"/>
       <wsdl:input>
@@ -5870,16 +5760,6 @@ SPDX-License-Identifier: AGPL-3.0-only
     </wsdl:operation>
     <wsdl:operation name="deleteAddressListRequest">
       <soap:operation soapAction="urn:zimbraAdmin/DeleteAddressList" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="deleteAlwaysOnClusterRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/DeleteAlwaysOnCluster" style="document"/>
       <wsdl:input>
         <soap:body use="literal"/>
         <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
@@ -6298,16 +6178,6 @@ SPDX-License-Identifier: AGPL-3.0-only
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="getAllAlwaysOnClustersRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/GetAllAlwaysOnClusters" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="getAllCalendarResourcesRequest">
       <soap:operation soapAction="urn:zimbraAdmin/GetAllCalendarResources" style="document"/>
       <wsdl:input>
@@ -6470,16 +6340,6 @@ SPDX-License-Identifier: AGPL-3.0-only
     </wsdl:operation>
     <wsdl:operation name="getAllZimletsRequest">
       <soap:operation soapAction="urn:zimbraAdmin/GetAllZimlets" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="getAlwaysOnClusterRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/GetAlwaysOnCluster" style="document"/>
       <wsdl:input>
         <soap:body use="literal"/>
         <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
@@ -6770,26 +6630,6 @@ SPDX-License-Identifier: AGPL-3.0-only
     </wsdl:operation>
     <wsdl:operation name="getLDAPEntriesRequest">
       <soap:operation soapAction="urn:zimbraAdmin/GetLDAPEntries" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="getLicenseInfoRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/GetLicenseInfo" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="getLicenseRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/GetLicense" style="document"/>
       <wsdl:input>
         <soap:body use="literal"/>
         <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
@@ -7118,16 +6958,6 @@ SPDX-License-Identifier: AGPL-3.0-only
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="installLicenseRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/InstallLicense" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="lockoutMailboxRequest">
       <soap:operation soapAction="urn:zimbraAdmin/LockoutMailbox" style="document"/>
       <wsdl:input>
@@ -7190,16 +7020,6 @@ SPDX-License-Identifier: AGPL-3.0-only
     </wsdl:operation>
     <wsdl:operation name="modifyAdminSavedSearchesRequest">
       <soap:operation soapAction="urn:zimbraAdmin/ModifyAdminSavedSearches" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="modifyAlwaysOnClusterRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/ModifyAlwaysOnCluster" style="document"/>
       <wsdl:input>
         <soap:body use="literal"/>
         <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
@@ -8091,16 +7911,6 @@ SPDX-License-Identifier: AGPL-3.0-only
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="checkLicenseRequest">
-      <soap:operation soapAction="urn:zimbraAccount/CheckLicense" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="checkRightsRequest">
       <soap:operation soapAction="urn:zimbraAccount/CheckRights" style="document"/>
       <wsdl:input>
@@ -8893,6 +8703,16 @@ SPDX-License-Identifier: AGPL-3.0-only
     </wsdl:operation>
     <wsdl:operation name="convActionRequest">
       <soap:operation soapAction="urn:zimbraMail/ConvAction" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="copyToFilesRequest">
+      <soap:operation soapAction="urn:zimbraMail/CopyToFiles" style="document"/>
       <wsdl:input>
         <soap:body use="literal"/>
         <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
@@ -10494,12 +10314,12 @@ SPDX-License-Identifier: AGPL-3.0-only
   </wsdl:binding>
   <wsdl:service name="zcsService">
     <wsdl:port name="zcsServicePort" binding="svc:zcsPortBinding">
-      <soap:address location="https://files-ce.demo.zextras.io/service/soap/"/>
+      <soap:address location="http://sw-s04.demo.zextras.io/service/soap/"/>
     </wsdl:port>
   </wsdl:service>
   <wsdl:service name="zcsAdminService">
     <wsdl:port name="zcsAdminServicePort" binding="svc:zcsAdminPortBinding">
-      <soap:address location="https://files-ce.demo.zextras.io:9071/service/admin/soap/"/>
+      <soap:address location="https://sw-s04.demo.zextras.io:9071/service/admin/soap/"/>
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>
