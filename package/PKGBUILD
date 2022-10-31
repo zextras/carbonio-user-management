@@ -1,10 +1,14 @@
+# SPDX-FileCopyrightText: 2022 Zextras <https://www.zextras.com>
+#
+# SPDX-License-Identifier: AGPL-3.0-only
+
 targets=(
   "ubuntu"
   "centos"
 )
 pkgname="carbonio-user-management"
 pkgver="0.1.2"
-pkgrel="1"
+pkgrel="2210311610"
 pkgdesc="Carbonio User Management"
 pkgdesclong=(
   "Carbonio User Management"

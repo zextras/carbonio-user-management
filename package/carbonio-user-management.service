@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2022 Zextras <https://www.zextras.com>
+#
+# SPDX-License-Identifier: AGPL-3.0-only
+
 [Unit]
 Description=Carbonio User Management daemon
 Wants=network.target
@@ -6,7 +10,11 @@ After=network-online.target
 
 [Service]
 Type=simple
-ExecStart=/opt/zextras/common/bin/java -jar /usr/bin/carbonio/user-management/carbonio-user-management.jar
+ExecStart=/opt/zextras/common/bin/java \
+  -Djava.net.preferIPv4Stack=true \
+  -Xmx4096m \
+  -jar /usr/bin/carbonio/user-management/carbonio-user-management.jar
+
 User=carbonio-user-management
 Group=carbonio-user-management
 Restart=on-failure
