@@ -12,7 +12,8 @@ After=network-online.target
 Type=simple
 ExecStart=/opt/zextras/common/bin/java \
   -Djava.net.preferIPv4Stack=true \
-  -Xmx4096m \
+  -Xmx1024m \
+  -Xms1024m \
   -jar /usr/bin/carbonio/user-management/carbonio-user-management.jar
 
 User=carbonio-user-management
