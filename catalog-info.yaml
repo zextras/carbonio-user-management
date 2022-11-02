@@ -1,0 +1,41 @@
+# SPDX-FileCopyrightText: 2022 Zextras <https://www.zextras.com>
+#
+# SPDX-License-Identifier: AGPL-3.0-only
+
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: carbonio-user-management
+  title: Carbonio User Management
+  description: Service that wraps carbonio-mailbox SOAP APIs in REST APIs necessary to validate user
+  cookies and to retrieve account information.
+  tags:
+    - java
+    - backend
+spec:
+  type: service
+  lifecycle: production
+  owner: shuffled-waffles
+  providesApis:
+    - carbonio-user-management-rest-api
+# Uncomment when the carbonio-mailbox project is added to backstage
+#  dependsOn:
+#    - carbonio-mailbox
+
+---
+
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: carbonio-user-management-rest-api
+  title: Carbonio User Management REST APIs
+  description: Carbonio User Management REST APIs
+  tags:
+    - java
+    - rest
+spec:
+  type: openapi
+  lifecycle: production
+  owner: shuffled-waffles
+  definition:
+    $text: https://github.com/Zextras/carbonio-user-management/blob/develop/resources/user-management.yaml
