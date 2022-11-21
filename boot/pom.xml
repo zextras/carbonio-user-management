@@ -64,7 +64,7 @@ SPDX-License-Identifier: AGPL-3.0-only
       </exclusions>
       <groupId>com.zextras.carbonio.user-management</groupId>
 
-      <version>0.1.2-2210311610</version>
+      <version>0.1.2-2211211211</version>
     </dependency>
 
     <!-- Jetty dependencies -->
@@ -116,7 +116,7 @@ SPDX-License-Identifier: AGPL-3.0-only
   <parent>
     <artifactId>carbonio-user-management</artifactId>
     <groupId>com.zextras.carbonio.user-management</groupId>
-    <version>0.1.2-2210311610</version>
+    <version>0.1.2-2211211211</version>
   </parent>
 
   <properties>

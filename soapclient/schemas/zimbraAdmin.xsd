@@ -206,10 +206,6 @@
     
   <xs:element name="CreateHABGroupResponse" type="tns:createHABGroupResponse"/>
     
-  <xs:element name="CreateLDAPEntryRequest" type="tns:createLDAPEntryRequest"/>
-    
-  <xs:element name="CreateLDAPEntryResponse" type="tns:createLDAPEntryResponse"/>
-    
   <xs:element name="CreateServerRequest" type="tns:createServerRequest"/>
     
   <xs:element name="CreateServerResponse" type="tns:createServerResponse"/>
@@ -277,10 +273,6 @@
   <xs:element name="DeleteGalSyncAccountRequest" type="tns:deleteGalSyncAccountRequest"/>
     
   <xs:element name="DeleteGalSyncAccountResponse" type="tns:deleteGalSyncAccountResponse"/>
-    
-  <xs:element name="DeleteLDAPEntryRequest" type="tns:deleteLDAPEntryRequest"/>
-    
-  <xs:element name="DeleteLDAPEntryResponse" type="tns:deleteLDAPEntryResponse"/>
     
   <xs:element name="DeleteMailboxRequest" type="tns:deleteMailboxRequest"/>
     
@@ -598,10 +590,6 @@
     
   <xs:element name="GetIndexStatsResponse" type="tns:getIndexStatsResponse"/>
     
-  <xs:element name="GetLDAPEntriesRequest" type="tns:getLDAPEntriesRequest"/>
-    
-  <xs:element name="GetLDAPEntriesResponse" type="tns:getLDAPEntriesResponse"/>
-    
   <xs:element name="GetLoggerStatsRequest" type="tns:getLoggerStatsRequest"/>
     
   <xs:element name="GetLoggerStatsResponse" type="tns:getLoggerStatsResponse"/>
@@ -794,10 +782,6 @@
     
   <xs:element name="ModifyHABGroupResponse" type="tns:modifyHABGroupResponse"/>
     
-  <xs:element name="ModifyLDAPEntryRequest" type="tns:modifyLDAPEntryRequest"/>
-    
-  <xs:element name="ModifyLDAPEntryResponse" type="tns:modifyLDAPEntryResponse"/>
-    
   <xs:element name="ModifyOutgoingFilterRulesRequest" type="tns:modifyOutgoingFilterRulesRequest"/>
     
   <xs:element name="ModifyOutgoingFilterRulesResponse" type="tns:modifyOutgoingFilterRulesResponse"/>
@@ -941,10 +925,6 @@
   <xs:element name="RenameDistributionListRequest" type="tns:renameDistributionListRequest"/>
     
   <xs:element name="RenameDistributionListResponse" type="tns:renameDistributionListResponse"/>
-    
-  <xs:element name="RenameLDAPEntryRequest" type="tns:renameLDAPEntryRequest"/>
-    
-  <xs:element name="RenameLDAPEntryResponse" type="tns:renameLDAPEntryResponse"/>
     
   <xs:element name="RenameUCServiceRequest" type="tns:renameUCServiceRequest"/>
     
@@ -3601,48 +3581,6 @@
       
   </xs:complexType>
     
-  <xs:complexType name="createLDAPEntryRequest">
-        
-    <xs:complexContent>
-            
-      <xs:extension base="tns:adminAttrsImpl">
-                
-        <xs:sequence/>
-                
-        <xs:attribute name="dn" type="xs:string" use="required"/>
-              
-      </xs:extension>
-          
-    </xs:complexContent>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="createLDAPEntryResponse">
-        
-    <xs:sequence>
-            
-      <xs:element name="LDAPEntry" type="tns:ldapEntryInfo"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="ldapEntryInfo">
-        
-    <xs:complexContent>
-            
-      <xs:extension base="tns:adminAttrsImpl">
-                
-        <xs:sequence/>
-                
-        <xs:attribute name="name" type="xs:string" use="required"/>
-              
-      </xs:extension>
-          
-    </xs:complexContent>
-      
-  </xs:complexType>
-    
   <xs:complexType name="createServerRequest">
         
     <xs:complexContent>
@@ -4112,20 +4050,6 @@
   </xs:complexType>
     
   <xs:complexType name="deleteGalSyncAccountResponse">
-        
-    <xs:sequence/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="deleteLDAPEntryRequest">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="dn" type="xs:string" use="required"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="deleteLDAPEntryResponse">
         
     <xs:sequence/>
       
@@ -4776,8 +4700,6 @@
     <xs:attribute name="type" type="xs:string" use="required"/>
         
     <xs:attribute name="allServers" type="xs:boolean"/>
-        
-    <xs:attribute name="imapServers" type="xs:boolean"/>
       
   </xs:complexType>
     
@@ -6877,37 +6799,6 @@
       
   </xs:complexType>
     
-  <xs:complexType name="getLDAPEntriesRequest">
-        
-    <xs:sequence>
-            
-      <xs:element name="ldapSearchBase" type="xs:string"/>
-          
-    </xs:sequence>
-        
-    <xs:attribute name="sortBy" type="xs:string"/>
-        
-    <xs:attribute name="sortAscending" type="xs:boolean"/>
-        
-    <xs:attribute name="limit" type="xs:int"/>
-        
-    <xs:attribute name="offset" type="xs:int"/>
-        
-    <xs:attribute name="query" type="xs:string" use="required"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="getLDAPEntriesResponse">
-        
-    <xs:sequence>
-            
-      <xs:element maxOccurs="unbounded" minOccurs="0" name="LDAPEntry" type="tns:ldapEntryInfo"/>
-          
-    </xs:sequence>
-      
-    <xs:attribute name="unusedCodeGenHelper" type="xs:string"/>
-  </xs:complexType>
-    
   <xs:complexType name="getLoggerStatsRequest">
         
     <xs:sequence>
@@ -8737,32 +8628,6 @@
       
   </xs:complexType>
     
-  <xs:complexType name="modifyLDAPEntryRequest">
-        
-    <xs:complexContent>
-            
-      <xs:extension base="tns:adminAttrsImpl">
-                
-        <xs:sequence/>
-                
-        <xs:attribute name="dn" type="xs:string" use="required"/>
-              
-      </xs:extension>
-          
-    </xs:complexContent>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="modifyLDAPEntryResponse">
-        
-    <xs:sequence>
-            
-      <xs:element name="LDAPEntry" type="tns:ldapEntryInfo"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
   <xs:complexType final="extension restriction" name="modifyOutgoingFilterRulesRequest">
         
     <xs:complexContent>
@@ -9735,26 +9600,6 @@
     <xs:sequence>
             
       <xs:element name="dl" type="tns:distributionListInfo"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="renameLDAPEntryRequest">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="dn" type="xs:string" use="required"/>
-        
-    <xs:attribute name="new_dn" type="xs:string" use="required"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="renameLDAPEntryResponse">
-        
-    <xs:sequence>
-            
-      <xs:element name="LDAPEntry" type="tns:ldapEntryInfo"/>
           
     </xs:sequence>
       
@@ -11492,9 +11337,11 @@
         
     <xs:sequence/>
         
-    <xs:attribute name="cert" type="xs:string"/>
+    <xs:attribute name="cert" type="xs:string" use="required"/>
         
-    <xs:attribute name="privkey" type="xs:string"/>
+    <xs:attribute name="privkey" type="xs:string" use="required"/>
+        
+    <xs:attribute name="ca" type="xs:string"/>
       
   </xs:complexType>
     
