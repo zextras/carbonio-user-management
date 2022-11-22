@@ -1771,12 +1771,6 @@
   <wsdl:message name="AdminCreateHABGroupResponseMessage">
     <wsdl:part name="params" element="zimbraAdmin:CreateHABGroupResponse"/>
   </wsdl:message>
-  <wsdl:message name="AdminCreateLDAPEntryRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:CreateLDAPEntryRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminCreateLDAPEntryResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:CreateLDAPEntryResponse"/>
-  </wsdl:message>
   <wsdl:message name="AdminCreateServerRequestMessage">
     <wsdl:part name="params" element="zimbraAdmin:CreateServerRequest"/>
   </wsdl:message>
@@ -1878,12 +1872,6 @@
   </wsdl:message>
   <wsdl:message name="AdminDeleteGalSyncAccountResponseMessage">
     <wsdl:part name="params" element="zimbraAdmin:DeleteGalSyncAccountResponse"/>
-  </wsdl:message>
-  <wsdl:message name="AdminDeleteLDAPEntryRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:DeleteLDAPEntryRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminDeleteLDAPEntryResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:DeleteLDAPEntryResponse"/>
   </wsdl:message>
   <wsdl:message name="AdminDeleteMailboxRequestMessage">
     <wsdl:part name="params" element="zimbraAdmin:DeleteMailboxRequest"/>
@@ -2359,12 +2347,6 @@
   <wsdl:message name="AdminGetIndexStatsResponseMessage">
     <wsdl:part name="params" element="zimbraAdmin:GetIndexStatsResponse"/>
   </wsdl:message>
-  <wsdl:message name="AdminGetLDAPEntriesRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:GetLDAPEntriesRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminGetLDAPEntriesResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:GetLDAPEntriesResponse"/>
-  </wsdl:message>
   <wsdl:message name="AdminGetLoggerStatsRequestMessage">
     <wsdl:part name="params" element="zimbraAdmin:GetLoggerStatsRequest"/>
   </wsdl:message>
@@ -2653,12 +2635,6 @@
   <wsdl:message name="AdminModifyHABGroupResponseMessage">
     <wsdl:part name="params" element="zimbraAdmin:ModifyHABGroupResponse"/>
   </wsdl:message>
-  <wsdl:message name="AdminModifyLDAPEntryRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:ModifyLDAPEntryRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminModifyLDAPEntryResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:ModifyLDAPEntryResponse"/>
-  </wsdl:message>
   <wsdl:message name="AdminModifyOutgoingFilterRulesRequestMessage">
     <wsdl:part name="params" element="zimbraAdmin:ModifyOutgoingFilterRulesRequest"/>
   </wsdl:message>
@@ -2874,12 +2850,6 @@
   </wsdl:message>
   <wsdl:message name="AdminRenameDistributionListResponseMessage">
     <wsdl:part name="params" element="zimbraAdmin:RenameDistributionListResponse"/>
-  </wsdl:message>
-  <wsdl:message name="AdminRenameLDAPEntryRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:RenameLDAPEntryRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminRenameLDAPEntryResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:RenameLDAPEntryResponse"/>
   </wsdl:message>
   <wsdl:message name="AdminRenameUCServiceRequestMessage">
     <wsdl:part name="params" element="zimbraAdmin:RenameUCServiceRequest"/>
@@ -3299,10 +3269,6 @@
       <wsdl:input message="svc:AdminCreateHABGroupRequestMessage"/>
       <wsdl:output message="svc:AdminCreateHABGroupResponseMessage"/>
     </wsdl:operation>
-    <wsdl:operation name="createLDAPEntryRequest">
-      <wsdl:input message="svc:AdminCreateLDAPEntryRequestMessage"/>
-      <wsdl:output message="svc:AdminCreateLDAPEntryResponseMessage"/>
-    </wsdl:operation>
     <wsdl:operation name="createServerRequest">
       <wsdl:input message="svc:AdminCreateServerRequestMessage"/>
       <wsdl:output message="svc:AdminCreateServerResponseMessage"/>
@@ -3370,10 +3336,6 @@
     <wsdl:operation name="deleteGalSyncAccountRequest">
       <wsdl:input message="svc:AdminDeleteGalSyncAccountRequestMessage"/>
       <wsdl:output message="svc:AdminDeleteGalSyncAccountResponseMessage"/>
-    </wsdl:operation>
-    <wsdl:operation name="deleteLDAPEntryRequest">
-      <wsdl:input message="svc:AdminDeleteLDAPEntryRequestMessage"/>
-      <wsdl:output message="svc:AdminDeleteLDAPEntryResponseMessage"/>
     </wsdl:operation>
     <wsdl:operation name="deleteMailboxRequest">
       <wsdl:input message="svc:AdminDeleteMailboxRequestMessage"/>
@@ -3691,10 +3653,6 @@
       <wsdl:input message="svc:AdminGetIndexStatsRequestMessage"/>
       <wsdl:output message="svc:AdminGetIndexStatsResponseMessage"/>
     </wsdl:operation>
-    <wsdl:operation name="getLDAPEntriesRequest">
-      <wsdl:input message="svc:AdminGetLDAPEntriesRequestMessage"/>
-      <wsdl:output message="svc:AdminGetLDAPEntriesResponseMessage"/>
-    </wsdl:operation>
     <wsdl:operation name="getLoggerStatsRequest">
       <wsdl:input message="svc:AdminGetLoggerStatsRequestMessage"/>
       <wsdl:output message="svc:AdminGetLoggerStatsResponseMessage"/>
@@ -3887,10 +3845,6 @@
       <wsdl:input message="svc:AdminModifyHABGroupRequestMessage"/>
       <wsdl:output message="svc:AdminModifyHABGroupResponseMessage"/>
     </wsdl:operation>
-    <wsdl:operation name="modifyLDAPEntryRequest">
-      <wsdl:input message="svc:AdminModifyLDAPEntryRequestMessage"/>
-      <wsdl:output message="svc:AdminModifyLDAPEntryResponseMessage"/>
-    </wsdl:operation>
     <wsdl:operation name="modifyOutgoingFilterRulesRequest">
       <wsdl:input message="svc:AdminModifyOutgoingFilterRulesRequestMessage"/>
       <wsdl:output message="svc:AdminModifyOutgoingFilterRulesResponseMessage"/>
@@ -4034,10 +3988,6 @@
     <wsdl:operation name="renameDistributionListRequest">
       <wsdl:input message="svc:AdminRenameDistributionListRequestMessage"/>
       <wsdl:output message="svc:AdminRenameDistributionListResponseMessage"/>
-    </wsdl:operation>
-    <wsdl:operation name="renameLDAPEntryRequest">
-      <wsdl:input message="svc:AdminRenameLDAPEntryRequestMessage"/>
-      <wsdl:output message="svc:AdminRenameLDAPEntryResponseMessage"/>
     </wsdl:operation>
     <wsdl:operation name="renameUCServiceRequest">
       <wsdl:input message="svc:AdminRenameUCServiceRequestMessage"/>
@@ -5648,16 +5598,6 @@
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="createLDAPEntryRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/CreateLDAPEntry" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="createServerRequest">
       <soap:operation soapAction="urn:zimbraAdmin/CreateServer" style="document"/>
       <wsdl:input>
@@ -5820,16 +5760,6 @@
     </wsdl:operation>
     <wsdl:operation name="deleteGalSyncAccountRequest">
       <soap:operation soapAction="urn:zimbraAdmin/DeleteGalSyncAccount" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="deleteLDAPEntryRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/DeleteLDAPEntry" style="document"/>
       <wsdl:input>
         <soap:body use="literal"/>
         <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
@@ -6628,16 +6558,6 @@
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="getLDAPEntriesRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/GetLDAPEntries" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="getLoggerStatsRequest">
       <soap:operation soapAction="urn:zimbraAdmin/GetLoggerStats" style="document"/>
       <wsdl:input>
@@ -7118,16 +7038,6 @@
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="modifyLDAPEntryRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/ModifyLDAPEntry" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="modifyOutgoingFilterRulesRequest">
       <soap:operation soapAction="urn:zimbraAdmin/ModifyOutgoingFilterRules" style="document"/>
       <wsdl:input>
@@ -7480,16 +7390,6 @@
     </wsdl:operation>
     <wsdl:operation name="renameDistributionListRequest">
       <soap:operation soapAction="urn:zimbraAdmin/RenameDistributionList" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="renameLDAPEntryRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/RenameLDAPEntry" style="document"/>
       <wsdl:input>
         <soap:body use="literal"/>
         <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
@@ -10314,12 +10214,12 @@
   </wsdl:binding>
   <wsdl:service name="zcsService">
     <wsdl:port name="zcsServicePort" binding="svc:zcsPortBinding">
-      <soap:address location="http://sw-s04.demo.zextras.io/service/soap/"/>
+      <soap:address location="http://localhost:7070/service/soap"/>
     </wsdl:port>
   </wsdl:service>
   <wsdl:service name="zcsAdminService">
     <wsdl:port name="zcsAdminServicePort" binding="svc:zcsAdminPortBinding">
-      <soap:address location="https://sw-s04.demo.zextras.io:9071/service/admin/soap/"/>
+      <soap:address location="https://localhost:7071/service/admin/soap"/>
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

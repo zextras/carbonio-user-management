@@ -7,8 +7,9 @@ kind: Component
 metadata:
   name: carbonio-user-management
   title: Carbonio User Management
-  description: Service that wraps carbonio-mailbox SOAP APIs in REST APIs necessary to validate user
-  cookies and to retrieve account information.
+  description: |
+    Service that wraps carbonio-mailbox SOAP APIs in REST APIs necessary to validate user
+    cookies and to retrieve account information.
   tags:
     - java
     - backend
@@ -18,9 +19,8 @@ spec:
   owner: shuffled-waffles
   providesApis:
     - carbonio-user-management-rest-api
-# Uncomment when the carbonio-mailbox project is added to backstage
-#  dependsOn:
-#    - carbonio-mailbox
+  dependsOn:
+    - carbonio-mailbox
 
 ---
 

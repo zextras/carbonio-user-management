@@ -8,7 +8,7 @@ targets=(
 )
 pkgname="carbonio-user-management"
 pkgver="0.1.2"
-pkgrel="2210311610"
+pkgrel="2211211211"
 pkgdesc="Carbonio User Management"
 pkgdesclong=(
   "Carbonio User Management"
