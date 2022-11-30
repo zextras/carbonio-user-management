@@ -20,7 +20,7 @@ spec:
   providesApis:
     - carbonio-user-management-rest-api
   dependsOn:
-    - carbonio-mailbox
+    - component:carbonio-mailbox
 
 ---
 
