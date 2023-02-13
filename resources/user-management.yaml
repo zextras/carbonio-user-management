@@ -33,8 +33,7 @@ paths:
           schema:
             type: array
             items:
-              type: string
-              format: UUID
+              $ref: '#/components/schemas/UserId'
       responses:
         '200':
           $ref: '#/components/responses/200UserDetails'
@@ -61,8 +60,7 @@ paths:
           description: The id of user to retrieve
           required: true
           schema:
-            type: string
-            format: UUID
+            $ref: '#/components/schemas/UserId'
       responses:
         '200':
           $ref: '#/components/responses/200UserInfo'
@@ -190,8 +188,7 @@ components:
       type: object
       properties:
         id:
-          type: string
-          format: UUID
+          $ref: '#/components/schemas/UserId'
         email:
           type: string
           format: email

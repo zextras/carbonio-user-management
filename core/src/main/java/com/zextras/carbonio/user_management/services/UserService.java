@@ -38,7 +38,9 @@ public class UserService {
       }
 
       if (attribute.getName().equals("zimbraId")) {
-        userInfo.setId(UUID.fromString(attribute.getValue()));
+        UserIdDto userId = new UserIdDto();
+        userId.setUserId(UUID.fromString(attribute.getValue()));
+        userInfo.setId(userId);
       }
     });
 
@@ -57,7 +59,9 @@ public class UserService {
       }
 
       if (attribute.getName().equals("zimbraId")) {
-        userDetails.getUserInfo().setId(UUID.fromString(attribute.getValue()));
+        UserIdDto userId = new UserIdDto();
+        userId.setUserId(UUID.fromString(attribute.getValue()));
+        userDetails.getUserInfo().setId(userId);
       }
     });
 
@@ -69,7 +73,7 @@ public class UserService {
     return userDetails;
   }
 
-  public List<UserDetailsDto> getUsers(List<UUID> userIds, String token) {
+  public List<UserDetailsDto> getUsers(List<UserIdDto> userIds, String token) {
     List<UserDetailsDto> usersDetails = new ArrayList<>();
 
     userIds.forEach(userId -> {
@@ -78,7 +82,7 @@ public class UserService {
         GetAccountInfoResponse accountInfo = SoapClient
           .newClient()
           .setAuthToken(token)
-          .getAccountInfoById(userId);
+          .getAccountInfoById(userId.getUserId());
         usersDetails.add(createUserDetails(accountInfo));
       } catch (ServerSOAPFaultException e) {
         e.printStackTrace();
@@ -92,7 +96,7 @@ public class UserService {
   }
 
   public Response getInfoById(
-    UUID userUuid,
+    UserIdDto userUuid,
     String token
   ) {
     System.out.println("Requested: " + userUuid);
@@ -103,7 +107,7 @@ public class UserService {
         GetAccountInfoResponse accountInfo = SoapClient
           .newClient()
           .setAuthToken(token)
-          .getAccountInfoById(userUuid);
+          .getAccountInfoById(userUuid.getUserId());
 
         userInfo = createUserInfo(accountInfo);
         cacheManager.getUserByIdCache().put(userUuid, userInfo);
