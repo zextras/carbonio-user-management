@@ -6,11 +6,8 @@ package com.zextras.carbonio.user_management.controllers;
 
 import com.google.inject.Inject;
 import com.zextras.carbonio.user_management.generated.UsersApiService;
-import com.zextras.carbonio.user_management.generated.model.UserDetailsDto;
 import com.zextras.carbonio.user_management.services.UserService;
 import com.zextras.carbonio.user_management.utilities.CookieParser;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -18,8 +15,6 @@ import javax.enterprise.context.RequestScoped;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
-import org.apache.http.util.EntityUtils;
-import org.eclipse.jetty.http.HttpTester;
 
 @RequestScoped
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaResteasyServerCodegen", date = "2021-12-22T09:50:40.665594+01:00[Europe/Rome]")
@@ -40,12 +35,9 @@ public class UsersApiController implements UsersApiService {
   ) {
     Map<String, String> cookies = CookieParser.getCookies(cookie);
 
-    List<Response> userDetails = new ArrayList<>();
-    userIds.forEach(userId ->
-      userDetails.add(userService.getInfoById(userId, cookies.get("ZM_AUTH_TOKEN")))
-    );
-
-    return (cookies.containsKey("ZM_AUTH_TOKEN")) ? userDetails : Response.status(Status.BAD_REQUEST).build();
+    return (cookies.containsKey("ZM_AUTH_TOKEN"))
+      ? Response.ok().entity(userService.getUsers(userIds, cookies.get("ZM_AUTH_TOKEN"))).build()
+      : Response.status(Status.BAD_REQUEST).build();
   }
 
   public Response getUserInfoByEmail(

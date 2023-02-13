@@ -69,7 +69,7 @@ public class UserService {
     return userDetails;
   }
 
-  public List<UserDetailsDto> getUsers(List<String> userIds, String token) {
+  public List<UserDetailsDto> getUsers(List<UUID> userIds, String token) {
     List<UserDetailsDto> usersDetails = new ArrayList<>();
 
     userIds.forEach(userId -> {
@@ -78,7 +78,7 @@ public class UserService {
         GetAccountInfoResponse accountInfo = SoapClient
           .newClient()
           .setAuthToken(token)
-          .getAccountInfoById(UUID.fromString(userId));
+          .getAccountInfoById(userId);
         usersDetails.add(createUserDetails(accountInfo));
       } catch (ServerSOAPFaultException e) {
         e.printStackTrace();
