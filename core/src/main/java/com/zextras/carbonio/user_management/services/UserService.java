@@ -9,8 +9,11 @@ import com.google.inject.Inject;
 import com.sun.xml.ws.fault.ServerSOAPFaultException;
 import com.zextras.carbonio.user_management.cache.CacheManager;
 import com.zextras.carbonio.user_management.entities.UserToken;
-import com.zextras.carbonio.user_management.generated.model.UserId;
-import com.zextras.carbonio.user_management.generated.model.UserInfo;
+import com.zextras.carbonio.user_management.generated.model.UserDetailsDto;
+import com.zextras.carbonio.user_management.generated.model.UserIdDto;
+import com.zextras.carbonio.user_management.generated.model.UserInfoDto;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -19,15 +22,15 @@ import zimbraaccount.GetInfoResponse;
 
 public class UserService {
 
-  private CacheManager cacheManager;
+  private final CacheManager cacheManager;
 
   @Inject
   public UserService(CacheManager cacheManager) {
     this.cacheManager = cacheManager;
   }
 
-  private UserInfo createUserInfo(GetAccountInfoResponse accountInfo) {
-    UserInfo userInfo = new UserInfo();
+  private UserInfoDto createUserInfo(GetAccountInfoResponse accountInfo) {
+    UserInfoDto userInfo = new UserInfoDto();
 
     accountInfo.getAttr().forEach(attribute -> {
       if (attribute.getName().equals("displayName")) {
@@ -45,12 +48,55 @@ public class UserService {
     return userInfo;
   }
 
+  private UserDetailsDto createUserDetails(GetAccountInfoResponse accountInfo) {
+    UserDetailsDto userDetails = new UserDetailsDto();
+
+    accountInfo.getAttr().forEach(attribute -> {
+      if (attribute.getName().equals("displayName")) {
+        userDetails.getUserInfo().setFullName(attribute.getValue());
+      }
+
+      if (attribute.getName().equals("zimbraId")) {
+        userDetails.getUserInfo().setId(UUID.fromString(attribute.getValue()));
+      }
+    });
+
+    userDetails.getUserInfo().setEmail(accountInfo.getName());
+    userDetails.getUserInfo().setDomain(accountInfo.getPublicURL());
+
+    // TODO add pictureUpdatedAt and statusMessage
+
+    return userDetails;
+  }
+
+  public List<UserDetailsDto> getUsers(List<String> userIds, String token) {
+    List<UserDetailsDto> usersDetails = new ArrayList<>();
+
+    userIds.forEach(userId -> {
+      System.out.println("Requested: " + userId);
+      try {
+        GetAccountInfoResponse accountInfo = SoapClient
+          .newClient()
+          .setAuthToken(token)
+          .getAccountInfoById(UUID.fromString(userId));
+        usersDetails.add(createUserDetails(accountInfo));
+      } catch (ServerSOAPFaultException e) {
+        e.printStackTrace();
+        //return Response.status(Status.NOT_FOUND).build();
+      } catch (Exception e) {
+        e.printStackTrace();
+        //return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+      }
+    });
+    return usersDetails;
+  }
+
   public Response getInfoById(
     UUID userUuid,
     String token
   ) {
     System.out.println("Requested: " + userUuid);
-    UserInfo userInfo = cacheManager.getUserByIdCache().getIfPresent(userUuid);
+    UserInfoDto userInfo = cacheManager.getUserByIdCache().getIfPresent(userUuid);
 
     if (userInfo == null) {
       try {
@@ -81,7 +127,7 @@ public class UserService {
     String token
   ) {
     System.out.println("Requested: " + userEmail);
-    UserInfo userInfo = cacheManager.getUserByEmailCache().getIfPresent(userEmail);
+    UserInfoDto userInfo = cacheManager.getUserByEmailCache().getIfPresent(userEmail);
 
     if (userInfo == null) {
       try {
@@ -137,7 +183,7 @@ public class UserService {
       }
     }
 
-    UserId userId = new UserId();
+    UserIdDto userId = new UserIdDto();
     userId.setUserId(userToken.getUserId());
     System.out.println(userId.getUserId());
     return Response.ok().entity(userId).build();

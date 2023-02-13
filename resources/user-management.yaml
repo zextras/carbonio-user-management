@@ -14,6 +14,36 @@ tags:
   - name: Auth
   - name: Health
 paths:
+  /users:
+    get:
+      tags:
+        - User
+      summary: Gets the detailed account info of users using their ids
+      operationId: getUserDetails
+      parameters:
+        - in: header
+          name: Cookie
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: userIds
+          description: List of ids (max 10) of the users to retrieve
+          required: true
+          schema:
+            type: array
+            items:
+              type: string
+              format: UUID
+      responses:
+        '200':
+          $ref: '#/components/responses/200UserDetails'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '404':
+          $ref: '#/components/responses/404NotFound'
   /users/id/{userId}/:
     get:
       tags:
@@ -137,6 +167,12 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/UserId'
+    200UserDetails:
+      description: Account details of the user
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UserDetails'
     204NoContent:
       description: The service is up and running
     400BadRequest:
@@ -163,6 +199,21 @@ components:
           type: string
         domain:
           type: string
+    UserDetails:
+      type: object
+      properties:
+        userInfo:
+          $ref: '#/components/schemas/UserInfo'
+        pictureUpdatedAt:
+          type: string
+          format: date-time
+          readOnly: true
+          description: |
+            user profile picture update timestamp,
+            returned only if the room picture was set at least once
+        statusMessage:
+          type: string
+          description: the user's status message
     UserId:
       type: object
       properties:

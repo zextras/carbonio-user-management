@@ -55,7 +55,7 @@ SPDX-License-Identifier: AGPL-3.0-only
                 </inputSpec>
                 <modelPackage>com.zextras.carbonio.user_management.generated.model</modelPackage>
                 <output>./</output>
-
+                <modelNameSuffix>dto</modelNameSuffix>
                 <packageName>com.zextras.carbonio.user_management</packageName>
               </configuration>
               <goals>
@@ -89,7 +89,7 @@ SPDX-License-Identifier: AGPL-3.0-only
     <dependency>
       <artifactId>jaxws-rt</artifactId>
       <groupId>com.sun.xml.ws</groupId>
-      <version>2.3.1</version>
+      <version>2.3.2</version>
     </dependency>
 
     <dependency>
