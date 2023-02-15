@@ -7,7 +7,6 @@ package com.zextras.carbonio.user_management.controllers;
 import com.google.inject.Inject;
 import com.zextras.carbonio.user_management.generated.UsersApiService;
 import com.zextras.carbonio.user_management.generated.model.UserId;
-import com.zextras.carbonio.user_management.generated.model.UserIdDto;
 import com.zextras.carbonio.user_management.services.UserService;
 import com.zextras.carbonio.user_management.utilities.CookieParser;
 import java.util.List;
