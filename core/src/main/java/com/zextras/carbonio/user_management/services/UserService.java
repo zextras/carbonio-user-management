@@ -10,8 +10,9 @@ import com.sun.xml.ws.fault.ServerSOAPFaultException;
 import com.zextras.carbonio.user_management.cache.CacheManager;
 import com.zextras.carbonio.user_management.entities.UserToken;
 import com.zextras.carbonio.user_management.generated.model.UserDetailsDto;
+import com.zextras.carbonio.user_management.generated.model.UserId;
 import com.zextras.carbonio.user_management.generated.model.UserIdDto;
-import com.zextras.carbonio.user_management.generated.model.UserInfoDto;
+import com.zextras.carbonio.user_management.generated.model.UserInfo;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -29,8 +30,8 @@ public class UserService {
     this.cacheManager = cacheManager;
   }
 
-  private UserInfoDto createUserInfo(GetAccountInfoResponse accountInfo) {
-    UserInfoDto userInfo = new UserInfoDto();
+  private UserInfo createUserInfo(GetAccountInfoResponse accountInfo) {
+    UserInfo userInfo = new UserInfo();
 
     accountInfo.getAttr().forEach(attribute -> {
       if (attribute.getName().equals("displayName")) {
@@ -38,7 +39,7 @@ public class UserService {
       }
 
       if (attribute.getName().equals("zimbraId")) {
-        UserIdDto userId = new UserIdDto();
+        UserId userId = new UserId();
         userId.setUserId(UUID.fromString(attribute.getValue()));
         userInfo.setId(userId);
       }
@@ -73,7 +74,7 @@ public class UserService {
     return userDetails;
   }
 
-  public List<UserDetailsDto> getUsers(List<UserIdDto> userIds, String token) {
+  public List<UserDetailsDto> getUsers(List<UserId> userIds, String token) {
     List<UserDetailsDto> usersDetails = new ArrayList<>();
 
     userIds.forEach(userId -> {
@@ -96,11 +97,11 @@ public class UserService {
   }
 
   public Response getInfoById(
-    UserIdDto userUuid,
+    UserId userUuid,
     String token
   ) {
     System.out.println("Requested: " + userUuid);
-    UserInfoDto userInfo = cacheManager.getUserByIdCache().getIfPresent(userUuid);
+    UserInfo userInfo = cacheManager.getUserByIdCache().getIfPresent(userUuid);
 
     if (userInfo == null) {
       try {
@@ -131,7 +132,7 @@ public class UserService {
     String token
   ) {
     System.out.println("Requested: " + userEmail);
-    UserInfoDto userInfo = cacheManager.getUserByEmailCache().getIfPresent(userEmail);
+    UserInfo userInfo = cacheManager.getUserByEmailCache().getIfPresent(userEmail);
 
     if (userInfo == null) {
       try {

@@ -6,6 +6,7 @@ package com.zextras.carbonio.user_management.controllers;
 
 import com.google.inject.Inject;
 import com.zextras.carbonio.user_management.generated.UsersApiService;
+import com.zextras.carbonio.user_management.generated.model.UserId;
 import com.zextras.carbonio.user_management.generated.model.UserIdDto;
 import com.zextras.carbonio.user_management.services.UserService;
 import com.zextras.carbonio.user_management.utilities.CookieParser;
@@ -30,7 +31,7 @@ public class UsersApiController implements UsersApiService {
   @Override
   public Response getUserDetails(
     String cookie,
-    List<UserIdDto> userIds,
+    List<UserId> userIds,
     SecurityContext securityContext
   ) {
     Map<String, String> cookies = CookieParser.getCookies(cookie);
@@ -54,7 +55,7 @@ public class UsersApiController implements UsersApiService {
 
   public Response getUserInfoById(
     String cookie,
-    UserIdDto uuid,
+    UserId uuid,
     SecurityContext securityContext
   ) {
     Map<String, String> cookies = CookieParser.getCookies(cookie);

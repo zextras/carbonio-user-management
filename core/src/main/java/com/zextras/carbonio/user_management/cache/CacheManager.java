@@ -10,15 +10,15 @@ import com.github.benmanes.caffeine.cache.Expiry;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.zextras.carbonio.user_management.entities.UserToken;
-import com.zextras.carbonio.user_management.generated.model.UserIdDto;
-import com.zextras.carbonio.user_management.generated.model.UserInfoDto;
+import com.zextras.carbonio.user_management.generated.model.UserId;
+import com.zextras.carbonio.user_management.generated.model.UserInfo;
 import java.util.concurrent.TimeUnit;
 
 @Singleton
 public class CacheManager {
 
-  private Cache<UserIdDto, UserInfoDto> userByUUIDCache;
-  private Cache<String, UserInfoDto>  userByEmailCache;
+  private Cache<UserId, UserInfo> userByUUIDCache;
+  private Cache<String, UserInfo>  userByEmailCache;
   private Cache<String, UserToken> userTokenCache;
 
   @Inject
@@ -69,11 +69,11 @@ public class CacheManager {
       .build();
   }
 
-  public Cache<UserIdDto, UserInfoDto> getUserByIdCache() {
+  public Cache<UserId, UserInfo> getUserByIdCache() {
     return userByUUIDCache;
   }
 
-  public Cache<String, UserInfoDto> getUserByEmailCache() {
+  public Cache<String, UserInfo> getUserByEmailCache() {
     return userByEmailCache;
   }
 
