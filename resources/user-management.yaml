@@ -19,13 +19,13 @@ paths:
       tags:
         - User
       summary: Gets the detailed account info of users using their ids
-      operationId: getUserDetails
+      operationId: getUsersInfo
       parameters:
         - $ref: '#/components/parameters/headerCookie'
         - $ref: '#/components/parameters/queryUserIds'
       responses:
         '200':
-          $ref: '#/components/responses/200UserDetails'
+          $ref: '#/components/responses/200UsersInfo'
         '400':
           $ref: '#/components/responses/400BadRequest'
         '403':
@@ -171,12 +171,12 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/UserId'
-    200UserDetails:
-      description: Account details of the user
+    200UsersInfo:
+      description: Account info of the user
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/UserDetails'
+            $ref: '#/components/schemas/UserInfo'
     204NoContent:
       description: The service is up and running
     400BadRequest:
@@ -202,21 +202,6 @@ components:
           type: string
         domain:
           type: string
-    UserDetails:
-      type: object
-      properties:
-        userInfo:
-          $ref: '#/components/schemas/UserInfo'
-        pictureUpdatedAt:
-          type: string
-          format: date-time
-          readOnly: true
-          description: |
-            user profile picture update timestamp,
-            returned only if the room picture was set at least once
-        statusMessage:
-          type: string
-          description: the user's status message
     UserId:
       type: object
       properties:

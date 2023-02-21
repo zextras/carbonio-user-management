@@ -5,6 +5,7 @@
 package com.zextras.carbonio.user_management.controllers;
 
 import com.google.inject.Inject;
+import com.zextras.carbonio.user_management.generated.NotFoundException;
 import com.zextras.carbonio.user_management.generated.UsersApiService;
 import com.zextras.carbonio.user_management.generated.model.UserId;
 import com.zextras.carbonio.user_management.services.UserService;
@@ -25,19 +26,6 @@ public class UsersApiController implements UsersApiService {
   @Inject
   public UsersApiController(UserService usersService) {
     this.userService = usersService;
-  }
-
-  @Override
-  public Response getUserDetails(
-    String cookie,
-    List<UserId> userIds,
-    SecurityContext securityContext
-  ) {
-    Map<String, String> cookies = CookieParser.getCookies(cookie);
-
-    return (cookies.containsKey("ZM_AUTH_TOKEN"))
-      ? Response.ok().entity(userService.getUsers(userIds, cookies.get("ZM_AUTH_TOKEN"))).build()
-      : Response.status(Status.BAD_REQUEST).build();
   }
 
   public Response getUserInfoByEmail(
@@ -62,6 +50,12 @@ public class UsersApiController implements UsersApiService {
     return (cookies.containsKey("ZM_AUTH_TOKEN"))
       ? userService.getInfoById(uuid, cookies.get("ZM_AUTH_TOKEN"))
       : Response.status(Status.BAD_REQUEST).build();
+  }
+
+  @Override
+  public Response getUsersInfo(String cookie, List<UserId> userIds, SecurityContext securityContext)
+    throws NotFoundException {
+    return null;
   }
 
 }

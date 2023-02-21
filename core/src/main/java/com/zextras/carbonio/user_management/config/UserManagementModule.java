@@ -9,8 +9,6 @@ import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.zextras.carbonio.user_management.controllers.AuthApiController;
 import com.zextras.carbonio.user_management.controllers.HealthApiController;
 import com.zextras.carbonio.user_management.controllers.UsersApiController;
-import com.zextras.carbonio.user_management.dal.repository.UserRepository;
-import com.zextras.carbonio.user_management.dal.repository.impl.UserRepositoryEbean;
 import com.zextras.carbonio.user_management.generated.AuthApi;
 import com.zextras.carbonio.user_management.generated.AuthApiService;
 import com.zextras.carbonio.user_management.generated.HealthApi;
@@ -33,6 +31,5 @@ public class UserManagementModule extends RequestScopeModule {
 
     bind(AuthApi.class);
     bind(AuthApiService.class).to(AuthApiController.class);
-    bind(UserRepository.class).to(UserRepositoryEbean.class);
   }
 }

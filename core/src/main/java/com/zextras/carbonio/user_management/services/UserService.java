@@ -8,16 +8,12 @@ import client.SoapClient;
 import com.google.inject.Inject;
 import com.sun.xml.ws.fault.ServerSOAPFaultException;
 import com.zextras.carbonio.user_management.cache.CacheManager;
-import com.zextras.carbonio.user_management.dal.dao.User;
-import com.zextras.carbonio.user_management.dal.repository.UserRepository;
 import com.zextras.carbonio.user_management.entities.UserToken;
 import com.zextras.carbonio.user_management.generated.model.UserDetails;
 import com.zextras.carbonio.user_management.generated.model.UserId;
 import com.zextras.carbonio.user_management.generated.model.UserInfo;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -27,12 +23,10 @@ import zimbraaccount.GetInfoResponse;
 public class UserService {
 
   private final CacheManager cacheManager;
-  private final UserRepository userRepository;
 
   @Inject
-  public UserService(CacheManager cacheManager, UserRepository userRepository) {
+  public UserService(CacheManager cacheManager) {
     this.cacheManager = cacheManager;
-    this.userRepository = userRepository;
   }
 
   private UserInfo createUserInfo(GetAccountInfoResponse accountInfo) {
@@ -56,7 +50,7 @@ public class UserService {
     return userInfo;
   }
 
-  private UserDetails createUserDetails(GetAccountInfoResponse accountInfo, Optional<User> user) {
+  private UserDetails createUserDetails(GetAccountInfoResponse accountInfo) {
     UserDetails userDetails = new UserDetails();
 
     accountInfo.getAttr().forEach(attribute -> {
@@ -73,10 +67,6 @@ public class UserService {
 
     userDetails.getUserInfo().setEmail(accountInfo.getName());
     userDetails.getUserInfo().setDomain(accountInfo.getPublicURL());
-    user.ifPresent(u -> {
-      userDetails.setPictureUpdatedAt(Date.from(u.getPictureUpdatedAt().toInstant()));
-      userDetails.setStatusMessage(u.getStatusMessage());
-    });
     return userDetails;
   }
 
@@ -90,7 +80,7 @@ public class UserService {
           .newClient()
           .setAuthToken(token)
           .getAccountInfoById(userId.getUserId());
-        usersDetails.add(createUserDetails(accountInfo, userRepository.getById(userId.getUserId())));
+        usersDetails.add(createUserDetails(accountInfo));
       } catch (ServerSOAPFaultException e) {
         e.printStackTrace();
         //return Response.status(Status.NOT_FOUND).build();
@@ -107,7 +97,7 @@ public class UserService {
     String token
   ) {
     System.out.println("Requested: " + userUuid);
-    UserInfo userInfo = cacheManager.getUserByIdCache().getIfPresent(userUuid);
+    UserInfo userInfo = cacheManager.getUserByIdCache().getIfPresent(userUuid.getUserId());
 
     if (userInfo == null) {
       try {
@@ -117,7 +107,7 @@ public class UserService {
           .getAccountInfoById(userUuid.getUserId());
 
         userInfo = createUserInfo(accountInfo);
-        cacheManager.getUserByIdCache().put(userUuid, userInfo);
+        cacheManager.getUserByIdCache().put(userUuid.getUserId(), userInfo);
         cacheManager.getUserByEmailCache().put(userInfo.getEmail(), userInfo);
 
       } catch (ServerSOAPFaultException e) {
@@ -149,7 +139,7 @@ public class UserService {
 
         userInfo = createUserInfo(accountInfo);
         cacheManager.getUserByEmailCache().put(userEmail, userInfo);
-        cacheManager.getUserByIdCache().put(userInfo.getId(), userInfo);
+        cacheManager.getUserByIdCache().put(userInfo.getId().getUserId(), userInfo);
 
       } catch (ServerSOAPFaultException e) {
         e.printStackTrace();
