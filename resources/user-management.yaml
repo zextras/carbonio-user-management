@@ -158,7 +158,8 @@ components:
         type: array
         maxItems: 10
         items:
-          $ref: '#/components/schemas/UserId'
+          type: string
+          format: UUID
   responses:
     200UserInfo:
       description: Account info of the user

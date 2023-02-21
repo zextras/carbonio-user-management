@@ -7,7 +7,6 @@ package com.zextras.carbonio.user_management.controllers;
 import com.google.inject.Inject;
 import com.zextras.carbonio.user_management.generated.NotFoundException;
 import com.zextras.carbonio.user_management.generated.UsersApiService;
-import com.zextras.carbonio.user_management.generated.model.UserId;
 import com.zextras.carbonio.user_management.services.UserService;
 import com.zextras.carbonio.user_management.utilities.CookieParser;
 import java.util.List;
@@ -54,7 +53,7 @@ public class UsersApiController implements UsersApiService {
   }
 
   @Override
-  public Response getUsersInfo(String cookie, List<UserId> userIds, SecurityContext securityContext)
+  public Response getUsersInfo(String cookie, List<UUID> userIds, SecurityContext securityContext)
     throws NotFoundException {
     return null;
   }
