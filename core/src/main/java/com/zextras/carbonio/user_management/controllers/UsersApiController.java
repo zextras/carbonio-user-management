@@ -55,7 +55,11 @@ public class UsersApiController implements UsersApiService {
   @Override
   public Response getUsersInfo(String cookie, List<UUID> userIds, SecurityContext securityContext)
     throws NotFoundException {
-    return null;
+    Map<String, String> cookies = CookieParser.getCookies(cookie);
+
+    return (cookies.containsKey("ZM_AUTH_TOKEN"))
+      ? userService.getUsers(userIds, cookies.get("ZM_AUTH_TOKEN"))
+      : Response.status(Status.BAD_REQUEST).build();
   }
 
 }

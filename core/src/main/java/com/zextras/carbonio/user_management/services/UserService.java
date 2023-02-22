@@ -11,13 +11,14 @@ import com.zextras.carbonio.user_management.cache.CacheManager;
 import com.zextras.carbonio.user_management.entities.UserToken;
 import com.zextras.carbonio.user_management.generated.model.UserId;
 import com.zextras.carbonio.user_management.generated.model.UserInfo;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import zimbraaccount.GetAccountInfoResponse;
 import zimbraaccount.GetInfoResponse;
+import zimbramail.GetContactsResponse;
 
 public class UserService {
 
@@ -49,26 +50,38 @@ public class UserService {
     return userInfo;
   }
 
-  public List<UserInfo> getUsers(List<UserId> userIds, String token) {
-    List<UserInfo> usersInfo = new ArrayList<>();
+  public Response getUsers(List<UUID> userIds, String token) {
+      if(!userIds.isEmpty()){
+        try {
+          GetContactsResponse contactsInfo = SoapClient
+            .newClient()
+            .setAuthToken(token)
+            .getContactsRequest(userIds
+              .stream()
+              .map(UUID::toString)
+              .collect(Collectors.toList())
+            );
 
-    userIds.forEach(userId -> {
-      System.out.println("Requested: " + userId);
-      /*try {
-        GetAccountInfoResponse accountInfo = SoapClient
-          .newClient()
-          .setAuthToken(token)
-          .getAccountInfoById(userId.getUserId());
-        usersDetails.add(createUserDetails(accountInfo));
-      } catch (ServerSOAPFaultException e) {
-        e.printStackTrace();
-        //return Response.status(Status.NOT_FOUND).build();
-      } catch (Exception e) {
-        e.printStackTrace();
-        //return Response.status(Status.INTERNAL_SERVER_ERROR).build();
-      }*/
-    });
-    return usersInfo;
+          return Response.ok(
+            contactsInfo.getCn().stream().map(cInfo -> {
+              UserId usId = new UserId();
+              UserInfo usInfo = new UserInfo();
+              usId.setUserId(UUID.fromString(cInfo.getId()));
+              usInfo.setId(usId);
+              usInfo.setFullName(cInfo.getF());
+              usInfo.setEmail(cInfo.getEmail());
+              usInfo.setDomain(cInfo.getDlist());
+              return usInfo;
+            })
+            .collect(Collectors.toList())
+            ).build();
+        } catch (Exception e) {
+          e.printStackTrace();
+          return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+        }
+      } else {
+        return Response.status(Status.BAD_REQUEST).build();
+      }
   }
 
   public Response getInfoById(

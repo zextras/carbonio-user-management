@@ -11,6 +11,7 @@ import com.sun.xml.ws.fault.ServerSOAPFaultException;
 import https.www_zextras_com.wsdl.zimbraservice.ZcsPortType;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.IntStream;
@@ -26,11 +27,14 @@ import zimbra.AccountBy;
 import zimbra.AccountSelector;
 import zimbra.AuthTokenControl;
 import zimbra.HeaderContext;
+import zimbra.Id;
 import zimbra.ObjectFactory;
 import zimbraaccount.GetAccountInfoRequest;
 import zimbraaccount.GetAccountInfoResponse;
 import zimbraaccount.GetInfoRequest;
 import zimbraaccount.GetInfoResponse;
+import zimbramail.GetContactsRequest;
+import zimbramail.GetContactsResponse;
 
 public class SoapClient {
 
@@ -113,6 +117,22 @@ public class SoapClient {
     try {
       ((WSBindingProvider) zimbraService).setOutboundHeaders(createServiceSoapHeader());
       return zimbraService.getAccountInfoRequest(accountInfoRequest, soapHeaderContext);
+    } finally {
+      zimbraServiceQueue.add(zimbraService);
+    }
+  }
+
+  public GetContactsResponse getContactsRequest(List<String> accountIds)
+    throws JAXBException, ParserConfigurationException, ServerSOAPFaultException {
+    Id csvId = new Id();
+    csvId.setId(String.join(",",accountIds));
+    GetContactsRequest contactsRequest = new GetContactsRequest();
+    contactsRequest.getCn().add(csvId);
+    ZcsPortType zimbraService = getZimbraService();
+
+    try {
+      ((WSBindingProvider) zimbraService).setOutboundHeaders(createServiceSoapHeader());
+      return zimbraService.getContactsRequest(contactsRequest, soapHeaderContext);
     } finally {
       zimbraServiceQueue.add(zimbraService);
     }
