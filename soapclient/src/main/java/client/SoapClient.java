@@ -124,12 +124,14 @@ public class SoapClient {
 
   public GetContactsResponse getContactsRequest(List<String> accountIds)
     throws JAXBException, ParserConfigurationException, ServerSOAPFaultException {
-    Id csvId = new Id();
-    csvId.setId(String.join(",",accountIds));
     GetContactsRequest contactsRequest = new GetContactsRequest();
-    contactsRequest.getCn().add(csvId);
-    ZcsPortType zimbraService = getZimbraService();
+    accountIds.forEach(aId -> {
+      Id id = new Id();
+      id.setId(aId);
+      contactsRequest.getCn().add(id);
+    });
 
+    ZcsPortType zimbraService = getZimbraService();
     try {
       ((WSBindingProvider) zimbraService).setOutboundHeaders(createServiceSoapHeader());
       return zimbraService.getContactsRequest(contactsRequest, soapHeaderContext);
