@@ -11,9 +11,9 @@ import com.zextras.carbonio.user_management.cache.CacheManager;
 import com.zextras.carbonio.user_management.entities.UserToken;
 import com.zextras.carbonio.user_management.generated.model.UserId;
 import com.zextras.carbonio.user_management.generated.model.UserInfo;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import zimbraaccount.GetAccountInfoResponse;
@@ -50,35 +50,32 @@ public class UserService {
   }
 
   public Response getUsers(List<UUID> userIds, String token) {
-    if (!userIds.isEmpty()) {
-      List<UserInfo> usersInfo = new ArrayList<>();
-      userIds.forEach(userUuid -> {
-        System.out.println("Requested: " + userUuid);
-        UserInfo userInfo = cacheManager.getUserByIdCache().getIfPresent(userUuid);
+    return (!userIds.isEmpty()) ? Response.status(Status.BAD_REQUEST).build()
+      : Response.ok().entity(
+          userIds.stream().map(userUuid -> {
+            System.out.println("Requested: " + userUuid);
+            UserInfo userInfo = cacheManager.getUserByIdCache().getIfPresent(userUuid);
 
-        if (userInfo == null) {
-          try {
-            GetAccountInfoResponse accountInfo = SoapClient
-              .newClient()
-              .setAuthToken(token)
-              .getAccountInfoById(userUuid);
+            if (userInfo == null) {
+              try {
+                GetAccountInfoResponse accountInfo = SoapClient
+                  .newClient()
+                  .setAuthToken(token)
+                  .getAccountInfoById(userUuid);
 
-            userInfo = createUserInfo(accountInfo);
-            cacheManager.getUserByIdCache().put(userUuid, userInfo);
-            cacheManager.getUserByEmailCache().put(userInfo.getEmail(), userInfo);
-
-          } catch (Exception e) {
-            e.printStackTrace();
-          }
-        }
-
-        usersInfo.add(userInfo);
-        System.out.println(userInfo.getId());
-      });
-      return Response.ok().entity(usersInfo).build();
+                userInfo = createUserInfo(accountInfo);
+                cacheManager.getUserByIdCache().put(userUuid, userInfo);
+                cacheManager.getUserByEmailCache().put(userInfo.getEmail(), userInfo);
+                System.out.println(userInfo.getId());
+              } catch (Exception e) {
+                e.printStackTrace();
+              }
+            }
+            System.out.println("Found: " + userUuid);
+            return userInfo;
+          }).collect(Collectors.toList())
+        ).build();
     }
-    return Response.status(Status.BAD_REQUEST).build();
-  }
 
   public Response getInfoById(
     UUID userUuid,
