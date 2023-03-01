@@ -50,7 +50,6 @@ paths:
           required: true
           schema:
             type: string
-            format: UUID
       responses:
         '200':
           $ref: '#/components/responses/200UserInfo'
@@ -159,7 +158,6 @@ components:
         maxItems: 10
         items:
           type: string
-          format: UUID
   responses:
     200UserInfo:
       description: Account info of the user
@@ -209,4 +207,3 @@ components:
       properties:
         userId:
           type: string
-          format: UUID

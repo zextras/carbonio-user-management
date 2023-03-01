@@ -162,16 +162,6 @@ SPDX-License-Identifier: AGPL-3.0-only
         </configuration>
       </plugin>
 
-      <!--<plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>11</source>
-          <target>11</target>
-        </configuration>
-        <groupId>org.apache.maven.plugins</groupId>
-        <version>3.6.1</version>
-      </plugin>-->
-
       <plugin>
         <groupId>io.ebean</groupId>
         <artifactId>ebean-maven-plugin</artifactId>

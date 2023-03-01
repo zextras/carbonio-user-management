@@ -5,17 +5,16 @@
 package com.zextras.carbonio.user_management.entities;
 
 import java.util.Objects;
-import java.util.UUID;
 
 public class UserToken {
 
   private final String token;
-  private final UUID   userId;
+  private final String   userId;
   private final Long   lifeTimeInMillis;
 
   public UserToken(
     String token,
-    UUID userId,
+    String userId,
     Long lifeTime
   ) {
     this.token = token;
@@ -27,7 +26,7 @@ public class UserToken {
     return token;
   }
 
-  public UUID getUserId() {
+  public String getUserId() {
     return userId;
   }
 

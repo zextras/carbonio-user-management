@@ -12,7 +12,6 @@ import com.zextras.carbonio.user_management.entities.UserToken;
 import com.zextras.carbonio.user_management.generated.model.UserId;
 import com.zextras.carbonio.user_management.generated.model.UserInfo;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -38,7 +37,7 @@ public class UserService {
 
       if (attribute.getName().equals("zimbraId")) {
         UserId userId = new UserId();
-        userId.setUserId(UUID.fromString(attribute.getValue()));
+        userId.setUserId(attribute.getValue());
         userInfo.setId(userId);
       }
     });
@@ -49,36 +48,36 @@ public class UserService {
     return userInfo;
   }
 
-  public Response getUsers(List<UUID> userIds, String token) {
+  public Response getUsers(List<String> userIds, String token) {
     return (!userIds.isEmpty()) ? Response.status(Status.BAD_REQUEST).build()
       : Response.ok().entity(
-          userIds.stream().map(userUuid -> {
-            System.out.println("Requested: " + userUuid);
-            UserInfo userInfo = cacheManager.getUserByIdCache().getIfPresent(userUuid);
+          userIds.stream().limit(10).map(userId -> {
+            System.out.println("Requested: " + userId);
+            UserInfo userInfo = cacheManager.getUserByIdCache().getIfPresent(userId);
 
             if (userInfo == null) {
               try {
                 GetAccountInfoResponse accountInfo = SoapClient
                   .newClient()
                   .setAuthToken(token)
-                  .getAccountInfoById(userUuid);
+                  .getAccountInfoById(userId);
 
                 userInfo = createUserInfo(accountInfo);
-                cacheManager.getUserByIdCache().put(userUuid, userInfo);
+                cacheManager.getUserByIdCache().put(userId, userInfo);
                 cacheManager.getUserByEmailCache().put(userInfo.getEmail(), userInfo);
                 System.out.println(userInfo.getId());
               } catch (Exception e) {
                 e.printStackTrace();
               }
             }
-            System.out.println("Found: " + userUuid);
+            System.out.println("Found: " + userId);
             return userInfo;
           }).collect(Collectors.toList())
         ).build();
     }
 
   public Response getInfoById(
-    UUID userUuid,
+    String userUuid,
     String token
   ) {
     System.out.println("Requested: " + userUuid);
@@ -154,7 +153,7 @@ public class UserService {
 
         userToken = new UserToken(
           token,
-          UUID.fromString(infoResponse.getId()),
+          infoResponse.getId(),
           infoResponse.getLifetime()
         );
 
