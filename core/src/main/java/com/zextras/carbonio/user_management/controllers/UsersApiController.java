@@ -41,13 +41,13 @@ public class UsersApiController implements UsersApiService {
 
   public Response getUserInfoById(
     String cookie,
-    String uuid,
+    String userId,
     SecurityContext securityContext
   ) {
     Map<String, String> cookies = CookieParser.getCookies(cookie);
 
     return (cookies.containsKey("ZM_AUTH_TOKEN"))
-      ? userService.getInfoById(uuid, cookies.get("ZM_AUTH_TOKEN"))
+      ? userService.getInfoById(userId, cookies.get("ZM_AUTH_TOKEN"))
       : Response.status(Status.BAD_REQUEST).build();
   }
 

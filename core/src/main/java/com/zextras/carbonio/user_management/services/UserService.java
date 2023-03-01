@@ -77,21 +77,21 @@ public class UserService {
     }
 
   public Response getInfoById(
-    String userUuid,
+    String userId,
     String token
   ) {
-    System.out.println("Requested: " + userUuid);
-    UserInfo userInfo = cacheManager.getUserByIdCache().getIfPresent(userUuid);
+    System.out.println("Requested: " + userId);
+    UserInfo userInfo = cacheManager.getUserByIdCache().getIfPresent(userId);
 
     if (userInfo == null) {
       try {
         GetAccountInfoResponse accountInfo = SoapClient
           .newClient()
           .setAuthToken(token)
-          .getAccountInfoById(userUuid);
+          .getAccountInfoById(userId);
 
         userInfo = createUserInfo(accountInfo);
-        cacheManager.getUserByIdCache().put(userUuid, userInfo);
+        cacheManager.getUserByIdCache().put(userId, userInfo);
         cacheManager.getUserByEmailCache().put(userInfo.getEmail(), userInfo);
 
       } catch (ServerSOAPFaultException e) {

@@ -16,14 +16,14 @@ import java.util.concurrent.TimeUnit;
 @Singleton
 public class CacheManager {
 
-  private Cache<String, UserInfo>    userByUUIDCache;
+  private Cache<String, UserInfo>  userByIdCache;
   private Cache<String, UserInfo>  userByEmailCache;
   private Cache<String, UserToken> userTokenCache;
 
   @Inject
   public CacheManager() {
 
-    userByUUIDCache = Caffeine
+    userByIdCache = Caffeine
       .newBuilder()
       .expireAfterWrite(5, TimeUnit.MINUTES)
       .build();
@@ -69,7 +69,7 @@ public class CacheManager {
   }
 
   public Cache<String, UserInfo> getUserByIdCache() {
-    return userByUUIDCache;
+    return userByIdCache;
   }
 
   public Cache<String, UserInfo> getUserByEmailCache() {

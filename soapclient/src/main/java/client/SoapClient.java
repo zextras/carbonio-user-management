@@ -98,13 +98,13 @@ public class SoapClient {
     return Headers.create(xmlDocumentHeader.getDocumentElement());
   }
 
-  public GetAccountInfoResponse getAccountInfoById(String accountUuid)
+  public GetAccountInfoResponse getAccountInfoById(String accountId)
     throws JAXBException, ParserConfigurationException, ServerSOAPFaultException {
 
     GetAccountInfoRequest accountInfoRequest = new GetAccountInfoRequest();
     AccountSelector accountSelector = new AccountSelector();
     accountSelector.setBy(AccountBy.ID);
-    accountSelector.setValue(accountUuid.toString());
+    accountSelector.setValue(accountId.toString());
     accountInfoRequest.setAccount(accountSelector);
 
     ZcsPortType zimbraService = getZimbraService();
