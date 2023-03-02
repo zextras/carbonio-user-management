@@ -51,7 +51,7 @@ public class UserService {
   public Response getUsers(List<String> userIds, String token) {
     return (!userIds.isEmpty()) ? Response.status(Status.BAD_REQUEST).build()
       : Response.ok().entity(
-          userIds.stream().limit(10).map(userId -> {
+          userIds.stream().map(userId -> {
             System.out.println("Requested: " + userId);
             UserInfo userInfo = cacheManager.getUserByIdCache().getIfPresent(userId);
 

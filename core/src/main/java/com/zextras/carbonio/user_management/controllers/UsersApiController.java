@@ -20,6 +20,7 @@ import javax.ws.rs.core.SecurityContext;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaResteasyServerCodegen", date = "2021-12-22T09:50:40.665594+01:00[Europe/Rome]")
 public class UsersApiController implements UsersApiService {
 
+  private final int MAX_USER_IDS = 10;
   private final UserService userService;
 
   @Inject
@@ -56,7 +57,7 @@ public class UsersApiController implements UsersApiService {
     throws NotFoundException {
     Map<String, String> cookies = CookieParser.getCookies(cookie);
 
-    return (cookies.containsKey("ZM_AUTH_TOKEN"))
+    return (cookies.containsKey("ZM_AUTH_TOKEN") && (userIds.size() <= MAX_USER_IDS))
       ? userService.getUsers(userIds, cookies.get("ZM_AUTH_TOKEN"))
       : Response.status(Status.BAD_REQUEST).build();
   }
