@@ -49,7 +49,7 @@ public class UserService {
   }
 
   public Response getUsers(List<String> userIds, String token) {
-    return (!userIds.isEmpty()) ? Response.status(Status.BAD_REQUEST).build()
+    return (userIds.isEmpty()) ? Response.status(Status.BAD_REQUEST).build()
       : Response.ok().entity(
           userIds.stream().map(userId -> {
             System.out.println("Requested: " + userId);
