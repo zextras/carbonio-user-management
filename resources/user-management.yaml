@@ -28,10 +28,6 @@ paths:
           $ref: '#/components/responses/200UsersInfo'
         '400':
           $ref: '#/components/responses/400BadRequest'
-        '403':
-          $ref: '#/components/responses/403Forbidden'
-        '404':
-          $ref: '#/components/responses/404NotFound'
   /users/id/{userId}/:
     get:
       tags:

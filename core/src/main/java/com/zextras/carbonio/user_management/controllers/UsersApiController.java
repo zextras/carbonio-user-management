@@ -57,7 +57,7 @@ public class UsersApiController implements UsersApiService {
     throws NotFoundException {
     Map<String, String> cookies = CookieParser.getCookies(cookie);
 
-    return (cookies.containsKey("ZM_AUTH_TOKEN") && (userIds.size() <= MAX_USER_IDS))
+    return (cookies.containsKey("ZM_AUTH_TOKEN") && (!userIds.isEmpty() && userIds.size() <= MAX_USER_IDS))
       ? userService.getUsers(userIds, cookies.get("ZM_AUTH_TOKEN"))
       : Response.status(Status.BAD_REQUEST).build();
   }

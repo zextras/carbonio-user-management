@@ -49,32 +49,31 @@ public class UserService {
   }
 
   public Response getUsers(List<String> userIds, String token) {
-    return (userIds.isEmpty()) ? Response.status(Status.BAD_REQUEST).build()
-      : Response.ok().entity(
-          userIds.stream().map(userId -> {
-            System.out.println("Requested: " + userId);
-            UserInfo userInfo = cacheManager.getUserByIdCache().getIfPresent(userId);
+    return Response.ok().entity(
+      userIds.stream().map(userId -> {
+        System.out.println("Requested: " + userId);
+        UserInfo userInfo = cacheManager.getUserByIdCache().getIfPresent(userId);
 
-            if (userInfo == null) {
-              try {
-                GetAccountInfoResponse accountInfo = SoapClient
-                  .newClient()
-                  .setAuthToken(token)
-                  .getAccountInfoById(userId);
+        if (userInfo == null) {
+          try {
+            GetAccountInfoResponse accountInfo = SoapClient
+              .newClient()
+              .setAuthToken(token)
+              .getAccountInfoById(userId);
 
-                userInfo = createUserInfo(accountInfo);
-                cacheManager.getUserByIdCache().put(userId, userInfo);
-                cacheManager.getUserByEmailCache().put(userInfo.getEmail(), userInfo);
-                System.out.println(userInfo.getId());
-              } catch (Exception e) {
-                e.printStackTrace();
-              }
-            }
-            System.out.println("Found: " + userId);
-            return userInfo;
-          }).collect(Collectors.toList())
-        ).build();
-    }
+            userInfo = createUserInfo(accountInfo);
+            cacheManager.getUserByIdCache().put(userId, userInfo);
+            cacheManager.getUserByEmailCache().put(userInfo.getEmail(), userInfo);
+            System.out.println(userInfo.getId());
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+        }
+        System.out.println("Found: " + userId);
+        return userInfo;
+      }).collect(Collectors.toList())
+    ).build();
+  }
 
   public Response getInfoById(
     String userId,
