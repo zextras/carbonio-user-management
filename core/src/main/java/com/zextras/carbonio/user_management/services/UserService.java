@@ -11,6 +11,7 @@ import com.zextras.carbonio.user_management.cache.CacheManager;
 import com.zextras.carbonio.user_management.entities.UserToken;
 import com.zextras.carbonio.user_management.generated.model.UserId;
 import com.zextras.carbonio.user_management.generated.model.UserInfo;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.ws.rs.core.Response;
@@ -50,7 +51,7 @@ public class UserService {
 
   public Response getUsers(List<String> userIds, String token) {
     return Response.ok().entity(
-      userIds.stream().map(userId -> {
+      (new HashSet<>(userIds)).stream().map(userId -> {
         System.out.println("Requested: " + userId);
         UserInfo userInfo = cacheManager.getUserByIdCache().getIfPresent(userId);
 
@@ -97,7 +98,6 @@ public class UserService {
         e.printStackTrace();
         return Response.status(Status.NOT_FOUND).build();
       } catch (Exception e) {
-        e.printStackTrace();
         return Response.status(Status.INTERNAL_SERVER_ERROR).build();
       }
     }
