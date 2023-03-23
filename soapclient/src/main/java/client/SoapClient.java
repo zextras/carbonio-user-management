@@ -11,7 +11,6 @@ import com.sun.xml.ws.fault.ServerSOAPFaultException;
 import https.www_zextras_com.wsdl.zimbraservice.ZcsPortType;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.IntStream;
 import javax.xml.bind.JAXBContext;
@@ -99,13 +98,13 @@ public class SoapClient {
     return Headers.create(xmlDocumentHeader.getDocumentElement());
   }
 
-  public GetAccountInfoResponse getAccountInfoById(UUID accountUuid)
+  public GetAccountInfoResponse getAccountInfoById(String accountId)
     throws JAXBException, ParserConfigurationException, ServerSOAPFaultException {
 
     GetAccountInfoRequest accountInfoRequest = new GetAccountInfoRequest();
     AccountSelector accountSelector = new AccountSelector();
     accountSelector.setBy(AccountBy.ID);
-    accountSelector.setValue(accountUuid.toString());
+    accountSelector.setValue(accountId.toString());
     accountInfoRequest.setAccount(accountSelector);
 
     ZcsPortType zimbraService = getZimbraService();

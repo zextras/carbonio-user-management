@@ -11,20 +11,19 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.zextras.carbonio.user_management.entities.UserToken;
 import com.zextras.carbonio.user_management.generated.model.UserInfo;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @Singleton
 public class CacheManager {
 
-  private Cache<UUID, UserInfo>    userByUUIDCache;
+  private Cache<String, UserInfo>  userByIdCache;
   private Cache<String, UserInfo>  userByEmailCache;
   private Cache<String, UserToken> userTokenCache;
 
   @Inject
   public CacheManager() {
 
-    userByUUIDCache = Caffeine
+    userByIdCache = Caffeine
       .newBuilder()
       .expireAfterWrite(5, TimeUnit.MINUTES)
       .build();
@@ -69,8 +68,8 @@ public class CacheManager {
       .build();
   }
 
-  public Cache<UUID, UserInfo> getUserByIdCache() {
-    return userByUUIDCache;
+  public Cache<String, UserInfo> getUserByIdCache() {
+    return userByIdCache;
   }
 
   public Cache<String, UserInfo> getUserByEmailCache() {

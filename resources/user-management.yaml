@@ -14,6 +14,20 @@ tags:
   - name: Auth
   - name: Health
 paths:
+  /users:
+    get:
+      tags:
+        - User
+      summary: Gets the detailed account info of users using their ids
+      operationId: getUsersInfo
+      parameters:
+        - $ref: '#/components/parameters/headerCookie'
+        - $ref: '#/components/parameters/queryUserIds'
+      responses:
+        '200':
+          $ref: '#/components/responses/200UsersInfo'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
   /users/id/{userId}/:
     get:
       tags:
@@ -32,7 +46,6 @@ paths:
           required: true
           schema:
             type: string
-            format: UUID
       responses:
         '200':
           $ref: '#/components/responses/200UserInfo'
@@ -124,6 +137,23 @@ paths:
         '500':
           $ref: '#/components/responses/500ServerError'
 components:
+  parameters:
+    headerCookie:
+      in: header
+      name: Cookie
+      required: true
+      schema:
+        type: string
+    queryUserIds:
+      in: query
+      name: userIds
+      description: List of ids (max 10) of the users to retrieve
+      required: true
+      schema:
+        type: array
+        maxItems: 10
+        items:
+          type: string
   responses:
     200UserInfo:
       description: Account info of the user
@@ -137,6 +167,12 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/UserId'
+    200UsersInfo:
+      description: Account info of the user
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UserInfo'
     204NoContent:
       description: The service is up and running
     400BadRequest:
@@ -154,8 +190,7 @@ components:
       type: object
       properties:
         id:
-          type: string
-          format: UUID
+          $ref: '#/components/schemas/UserId'
         email:
           type: string
           format: email
@@ -168,4 +203,3 @@ components:
       properties:
         userId:
           type: string
-          format: UUID
