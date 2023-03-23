@@ -11,6 +11,8 @@ import com.zextras.carbonio.user_management.cache.CacheManager;
 import com.zextras.carbonio.user_management.entities.UserToken;
 import com.zextras.carbonio.user_management.generated.model.UserId;
 import com.zextras.carbonio.user_management.generated.model.UserInfo;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.ws.rs.core.Response;
@@ -65,7 +67,10 @@ public class UserService {
             cacheManager.getUserByIdCache().put(userId, userInfo);
             cacheManager.getUserByEmailCache().put(userInfo.getEmail(), userInfo);
           } catch (Exception e) {
-            e.printStackTrace();
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            System.out.println(sw);
           }
         }
         System.out.println("Found: " + userId);
