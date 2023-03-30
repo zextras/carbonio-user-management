@@ -8,6 +8,13 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.1](https://github.com/Zextras/carbonio-user-management/compare/v0.2.0...v0.2.1) (2023-03-30)
+
+
+### Bug Fixes
+
+* UM14 fix GetUsers API returning a list of UserInfo ([#12](https://github.com/Zextras/carbonio-user-management/issues/12)) ([ee5ed55](https://github.com/Zextras/carbonio-user-management/commit/ee5ed556043ab5c514b67c761f9f7c85991424e5))
+
 ### [0.2.0](https://github.com/Zextras/carbonio-user-management/compare/v0.1.3...v0.2.0) (2023-03-28)
 
 
