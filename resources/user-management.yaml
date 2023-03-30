@@ -168,11 +168,13 @@ components:
           schema:
             $ref: '#/components/schemas/UserId'
     200UsersInfo:
-      description: Account info of the user
+      description: List of account info of the user
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/UserInfo'
+            type: array
+            items:
+              $ref: '#/components/schemas/UserInfo'
     204NoContent:
       description: The service is up and running
     400BadRequest:
