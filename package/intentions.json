@@ -85,6 +85,21 @@
         {
           "Action": "allow",
           "HTTP": {
+            "PathPrefix": "/users",
+            "Header": [
+              {
+                "Name": "Cookie",
+                "Present": true
+              }
+            ],
+            "Methods": [
+              "GET"
+            ]
+          }
+        },
+        {
+          "Action": "allow",
+          "HTTP": {
             "PathPrefix": "/health/",
             "Methods": [
               "GET"

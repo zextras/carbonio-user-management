@@ -100,7 +100,7 @@ public class UserService {
       }
     }
 
-    System.out.println(userInfo.getId());
+    System.out.println(userInfo.getId().getUserId());
     return Response.ok().entity(userInfo).build();
   }
 
@@ -130,7 +130,7 @@ public class UserService {
         return Response.status(Status.INTERNAL_SERVER_ERROR).build();
       }
     }
-    System.out.println(userInfo.getId());
+    System.out.println(userInfo.getId().getUserId());
 
     return Response.ok().entity(userInfo).build();
   }
