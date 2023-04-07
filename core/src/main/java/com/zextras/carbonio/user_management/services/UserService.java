@@ -50,29 +50,30 @@ public class UserService {
   }
 
   public Response getUsers(List<String> userIds, String token) {
-    return Response.ok().entity(
-      userIds.stream().distinct().map(userId -> {
-        System.out.println("Requested: " + userId);
-        UserInfo userInfo = cacheManager.getUserByIdCache().getIfPresent(userId);
+    List<UserInfo> result = userIds.stream().distinct().map(userId -> {
+      System.out.println("Requested: " + userId);
+      UserInfo userInfo = cacheManager.getUserByIdCache().getIfPresent(userId);
 
-        if (userInfo == null) {
-          try {
-            GetAccountInfoResponse accountInfo = SoapClient
-              .newClient()
-              .setAuthToken(token)
-              .getAccountInfoById(userId);
+      if (userInfo == null) {
+        try {
+          GetAccountInfoResponse accountInfo = SoapClient
+            .newClient()
+            .setAuthToken(token)
+            .getAccountInfoById(userId);
 
-            userInfo = createUserInfo(accountInfo);
-            cacheManager.getUserByIdCache().put(userId, userInfo);
-            cacheManager.getUserByEmailCache().put(userInfo.getEmail(), userInfo);
-          } catch (Exception e) {
-            e.printStackTrace(System.out);
-          }
+          userInfo = createUserInfo(accountInfo);
+          cacheManager.getUserByIdCache().put(userId, userInfo);
+          cacheManager.getUserByEmailCache().put(userInfo.getEmail(), userInfo);
+          System.out.println("Found: " + userId);
+        } catch (Exception e) {
+          e.printStackTrace(System.out);
         }
-        System.out.println("Found: " + userId);
-        return userInfo;
-      }).filter(Objects::nonNull).collect(Collectors.toList())
-    ).build();
+      }
+      return userInfo;
+    }).collect(Collectors.toList());
+    result = result.stream().filter(Objects::nonNull).collect(Collectors.toList());
+
+    return Response.ok().entity(result).build();
   }
 
   public Response getInfoById(
