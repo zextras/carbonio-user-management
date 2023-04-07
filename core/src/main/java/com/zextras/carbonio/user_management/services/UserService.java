@@ -12,6 +12,7 @@ import com.zextras.carbonio.user_management.entities.UserToken;
 import com.zextras.carbonio.user_management.generated.model.UserId;
 import com.zextras.carbonio.user_management.generated.model.UserInfo;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -64,13 +65,13 @@ public class UserService {
             userInfo = createUserInfo(accountInfo);
             cacheManager.getUserByIdCache().put(userId, userInfo);
             cacheManager.getUserByEmailCache().put(userInfo.getEmail(), userInfo);
+            System.out.println("Found: " + userId);
           } catch (Exception e) {
             e.printStackTrace(System.out);
           }
         }
-        System.out.println("Found: " + userId);
         return userInfo;
-      }).collect(Collectors.toList())
+      }).filter(Objects::nonNull).collect(Collectors.toList())
     ).build();
   }
 
