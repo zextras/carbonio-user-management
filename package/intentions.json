@@ -56,7 +56,7 @@
       ]
     },
     {
-      "Name": "carbonio-chats",
+      "Name": "carbonio-ws-collaboration",
       "Permissions": [
         {
           "Action": "allow",
@@ -116,6 +116,29 @@
                 "Present": true
               }
             ],
+            "Methods": [
+              "GET"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "Name": "carbonio-message-dispatcher-auth",
+      "Permissions": [
+        {
+          "Action": "allow",
+          "HTTP": {
+            "PathPrefix": "/auth/token/",
+            "Methods": [
+              "GET"
+            ]
+          }
+        },
+        {
+          "Action": "allow",
+          "HTTP": {
+            "PathPrefix": "/health/",
             "Methods": [
               "GET"
             ]
