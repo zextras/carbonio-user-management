@@ -8,7 +8,7 @@ targets=(
 )
 pkgname="carbonio-user-management"
 pkgver="0.2.1"
-pkgrel="2304131313"
+pkgrel="2304211613"
 pkgdesc="Carbonio User Management"
 pkgdesclong=(
   "Carbonio User Management"
@@ -18,7 +18,7 @@ arch="amd64"
 section="admin"
 priority="optional"
 url="https://www.zextras.com/"
-license=("spdx:AGPL-3.0-only")
+license=("AGPL-3.0-only")
 depends=(
   "service-discover"
   "pending-setups"
