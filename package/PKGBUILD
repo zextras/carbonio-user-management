@@ -7,8 +7,8 @@ targets=(
   "centos"
 )
 pkgname="carbonio-user-management"
-pkgver="0.2.1"
-pkgrel="2304211613"
+pkgver="0.2.2"
+pkgrel="1"
 pkgdesc="Carbonio User Management"
 pkgdesclong=(
   "Carbonio User Management"
