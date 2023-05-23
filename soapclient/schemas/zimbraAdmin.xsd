@@ -102,10 +102,6 @@
     
   <xs:element name="CheckDirectoryResponse" type="tns:checkDirectoryResponse"/>
     
-  <xs:element name="CheckDomainMXRecordRequest" type="tns:checkDomainMXRecordRequest"/>
-    
-  <xs:element name="CheckDomainMXRecordResponse" type="tns:checkDomainMXRecordResponse"/>
-    
   <xs:element name="CheckExchangeAuthRequest" type="tns:checkExchangeAuthRequest"/>
     
   <xs:element name="CheckExchangeAuthResponse" type="tns:checkExchangeAuthResponse"/>
@@ -546,10 +542,6 @@
     
   <xs:element name="GetDevicesCountUsedTodayResponse" type="tns:getDevicesCountUsedTodayResponse"/>
     
-  <xs:element name="GetDevicesRequest" type="tns:getDevicesRequest"/>
-    
-  <xs:element name="GetDevicesResponse" type="tns:getDevicesResponse"/>
-    
   <xs:element name="GetDistributionListMembershipRequest" type="tns:getDistributionListMembershipRequest"/>
     
   <xs:element name="GetDistributionListMembershipResponse" type="tns:getDistributionListMembershipResponse"/>
@@ -557,6 +549,10 @@
   <xs:element name="GetDistributionListRequest" type="tns:getDistributionListRequest"/>
     
   <xs:element name="GetDistributionListResponse" type="tns:getDistributionListResponse"/>
+    
+  <xs:element name="GetDomainCertRequest" type="tns:getDomainCertRequest"/>
+    
+  <xs:element name="GetDomainCertResponse" type="tns:getDomainCertResponse"/>
     
   <xs:element name="GetDomainInfoRequest" type="tns:getDomainInfoRequest"/>
     
@@ -717,6 +713,10 @@
   <xs:element name="InstallCertRequest" type="tns:installCertRequest"/>
     
   <xs:element name="InstallCertResponse" type="tns:installCertResponse"/>
+    
+  <xs:element name="IssueCertRequest" type="tns:issueCertRequest"/>
+    
+  <xs:element name="IssueCertResponse" type="tns:issueCertResponse"/>
     
   <xs:element name="LockoutMailboxRequest" type="tns:lockoutMailboxRequest"/>
     
@@ -1021,10 +1021,6 @@
   <xs:element name="UnregisterMailboxMoveOutRequest" type="tns:unregisterMailboxMoveOutRequest"/>
     
   <xs:element name="UnregisterMailboxMoveOutResponse" type="tns:unregisterMailboxMoveOutResponse"/>
-    
-  <xs:element name="UpdateDeviceStatusRequest" type="tns:updateDeviceStatusRequest"/>
-    
-  <xs:element name="UpdateDeviceStatusResponse" type="tns:updateDeviceStatusResponse"/>
     
   <xs:element name="UpdatePresenceSessionIdRequest" type="tns:updatePresenceSessionIdRequest"/>
     
@@ -2474,30 +2470,6 @@
     <xs:attribute name="readable" type="xs:boolean" use="required"/>
         
     <xs:attribute name="writable" type="xs:boolean" use="required"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="checkDomainMXRecordRequest">
-        
-    <xs:sequence>
-            
-      <xs:element minOccurs="0" name="domain" type="tns:domainSelector"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="checkDomainMXRecordResponse">
-        
-    <xs:sequence>
-            
-      <xs:element maxOccurs="unbounded" minOccurs="0" name="entry" type="xs:string"/>
-            
-      <xs:element name="code" type="xs:string"/>
-            
-      <xs:element minOccurs="0" name="message" type="xs:string"/>
-          
-    </xs:sequence>
       
   </xs:complexType>
     
@@ -6046,9 +6018,9 @@
           
     </xs:sequence>
         
-    <xs:attribute name="server" type="xs:string" use="required"/>
+    <xs:attribute name="server" type="xs:string"/>
         
-    <xs:attribute name="type" type="xs:string" use="required"/>
+    <xs:attribute name="type" type="xs:string"/>
       
   </xs:complexType>
     
@@ -6386,27 +6358,6 @@
       
   </xs:complexType>
     
-  <xs:complexType name="getDevicesRequest">
-        
-    <xs:sequence>
-            
-      <xs:element name="account" type="ns1:accountSelector"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="getDevicesResponse">
-        
-    <xs:sequence>
-            
-      <xs:element maxOccurs="unbounded" minOccurs="0" name="device" type="ns3:deviceInfo"/>
-          
-    </xs:sequence>
-      
-    <xs:attribute name="unusedCodeGenHelper" type="xs:string"/>
-  </xs:complexType>
-    
   <xs:complexType name="getDistributionListMembershipRequest">
         
     <xs:sequence>
@@ -6479,6 +6430,26 @@
     <xs:attribute name="more" type="xs:boolean"/>
         
     <xs:attribute name="total" type="xs:int"/>
+      
+  </xs:complexType>
+    
+  <xs:complexType name="getDomainCertRequest">
+        
+    <xs:sequence/>
+        
+    <xs:attribute name="domain" type="xs:string" use="required"/>
+      
+  </xs:complexType>
+    
+  <xs:complexType name="getDomainCertResponse">
+        
+    <xs:sequence>
+            
+      <xs:element minOccurs="0" name="cert" type="tns:certInfo"/>
+          
+    </xs:sequence>
+        
+    <xs:attribute name="domain" type="xs:string"/>
       
   </xs:complexType>
     
@@ -8180,6 +8151,28 @@
     <xs:sequence/>
         
     <xs:attribute name="server" type="xs:string" use="required"/>
+      
+  </xs:complexType>
+    
+  <xs:complexType name="issueCertRequest">
+        
+    <xs:all/>
+        
+    <xs:attribute name="domain" type="xs:string" use="required"/>
+        
+    <xs:attribute name="chainType" type="xs:string"/>
+      
+  </xs:complexType>
+    
+  <xs:complexType name="issueCertResponse">
+        
+    <xs:sequence>
+            
+      <xs:element name="message" type="xs:string"/>
+          
+    </xs:sequence>
+        
+    <xs:attribute name="domain" type="xs:string" use="required"/>
       
   </xs:complexType>
     
@@ -11234,29 +11227,6 @@
         
     <xs:sequence/>
       
-  </xs:complexType>
-    
-  <xs:complexType name="updateDeviceStatusRequest">
-        
-    <xs:sequence>
-            
-      <xs:element name="account" type="ns1:accountSelector"/>
-            
-      <xs:element name="device" type="ns3:idStatus"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="updateDeviceStatusResponse">
-        
-    <xs:sequence>
-            
-      <xs:element maxOccurs="unbounded" minOccurs="0" name="device" type="ns3:deviceInfo"/>
-          
-    </xs:sequence>
-      
-    <xs:attribute name="unusedCodeGenHelper" type="xs:string"/>
   </xs:complexType>
     
   <xs:complexType name="updatePresenceSessionIdRequest">

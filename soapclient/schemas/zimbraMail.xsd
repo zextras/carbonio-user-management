@@ -60,10 +60,6 @@
     
   <xs:element name="CancelTaskResponse" type="tns:cancelTaskResponse"/>
     
-  <xs:element name="CheckDeviceStatusRequest" type="tns:checkDeviceStatusRequest"/>
-    
-  <xs:element name="CheckDeviceStatusResponse" type="tns:checkDeviceStatusResponse"/>
-    
   <xs:element name="CheckPermissionRequest" type="tns:checkPermissionRequest"/>
     
   <xs:element name="CheckPermissionResponse" type="tns:checkPermissionResponse"/>
@@ -152,10 +148,6 @@
     
   <xs:element name="DeleteDataSourceResponse" type="tns:deleteDataSourceResponse"/>
     
-  <xs:element name="DeleteDeviceRequest" type="tns:deleteDeviceRequest"/>
-    
-  <xs:element name="DeleteDeviceResponse" type="tns:deleteDeviceResponse"/>
-    
   <xs:element name="DestroyWaitSetRequest" type="tns:destroyWaitSetRequest"/>
     
   <xs:element name="DestroyWaitSetResponse" type="tns:destroyWaitSetResponse"/>
@@ -167,10 +159,6 @@
   <xs:element name="DismissCalendarItemAlarmRequest" type="tns:dismissCalendarItemAlarmRequest"/>
     
   <xs:element name="DismissCalendarItemAlarmResponse" type="tns:dismissCalendarItemAlarmResponse"/>
-    
-  <xs:element name="DocumentActionRequest" type="tns:documentActionRequest"/>
-    
-  <xs:element name="DocumentActionResponse" type="tns:documentActionResponse"/>
     
   <xs:element name="EmptyDumpsterRequest" type="tns:emptyDumpsterRequest"/>
     
@@ -204,14 +192,6 @@
     
   <xs:element name="GenerateUUIDResponse" type="tns:generateUUIDResponse"/>
     
-  <xs:element name="GetActivityStreamRequest" type="tns:getActivityStreamRequest"/>
-    
-  <xs:element name="GetActivityStreamResponse" type="tns:getActivityStreamResponse"/>
-    
-  <xs:element name="GetAllDevicesRequest" type="tns:getAllDevicesRequest"/>
-    
-  <xs:element name="GetAllDevicesResponse" type="tns:getAllDevicesResponse"/>
-    
   <xs:element name="GetAppointmentRequest" type="tns:getAppointmentRequest"/>
     
   <xs:element name="GetAppointmentResponse" type="tns:getAppointmentResponse"/>
@@ -227,10 +207,6 @@
   <xs:element name="GetCommentsRequest" type="tns:getCommentsRequest"/>
     
   <xs:element name="GetCommentsResponse" type="tns:getCommentsResponse"/>
-    
-  <xs:element name="GetContactBackupListRequest" type="tns:getContactBackupListRequest"/>
-    
-  <xs:element name="GetContactBackupListResponse" type="tns:getContactBackupListResponse"/>
     
   <xs:element name="GetContactsRequest" type="tns:getContactsRequest"/>
     
@@ -251,10 +227,6 @@
   <xs:element name="GetDataSourcesRequest" type="tns:getDataSourcesRequest"/>
     
   <xs:element name="GetDataSourcesResponse" type="tns:getDataSourcesResponse"/>
-    
-  <xs:element name="GetDocumentShareURLRequest" type="tns:getDocumentShareURLRequest"/>
-    
-  <xs:element name="GetDocumentShareURLResponse" type="tns:getDocumentShareURLResponse"/>
     
   <xs:element name="GetEffectiveFolderPermsRequest" type="tns:getEffectiveFolderPermsRequest"/>
     
@@ -320,10 +292,6 @@
     
   <xs:element name="GetNoteResponse" type="tns:getNoteResponse"/>
     
-  <xs:element name="GetNotificationsRequest" type="tns:getNotificationsRequest"/>
-    
-  <xs:element name="GetNotificationsResponse" type="tns:getNotificationsResponse"/>
-    
   <xs:element name="GetOutgoingFilterRulesRequest" type="tns:getOutgoingFilterRulesRequest"/>
     
   <xs:element name="GetOutgoingFilterRulesResponse" type="tns:getOutgoingFilterRulesResponse"/>
@@ -339,10 +307,6 @@
   <xs:element name="GetSearchFolderRequest" type="tns:getSearchFolderRequest"/>
     
   <xs:element name="GetSearchFolderResponse" type="tns:getSearchFolderResponse"/>
-    
-  <xs:element name="GetShareDetailsRequest" type="tns:getShareDetailsRequest"/>
-    
-  <xs:element name="GetShareDetailsResponse" type="tns:getShareDetailsResponse"/>
     
   <xs:element name="GetShareNotificationsRequest" type="tns:getShareNotificationsRequest"/>
     
@@ -367,14 +331,6 @@
   <xs:element name="GetTaskSummariesRequest" type="tns:getTaskSummariesRequest"/>
     
   <xs:element name="GetTaskSummariesResponse" type="tns:getTaskSummariesResponse"/>
-    
-  <xs:element name="GetWatchersRequest" type="tns:getWatchersRequest"/>
-    
-  <xs:element name="GetWatchersResponse" type="tns:getWatchersResponse"/>
-    
-  <xs:element name="GetWatchingItemsRequest" type="tns:getWatchingItemsRequest"/>
-    
-  <xs:element name="GetWatchingItemsResponse" type="tns:getWatchingItemsResponse"/>
     
   <xs:element name="GetWorkingHoursRequest" type="tns:getWorkingHoursRequest"/>
     
@@ -496,10 +452,6 @@
     
   <xs:element name="RecoverAccountResponse" type="tns:recoverAccountResponse"/>
     
-  <xs:element name="RegisterDeviceRequest" type="tns:registerDeviceRequest"/>
-    
-  <xs:element name="RegisterDeviceResponse" type="tns:registerDeviceResponse"/>
-    
   <xs:element name="RemoveAttachmentsRequest" type="tns:removeAttachmentsRequest"/>
     
   <xs:element name="RemoveAttachmentsResponse" type="tns:removeAttachmentsResponse"/>
@@ -507,10 +459,6 @@
   <xs:element name="ResetRecentMessageCountRequest" type="tns:resetRecentMessageCountRequest"/>
     
   <xs:element name="ResetRecentMessageCountResponse" type="tns:resetRecentMessageCountResponse"/>
-    
-  <xs:element name="RestoreContactsRequest" type="tns:restoreContactsRequest"/>
-    
-  <xs:element name="RestoreContactsResponse" type="tns:restoreContactsResponse"/>
     
   <xs:element name="RevokePermissionRequest" type="tns:revokePermissionRequest"/>
     
@@ -599,10 +547,6 @@
   <xs:element name="TestDataSourceRequest" type="tns:testDataSourceRequest"/>
     
   <xs:element name="TestDataSourceResponse" type="tns:testDataSourceResponse"/>
-    
-  <xs:element name="UpdateDeviceStatusRequest" type="tns:updateDeviceStatusRequest"/>
-    
-  <xs:element name="UpdateDeviceStatusResponse" type="tns:updateDeviceStatusResponse"/>
     
   <xs:element name="VerifyCodeRequest" type="tns:verifyCodeRequest"/>
     
@@ -779,22 +723,6 @@
     <xs:attribute name="name" type="xs:string"/>
         
     <xs:attribute name="lifetime" type="xs:string"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="deviceInfo">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="id" type="xs:string"/>
-        
-    <xs:attribute name="name" type="xs:string"/>
-        
-    <xs:attribute name="status" type="xs:string"/>
-        
-    <xs:attribute name="created" type="xs:long"/>
-        
-    <xs:attribute name="accessed" type="xs:long"/>
       
   </xs:complexType>
     
@@ -1768,16 +1696,6 @@
       </xs:element>
           
     </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="idStatus">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="id" type="xs:string"/>
-        
-    <xs:attribute name="status" type="xs:string"/>
       
   </xs:complexType>
     
@@ -3262,26 +3180,6 @@
       </xs:extension>
           
     </xs:complexContent>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="checkDeviceStatusRequest">
-        
-    <xs:sequence>
-            
-      <xs:element name="device" type="ns1:id"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="checkDeviceStatusResponse">
-        
-    <xs:sequence>
-            
-      <xs:element name="device" type="tns:idStatus"/>
-          
-    </xs:sequence>
       
   </xs:complexType>
     
@@ -5306,36 +5204,6 @@
       
   </xs:complexType>
     
-  <xs:complexType name="deleteDeviceRequest">
-        
-    <xs:sequence>
-            
-      <xs:element name="device" type="ns1:id"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="deleteDeviceResponse">
-        
-    <xs:sequence>
-            
-      <xs:element name="device" type="tns:nameId"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="nameId">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="name" type="xs:string" use="required"/>
-        
-    <xs:attribute name="id" type="xs:string" use="required"/>
-      
-  </xs:complexType>
-    
   <xs:complexType name="destroyWaitSetRequest">
         
     <xs:sequence/>
@@ -5531,58 +5399,6 @@
       
   </xs:complexType>
     
-  <xs:complexType name="documentActionRequest">
-        
-    <xs:sequence>
-            
-      <xs:element name="action" type="tns:documentActionSelector"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="documentActionSelector">
-        
-    <xs:complexContent>
-            
-      <xs:extension base="tns:actionSelector">
-                
-        <xs:sequence>
-                    
-          <xs:element minOccurs="0" name="grant" type="tns:documentActionGrant"/>
-                  
-        </xs:sequence>
-                
-        <xs:attribute name="zid" type="xs:string"/>
-              
-      </xs:extension>
-          
-    </xs:complexContent>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="documentActionGrant">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="perm" type="xs:string" use="required"/>
-        
-    <xs:attribute name="gt" type="xs:string" use="required"/>
-        
-    <xs:attribute name="expiry" type="xs:long"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="documentActionResponse">
-        
-    <xs:sequence>
-            
-      <xs:element name="action" type="tns:actionResult"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
   <xs:complexType name="emptyDumpsterRequest">
         
     <xs:sequence/>
@@ -5753,103 +5569,6 @@
     <xs:restriction base="xs:string"/>
       
   </xs:simpleType>
-    
-  <xs:complexType name="getActivityStreamRequest">
-        
-    <xs:sequence>
-            
-      <xs:element minOccurs="0" name="filter" type="tns:activityFilter"/>
-          
-    </xs:sequence>
-        
-    <xs:attribute name="id" type="xs:string" use="required"/>
-        
-    <xs:attribute name="offset" type="xs:int"/>
-        
-    <xs:attribute name="limit" type="xs:int"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="activityFilter">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="account" type="xs:string"/>
-        
-    <xs:attribute name="op" type="xs:string"/>
-        
-    <xs:attribute name="session" type="xs:string"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="getActivityStreamResponse">
-        
-    <xs:sequence>
-            
-      <xs:element maxOccurs="unbounded" minOccurs="0" name="op" type="ns1:namedElement"/>
-            
-      <xs:element maxOccurs="unbounded" minOccurs="0" name="user" type="tns:idEmailName"/>
-            
-      <xs:element maxOccurs="unbounded" minOccurs="0" name="a" type="tns:activityInfo"/>
-          
-    </xs:sequence>
-        
-    <xs:attribute name="session" type="xs:string"/>
-        
-    <xs:attribute name="count" type="xs:string"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="idEmailName">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="id" type="xs:string"/>
-        
-    <xs:attribute name="email" type="xs:string"/>
-        
-    <xs:attribute name="name" type="xs:string"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="activityInfo">
-        
-    <xs:sequence>
-            
-      <xs:element maxOccurs="unbounded" minOccurs="0" name="arg" type="ns1:namedValue"/>
-          
-    </xs:sequence>
-        
-    <xs:attribute name="op" type="xs:string" use="required"/>
-        
-    <xs:attribute name="ts" type="xs:long" use="required"/>
-        
-    <xs:attribute name="itemId" type="xs:string" use="required"/>
-        
-    <xs:attribute name="ver" type="xs:int"/>
-        
-    <xs:attribute name="ua" type="xs:string"/>
-        
-    <xs:attribute name="email" type="xs:string"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="getAllDevicesRequest">
-        
-    <xs:sequence/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="getAllDevicesResponse">
-        
-    <xs:sequence>
-            
-      <xs:element maxOccurs="unbounded" minOccurs="0" name="device" type="tns:deviceInfo"/>
-          
-    </xs:sequence>
-      
-    <xs:attribute name="unusedCodeGenHelper" type="xs:string"/>
-  </xs:complexType>
     
   <xs:complexType name="getAppointmentRequest">
         
@@ -6288,6 +6007,18 @@
       
   </xs:complexType>
     
+  <xs:complexType name="idEmailName">
+        
+    <xs:sequence/>
+        
+    <xs:attribute name="id" type="xs:string"/>
+        
+    <xs:attribute name="email" type="xs:string"/>
+        
+    <xs:attribute name="name" type="xs:string"/>
+      
+  </xs:complexType>
+    
   <xs:complexType mixed="true" name="commentInfo">
         
     <xs:sequence>
@@ -6315,35 +6046,6 @@
     <xs:attribute name="rgb" type="xs:string"/>
         
     <xs:attribute name="d" type="xs:long"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="getContactBackupListRequest">
-        
-    <xs:sequence/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="getContactBackupListResponse">
-        
-    <xs:sequence>
-            
-      <xs:element minOccurs="0" name="backups">
-                
-        <xs:complexType>
-                    
-          <xs:sequence>
-                        
-            <xs:element maxOccurs="unbounded" minOccurs="0" name="backup" type="xs:string"/>
-                      
-          </xs:sequence>
-                  
-          <xs:attribute name="unusedCodeGenHelper" type="xs:string"/>
-        </xs:complexType>
-              
-      </xs:element>
-          
-    </xs:sequence>
       
   </xs:complexType>
     
@@ -6625,36 +6327,6 @@
     </xs:sequence>
       
   </xs:complexType>
-    
-  <xs:complexType name="getDocumentShareURLRequest">
-        
-    <xs:sequence>
-            
-      <xs:element minOccurs="0" name="item" type="tns:itemSpec"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="itemSpec">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="id" type="xs:string"/>
-        
-    <xs:attribute name="l" type="xs:string"/>
-        
-    <xs:attribute name="name" type="xs:string"/>
-        
-    <xs:attribute name="path" type="xs:string"/>
-      
-  </xs:complexType>
-    
-  <xs:simpleType name="getDocumentShareURLResponse">
-        
-    <xs:restriction base="xs:string"/>
-      
-  </xs:simpleType>
     
   <xs:complexType name="getEffectiveFolderPermsRequest">
         
@@ -7161,6 +6833,20 @@
       <xs:element minOccurs="0" name="item" type="tns:itemSpec"/>
           
     </xs:sequence>
+      
+  </xs:complexType>
+    
+  <xs:complexType name="itemSpec">
+        
+    <xs:sequence/>
+        
+    <xs:attribute name="id" type="xs:string"/>
+        
+    <xs:attribute name="l" type="xs:string"/>
+        
+    <xs:attribute name="name" type="xs:string"/>
+        
+    <xs:attribute name="path" type="xs:string"/>
       
   </xs:complexType>
     
@@ -7674,30 +7360,6 @@
       
   </xs:complexType>
     
-  <xs:complexType name="getNotificationsRequest">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="markSeen" type="xs:boolean"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="getNotificationsResponse">
-        
-    <xs:sequence>
-            
-      <xs:element maxOccurs="unbounded" minOccurs="0" name="op" type="ns1:namedElement"/>
-            
-      <xs:element maxOccurs="unbounded" minOccurs="0" name="user" type="tns:idEmailName"/>
-            
-      <xs:element maxOccurs="unbounded" minOccurs="0" name="a" type="tns:activityInfo"/>
-          
-    </xs:sequence>
-        
-    <xs:attribute name="lastSeen" type="xs:long" use="required"/>
-      
-  </xs:complexType>
-    
   <xs:complexType name="getOutgoingFilterRulesRequest">
         
     <xs:sequence/>
@@ -7882,52 +7544,6 @@
     <xs:attribute name="unusedCodeGenHelper" type="xs:string"/>
   </xs:complexType>
     
-  <xs:complexType name="getShareDetailsRequest">
-        
-    <xs:sequence>
-            
-      <xs:element name="item" type="ns1:id"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="getShareDetailsResponse">
-        
-    <xs:sequence>
-            
-      <xs:element name="item" type="tns:shareDetails"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="shareDetails">
-        
-    <xs:sequence>
-            
-      <xs:element maxOccurs="unbounded" minOccurs="0" name="grantee" type="tns:shareGrantee"/>
-          
-    </xs:sequence>
-        
-    <xs:attribute name="id" type="xs:string" use="required"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="shareGrantee">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="perm" type="xs:string" use="required"/>
-        
-    <xs:attribute name="gt" type="ns1:grantGranteeType" use="required"/>
-        
-    <xs:attribute name="name" type="xs:string"/>
-        
-    <xs:attribute name="email" type="xs:string"/>
-      
-  </xs:complexType>
-    
   <xs:complexType name="getShareNotificationsRequest">
         
     <xs:sequence/>
@@ -8096,80 +7712,6 @@
       </xs:choice>
           
     </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="getWatchersRequest">
-        
-    <xs:sequence/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="getWatchersResponse">
-        
-    <xs:sequence>
-            
-      <xs:element maxOccurs="unbounded" minOccurs="0" name="watcher" type="tns:watcherInfo"/>
-          
-    </xs:sequence>
-      
-    <xs:attribute name="unusedCodeGenHelper" type="xs:string"/>
-  </xs:complexType>
-    
-  <xs:complexType name="watcherInfo">
-        
-    <xs:sequence>
-            
-      <xs:element maxOccurs="unbounded" minOccurs="0" name="item" type="tns:integerIdAttr"/>
-          
-    </xs:sequence>
-        
-    <xs:attribute name="id" type="xs:string" use="required"/>
-        
-    <xs:attribute name="email" type="xs:string" use="required"/>
-        
-    <xs:attribute name="name" type="xs:string" use="required"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="integerIdAttr">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="id" type="xs:int" use="required"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="getWatchingItemsRequest">
-        
-    <xs:sequence/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="getWatchingItemsResponse">
-        
-    <xs:sequence>
-            
-      <xs:element maxOccurs="unbounded" minOccurs="0" name="target" type="tns:watchingTarget"/>
-          
-    </xs:sequence>
-      
-    <xs:attribute name="unusedCodeGenHelper" type="xs:string"/>
-  </xs:complexType>
-    
-  <xs:complexType name="watchingTarget">
-        
-    <xs:sequence>
-            
-      <xs:element maxOccurs="unbounded" minOccurs="0" name="item" type="ns1:id"/>
-          
-    </xs:sequence>
-        
-    <xs:attribute name="id" type="xs:string" use="required"/>
-        
-    <xs:attribute name="email" type="xs:string" use="required"/>
-        
-    <xs:attribute name="name" type="xs:string" use="required"/>
       
   </xs:complexType>
     
@@ -9021,26 +8563,6 @@
       
   </xs:complexType>
     
-  <xs:complexType name="registerDeviceRequest">
-        
-    <xs:sequence>
-            
-      <xs:element name="device" type="ns1:namedElement"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="registerDeviceResponse">
-        
-    <xs:sequence>
-            
-      <xs:element name="device" type="tns:nameId"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
   <xs:complexType name="removeAttachmentsRequest">
         
     <xs:sequence>
@@ -9084,22 +8606,6 @@
   </xs:complexType>
     
   <xs:complexType name="resetRecentMessageCountResponse">
-        
-    <xs:sequence/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="restoreContactsRequest">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="contactsBackupFileName" type="xs:string" use="required"/>
-        
-    <xs:attribute name="resolve" type="tns:resolve"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="restoreContactsResponse">
         
     <xs:sequence/>
       
@@ -10692,22 +10198,6 @@
       
   </xs:complexType>
     
-  <xs:complexType name="updateDeviceStatusRequest">
-        
-    <xs:sequence>
-            
-      <xs:element name="device" type="tns:idStatus"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="updateDeviceStatusResponse">
-        
-    <xs:sequence/>
-      
-  </xs:complexType>
-    
   <xs:complexType name="verifyCodeRequest">
         
     <xs:sequence/>
@@ -10952,22 +10442,6 @@
       <xs:enumeration value="sendRecoveryCode"/>
             
       <xs:enumeration value="sendRecoveryLink"/>
-          
-    </xs:restriction>
-      
-  </xs:simpleType>
-    
-  <xs:simpleType name="resolve">
-        
-    <xs:restriction base="xs:string">
-            
-      <xs:enumeration value="ignore"/>
-            
-      <xs:enumeration value="modify"/>
-            
-      <xs:enumeration value="replace"/>
-            
-      <xs:enumeration value="reset"/>
           
     </xs:restriction>
       
