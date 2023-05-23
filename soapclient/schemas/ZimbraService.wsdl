@@ -481,12 +481,6 @@
   <wsdl:message name="MailCancelTaskResponseMessage">
     <wsdl:part name="params" element="zimbraMail:CancelTaskResponse"/>
   </wsdl:message>
-  <wsdl:message name="MailCheckDeviceStatusRequestMessage">
-    <wsdl:part name="params" element="zimbraMail:CheckDeviceStatusRequest"/>
-  </wsdl:message>
-  <wsdl:message name="MailCheckDeviceStatusResponseMessage">
-    <wsdl:part name="params" element="zimbraMail:CheckDeviceStatusResponse"/>
-  </wsdl:message>
   <wsdl:message name="MailCheckPermissionRequestMessage">
     <wsdl:part name="params" element="zimbraMail:CheckPermissionRequest"/>
   </wsdl:message>
@@ -619,12 +613,6 @@
   <wsdl:message name="MailDeleteDataSourceResponseMessage">
     <wsdl:part name="params" element="zimbraMail:DeleteDataSourceResponse"/>
   </wsdl:message>
-  <wsdl:message name="MailDeleteDeviceRequestMessage">
-    <wsdl:part name="params" element="zimbraMail:DeleteDeviceRequest"/>
-  </wsdl:message>
-  <wsdl:message name="MailDeleteDeviceResponseMessage">
-    <wsdl:part name="params" element="zimbraMail:DeleteDeviceResponse"/>
-  </wsdl:message>
   <wsdl:message name="MailDestroyWaitSetRequestMessage">
     <wsdl:part name="params" element="zimbraMail:DestroyWaitSetRequest"/>
   </wsdl:message>
@@ -642,12 +630,6 @@
   </wsdl:message>
   <wsdl:message name="MailDismissCalendarItemAlarmResponseMessage">
     <wsdl:part name="params" element="zimbraMail:DismissCalendarItemAlarmResponse"/>
-  </wsdl:message>
-  <wsdl:message name="MailDocumentActionRequestMessage">
-    <wsdl:part name="params" element="zimbraMail:DocumentActionRequest"/>
-  </wsdl:message>
-  <wsdl:message name="MailDocumentActionResponseMessage">
-    <wsdl:part name="params" element="zimbraMail:DocumentActionResponse"/>
   </wsdl:message>
   <wsdl:message name="MailEmptyDumpsterRequestMessage">
     <wsdl:part name="params" element="zimbraMail:EmptyDumpsterRequest"/>
@@ -697,18 +679,6 @@
   <wsdl:message name="MailGenerateUUIDResponseMessage">
     <wsdl:part name="params" element="zimbraMail:GenerateUUIDResponse"/>
   </wsdl:message>
-  <wsdl:message name="MailGetActivityStreamRequestMessage">
-    <wsdl:part name="params" element="zimbraMail:GetActivityStreamRequest"/>
-  </wsdl:message>
-  <wsdl:message name="MailGetActivityStreamResponseMessage">
-    <wsdl:part name="params" element="zimbraMail:GetActivityStreamResponse"/>
-  </wsdl:message>
-  <wsdl:message name="MailGetAllDevicesRequestMessage">
-    <wsdl:part name="params" element="zimbraMail:GetAllDevicesRequest"/>
-  </wsdl:message>
-  <wsdl:message name="MailGetAllDevicesResponseMessage">
-    <wsdl:part name="params" element="zimbraMail:GetAllDevicesResponse"/>
-  </wsdl:message>
   <wsdl:message name="MailGetAppointmentRequestMessage">
     <wsdl:part name="params" element="zimbraMail:GetAppointmentRequest"/>
   </wsdl:message>
@@ -732,12 +702,6 @@
   </wsdl:message>
   <wsdl:message name="MailGetCommentsResponseMessage">
     <wsdl:part name="params" element="zimbraMail:GetCommentsResponse"/>
-  </wsdl:message>
-  <wsdl:message name="MailGetContactBackupListRequestMessage">
-    <wsdl:part name="params" element="zimbraMail:GetContactBackupListRequest"/>
-  </wsdl:message>
-  <wsdl:message name="MailGetContactBackupListResponseMessage">
-    <wsdl:part name="params" element="zimbraMail:GetContactBackupListResponse"/>
   </wsdl:message>
   <wsdl:message name="MailGetContactsRequestMessage">
     <wsdl:part name="params" element="zimbraMail:GetContactsRequest"/>
@@ -768,12 +732,6 @@
   </wsdl:message>
   <wsdl:message name="MailGetDataSourcesResponseMessage">
     <wsdl:part name="params" element="zimbraMail:GetDataSourcesResponse"/>
-  </wsdl:message>
-  <wsdl:message name="MailGetDocumentShareURLRequestMessage">
-    <wsdl:part name="params" element="zimbraMail:GetDocumentShareURLRequest"/>
-  </wsdl:message>
-  <wsdl:message name="MailGetDocumentShareURLResponseMessage">
-    <wsdl:part name="params" element="zimbraMail:GetDocumentShareURLResponse"/>
   </wsdl:message>
   <wsdl:message name="MailGetEffectiveFolderPermsRequestMessage">
     <wsdl:part name="params" element="zimbraMail:GetEffectiveFolderPermsRequest"/>
@@ -871,12 +829,6 @@
   <wsdl:message name="MailGetNoteResponseMessage">
     <wsdl:part name="params" element="zimbraMail:GetNoteResponse"/>
   </wsdl:message>
-  <wsdl:message name="MailGetNotificationsRequestMessage">
-    <wsdl:part name="params" element="zimbraMail:GetNotificationsRequest"/>
-  </wsdl:message>
-  <wsdl:message name="MailGetNotificationsResponseMessage">
-    <wsdl:part name="params" element="zimbraMail:GetNotificationsResponse"/>
-  </wsdl:message>
   <wsdl:message name="MailGetOutgoingFilterRulesRequestMessage">
     <wsdl:part name="params" element="zimbraMail:GetOutgoingFilterRulesRequest"/>
   </wsdl:message>
@@ -900,12 +852,6 @@
   </wsdl:message>
   <wsdl:message name="MailGetSearchFolderResponseMessage">
     <wsdl:part name="params" element="zimbraMail:GetSearchFolderResponse"/>
-  </wsdl:message>
-  <wsdl:message name="MailGetShareDetailsRequestMessage">
-    <wsdl:part name="params" element="zimbraMail:GetShareDetailsRequest"/>
-  </wsdl:message>
-  <wsdl:message name="MailGetShareDetailsResponseMessage">
-    <wsdl:part name="params" element="zimbraMail:GetShareDetailsResponse"/>
   </wsdl:message>
   <wsdl:message name="MailGetShareNotificationsRequestMessage">
     <wsdl:part name="params" element="zimbraMail:GetShareNotificationsRequest"/>
@@ -942,18 +888,6 @@
   </wsdl:message>
   <wsdl:message name="MailGetTaskSummariesResponseMessage">
     <wsdl:part name="params" element="zimbraMail:GetTaskSummariesResponse"/>
-  </wsdl:message>
-  <wsdl:message name="MailGetWatchersRequestMessage">
-    <wsdl:part name="params" element="zimbraMail:GetWatchersRequest"/>
-  </wsdl:message>
-  <wsdl:message name="MailGetWatchersResponseMessage">
-    <wsdl:part name="params" element="zimbraMail:GetWatchersResponse"/>
-  </wsdl:message>
-  <wsdl:message name="MailGetWatchingItemsRequestMessage">
-    <wsdl:part name="params" element="zimbraMail:GetWatchingItemsRequest"/>
-  </wsdl:message>
-  <wsdl:message name="MailGetWatchingItemsResponseMessage">
-    <wsdl:part name="params" element="zimbraMail:GetWatchingItemsResponse"/>
   </wsdl:message>
   <wsdl:message name="MailGetWorkingHoursRequestMessage">
     <wsdl:part name="params" element="zimbraMail:GetWorkingHoursRequest"/>
@@ -1135,12 +1069,6 @@
   <wsdl:message name="MailRecoverAccountResponseMessage">
     <wsdl:part name="params" element="zimbraMail:RecoverAccountResponse"/>
   </wsdl:message>
-  <wsdl:message name="MailRegisterDeviceRequestMessage">
-    <wsdl:part name="params" element="zimbraMail:RegisterDeviceRequest"/>
-  </wsdl:message>
-  <wsdl:message name="MailRegisterDeviceResponseMessage">
-    <wsdl:part name="params" element="zimbraMail:RegisterDeviceResponse"/>
-  </wsdl:message>
   <wsdl:message name="MailRemoveAttachmentsRequestMessage">
     <wsdl:part name="params" element="zimbraMail:RemoveAttachmentsRequest"/>
   </wsdl:message>
@@ -1152,12 +1080,6 @@
   </wsdl:message>
   <wsdl:message name="MailResetRecentMessageCountResponseMessage">
     <wsdl:part name="params" element="zimbraMail:ResetRecentMessageCountResponse"/>
-  </wsdl:message>
-  <wsdl:message name="MailRestoreContactsRequestMessage">
-    <wsdl:part name="params" element="zimbraMail:RestoreContactsRequest"/>
-  </wsdl:message>
-  <wsdl:message name="MailRestoreContactsResponseMessage">
-    <wsdl:part name="params" element="zimbraMail:RestoreContactsResponse"/>
   </wsdl:message>
   <wsdl:message name="MailRevokePermissionRequestMessage">
     <wsdl:part name="params" element="zimbraMail:RevokePermissionRequest"/>
@@ -1290,12 +1212,6 @@
   </wsdl:message>
   <wsdl:message name="MailTestDataSourceResponseMessage">
     <wsdl:part name="params" element="zimbraMail:TestDataSourceResponse"/>
-  </wsdl:message>
-  <wsdl:message name="MailUpdateDeviceStatusRequestMessage">
-    <wsdl:part name="params" element="zimbraMail:UpdateDeviceStatusRequest"/>
-  </wsdl:message>
-  <wsdl:message name="MailUpdateDeviceStatusResponseMessage">
-    <wsdl:part name="params" element="zimbraMail:UpdateDeviceStatusResponse"/>
   </wsdl:message>
   <wsdl:message name="MailVerifyCodeRequestMessage">
     <wsdl:part name="params" element="zimbraMail:VerifyCodeRequest"/>
@@ -1614,12 +1530,6 @@
   </wsdl:message>
   <wsdl:message name="AdminCheckDirectoryResponseMessage">
     <wsdl:part name="params" element="zimbraAdmin:CheckDirectoryResponse"/>
-  </wsdl:message>
-  <wsdl:message name="AdminCheckDomainMXRecordRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:CheckDomainMXRecordRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminCheckDomainMXRecordResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:CheckDomainMXRecordResponse"/>
   </wsdl:message>
   <wsdl:message name="AdminCheckExchangeAuthRequestMessage">
     <wsdl:part name="params" element="zimbraAdmin:CheckExchangeAuthRequest"/>
@@ -2281,12 +2191,6 @@
   <wsdl:message name="AdminGetDevicesCountUsedTodayResponseMessage">
     <wsdl:part name="params" element="zimbraAdmin:GetDevicesCountUsedTodayResponse"/>
   </wsdl:message>
-  <wsdl:message name="AdminGetDevicesRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:GetDevicesRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminGetDevicesResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:GetDevicesResponse"/>
-  </wsdl:message>
   <wsdl:message name="AdminGetDistributionListMembershipRequestMessage">
     <wsdl:part name="params" element="zimbraAdmin:GetDistributionListMembershipRequest"/>
   </wsdl:message>
@@ -2298,6 +2202,12 @@
   </wsdl:message>
   <wsdl:message name="AdminGetDistributionListResponseMessage">
     <wsdl:part name="params" element="zimbraAdmin:GetDistributionListResponse"/>
+  </wsdl:message>
+  <wsdl:message name="AdminGetDomainCertRequestMessage">
+    <wsdl:part name="params" element="zimbraAdmin:GetDomainCertRequest"/>
+  </wsdl:message>
+  <wsdl:message name="AdminGetDomainCertResponseMessage">
+    <wsdl:part name="params" element="zimbraAdmin:GetDomainCertResponse"/>
   </wsdl:message>
   <wsdl:message name="AdminGetDomainInfoRequestMessage">
     <wsdl:part name="params" element="zimbraAdmin:GetDomainInfoRequest"/>
@@ -2538,6 +2448,12 @@
   </wsdl:message>
   <wsdl:message name="AdminInstallCertResponseMessage">
     <wsdl:part name="params" element="zimbraAdmin:InstallCertResponse"/>
+  </wsdl:message>
+  <wsdl:message name="AdminIssueCertRequestMessage">
+    <wsdl:part name="params" element="zimbraAdmin:IssueCertRequest"/>
+  </wsdl:message>
+  <wsdl:message name="AdminIssueCertResponseMessage">
+    <wsdl:part name="params" element="zimbraAdmin:IssueCertResponse"/>
   </wsdl:message>
   <wsdl:message name="AdminLockoutMailboxRequestMessage">
     <wsdl:part name="params" element="zimbraAdmin:LockoutMailboxRequest"/>
@@ -2995,12 +2911,6 @@
   <wsdl:message name="AdminUnregisterMailboxMoveOutResponseMessage">
     <wsdl:part name="params" element="zimbraAdmin:UnregisterMailboxMoveOutResponse"/>
   </wsdl:message>
-  <wsdl:message name="AdminUpdateDeviceStatusRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:UpdateDeviceStatusRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminUpdateDeviceStatusResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:UpdateDeviceStatusResponse"/>
-  </wsdl:message>
   <wsdl:message name="AdminUpdatePresenceSessionIdRequestMessage">
     <wsdl:part name="params" element="zimbraAdmin:UpdatePresenceSessionIdRequest"/>
   </wsdl:message>
@@ -3164,10 +3074,6 @@
     <wsdl:operation name="checkDirectoryRequest">
       <wsdl:input message="svc:AdminCheckDirectoryRequestMessage"/>
       <wsdl:output message="svc:AdminCheckDirectoryResponseMessage"/>
-    </wsdl:operation>
-    <wsdl:operation name="checkDomainMXRecordRequest">
-      <wsdl:input message="svc:AdminCheckDomainMXRecordRequestMessage"/>
-      <wsdl:output message="svc:AdminCheckDomainMXRecordResponseMessage"/>
     </wsdl:operation>
     <wsdl:operation name="checkExchangeAuthRequest">
       <wsdl:input message="svc:AdminCheckExchangeAuthRequestMessage"/>
@@ -3609,10 +3515,6 @@
       <wsdl:input message="svc:AdminGetDevicesCountUsedTodayRequestMessage"/>
       <wsdl:output message="svc:AdminGetDevicesCountUsedTodayResponseMessage"/>
     </wsdl:operation>
-    <wsdl:operation name="getDevicesRequest">
-      <wsdl:input message="svc:AdminGetDevicesRequestMessage"/>
-      <wsdl:output message="svc:AdminGetDevicesResponseMessage"/>
-    </wsdl:operation>
     <wsdl:operation name="getDistributionListMembershipRequest">
       <wsdl:input message="svc:AdminGetDistributionListMembershipRequestMessage"/>
       <wsdl:output message="svc:AdminGetDistributionListMembershipResponseMessage"/>
@@ -3620,6 +3522,10 @@
     <wsdl:operation name="getDistributionListRequest">
       <wsdl:input message="svc:AdminGetDistributionListRequestMessage"/>
       <wsdl:output message="svc:AdminGetDistributionListResponseMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="getDomainCertRequest">
+      <wsdl:input message="svc:AdminGetDomainCertRequestMessage"/>
+      <wsdl:output message="svc:AdminGetDomainCertResponseMessage"/>
     </wsdl:operation>
     <wsdl:operation name="getDomainInfoRequest">
       <wsdl:input message="svc:AdminGetDomainInfoRequestMessage"/>
@@ -3780,6 +3686,10 @@
     <wsdl:operation name="installCertRequest">
       <wsdl:input message="svc:AdminInstallCertRequestMessage"/>
       <wsdl:output message="svc:AdminInstallCertResponseMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="issueCertRequest">
+      <wsdl:input message="svc:AdminIssueCertRequestMessage"/>
+      <wsdl:output message="svc:AdminIssueCertResponseMessage"/>
     </wsdl:operation>
     <wsdl:operation name="lockoutMailboxRequest">
       <wsdl:input message="svc:AdminLockoutMailboxRequestMessage"/>
@@ -4084,10 +3994,6 @@
     <wsdl:operation name="unregisterMailboxMoveOutRequest">
       <wsdl:input message="svc:AdminUnregisterMailboxMoveOutRequestMessage"/>
       <wsdl:output message="svc:AdminUnregisterMailboxMoveOutResponseMessage"/>
-    </wsdl:operation>
-    <wsdl:operation name="updateDeviceStatusRequest">
-      <wsdl:input message="svc:AdminUpdateDeviceStatusRequestMessage"/>
-      <wsdl:output message="svc:AdminUpdateDeviceStatusResponseMessage"/>
     </wsdl:operation>
     <wsdl:operation name="updatePresenceSessionIdRequest">
       <wsdl:input message="svc:AdminUpdatePresenceSessionIdRequestMessage"/>
@@ -4447,10 +4353,6 @@
       <wsdl:input message="svc:MailCancelTaskRequestMessage"/>
       <wsdl:output message="svc:MailCancelTaskResponseMessage"/>
     </wsdl:operation>
-    <wsdl:operation name="checkDeviceStatusRequest">
-      <wsdl:input message="svc:MailCheckDeviceStatusRequestMessage"/>
-      <wsdl:output message="svc:MailCheckDeviceStatusResponseMessage"/>
-    </wsdl:operation>
     <wsdl:operation name="checkPermissionRequest">
       <wsdl:input message="svc:MailCheckPermissionRequestMessage"/>
       <wsdl:output message="svc:MailCheckPermissionResponseMessage"/>
@@ -4539,10 +4441,6 @@
       <wsdl:input message="svc:MailDeleteDataSourceRequestMessage"/>
       <wsdl:output message="svc:MailDeleteDataSourceResponseMessage"/>
     </wsdl:operation>
-    <wsdl:operation name="deleteDeviceRequest">
-      <wsdl:input message="svc:MailDeleteDeviceRequestMessage"/>
-      <wsdl:output message="svc:MailDeleteDeviceResponseMessage"/>
-    </wsdl:operation>
     <wsdl:operation name="destroyWaitSetRequest">
       <wsdl:input message="svc:MailDestroyWaitSetRequestMessage"/>
       <wsdl:output message="svc:MailDestroyWaitSetResponseMessage"/>
@@ -4554,10 +4452,6 @@
     <wsdl:operation name="dismissCalendarItemAlarmRequest">
       <wsdl:input message="svc:MailDismissCalendarItemAlarmRequestMessage"/>
       <wsdl:output message="svc:MailDismissCalendarItemAlarmResponseMessage"/>
-    </wsdl:operation>
-    <wsdl:operation name="documentActionRequest">
-      <wsdl:input message="svc:MailDocumentActionRequestMessage"/>
-      <wsdl:output message="svc:MailDocumentActionResponseMessage"/>
     </wsdl:operation>
     <wsdl:operation name="emptyDumpsterRequest">
       <wsdl:input message="svc:MailEmptyDumpsterRequestMessage"/>
@@ -4591,14 +4485,6 @@
       <wsdl:input message="svc:MailGenerateUUIDRequestMessage"/>
       <wsdl:output message="svc:MailGenerateUUIDResponseMessage"/>
     </wsdl:operation>
-    <wsdl:operation name="getActivityStreamRequest">
-      <wsdl:input message="svc:MailGetActivityStreamRequestMessage"/>
-      <wsdl:output message="svc:MailGetActivityStreamResponseMessage"/>
-    </wsdl:operation>
-    <wsdl:operation name="getAllDevicesRequest">
-      <wsdl:input message="svc:MailGetAllDevicesRequestMessage"/>
-      <wsdl:output message="svc:MailGetAllDevicesResponseMessage"/>
-    </wsdl:operation>
     <wsdl:operation name="getAppointmentRequest">
       <wsdl:input message="svc:MailGetAppointmentRequestMessage"/>
       <wsdl:output message="svc:MailGetAppointmentResponseMessage"/>
@@ -4614,10 +4500,6 @@
     <wsdl:operation name="getCommentsRequest">
       <wsdl:input message="svc:MailGetCommentsRequestMessage"/>
       <wsdl:output message="svc:MailGetCommentsResponseMessage"/>
-    </wsdl:operation>
-    <wsdl:operation name="getContactBackupListRequest">
-      <wsdl:input message="svc:MailGetContactBackupListRequestMessage"/>
-      <wsdl:output message="svc:MailGetContactBackupListResponseMessage"/>
     </wsdl:operation>
     <wsdl:operation name="getContactsRequest">
       <wsdl:input message="svc:MailGetContactsRequestMessage"/>
@@ -4638,10 +4520,6 @@
     <wsdl:operation name="getDataSourcesRequest">
       <wsdl:input message="svc:MailGetDataSourcesRequestMessage"/>
       <wsdl:output message="svc:MailGetDataSourcesResponseMessage"/>
-    </wsdl:operation>
-    <wsdl:operation name="getDocumentShareURLRequest">
-      <wsdl:input message="svc:MailGetDocumentShareURLRequestMessage"/>
-      <wsdl:output message="svc:MailGetDocumentShareURLResponseMessage"/>
     </wsdl:operation>
     <wsdl:operation name="getEffectiveFolderPermsRequest">
       <wsdl:input message="svc:MailGetEffectiveFolderPermsRequestMessage"/>
@@ -4707,10 +4585,6 @@
       <wsdl:input message="svc:MailGetNoteRequestMessage"/>
       <wsdl:output message="svc:MailGetNoteResponseMessage"/>
     </wsdl:operation>
-    <wsdl:operation name="getNotificationsRequest">
-      <wsdl:input message="svc:MailGetNotificationsRequestMessage"/>
-      <wsdl:output message="svc:MailGetNotificationsResponseMessage"/>
-    </wsdl:operation>
     <wsdl:operation name="getOutgoingFilterRulesRequest">
       <wsdl:input message="svc:MailGetOutgoingFilterRulesRequestMessage"/>
       <wsdl:output message="svc:MailGetOutgoingFilterRulesResponseMessage"/>
@@ -4726,10 +4600,6 @@
     <wsdl:operation name="getSearchFolderRequest">
       <wsdl:input message="svc:MailGetSearchFolderRequestMessage"/>
       <wsdl:output message="svc:MailGetSearchFolderResponseMessage"/>
-    </wsdl:operation>
-    <wsdl:operation name="getShareDetailsRequest">
-      <wsdl:input message="svc:MailGetShareDetailsRequestMessage"/>
-      <wsdl:output message="svc:MailGetShareDetailsResponseMessage"/>
     </wsdl:operation>
     <wsdl:operation name="getShareNotificationsRequest">
       <wsdl:input message="svc:MailGetShareNotificationsRequestMessage"/>
@@ -4754,14 +4624,6 @@
     <wsdl:operation name="getTaskSummariesRequest">
       <wsdl:input message="svc:MailGetTaskSummariesRequestMessage"/>
       <wsdl:output message="svc:MailGetTaskSummariesResponseMessage"/>
-    </wsdl:operation>
-    <wsdl:operation name="getWatchersRequest">
-      <wsdl:input message="svc:MailGetWatchersRequestMessage"/>
-      <wsdl:output message="svc:MailGetWatchersResponseMessage"/>
-    </wsdl:operation>
-    <wsdl:operation name="getWatchingItemsRequest">
-      <wsdl:input message="svc:MailGetWatchingItemsRequestMessage"/>
-      <wsdl:output message="svc:MailGetWatchingItemsResponseMessage"/>
     </wsdl:operation>
     <wsdl:operation name="getWorkingHoursRequest">
       <wsdl:input message="svc:MailGetWorkingHoursRequestMessage"/>
@@ -4883,10 +4745,6 @@
       <wsdl:input message="svc:MailRecoverAccountRequestMessage"/>
       <wsdl:output message="svc:MailRecoverAccountResponseMessage"/>
     </wsdl:operation>
-    <wsdl:operation name="registerDeviceRequest">
-      <wsdl:input message="svc:MailRegisterDeviceRequestMessage"/>
-      <wsdl:output message="svc:MailRegisterDeviceResponseMessage"/>
-    </wsdl:operation>
     <wsdl:operation name="removeAttachmentsRequest">
       <wsdl:input message="svc:MailRemoveAttachmentsRequestMessage"/>
       <wsdl:output message="svc:MailRemoveAttachmentsResponseMessage"/>
@@ -4894,10 +4752,6 @@
     <wsdl:operation name="resetRecentMessageCountRequest">
       <wsdl:input message="svc:MailResetRecentMessageCountRequestMessage"/>
       <wsdl:output message="svc:MailResetRecentMessageCountResponseMessage"/>
-    </wsdl:operation>
-    <wsdl:operation name="restoreContactsRequest">
-      <wsdl:input message="svc:MailRestoreContactsRequestMessage"/>
-      <wsdl:output message="svc:MailRestoreContactsResponseMessage"/>
     </wsdl:operation>
     <wsdl:operation name="revokePermissionRequest">
       <wsdl:input message="svc:MailRevokePermissionRequestMessage"/>
@@ -4986,10 +4840,6 @@
     <wsdl:operation name="testDataSourceRequest">
       <wsdl:input message="svc:MailTestDataSourceRequestMessage"/>
       <wsdl:output message="svc:MailTestDataSourceResponseMessage"/>
-    </wsdl:operation>
-    <wsdl:operation name="updateDeviceStatusRequest">
-      <wsdl:input message="svc:MailUpdateDeviceStatusRequestMessage"/>
-      <wsdl:output message="svc:MailUpdateDeviceStatusResponseMessage"/>
     </wsdl:operation>
     <wsdl:operation name="verifyCodeRequest">
       <wsdl:input message="svc:MailVerifyCodeRequestMessage"/>
@@ -5330,16 +5180,6 @@
     </wsdl:operation>
     <wsdl:operation name="checkDirectoryRequest">
       <soap:operation soapAction="urn:zimbraAdmin/CheckDirectory" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="checkDomainMXRecordRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/CheckDomainMXRecord" style="document"/>
       <wsdl:input>
         <soap:body use="literal"/>
         <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
@@ -6448,16 +6288,6 @@
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="getDevicesRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/GetDevices" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="getDistributionListMembershipRequest">
       <soap:operation soapAction="urn:zimbraAdmin/GetDistributionListMembership" style="document"/>
       <wsdl:input>
@@ -6470,6 +6300,16 @@
     </wsdl:operation>
     <wsdl:operation name="getDistributionListRequest">
       <soap:operation soapAction="urn:zimbraAdmin/GetDistributionList" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getDomainCertRequest">
+      <soap:operation soapAction="urn:zimbraAdmin/GetDomainCert" style="document"/>
       <wsdl:input>
         <soap:body use="literal"/>
         <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
@@ -6870,6 +6710,16 @@
     </wsdl:operation>
     <wsdl:operation name="installCertRequest">
       <soap:operation soapAction="urn:zimbraAdmin/InstallCert" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="issueCertRequest">
+      <soap:operation soapAction="urn:zimbraAdmin/IssueCert" style="document"/>
       <wsdl:input>
         <soap:body use="literal"/>
         <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
@@ -7630,16 +7480,6 @@
     </wsdl:operation>
     <wsdl:operation name="unregisterMailboxMoveOutRequest">
       <soap:operation soapAction="urn:zimbraAdmin/UnregisterMailboxMoveOut" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="updateDeviceStatusRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/UpdateDeviceStatus" style="document"/>
       <wsdl:input>
         <soap:body use="literal"/>
         <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
@@ -8541,16 +8381,6 @@
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="checkDeviceStatusRequest">
-      <soap:operation soapAction="urn:zimbraMail/CheckDeviceStatus" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="checkPermissionRequest">
       <soap:operation soapAction="urn:zimbraMail/CheckPermission" style="document"/>
       <wsdl:input>
@@ -8771,16 +8601,6 @@
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="deleteDeviceRequest">
-      <soap:operation soapAction="urn:zimbraMail/DeleteDevice" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="destroyWaitSetRequest">
       <soap:operation soapAction="urn:zimbraMail/DestroyWaitSet" style="document"/>
       <wsdl:input>
@@ -8803,16 +8623,6 @@
     </wsdl:operation>
     <wsdl:operation name="dismissCalendarItemAlarmRequest">
       <soap:operation soapAction="urn:zimbraMail/DismissCalendarItemAlarm" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="documentActionRequest">
-      <soap:operation soapAction="urn:zimbraMail/DocumentAction" style="document"/>
       <wsdl:input>
         <soap:body use="literal"/>
         <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
@@ -8901,26 +8711,6 @@
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="getActivityStreamRequest">
-      <soap:operation soapAction="urn:zimbraMail/GetActivityStream" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="getAllDevicesRequest">
-      <soap:operation soapAction="urn:zimbraMail/GetAllDevices" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="getAppointmentRequest">
       <soap:operation soapAction="urn:zimbraMail/GetAppointment" style="document"/>
       <wsdl:input>
@@ -8953,16 +8743,6 @@
     </wsdl:operation>
     <wsdl:operation name="getCommentsRequest">
       <soap:operation soapAction="urn:zimbraMail/GetComments" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="getContactBackupListRequest">
-      <soap:operation soapAction="urn:zimbraMail/GetContactBackupList" style="document"/>
       <wsdl:input>
         <soap:body use="literal"/>
         <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
@@ -9013,16 +8793,6 @@
     </wsdl:operation>
     <wsdl:operation name="getDataSourcesRequest">
       <soap:operation soapAction="urn:zimbraMail/GetDataSources" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="getDocumentShareURLRequest">
-      <soap:operation soapAction="urn:zimbraMail/GetDocumentShareURL" style="document"/>
       <wsdl:input>
         <soap:body use="literal"/>
         <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
@@ -9191,16 +8961,6 @@
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="getNotificationsRequest">
-      <soap:operation soapAction="urn:zimbraMail/GetNotifications" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="getOutgoingFilterRulesRequest">
       <soap:operation soapAction="urn:zimbraMail/GetOutgoingFilterRules" style="document"/>
       <wsdl:input>
@@ -9233,16 +8993,6 @@
     </wsdl:operation>
     <wsdl:operation name="getSearchFolderRequest">
       <soap:operation soapAction="urn:zimbraMail/GetSearchFolder" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="getShareDetailsRequest">
-      <soap:operation soapAction="urn:zimbraMail/GetShareDetails" style="document"/>
       <wsdl:input>
         <soap:body use="literal"/>
         <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
@@ -9303,26 +9053,6 @@
     </wsdl:operation>
     <wsdl:operation name="getTaskSummariesRequest">
       <soap:operation soapAction="urn:zimbraMail/GetTaskSummaries" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="getWatchersRequest">
-      <soap:operation soapAction="urn:zimbraMail/GetWatchers" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="getWatchingItemsRequest">
-      <soap:operation soapAction="urn:zimbraMail/GetWatchingItems" style="document"/>
       <wsdl:input>
         <soap:body use="literal"/>
         <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
@@ -9631,16 +9361,6 @@
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="registerDeviceRequest">
-      <soap:operation soapAction="urn:zimbraMail/RegisterDevice" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="removeAttachmentsRequest">
       <soap:operation soapAction="urn:zimbraMail/RemoveAttachments" style="document"/>
       <wsdl:input>
@@ -9653,16 +9373,6 @@
     </wsdl:operation>
     <wsdl:operation name="resetRecentMessageCountRequest">
       <soap:operation soapAction="urn:zimbraMail/ResetRecentMessageCount" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="restoreContactsRequest">
-      <soap:operation soapAction="urn:zimbraMail/RestoreContacts" style="document"/>
       <wsdl:input>
         <soap:body use="literal"/>
         <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
@@ -9883,16 +9593,6 @@
     </wsdl:operation>
     <wsdl:operation name="testDataSourceRequest">
       <soap:operation soapAction="urn:zimbraMail/TestDataSource" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="updateDeviceStatusRequest">
-      <soap:operation soapAction="urn:zimbraMail/UpdateDeviceStatus" style="document"/>
       <wsdl:input>
         <soap:body use="literal"/>
         <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
@@ -10219,7 +9919,7 @@
   </wsdl:service>
   <wsdl:service name="zcsAdminService">
     <wsdl:port name="zcsAdminServicePort" binding="svc:zcsAdminPortBinding">
-      <soap:address location="https://localhost:7071/service/admin/soap"/>
+      <soap:address location="http://localhost:7071/service/admin/soap"/>
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>
