@@ -152,7 +152,7 @@ SPDX-License-Identifier: AGPL-3.0-only
   <parent>
     <artifactId>carbonio-user-management</artifactId>
     <groupId>com.zextras.carbonio.user-management</groupId>
-    <version>0.2.3-2307061621</version>
+    <version>0.2.4-1</version>
   </parent>
-  <version>0.2.3-2307061621</version>
+  <version>0.2.4-1</version>
 </project>
