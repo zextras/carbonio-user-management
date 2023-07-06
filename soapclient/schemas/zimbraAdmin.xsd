@@ -1046,10 +1046,6 @@
     
   <xs:element name="VerifyStoreManagerResponse" type="tns:verifyStoreManagerResponse"/>
     
-  <xs:element name="VersionCheckRequest" type="tns:versionCheckRequest"/>
-    
-  <xs:element name="VersionCheckResponse" type="tns:versionCheckResponse"/>
-    
   <xs:element name="a" type="tns:attr"/>
     
   <xs:element name="cos" type="tns:dlInfo"/>
@@ -11372,73 +11368,6 @@
     <xs:attribute name="fetchTime" type="xs:long"/>
         
     <xs:attribute name="deleteTime" type="xs:long"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="versionCheckRequest">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="action" type="xs:string" use="required"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="versionCheckResponse">
-        
-    <xs:sequence>
-            
-      <xs:element minOccurs="0" name="versionCheck" type="tns:versionCheckInfo"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="versionCheckInfo">
-        
-    <xs:sequence>
-            
-      <xs:element minOccurs="0" name="updates">
-                
-        <xs:complexType>
-                    
-          <xs:sequence>
-                        
-            <xs:element maxOccurs="unbounded" minOccurs="0" name="update" type="tns:versionCheckUpdateInfo"/>
-                      
-          </xs:sequence>
-                  
-          <xs:attribute name="unusedCodeGenHelper" type="xs:string"/>
-        </xs:complexType>
-              
-      </xs:element>
-          
-    </xs:sequence>
-        
-    <xs:attribute name="status" type="xs:boolean"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="versionCheckUpdateInfo">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="type" type="xs:string"/>
-        
-    <xs:attribute name="critical" type="xs:boolean"/>
-        
-    <xs:attribute name="updateURL" type="xs:string"/>
-        
-    <xs:attribute name="description" type="xs:string"/>
-        
-    <xs:attribute name="shortversion" type="xs:string"/>
-        
-    <xs:attribute name="release" type="xs:string"/>
-        
-    <xs:attribute name="version" type="xs:string"/>
-        
-    <xs:attribute name="buildtype" type="xs:string"/>
-        
-    <xs:attribute name="platform" type="xs:string"/>
       
   </xs:complexType>
     

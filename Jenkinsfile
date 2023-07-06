@@ -156,8 +156,6 @@ pipeline {
         stage('Upload & Promotion Config') {
             when {
                 anyOf {
-                    branch 'develop'
-                    branch 'release/*'
                     buildingTag()
                 }
             }

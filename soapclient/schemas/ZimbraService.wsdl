@@ -391,12 +391,6 @@
   <wsdl:message name="AccountSearchGalResponseMessage">
     <wsdl:part name="params" element="zimbraAccount:SearchGalResponse"/>
   </wsdl:message>
-  <wsdl:message name="AccountSubscribeDistributionListRequestMessage">
-    <wsdl:part name="params" element="zimbraAccount:SubscribeDistributionListRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AccountSubscribeDistributionListResponseMessage">
-    <wsdl:part name="params" element="zimbraAccount:SubscribeDistributionListResponse"/>
-  </wsdl:message>
   <wsdl:message name="AccountSyncGalRequestMessage">
     <wsdl:part name="params" element="zimbraAccount:SyncGalRequest"/>
   </wsdl:message>
@@ -2947,12 +2941,6 @@
   <wsdl:message name="AdminVerifyStoreManagerResponseMessage">
     <wsdl:part name="params" element="zimbraAdmin:VerifyStoreManagerResponse"/>
   </wsdl:message>
-  <wsdl:message name="AdminVersionCheckRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:VersionCheckRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminVersionCheckResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:VersionCheckResponse"/>
-  </wsdl:message>
   <wsdl:message name="AdminExtBulkIMAPDataImportRequestMessage">
     <wsdl:part name="params" element="zimbraAdminExt:BulkIMAPDataImportRequest"/>
   </wsdl:message>
@@ -4019,10 +4007,6 @@
       <wsdl:input message="svc:AdminVerifyStoreManagerRequestMessage"/>
       <wsdl:output message="svc:AdminVerifyStoreManagerResponseMessage"/>
     </wsdl:operation>
-    <wsdl:operation name="versionCheckRequest">
-      <wsdl:input message="svc:AdminVersionCheckRequestMessage"/>
-      <wsdl:output message="svc:AdminVersionCheckResponseMessage"/>
-    </wsdl:operation>
     <wsdl:operation name="bulkIMAPDataImportRequest">
       <wsdl:input message="svc:AdminExtBulkIMAPDataImportRequestMessage"/>
       <wsdl:output message="svc:AdminExtBulkIMAPDataImportResponseMessage"/>
@@ -4292,10 +4276,6 @@
     <wsdl:operation name="searchGalRequest">
       <wsdl:input message="svc:AccountSearchGalRequestMessage"/>
       <wsdl:output message="svc:AccountSearchGalResponseMessage"/>
-    </wsdl:operation>
-    <wsdl:operation name="subscribeDistributionListRequest">
-      <wsdl:input message="svc:AccountSubscribeDistributionListRequestMessage"/>
-      <wsdl:output message="svc:AccountSubscribeDistributionListResponseMessage"/>
     </wsdl:operation>
     <wsdl:operation name="syncGalRequest">
       <wsdl:input message="svc:AccountSyncGalRequestMessage"/>
@@ -7548,16 +7528,6 @@
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="versionCheckRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/VersionCheck" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="bulkIMAPDataImportRequest">
       <soap:operation soapAction="urn:zimbraAdminExt/BulkIMAPDataImport" style="document"/>
       <wsdl:input>
@@ -8223,16 +8193,6 @@
     </wsdl:operation>
     <wsdl:operation name="searchGalRequest">
       <soap:operation soapAction="urn:zimbraAccount/SearchGal" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="subscribeDistributionListRequest">
-      <soap:operation soapAction="urn:zimbraAccount/SubscribeDistributionList" style="document"/>
       <wsdl:input>
         <soap:body use="literal"/>
         <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
