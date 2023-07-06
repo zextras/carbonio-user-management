@@ -258,10 +258,6 @@
     
   <xs:element name="SearchGalResponse" type="tns:searchGalResponse"/>
     
-  <xs:element name="SubscribeDistributionListRequest" type="tns:subscribeDistributionListRequest"/>
-    
-  <xs:element name="SubscribeDistributionListResponse" type="tns:subscribeDistributionListResponse"/>
-    
   <xs:element name="SyncGalRequest" type="tns:syncGalRequest"/>
     
   <xs:element name="SyncGalResponse" type="tns:syncGalResponse"/>
@@ -283,8 +279,6 @@
   <xs:element name="serverExtension" type="tns:zimletServerExtension"/>
     
   <xs:element name="signature" type="tns:signature"/>
-    
-  <xs:element name="subsReq" type="tns:distributionListSubscribeReq"/>
     
   <xs:element name="target" type="tns:accountZimletTarget"/>
     
@@ -1106,8 +1100,6 @@
           <xs:element maxOccurs="unbounded" minOccurs="0" name="owner" type="tns:distributionListGranteeSelector"/>
                     
           <xs:element maxOccurs="unbounded" minOccurs="0" name="right" type="tns:distributionListRightSpec"/>
-                    
-          <xs:element minOccurs="0" ref="tns:subsReq"/>
                   
         </xs:sequence>
                 
@@ -1144,22 +1136,6 @@
     </xs:sequence>
         
     <xs:attribute name="right" type="xs:string" use="required"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="distributionListSubscribeReq">
-        
-    <xs:simpleContent>
-            
-      <xs:extension base="xs:string">
-                
-        <xs:attribute name="op" type="tns:distributionListSubscribeOp" use="required"/>
-                
-        <xs:attribute name="bccOwners" type="xs:boolean"/>
-              
-      </xs:extension>
-          
-    </xs:simpleContent>
       
   </xs:complexType>
     
@@ -3241,26 +3217,6 @@
       
   </xs:complexType>
     
-  <xs:complexType name="subscribeDistributionListRequest">
-        
-    <xs:sequence>
-            
-      <xs:element name="dl" type="ns1:distributionListSelector"/>
-          
-    </xs:sequence>
-        
-    <xs:attribute name="op" type="tns:distributionListSubscribeOp" use="required"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="subscribeDistributionListResponse">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="status" type="tns:distributionListSubscribeStatus" use="required"/>
-      
-  </xs:complexType>
-    
   <xs:complexType name="syncGalRequest">
         
     <xs:sequence/>
@@ -3454,22 +3410,6 @@
       <xs:enumeration value="addMembers"/>
             
       <xs:enumeration value="removeMembers"/>
-            
-      <xs:enumeration value="acceptSubsReq"/>
-            
-      <xs:enumeration value="rejectSubsReq"/>
-          
-    </xs:restriction>
-      
-  </xs:simpleType>
-    
-  <xs:simpleType name="distributionListSubscribeOp">
-        
-    <xs:restriction base="xs:string">
-            
-      <xs:enumeration value="subscribe"/>
-            
-      <xs:enumeration value="unsubscribe"/>
           
     </xs:restriction>
       
@@ -3500,20 +3440,6 @@
       <xs:enumeration value="tls"/>
             
       <xs:enumeration value="tls_is_available"/>
-          
-    </xs:restriction>
-      
-  </xs:simpleType>
-    
-  <xs:simpleType name="distributionListSubscribeStatus">
-        
-    <xs:restriction base="xs:string">
-            
-      <xs:enumeration value="subscribed"/>
-            
-      <xs:enumeration value="unsubscribed"/>
-            
-      <xs:enumeration value="awaiting_approval"/>
           
     </xs:restriction>
       
