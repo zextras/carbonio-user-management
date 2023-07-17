@@ -5,7 +5,7 @@
 pipeline {
     agent {
         node {
-            label 'carbonio-agent-v2'
+            label 'openjdk17-agent-v1'
         }
     }
     environment {
