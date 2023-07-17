@@ -5,7 +5,7 @@
 pipeline {
     agent {
         node {
-            label 'openjdk11-agent-v1'
+            label 'openjdk17-agent-v1'
         }
     }
     environment {
@@ -105,12 +105,12 @@ pipeline {
                         "files": [
                             {
                                 "pattern": "artifacts/carbonio-user-management*.deb",
-                                "target": "ubuntu-develop/pool/",
+                                "target": "ubuntu-devel/pool/",
                                 "props": "deb.distribution=bionic;deb.distribution=focal;deb.component=main;deb.architecture=amd64"
                             },
                             {
                                 "pattern": "artifacts/(carbonio-user-management)-(*).rpm",
-                                "target": "centos8-develop/zextras/{1}/{1}-{2}.rpm",
+                                "target": "centos8-devel/zextras/{1}/{1}-{2}.rpm",
                                 "props": "rpm.metadata.arch=x86_64;rpm.metadata.vendor=zextras"
                             }
                         ]

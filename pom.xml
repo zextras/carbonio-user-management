@@ -27,237 +27,168 @@ SPDX-License-Identifier: AGPL-3.0-only
   </modules>
 
   <properties>
-    <com.fasterxml.jackson.jaxrs.version>2.11.3</com.fasterxml.jackson.jaxrs.version>
-    <com.fasterxml.jackson.version>2.13.0</com.fasterxml.jackson.version>
-    <com.github.ben-manes.caffeine.version>3.0.5</com.github.ben-manes.caffeine.version>
-    <guice.version>5.0.1</guice.version>
-    <io.ebean.version>12.12.3</io.ebean.version>
-    <io.vavr.version>1.0.0-alpha-4</io.vavr.version>
-    <jackson-databind-nullable-version>0.2.1</jackson-databind-nullable-version>
-    <jackson-databind-version>2.10.5.1</jackson-databind-version>
-    <jackson-version>2.11.2</jackson-version>
-    <jakarta-annotation-version>1.3.5</jakarta-annotation-version>
+    <caffeine.version>3.1.6</caffeine.version>
+    <guice.version>6.0.0</guice.version>
+    <jackson.version>2.15.2</jackson.version>
     <javaee-api.version>7.0</javaee-api.version>
-    <javax-annotation-api.version>1.2</javax-annotation-api.version>
-    <javax-validation-api.version>1.1.0.Final</javax-validation-api.version>
-    <jaxrs-api.version>3.0.12.Final</jaxrs-api.version>
-    <jaxws-rt.version>2.3.2</jaxws-rt.version>
-    <jaxb-impl.version>2.3.1</jaxb-impl.version>
-    <jetty-version>10.0.6</jetty-version>
-    <joda-time.version>2.7</joda-time.version>
-    <junit-version>4.13</junit-version>
-    <junit-version>4.13.1</junit-version>
-    <maven-plugin-version>1.0.0</maven-plugin-version>
-    <maven.compiler.source>11</maven.compiler.source>
-    <maven.compiler.target>11</maven.compiler.target>
-    <org.junit.jupiter.version>5.8.2</org.junit.jupiter.version>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <resolver.version>20050927</resolver.version>
-    <resteasy-jaxrs-version>2.2.1.GA</resteasy-jaxrs-version>
-    <resteasy-validator.version>3.6.3.SP1</resteasy-validator.version>
-    <resteasy-version>4.7.2.Final</resteasy-version>
-    <resteasy2-version>3.13.0.Final</resteasy2-version>
-    <servlet-api-version>2.5</servlet-api-version>
-    <slf4j-version>1.6.3</slf4j-version>
-    <swagger-annotations-version>1.5.22</swagger-annotations-version>
-    <swagger-core-version>1.5.22</swagger-core-version>
-    <threetenbp-version>2.9.10</threetenbp-version>
-    <org.mockito.version>4.3.0</org.mockito.version>
+    <jetty-version>10.0.15</jetty-version>
+    <resteasy-jaxrs-api.version>3.0.12.Final</resteasy-jaxrs-api.version>
+    <resteasy.version>4.7.9.Final</resteasy.version>
+    <swagger-core-version>1.6.11</swagger-core-version>
+    <!-- We are using an alpha package due to some vulnerabilities of the stable one -->
+    <vavr.version>1.0.0-alpha-4</vavr.version>
 
     <!-- Plugins -->
-    <ebean-maven-plugin.version>13.6.5</ebean-maven-plugin.version>
+    <build-helper-maven-plugin.version>3.4.0</build-helper-maven-plugin.version>
+    <jaxws-maven-plugin.version>2.6</jaxws-maven-plugin.version>
+    <maven-assembly-plugin.version>3.6.0</maven-assembly-plugin.version>
+    <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
     <maven-jar-plugin.version>3.3.0</maven-jar-plugin.version>
-    <maven-resources-plugin.version>3.2.0</maven-resources-plugin.version>
-    <maven-surefire-plugin.version>3.0.0-M5</maven-surefire-plugin.version>
-    <maven-failsafe-plugin.version>3.0.0-M5</maven-failsafe-plugin.version>
+    <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
+    <openapi-generator-maven-plugin.version>6.6.0</openapi-generator-maven-plugin.version>
+
+    <!-- Other properties -->
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
   <dependencyManagement>
     <dependencies>
-
+      <!-- Jetty dependencies -->
       <dependency>
+        <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-server</artifactId>
-        <groupId>org.eclipse.jetty</groupId>
         <version>${jetty-version}</version>
       </dependency>
 
       <dependency>
+        <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-servlet</artifactId>
-        <groupId>org.eclipse.jetty</groupId>
         <version>${jetty-version}</version>
       </dependency>
 
+      <!-- Guice dependencies -->
       <dependency>
-        <artifactId>jaxws-rt</artifactId>
-        <groupId>com.sun.xml.ws</groupId>
-        <version>${jaxws-rt.version}</version>
-      </dependency>
-
-      <dependency>
-        <artifactId>jaxb-impl</artifactId>
-        <groupId>com.sun.xml.bind</groupId>
-        <version>${jaxb-impl.version}</version>
-      </dependency>
-
-      <!-- Dependency necessary to resolve NoClassDefFound of com/sun/org/apache/xml/internal/resolver/CatalogManager -->
-      <dependency>
-        <artifactId>resolver</artifactId>
-        <groupId>com.sun.org.apache.xml.internal</groupId>
-        <version>${resolver.version}</version>
-      </dependency>
-
-      <dependency>
-        <artifactId>javaee-api</artifactId>
-        <groupId>javax</groupId>
-        <scope>provided</scope>
-        <version>${javaee-api.version}</version>
-      </dependency>
-
-      <dependency>
-        <artifactId>resteasy-core</artifactId>
-        <groupId>org.jboss.resteasy</groupId>
-        <version>${resteasy-version}</version>
-      </dependency>
-
-      <dependency>
-        <artifactId>jaxrs-api</artifactId>
-        <groupId>org.jboss.resteasy</groupId>
-        <version>${jaxrs-api.version}</version>
-      </dependency>
-
-      <dependency>
-        <artifactId>resteasy-multipart-provider</artifactId>
-        <groupId>org.jboss.resteasy</groupId>
-        <version>${resteasy-version}</version>
-      </dependency>
-
-      <dependency>
-        <artifactId>resteasy-validator-provider-11</artifactId>
-        <groupId>org.jboss.resteasy</groupId>
-        <version>${resteasy-validator.version}</version>
-      </dependency>
-
-      <dependency>
-        <artifactId>resteasy-jackson2-provider</artifactId>
-        <groupId>org.jboss.resteasy</groupId>
-        <version>${resteasy-version}</version>
-      </dependency>
-
-      <dependency>
-        <artifactId>resteasy-jaxb-provider</artifactId>
-        <groupId>org.jboss.resteasy</groupId>
-        <version>${resteasy-version}</version>
-      </dependency>
-
-      <dependency>
-        <artifactId>jackson-databind</artifactId>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <version>${com.fasterxml.jackson.version}</version>
-      </dependency>
-
-      <dependency>
-        <artifactId>jackson-core</artifactId>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <version>${com.fasterxml.jackson.version}</version>
-      </dependency>
-
-      <dependency>
-        <artifactId>jackson-annotations</artifactId>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <version>${com.fasterxml.jackson.version}</version>
-      </dependency>
-
-      <dependency>
-        <artifactId>jackson-jaxrs-json-provider</artifactId>
-        <groupId>com.fasterxml.jackson.jaxrs</groupId>
-        <version>${com.fasterxml.jackson.jaxrs.version}</version>
-      </dependency>
-
-      <dependency>
-        <artifactId>guice</artifactId>
         <groupId>com.google.inject</groupId>
+        <artifactId>guice</artifactId>
         <version>${guice.version}</version>
       </dependency>
 
       <dependency>
-        <artifactId>resteasy-guice</artifactId>
         <groupId>org.jboss.resteasy</groupId>
-        <version>${resteasy-version}</version>
+        <artifactId>resteasy-guice</artifactId>
+        <version>${resteasy.version}</version>
+      </dependency>
+
+      <!-- JavaEE API -->
+      <dependency>
+        <groupId>javax</groupId>
+        <artifactId>javaee-api</artifactId>
+        <version>${javaee-api.version}</version>
+        <scope>provided</scope>
+      </dependency>
+
+      <!-- RESTEasy dependencies -->
+      <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-core</artifactId>
+        <version>${resteasy.version}</version>
       </dependency>
 
       <dependency>
-        <artifactId>swagger-annotations</artifactId>
-        <groupId>io.swagger</groupId>
-        <version>${swagger-core-version}</version>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-servlet-initializer</artifactId>
+        <version>${resteasy.version}</version>
       </dependency>
 
       <dependency>
-        <artifactId>swagger-jaxrs</artifactId>
-        <groupId>io.swagger</groupId>
-        <version>${swagger-core-version}</version>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>jaxrs-api</artifactId>
+        <version>${resteasy-jaxrs-api.version}</version>
       </dependency>
 
       <dependency>
-        <artifactId>javax.annotation-api</artifactId>
-        <groupId>javax.annotation</groupId>
-        <version>${javax-annotation-api.version}</version>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-validator-provider</artifactId>
+        <version>${resteasy.version}</version>
       </dependency>
 
       <dependency>
-        <artifactId>jackson-datatype-joda</artifactId>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-jackson2-provider</artifactId>
+        <version>${resteasy.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-jaxb-provider</artifactId>
+        <version>${resteasy.version}</version>
+      </dependency>
+
+      <!-- Jackson dependencies -->
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-core</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-annotations</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.fasterxml.jackson.jaxrs</groupId>
+        <artifactId>jackson-jaxrs-json-provider</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+
+      <dependency>
         <groupId>com.fasterxml.jackson.datatype</groupId>
-        <version>${jackson-version}</version>
+        <artifactId>jackson-datatype-jsr310</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+
+      <!-- Swagger dependencies -->
+      <dependency>
+        <groupId>io.swagger</groupId>
+        <artifactId>swagger-annotations</artifactId>
+        <version>${swagger-core-version}</version>
       </dependency>
 
       <dependency>
-        <artifactId>joda-time</artifactId>
-        <groupId>joda-time</groupId>
-        <version>${joda-time.version}</version>
+        <groupId>io.swagger</groupId>
+        <artifactId>swagger-jaxrs</artifactId>
+        <version>${swagger-core-version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
-      <!-- We are using an alpha package due to some vulnerabilities of the stable one -->
+      <!-- Vavr -->
       <dependency>
-        <artifactId>vavr</artifactId>
         <groupId>io.vavr</groupId>
-        <version>${io.vavr.version}</version>
+        <artifactId>vavr</artifactId>
+        <version>${vavr.version}</version>
       </dependency>
 
+      <!-- Cache -->
       <dependency>
-        <artifactId>caffeine</artifactId>
         <groupId>com.github.ben-manes.caffeine</groupId>
-        <version>${com.github.ben-manes.caffeine.version}</version>
+        <artifactId>caffeine</artifactId>
+        <version>${caffeine.version}</version>
       </dependency>
-
-      <dependency>
-        <groupId>io.ebean</groupId>
-        <artifactId>ebean</artifactId>
-        <version>${io.ebean.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>io.ebean</groupId>
-        <artifactId>ebean-test</artifactId>
-        <version>${io.ebean.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.mockito</groupId>
-        <artifactId>mockito-core</artifactId>
-        <version>${org.mockito.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.mockito</groupId>
-        <artifactId>mockito-inline</artifactId>
-        <version>${org.mockito.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.junit.jupiter</groupId>
-        <artifactId>junit-jupiter-api</artifactId>
-        <version>${org.junit.jupiter.version}</version>
-      </dependency>
-
     </dependencies>
   </dependencyManagement>
 
@@ -265,7 +196,9 @@ SPDX-License-Identifier: AGPL-3.0-only
     <pluginManagement>
       <plugins>
         <plugin>
+          <groupId>org.codehaus.mojo</groupId>
           <artifactId>jaxws-maven-plugin</artifactId>
+          <version>${jaxws-maven-plugin.version}</version>
           <configuration>
             <args>
               <arg>-B-XautoNameResolution</arg>
@@ -281,31 +214,32 @@ SPDX-License-Identifier: AGPL-3.0-only
               </goals>
             </execution>
           </executions>
-          <groupId>org.codehaus.mojo</groupId>
-          <version>2.6</version>
         </plugin>
+
         <plugin>
+          <groupId>org.openapitools</groupId>
           <artifactId>openapi-generator-maven-plugin</artifactId>
+          <version>${openapi-generator-maven-plugin.version}</version>
           <executions>
             <execution>
               <configuration>
-                <apiPackage>com.zextras.carbonio.user_management.generated</apiPackage>
+                <generatorName>jaxrs-resteasy</generatorName>
+                <groupId>com.zextras.carbonio.user_management</groupId>
                 <artifactId>carbonio-user-management-generated</artifactId>
-                <artifactVersion>0.2.0</artifactVersion>
+                <apiPackage>com.zextras.carbonio.user_management.generated</apiPackage>
+                <packageName>com.zextras.carbonio.user_management</packageName>
+                <modelPackage>com.zextras.carbonio.user_management.generated.model</modelPackage>
                 <configOptions>
                   <artifactDescription>User Management generated</artifactDescription>
                   <librart>resteasy</librart>
                   <serializationLibrary>jackson</serializationLibrary>
+                  <dateLibrary>java8</dateLibrary>
                 </configOptions>
                 <generateApiTests>false</generateApiTests>
-                <generatorName>jaxrs-resteasy</generatorName>
-                <groupId>com.zextras.carbonio.user_management</groupId>
                 <inputSpec>
                   resources/user-management.yaml
                 </inputSpec>
-                <modelPackage>com.zextras.carbonio.user_management.generated.model</modelPackage>
                 <output>./</output>
-                <packageName>com.zextras.carbonio.user_management</packageName>
               </configuration>
               <goals>
                 <goal>generate</goal>
@@ -315,14 +249,7 @@ SPDX-License-Identifier: AGPL-3.0-only
               </phase>
             </execution>
           </executions>
-          <groupId>org.openapitools</groupId>
-          <version>5.2.1</version>
         </plugin>
-        <!--<plugin>
-          <groupId>io.ebean</groupId>
-          <artifactId>ebean-maven-plugin</artifactId>
-          <version>${ebean-maven-plugin.version}</version>
-        </plugin>-->
 
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -337,18 +264,27 @@ SPDX-License-Identifier: AGPL-3.0-only
         </plugin>
 
         <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-surefire-plugin</artifactId>
-          <version>${maven-surefire-plugin.version}</version>
-        </plugin>
-
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-failsafe-plugin</artifactId>
-          <version>${maven-failsafe-plugin.version}</version>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>build-helper-maven-plugin</artifactId>
+          <version>${build-helper-maven-plugin.version}</version>
+          <executions>
+            <execution>
+              <configuration>
+                <sources>
+                  <source>
+                    src/gen/java
+                  </source>
+                </sources>
+              </configuration>
+              <goals>
+                <goal>add-source</goal>
+              </goals>
+              <id>add-source</id>
+              <phase>generate-sources</phase>
+            </execution>
+          </executions>
         </plugin>
       </plugins>
     </pluginManagement>
   </build>
-
 </project>
