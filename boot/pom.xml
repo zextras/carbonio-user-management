@@ -22,7 +22,6 @@ SPDX-License-Identifier: AGPL-3.0-only
   </parent>
 
   <dependencies>
-
     <dependency>
       <groupId>com.zextras.carbonio.user-management</groupId>
       <artifactId>carbonio-user-management-core</artifactId>
@@ -67,7 +66,6 @@ SPDX-License-Identifier: AGPL-3.0-only
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>jaxrs-api</artifactId>
     </dependency>
-
   </dependencies>
 
   <build>
@@ -110,5 +108,4 @@ SPDX-License-Identifier: AGPL-3.0-only
       </plugin>
     </plugins>
   </build>
-
 </project>

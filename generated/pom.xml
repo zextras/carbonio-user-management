@@ -7,6 +7,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns="http://maven.apache.org/POM/4.0.0"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>carbonio-user-management-generated</artifactId>
@@ -19,7 +20,6 @@ SPDX-License-Identifier: AGPL-3.0-only
   </parent>
 
   <dependencies>
-
     <!-- JavaEE API -->
     <dependency>
       <groupId>javax</groupId>
@@ -89,7 +89,6 @@ SPDX-License-Identifier: AGPL-3.0-only
       <groupId>io.swagger</groupId>
       <artifactId>swagger-jaxrs</artifactId>
     </dependency>
-
   </dependencies>
 
   <build>
@@ -107,5 +106,4 @@ SPDX-License-Identifier: AGPL-3.0-only
     </plugins>
     <sourceDirectory>src/main/java</sourceDirectory>
   </build>
-
 </project>

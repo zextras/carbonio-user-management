@@ -36,6 +36,21 @@ pipeline {
         }
         stage('Build deb/rpm') {
             stages {
+                // Replace the pkgrel value from SNAPSHOT with the git commit hash to ensure that
+                // each merged PR has unique artifacts and to prevent conflicts between them.
+                // Note that the pkgrel value will remain as SNAPSHOT in the codebase to avoid
+                // conflicts between multiple open PRs
+                stage('Snapshot to commit hash') {
+                    when {
+                        branch 'develop'
+                    }
+                    steps {
+                        sh'''
+                            export GIT_COMMIT_SHORT=$(git rev-parse HEAD | head -c 8)
+                            sed -i "s/pkgrel=\\"SNAPSHOT\\"/pkgrel=\\"$GIT_COMMIT_SHORT\\"/" ./package/PKGBUILD
+                        '''
+                    }
+                }
                 stage('Stash') {
                     steps {
                         stash includes: 'pacur.json,package/**', name: 'binaries'
@@ -62,7 +77,7 @@ pipeline {
                                 }
                             }
                         }
-                        stage('RHEL 8') {
+                        stage('Rocky 8') {
                             agent {
                                 node {
                                     label 'pacur-agent-rocky-8-v1'

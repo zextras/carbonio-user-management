@@ -97,7 +97,5 @@ SPDX-License-Identifier: AGPL-3.0-only
       <groupId>com.github.ben-manes.caffeine</groupId>
       <artifactId>caffeine</artifactId>
     </dependency>
-
   </dependencies>
-
 </project>

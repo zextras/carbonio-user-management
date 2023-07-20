@@ -19,12 +19,12 @@ SPDX-License-Identifier: AGPL-3.0-only
   <name>carbonio-soap-client</name>
 
   <properties>
+    <jaxb-impl.version>4.0.3</jaxb-impl.version>
+    <jaxb-runtime.version>2.3.8</jaxb-runtime.version>
     <!--
       This is the newest version to use since the latest version of jaxws-maven-plugin generates
       imports with javax instead of jakarta. Don't bump it!
     -->
-    <jaxb-impl.version>4.0.3</jaxb-impl.version>
-    <jaxb-runtime.version>2.3.8</jaxb-runtime.version>
     <jaxws-rt.version>2.3.6</jaxws-rt.version>
     <no-class-def-found-resolver.version>20050927</no-class-def-found-resolver.version>
 
