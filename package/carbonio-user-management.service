@@ -25,4 +25,3 @@ TimeoutStopSec=120
 
 [Install]
 WantedBy=multi-user.target
-java -Djava.net.preferIPv4Stack=true -Xmx1024m -Xms1024m -jar ./boot/target/carbonio-user-management
