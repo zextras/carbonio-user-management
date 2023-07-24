@@ -9,150 +9,100 @@ SPDX-License-Identifier: AGPL-3.0-only
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
-  <packaging>jar</packaging>
 
-  <parent>
-    <artifactId>carbonio-user-management</artifactId>
-    <groupId>com.zextras.carbonio.user-management</groupId>
-    <version>0.2.4-1</version>
-  </parent>
+  <licenses>
+    <license>
+      <comments>Copyright (C) 2022 Zextras, https://www.zextras.com</comments>
+      <name>AGPL-3.0-only</name>
+    </license>
+  </licenses>
 
   <artifactId>carbonio-user-management-core</artifactId>
   <name>carbonio-user-management-core</name>
-  <version>0.2.4-1</version>
+
+  <parent>
+    <groupId>com.zextras.carbonio.user-management</groupId>
+    <artifactId>carbonio-user-management</artifactId>
+    <version>0.2.5-SNAPSHOT</version>
+  </parent>
 
   <dependencies>
     <dependency>
-      <artifactId>carbonio-user-management-generated</artifactId>
       <groupId>com.zextras.carbonio.user-management</groupId>
-      <version>0.2.4-1</version>
+      <artifactId>carbonio-user-management-generated</artifactId>
+      <version>${project.parent.version}</version>
     </dependency>
 
     <dependency>
-      <artifactId>carbonio-soap-client</artifactId>
       <groupId>com.zextras.carbonio.soap-client</groupId>
-      <version>0.2.4-1</version>
+      <artifactId>carbonio-soap-client</artifactId>
+      <version>0.2.4-SNAPSHOT</version>
     </dependency>
 
+    <!-- Guice dependencies -->
     <dependency>
-      <artifactId>guice</artifactId>
       <groupId>com.google.inject</groupId>
+      <artifactId>guice</artifactId>
     </dependency>
 
     <dependency>
-      <artifactId>resteasy-guice</artifactId>
       <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-guice</artifactId>
     </dependency>
 
+    <!-- JavaEE API -->
     <dependency>
-      <artifactId>javaee-api</artifactId>
       <groupId>javax</groupId>
+      <artifactId>javaee-api</artifactId>
       <scope>provided</scope>
     </dependency>
 
+    <!-- RestEasy dependencies -->
     <dependency>
+      <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-core</artifactId>
-      <groupId>org.jboss.resteasy</groupId>
     </dependency>
 
     <dependency>
+      <groupId>org.jboss.resteasy</groupId>
       <artifactId>jaxrs-api</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-validator-provider</artifactId>
     </dependency>
 
     <dependency>
-      <artifactId>resteasy-multipart-provider</artifactId>
       <groupId>org.jboss.resteasy</groupId>
-    </dependency>
-
-    <dependency>
-      <artifactId>resteasy-validator-provider-11</artifactId>
-      <groupId>org.jboss.resteasy</groupId>
-    </dependency>
-
-    <dependency>
-      <artifactId>resteasy-jackson2-provider</artifactId>
-      <groupId>org.jboss.resteasy</groupId>
-    </dependency>
-
-    <dependency>
-      <artifactId>swagger-annotations</artifactId>
-      <groupId>io.swagger</groupId>
-    </dependency>
-
-    <dependency>
-      <artifactId>swagger-jaxrs</artifactId>
-      <groupId>io.swagger</groupId>
-    </dependency>
-
-    <dependency>
-      <artifactId>javax.annotation-api</artifactId>
-      <groupId>javax.annotation</groupId>
-    </dependency>
-
-    <dependency>
-      <artifactId>jackson-databind</artifactId>
-      <groupId>com.fasterxml.jackson.core</groupId>
-    </dependency>
-
-    <dependency>
-      <artifactId>jackson-core</artifactId>
-      <groupId>com.fasterxml.jackson.core</groupId>
-    </dependency>
-
-    <dependency>
       <artifactId>resteasy-jaxb-provider</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-jackson2-provider</artifactId>
+    </dependency>
+
+    <!-- Jackson dependencies -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
     </dependency>
 
     <dependency>
-      <artifactId>jackson-datatype-joda</artifactId>
-      <groupId>com.fasterxml.jackson.datatype</groupId>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
     </dependency>
 
     <dependency>
-      <artifactId>joda-time</artifactId>
-      <groupId>joda-time</groupId>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
     </dependency>
 
+    <!-- Cache -->
     <dependency>
-      <artifactId>caffeine</artifactId>
       <groupId>com.github.ben-manes.caffeine</groupId>
+      <artifactId>caffeine</artifactId>
     </dependency>
-
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-core</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-inline</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-api</artifactId>
-      <scope>test</scope>
-    </dependency>
-
   </dependencies>
-
-  <build>
-    <plugins>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <parallel>classes</parallel>
-        </configuration>
-      </plugin>
-
-    </plugins>
-    <sourceDirectory>src/main/java</sourceDirectory>
-  </build>
-
 </project>

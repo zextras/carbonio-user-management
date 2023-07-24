@@ -9,56 +9,69 @@ SPDX-License-Identifier: AGPL-3.0-only
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns="http://maven.apache.org/POM/4.0.0"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <artifactId>carbonio-soap-client</artifactId>
 
-  <build>
-    <plugins>
-      <plugin>
-        <artifactId>jaxws-maven-plugin</artifactId>
-        <groupId>org.codehaus.mojo</groupId>
-      </plugin>
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>11</source>
-          <target>11</target>
-        </configuration>
-        <groupId>org.apache.maven.plugins</groupId>
-      </plugin>
-    </plugins>
-  </build>
-  <dependencies>
-    <dependency>
-      <artifactId>junit</artifactId>
-      <groupId>junit</groupId>
-      <scope>test</scope>
-      <version>4.11</version>
-    </dependency>
-    <dependency>
-      <artifactId>jaxws-rt</artifactId>
-      <groupId>com.sun.xml.ws</groupId>
-      <version>2.3.2</version>
-    </dependency>
-    <dependency>
-      <artifactId>jaxb-impl</artifactId>
-      <groupId>com.sun.xml.bind</groupId>
-      <version>2.3.1</version>
-    </dependency>
-    <!-- Dependency necessary to resolve NoClassDefFound of com/sun/org/apache/xml/internal/resolver/CatalogManager -->
-    <dependency>
-      <artifactId>resolver</artifactId>
-      <groupId>com.sun.org.apache.xml.internal</groupId>
-      <version>20050927</version>
-    </dependency>
-  </dependencies>
-  <groupId>com.zextras.carbonio.soap-client</groupId>
   <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.zextras.carbonio.soap-client</groupId>
+  <artifactId>carbonio-soap-client</artifactId>
+  <version>0.2.4-SNAPSHOT</version>
 
   <name>carbonio-soap-client</name>
 
   <properties>
+    <jaxb-impl.version>4.0.3</jaxb-impl.version>
+    <jaxb-runtime.version>2.3.8</jaxb-runtime.version>
+    <!--
+      This is the newest version to use since the latest version of jaxws-maven-plugin generates
+      imports with javax instead of jakarta. Don't bump it!
+    -->
+    <jaxws-rt.version>2.3.6</jaxws-rt.version>
+    <no-class-def-found-resolver.version>20050927</no-class-def-found-resolver.version>
+
+    <!-- Other properties -->
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
-  <version>0.2.4-1</version>
+  <dependencies>
+    <dependency>
+      <groupId>com.sun.xml.ws</groupId>
+      <artifactId>jaxws-rt</artifactId>
+      <version>${jaxws-rt.version}</version>
+      <!--
+        The jaxb-runtime version included on jaxws-rt uses reflection, and it is not compatible
+        with the latest version of the JDK.
+      -->
+      <exclusions>
+        <exclusion>
+          <groupId>org.glassfish.jaxb</groupId>
+          <artifactId>jaxb-runtime</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>com.sun.xml.bind</groupId>
+      <artifactId>jaxb-impl</artifactId>
+      <version>${jaxb-impl.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.glassfish.jaxb</groupId>
+      <artifactId>jaxb-runtime</artifactId>
+      <version>${jaxb-runtime.version}</version>
+    </dependency>
+
+    <!--
+      Dependency necessary to resolve runtime NoClassDefFound of
+      com/sun/org/apache/xml/internal/resolver/CatalogManager
+    -->
+    <dependency>
+      <groupId>com.sun.org.apache.xml.internal</groupId>
+      <artifactId>resolver</artifactId>
+      <version>${no-class-def-found-resolver.version}</version>
+    </dependency>
+
+  </dependencies>
 </project>
