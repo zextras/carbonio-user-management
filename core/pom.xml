@@ -10,6 +10,13 @@ SPDX-License-Identifier: AGPL-3.0-only
 
   <modelVersion>4.0.0</modelVersion>
 
+  <licenses>
+    <license>
+      <comments>Copyright (C) 2022 Zextras, https://www.zextras.com</comments>
+      <name>AGPL-3.0-only</name>
+    </license>
+  </licenses>
+
   <artifactId>carbonio-user-management-core</artifactId>
   <name>carbonio-user-management-core</name>
 

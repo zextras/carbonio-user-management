@@ -10,14 +10,22 @@ SPDX-License-Identifier: AGPL-3.0-only
   xmlns="http://maven.apache.org/POM/4.0.0"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-  <name>carbonio-user-management</name>
-
   <modelVersion>4.0.0</modelVersion>
-  <packaging>pom</packaging>
+
+  <licenses>
+    <license>
+      <comments>Copyright (C) 2022 Zextras, https://www.zextras.com</comments>
+      <name>AGPL-3.0-only</name>
+    </license>
+  </licenses>
 
   <groupId>com.zextras.carbonio.user-management</groupId>
   <artifactId>carbonio-user-management</artifactId>
   <version>0.2.4-1</version>
+  <packaging>pom</packaging>
+
+  <name>carbonio-user-management</name>
+  <url>https://www.github.com/Zextras/carbonio-user-management</url>
 
   <modules>
     <module>boot</module>
@@ -30,7 +38,7 @@ SPDX-License-Identifier: AGPL-3.0-only
     <caffeine.version>3.1.6</caffeine.version>
     <guice.version>6.0.0</guice.version>
     <jackson.version>2.15.2</jackson.version>
-    <javaee-api.version>7.0</javaee-api.version>
+    <javaee-api.version>8.0.1</javaee-api.version>
     <jetty-version>10.0.15</jetty-version>
     <resteasy-jaxrs-api.version>3.0.12.Final</resteasy-jaxrs-api.version>
     <resteasy.version>4.7.9.Final</resteasy.version>
@@ -55,19 +63,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 
   <dependencyManagement>
     <dependencies>
-      <!-- Jetty dependencies -->
-      <dependency>
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-server</artifactId>
-        <version>${jetty-version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-servlet</artifactId>
-        <version>${jetty-version}</version>
-      </dependency>
-
       <!-- Guice dependencies -->
       <dependency>
         <groupId>com.google.inject</groupId>
@@ -79,6 +74,19 @@ SPDX-License-Identifier: AGPL-3.0-only
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-guice</artifactId>
         <version>${resteasy.version}</version>
+      </dependency>
+
+      <!-- Jetty dependencies -->
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-server</artifactId>
+        <version>${jetty-version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-servlet</artifactId>
+        <version>${jetty-version}</version>
       </dependency>
 
       <!-- JavaEE API -->
