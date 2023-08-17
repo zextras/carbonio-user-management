@@ -9,6 +9,7 @@ import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.zextras.carbonio.user_management.controllers.AuthApiController;
 import com.zextras.carbonio.user_management.controllers.HealthApiController;
 import com.zextras.carbonio.user_management.controllers.UsersApiController;
+import com.zextras.carbonio.user_management.exceptions.ServiceExceptionMapper;
 import com.zextras.carbonio.user_management.generated.AuthApi;
 import com.zextras.carbonio.user_management.generated.AuthApiService;
 import com.zextras.carbonio.user_management.generated.HealthApi;
@@ -22,6 +23,7 @@ public class UserManagementModule extends RequestScopeModule {
   @Override
   protected void configure() {
     bind(JacksonJsonProvider.class);
+    bind(ServiceExceptionMapper.class);
 
     bind(HealthApi.class);
     bind(HealthApiService.class).to(HealthApiController.class);

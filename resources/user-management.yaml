@@ -6,7 +6,7 @@ openapi: 3.0.3
 info:
   title: UserManagement API
   description: UserManagement API
-  version: 0.1.0
+  version: 0.2.5
 servers:
   - url: 'https://example.com/services/user-management/'
 tags:
@@ -81,6 +81,21 @@ paths:
           $ref: '#/components/responses/400BadRequest'
         '403':
           $ref: '#/components/responses/403Forbidden'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+  /users/myself:
+    get:
+      tags:
+        - User
+      summary: |
+        Gets the detailed account info of the user making the request. The details are
+        fetched by the requester cookie.
+      operationId: getUserInfoByCookie
+      parameters:
+        - $ref: '#/components/parameters/headerCookie'
+      responses:
+        '200':
+          $ref: '#/components/responses/200UserInfo'
         '404':
           $ref: '#/components/responses/404NotFound'
   /auth/token/{tokenId}:
@@ -200,8 +215,30 @@ components:
           type: string
         domain:
           type: string
+        locale:
+          $ref: '#/components/schemas/Locale'
     UserId:
       type: object
       properties:
         userId:
           type: string
+    Locale:
+      type: string
+      enum:
+        - zh_CN
+        - nl
+        - en
+        - de
+        - hi
+        - it
+        - ja
+        - pt
+        - pl
+        - pt_BR
+        - ro
+        - ru
+        - es
+        - th
+        - tr
+        - fr
+        - vi

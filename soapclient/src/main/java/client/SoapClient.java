@@ -136,6 +136,22 @@ public class SoapClient {
     }
   }
 
+  public GetInfoResponse getAccountInfoByAuthToken()
+    throws JAXBException, ParserConfigurationException {
+
+    GetInfoRequest infoRequest = new GetInfoRequest();
+    infoRequest.setSections("children,prefs");
+
+    ZcsPortType zimbraService = getZimbraService();
+
+    try {
+      ((WSBindingProvider) zimbraService).setOutboundHeaders(createServiceSoapHeader());
+      return zimbraService.getInfoRequest(infoRequest, soapHeaderContext);
+    } finally {
+      zimbraServiceQueue.add(zimbraService);
+    }
+  }
+
   public GetInfoResponse validateAuthToken()
     throws JAXBException, ParserConfigurationException, ServerSOAPFaultException {
 
