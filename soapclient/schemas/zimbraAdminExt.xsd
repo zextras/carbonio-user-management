@@ -18,14 +18,6 @@
     
   <xs:element name="GenerateBulkProvisionFileFromLDAPResponse" type="tns:generateBulkProvisionFileFromLDAPResponse"/>
     
-  <xs:element name="GetBulkIMAPImportTaskListRequest" type="tns:getBulkIMAPImportTaskListRequest"/>
-    
-  <xs:element name="GetBulkIMAPImportTaskListResponse" type="tns:getBulkIMAPImportTaskListResponse"/>
-    
-  <xs:element name="PurgeBulkIMAPImportTasksRequest" type="tns:purgeBulkIMAPImportTasksRequest"/>
-    
-  <xs:element name="PurgeBulkIMAPImportTasksResponse" type="tns:purgeBulkIMAPImportTasksResponse"/>
-    
   <xs:complexType name="bulkIMAPDataImportRequest">
         
     <xs:sequence>
@@ -240,8 +232,6 @@
                     
           <xs:element minOccurs="0" name="importCalendar" type="xs:string"/>
                     
-          <xs:element minOccurs="0" name="importTasks" type="xs:string"/>
-                    
           <xs:element minOccurs="0" name="importJunk" type="xs:string"/>
                     
           <xs:element minOccurs="0" name="importDeletedItems" type="xs:string"/>
@@ -291,49 +281,6 @@
       <xs:element minOccurs="0" name="fileToken" type="xs:string"/>
           
     </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="getBulkIMAPImportTaskListRequest">
-        
-    <xs:sequence/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="getBulkIMAPImportTaskListResponse">
-        
-    <xs:sequence>
-            
-      <xs:element maxOccurs="unbounded" minOccurs="0" name="task" type="tns:bulkIMAPImportTaskInfo"/>
-          
-    </xs:sequence>
-      
-    <xs:attribute name="unusedCodeGenHelper" type="xs:string"/>
-  </xs:complexType>
-    
-  <xs:complexType name="bulkIMAPImportTaskInfo">
-        
-    <xs:complexContent>
-            
-      <xs:extension base="tns:attrsImpl">
-                
-        <xs:sequence/>
-              
-      </xs:extension>
-          
-    </xs:complexContent>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="purgeBulkIMAPImportTasksRequest">
-        
-    <xs:sequence/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="purgeBulkIMAPImportTasksResponse">
-        
-    <xs:sequence/>
       
   </xs:complexType>
   

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:admin="urn:zimbraAdmin" xmlns:ns1="urn:zimbra" xmlns:ns2="urn:zimbraAccount" xmlns:ns3="urn:zimbraMail" xmlns:ns4="urn:zimbraSync" xmlns:tns="urn:zimbraAdmin" elementFormDefault="qualified" targetNamespace="urn:zimbraAdmin" version="1.0">
+<?xml version="1.0" encoding="UTF-8"?><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:admin="urn:zimbraAdmin" xmlns:ns1="urn:zimbra" xmlns:ns2="urn:zimbraAccount" xmlns:ns3="urn:zimbraMail" xmlns:tns="urn:zimbraAdmin" elementFormDefault="qualified" targetNamespace="urn:zimbraAdmin" version="1.0">
 
   <!--
     SPDX-FileCopyrightText: 2022 Zextras <https://www.zextras.com>
@@ -11,8 +11,6 @@
   <xs:import namespace="urn:zimbraAccount" schemaLocation="zimbraAccount.xsd"/>
     
   <xs:import namespace="urn:zimbraMail" schemaLocation="zimbraMail.xsd"/>
-    
-  <xs:import namespace="urn:zimbraSync" schemaLocation="zimbraSync.xsd"/>
     
   <xs:element name="AbortHsmRequest" type="tns:abortHsmRequest"/>
     
@@ -82,10 +80,6 @@
     
   <xs:element name="BackupResponse" type="tns:backupResponse"/>
     
-  <xs:element name="CancelPendingRemoteWipeRequest" type="tns:cancelPendingRemoteWipeRequest"/>
-    
-  <xs:element name="CancelPendingRemoteWipeResponse" type="tns:cancelPendingRemoteWipeResponse"/>
-    
   <xs:element name="ChangePrimaryEmailRequest" type="tns:changePrimaryEmailRequest"/>
     
   <xs:element name="ChangePrimaryEmailResponse" type="tns:changePrimaryEmailResponse"/>
@@ -129,10 +123,6 @@
   <xs:element name="ClearCookieRequest" type="tns:clearCookieRequest"/>
     
   <xs:element name="ClearCookieResponse" type="tns:clearCookieResponse"/>
-    
-  <xs:element name="ClearTwoFactorAuthDataRequest" type="tns:clearTwoFactorAuthDataRequest"/>
-    
-  <xs:element name="ClearTwoFactorAuthDataResponse" type="tns:clearTwoFactorAuthDataResponse"/>
     
   <xs:element name="CompactIndexRequest" type="tns:compactIndexRequest"/>
     
@@ -210,10 +200,6 @@
     
   <xs:element name="CreateSystemRetentionPolicyResponse" type="tns:createSystemRetentionPolicyResponse"/>
     
-  <xs:element name="CreateUCServiceRequest" type="tns:createUCServiceRequest"/>
-    
-  <xs:element name="CreateUCServiceResponse" type="tns:createUCServiceResponse"/>
-    
   <xs:element name="CreateVolumeRequest" type="tns:createVolumeRequest"/>
     
   <xs:element name="CreateVolumeResponse" type="tns:createVolumeResponse"/>
@@ -281,10 +267,6 @@
   <xs:element name="DeleteSystemRetentionPolicyRequest" type="tns:deleteSystemRetentionPolicyRequest"/>
     
   <xs:element name="DeleteSystemRetentionPolicyResponse" type="tns:deleteSystemRetentionPolicyResponse"/>
-    
-  <xs:element name="DeleteUCServiceRequest" type="tns:deleteUCServiceRequest"/>
-    
-  <xs:element name="DeleteUCServiceResponse" type="tns:deleteUCServiceResponse"/>
     
   <xs:element name="DeleteVolumeRequest" type="tns:deleteVolumeRequest"/>
     
@@ -394,10 +376,6 @@
     
   <xs:element name="GetAllAccountsResponse" type="tns:getAllAccountsResponse"/>
     
-  <xs:element name="GetAllActiveServersRequest" type="tns:getAllActiveServersRequest"/>
-    
-  <xs:element name="GetAllActiveServersResponse" type="tns:getAllActiveServersResponse"/>
-    
   <xs:element name="GetAllAddressListsRequest" type="tns:getAllAddressListsRequest"/>
     
   <xs:element name="GetAllAddressListsResponse" type="tns:getAllAddressListsResponse"/>
@@ -450,18 +428,6 @@
     
   <xs:element name="GetAllServersResponse" type="tns:getAllServersResponse"/>
     
-  <xs:element name="GetAllSkinsRequest" type="tns:getAllSkinsRequest"/>
-    
-  <xs:element name="GetAllSkinsResponse" type="tns:getAllSkinsResponse"/>
-    
-  <xs:element name="GetAllUCProvidersRequest" type="tns:getAllUCProvidersRequest"/>
-    
-  <xs:element name="GetAllUCProvidersResponse" type="tns:getAllUCProvidersResponse"/>
-    
-  <xs:element name="GetAllUCServicesRequest" type="tns:getAllUCServicesRequest"/>
-    
-  <xs:element name="GetAllUCServicesResponse" type="tns:getAllUCServicesResponse"/>
-    
   <xs:element name="GetAllVolumesRequest" type="tns:getAllVolumesRequest"/>
     
   <xs:element name="GetAllVolumesResponse" type="tns:getAllVolumesResponse"/>
@@ -494,10 +460,6 @@
     
   <xs:element name="GetCertResponse" type="tns:getCertResponse"/>
     
-  <xs:element name="GetClearTwoFactorAuthDataStatusRequest" type="tns:getClearTwoFactorAuthDataStatusRequest"/>
-    
-  <xs:element name="GetClearTwoFactorAuthDataStatusResponse" type="tns:getClearTwoFactorAuthDataStatusResponse"/>
-    
   <xs:element name="GetClusterStatusRequest" type="tns:getClusterStatusRequest"/>
     
   <xs:element name="GetClusterStatusResponse" type="tns:getClusterStatusResponse"/>
@@ -525,22 +487,6 @@
   <xs:element name="GetDelegatedAdminConstraintsRequest" type="tns:getDelegatedAdminConstraintsRequest"/>
     
   <xs:element name="GetDelegatedAdminConstraintsResponse" type="tns:getDelegatedAdminConstraintsResponse"/>
-    
-  <xs:element name="GetDeviceStatusRequest" type="tns:getDeviceStatusRequest"/>
-    
-  <xs:element name="GetDeviceStatusResponse" type="tns:getDeviceStatusResponse"/>
-    
-  <xs:element name="GetDevicesCountRequest" type="tns:getDevicesCountRequest"/>
-    
-  <xs:element name="GetDevicesCountResponse" type="tns:getDevicesCountResponse"/>
-    
-  <xs:element name="GetDevicesCountSinceLastUsedRequest" type="tns:getDevicesCountSinceLastUsedRequest"/>
-    
-  <xs:element name="GetDevicesCountSinceLastUsedResponse" type="tns:getDevicesCountSinceLastUsedResponse"/>
-    
-  <xs:element name="GetDevicesCountUsedTodayRequest" type="tns:getDevicesCountUsedTodayRequest"/>
-    
-  <xs:element name="GetDevicesCountUsedTodayResponse" type="tns:getDevicesCountUsedTodayResponse"/>
     
   <xs:element name="GetDistributionListMembershipRequest" type="tns:getDistributionListMembershipRequest"/>
     
@@ -662,17 +608,9 @@
     
   <xs:element name="GetShareInfoResponse" type="tns:getShareInfoResponse"/>
     
-  <xs:element name="GetSyncStateRequest" type="tns:getSyncStateRequest"/>
-    
-  <xs:element name="GetSyncStateResponse" type="tns:getSyncStateResponse"/>
-    
   <xs:element name="GetSystemRetentionPolicyRequest" type="tns:getSystemRetentionPolicyRequest"/>
     
   <xs:element name="GetSystemRetentionPolicyResponse" type="tns:getSystemRetentionPolicyResponse"/>
-    
-  <xs:element name="GetUCServiceRequest" type="tns:getUCServiceRequest"/>
-    
-  <xs:element name="GetUCServiceResponse" type="tns:getUCServiceResponse"/>
     
   <xs:element name="GetVersionInfoRequest" type="tns:getVersionInfoRequest"/>
     
@@ -798,10 +736,6 @@
     
   <xs:element name="ModifySystemRetentionPolicyResponse" type="tns:modifySystemRetentionPolicyResponse"/>
     
-  <xs:element name="ModifyUCServiceRequest" type="tns:modifyUCServiceRequest"/>
-    
-  <xs:element name="ModifyUCServiceResponse" type="tns:modifyUCServiceResponse"/>
-    
   <xs:element name="ModifyVolumeRequest" type="tns:modifyVolumeRequest"/>
     
   <xs:element name="ModifyVolumeResponse" type="tns:modifyVolumeResponse"/>
@@ -882,10 +816,6 @@
     
   <xs:element name="ReloadMemcachedClientConfigResponse" type="tns:reloadMemcachedClientConfigResponse"/>
     
-  <xs:element name="RemoteWipeRequest" type="tns:remoteWipeRequest"/>
-    
-  <xs:element name="RemoteWipeResponse" type="tns:remoteWipeResponse"/>
-    
   <xs:element name="RemoveAccountAliasRequest" type="tns:removeAccountAliasRequest"/>
     
   <xs:element name="RemoveAccountAliasResponse" type="tns:removeAccountAliasResponse"/>
@@ -894,10 +824,6 @@
     
   <xs:element name="RemoveAccountLoggerResponse" type="tns:removeAccountLoggerResponse"/>
     
-  <xs:element name="RemoveDeviceRequest" type="tns:removeDeviceRequest"/>
-    
-  <xs:element name="RemoveDeviceResponse" type="tns:removeDeviceResponse"/>
-    
   <xs:element name="RemoveDistributionListAliasRequest" type="tns:removeDistributionListAliasRequest"/>
     
   <xs:element name="RemoveDistributionListAliasResponse" type="tns:removeDistributionListAliasResponse"/>
@@ -905,10 +831,6 @@
   <xs:element name="RemoveDistributionListMemberRequest" type="tns:removeDistributionListMemberRequest"/>
     
   <xs:element name="RemoveDistributionListMemberResponse" type="tns:removeDistributionListMemberResponse"/>
-    
-  <xs:element name="RemoveStaleDeviceMetadataRequest" type="tns:removeStaleDeviceMetadataRequest"/>
-    
-  <xs:element name="RemoveStaleDeviceMetadataResponse" type="tns:removeStaleDeviceMetadataResponse"/>
     
   <xs:element name="RenameAccountRequest" type="tns:renameAccountRequest"/>
     
@@ -926,10 +848,6 @@
     
   <xs:element name="RenameDistributionListResponse" type="tns:renameDistributionListResponse"/>
     
-  <xs:element name="RenameUCServiceRequest" type="tns:renameUCServiceRequest"/>
-    
-  <xs:element name="RenameUCServiceResponse" type="tns:renameUCServiceResponse"/>
-    
   <xs:element name="ResetAccountPasswordRequest" type="tns:resetAccountPasswordRequest"/>
     
   <xs:element name="ResetAccountPasswordResponse" type="tns:resetAccountPasswordResponse"/>
@@ -941,10 +859,6 @@
   <xs:element name="RestoreRequest" type="tns:restoreRequest"/>
     
   <xs:element name="RestoreResponse" type="tns:restoreResponse"/>
-    
-  <xs:element name="ResumeDeviceRequest" type="tns:resumeDeviceRequest"/>
-    
-  <xs:element name="ResumeDeviceResponse" type="tns:resumeDeviceResponse"/>
     
   <xs:element name="RevokeRightRequest" type="tns:revokeRightRequest"/>
     
@@ -990,21 +904,9 @@
     
   <xs:element name="SetCurrentVolumeResponse" type="tns:setCurrentVolumeResponse"/>
     
-  <xs:element name="SetLocalServerOnlineRequest" type="tns:setLocalServerOnlineRequest"/>
-    
-  <xs:element name="SetLocalServerOnlineResponse" type="tns:setLocalServerOnlineResponse"/>
-    
   <xs:element name="SetPasswordRequest" type="tns:setPasswordRequest"/>
     
   <xs:element name="SetPasswordResponse" type="tns:setPasswordResponse"/>
-    
-  <xs:element name="SetServerOfflineRequest" type="tns:setServerOfflineRequest"/>
-    
-  <xs:element name="SetServerOfflineResponse" type="tns:setServerOfflineResponse"/>
-    
-  <xs:element name="SuspendDeviceRequest" type="tns:suspendDeviceRequest"/>
-    
-  <xs:element name="SuspendDeviceResponse" type="tns:suspendDeviceResponse"/>
     
   <xs:element name="SyncGalAccountRequest" type="tns:syncGalAccountRequest"/>
     
@@ -1021,10 +923,6 @@
   <xs:element name="UnregisterMailboxMoveOutRequest" type="tns:unregisterMailboxMoveOutRequest"/>
     
   <xs:element name="UnregisterMailboxMoveOutResponse" type="tns:unregisterMailboxMoveOutResponse"/>
-    
-  <xs:element name="UpdatePresenceSessionIdRequest" type="tns:updatePresenceSessionIdRequest"/>
-    
-  <xs:element name="UpdatePresenceSessionIdResponse" type="tns:updatePresenceSessionIdResponse"/>
     
   <xs:element name="UploadDomCertRequest" type="tns:uploadDomCertRequest"/>
     
@@ -1065,8 +963,6 @@
   <xs:element name="serverExtension" type="tns:zimletServerExtension"/>
     
   <xs:element name="target" type="tns:adminZimletTarget"/>
-    
-  <xs:element name="ucservice" type="tns:ucServiceInfo"/>
     
   <xs:element name="values" type="tns:statsValueWrapper"/>
     
@@ -1528,8 +1424,6 @@
       <xs:element minOccurs="0" name="account" type="ns1:accountSelector"/>
             
       <xs:element minOccurs="0" name="virtualHost" type="xs:string"/>
-            
-      <xs:element minOccurs="0" name="twoFactorCode" type="xs:string"/>
           
     </xs:all>
         
@@ -2075,81 +1969,6 @@
     <xs:attribute name="label" type="xs:string"/>
         
     <xs:attribute name="incr-label" type="xs:string"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="cancelPendingRemoteWipeRequest">
-        
-    <xs:sequence>
-            
-      <xs:element name="account" type="ns1:accountSelector"/>
-            
-      <xs:element minOccurs="0" name="device" type="tns:deviceId"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="deviceId">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="id" type="xs:string" use="required"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="cancelPendingRemoteWipeResponse">
-        
-    <xs:sequence>
-            
-      <xs:element maxOccurs="unbounded" minOccurs="0" name="device" type="tns:deviceStatusInfo"/>
-          
-    </xs:sequence>
-      
-    <xs:attribute name="unusedCodeGenHelper" type="xs:string"/>
-  </xs:complexType>
-    
-  <xs:complexType name="deviceStatusInfo">
-        
-    <xs:sequence>
-            
-      <xs:element name="provisionable" type="xs:boolean"/>
-            
-      <xs:element name="status" type="xs:byte"/>
-            
-      <xs:element name="firstReqReceived" type="xs:int"/>
-            
-      <xs:element minOccurs="0" name="lastPolicyUpdate" type="xs:int"/>
-            
-      <xs:element minOccurs="0" name="remoteWipeReqTime" type="xs:int"/>
-            
-      <xs:element minOccurs="0" name="remoteWipeAckTime" type="xs:int"/>
-            
-      <xs:element minOccurs="0" name="recoveryPassword" type="xs:string"/>
-            
-      <xs:element minOccurs="0" name="lastUsedDate" type="xs:string"/>
-          
-    </xs:sequence>
-        
-    <xs:attribute name="id" type="xs:string" use="required"/>
-        
-    <xs:attribute name="type" type="xs:string" use="required"/>
-        
-    <xs:attribute name="ua" type="xs:string"/>
-        
-    <xs:attribute name="protocol" type="xs:string"/>
-        
-    <xs:attribute name="model" type="xs:string"/>
-        
-    <xs:attribute name="imei" type="xs:string"/>
-        
-    <xs:attribute name="friendly_name" type="xs:string"/>
-        
-    <xs:attribute name="os" type="xs:string"/>
-        
-    <xs:attribute name="os_language" type="xs:string"/>
-        
-    <xs:attribute name="phone_number" type="xs:string"/>
       
   </xs:complexType>
     
@@ -2764,42 +2583,6 @@
       
   </xs:complexType>
     
-  <xs:complexType name="clearTwoFactorAuthDataRequest">
-        
-    <xs:sequence>
-            
-      <xs:element minOccurs="0" name="cos" type="tns:cosSelector"/>
-            
-      <xs:element minOccurs="0" name="account" type="ns1:accountSelector"/>
-          
-    </xs:sequence>
-        
-    <xs:attribute name="lazyDelete" type="xs:boolean"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="cosSelector">
-        
-    <xs:simpleContent>
-            
-      <xs:extension base="xs:string">
-                
-        <xs:attribute name="by" type="tns:cosBy"/>
-              
-      </xs:extension>
-          
-    </xs:simpleContent>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="clearTwoFactorAuthDataResponse">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="status" type="xs:string"/>
-      
-  </xs:complexType>
-    
   <xs:complexType name="compactIndexRequest">
         
     <xs:sequence>
@@ -2965,6 +2748,20 @@
       
   </xs:complexType>
     
+  <xs:complexType name="cosSelector">
+        
+    <xs:simpleContent>
+            
+      <xs:extension base="xs:string">
+                
+        <xs:attribute name="by" type="tns:cosBy"/>
+              
+      </xs:extension>
+          
+    </xs:simpleContent>
+      
+  </xs:complexType>
+    
   <xs:complexType name="copyCosResponse">
         
     <xs:sequence>
@@ -3049,28 +2846,12 @@
     <xs:sequence>
             
       <xs:element maxOccurs="unbounded" minOccurs="0" name="domain" type="tns:domainSelector"/>
-            
-      <xs:element minOccurs="0" name="ucservice" type="tns:ucServiceSelector"/>
           
     </xs:sequence>
         
     <xs:attribute name="type" type="tns:countObjectsType" use="required"/>
         
     <xs:attribute name="onlyRelated" type="xs:boolean"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="ucServiceSelector">
-        
-    <xs:simpleContent>
-            
-      <xs:extension base="xs:string">
-                
-        <xs:attribute name="by" type="tns:ucServiceBy"/>
-              
-      </xs:extension>
-          
-    </xs:simpleContent>
       
   </xs:complexType>
     
@@ -3623,48 +3404,6 @@
       
   </xs:complexType>
     
-  <xs:complexType name="createUCServiceRequest">
-        
-    <xs:complexContent>
-            
-      <xs:extension base="tns:adminAttrsImpl">
-                
-        <xs:sequence>
-                    
-          <xs:element name="name" type="xs:string"/>
-                  
-        </xs:sequence>
-              
-      </xs:extension>
-          
-    </xs:complexContent>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="createUCServiceResponse">
-        
-    <xs:sequence>
-            
-      <xs:element minOccurs="0" ref="tns:ucservice"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="ucServiceInfo">
-        
-    <xs:complexContent>
-            
-      <xs:extension base="tns:adminObjectInfo">
-                
-        <xs:all/>
-              
-      </xs:extension>
-          
-    </xs:complexContent>
-      
-  </xs:complexType>
-    
   <xs:complexType name="createVolumeRequest">
         
     <xs:sequence>
@@ -4084,22 +3823,6 @@
   <xs:complexType name="deleteSystemRetentionPolicyResponse">
         
     <xs:sequence/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="deleteUCServiceRequest">
-        
-    <xs:sequence>
-            
-      <xs:element name="id" type="xs:string"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="deleteUCServiceResponse">
-        
-    <xs:all/>
       
   </xs:complexType>
     
@@ -5179,23 +4902,6 @@
     <xs:attribute name="unusedCodeGenHelper" type="xs:string"/>
   </xs:complexType>
     
-  <xs:complexType name="getAllActiveServersRequest">
-        
-    <xs:sequence/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="getAllActiveServersResponse">
-        
-    <xs:sequence>
-            
-      <xs:element maxOccurs="unbounded" minOccurs="0" ref="tns:server"/>
-          
-    </xs:sequence>
-      
-    <xs:attribute name="unusedCodeGenHelper" type="xs:string"/>
-  </xs:complexType>
-    
   <xs:complexType name="getAllAdminAccountsRequest">
         
     <xs:sequence/>
@@ -5692,90 +5398,6 @@
     <xs:attribute name="unusedCodeGenHelper" type="xs:string"/>
   </xs:complexType>
     
-  <xs:complexType name="getAllSkinsRequest">
-        
-    <xs:sequence/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="getAllSkinsResponse">
-        
-    <xs:sequence>
-            
-      <xs:element maxOccurs="unbounded" minOccurs="0" name="skin" type="ns1:namedElement"/>
-          
-    </xs:sequence>
-      
-    <xs:attribute name="unusedCodeGenHelper" type="xs:string"/>
-  </xs:complexType>
-    
-  <xs:complexType name="getAllUCProvidersRequest">
-        
-    <xs:sequence/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="getAllUCProvidersResponse">
-        
-    <xs:sequence>
-            
-      <xs:element maxOccurs="unbounded" minOccurs="0" name="provider" type="tns:voiceProviderInfo"/>
-          
-    </xs:sequence>
-      
-    <xs:attribute name="unusedCodeGenHelper" type="xs:string"/>
-  </xs:complexType>
-    
-  <xs:complexType name="voiceProviderInfo">
-        
-    <xs:sequence>
-            
-      <xs:element name="attrs">
-                
-        <xs:complexType>
-                    
-          <xs:sequence>
-                        
-            <xs:element maxOccurs="unbounded" minOccurs="0" name="a" type="tns:ucServiceAttribute"/>
-                      
-          </xs:sequence>
-                  
-          <xs:attribute name="unusedCodeGenHelper" type="xs:string"/>
-        </xs:complexType>
-              
-      </xs:element>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="ucServiceAttribute">
-        
-    <xs:sequence>
-            
-      <xs:element minOccurs="0" name="n" type="xs:string"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="getAllUCServicesRequest">
-        
-    <xs:sequence/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="getAllUCServicesResponse">
-        
-    <xs:sequence>
-            
-      <xs:element maxOccurs="unbounded" minOccurs="0" ref="tns:ucservice"/>
-          
-    </xs:sequence>
-      
-    <xs:attribute name="unusedCodeGenHelper" type="xs:string"/>
-  </xs:complexType>
-    
   <xs:complexType name="getAllVolumesRequest">
         
     <xs:sequence/>
@@ -6020,24 +5642,6 @@
       
   </xs:complexType>
     
-  <xs:complexType name="getClearTwoFactorAuthDataStatusRequest">
-        
-    <xs:sequence>
-            
-      <xs:element minOccurs="0" name="cos" type="tns:cosSelector"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="getClearTwoFactorAuthDataStatusResponse">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="status" type="xs:string"/>
-      
-  </xs:complexType>
-    
   <xs:complexType name="getClusterStatusRequest">
         
     <xs:sequence/>
@@ -6274,83 +5878,6 @@
     </xs:sequence>
         
     <xs:attribute name="name" type="xs:string" use="required"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="getDeviceStatusRequest">
-        
-    <xs:sequence>
-            
-      <xs:element name="account" type="ns1:accountSelector"/>
-            
-      <xs:element minOccurs="0" name="device" type="tns:deviceId"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="getDeviceStatusResponse">
-        
-    <xs:sequence>
-            
-      <xs:element maxOccurs="unbounded" minOccurs="0" name="device" type="tns:deviceStatusInfo"/>
-          
-    </xs:sequence>
-      
-    <xs:attribute name="unusedCodeGenHelper" type="xs:string"/>
-  </xs:complexType>
-    
-  <xs:complexType name="getDevicesCountRequest">
-        
-    <xs:sequence/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="getDevicesCountResponse">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="count" type="xs:int" use="required"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="getDevicesCountSinceLastUsedRequest">
-        
-    <xs:sequence>
-            
-      <xs:element name="lastUsedDate" type="tns:dateString"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="dateString">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="date" type="xs:string" use="required"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="getDevicesCountSinceLastUsedResponse">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="count" type="xs:int" use="required"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="getDevicesCountUsedTodayRequest">
-        
-    <xs:sequence/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="getDevicesCountUsedTodayResponse">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="count" type="xs:int" use="required"/>
       
   </xs:complexType>
     
@@ -7727,56 +7254,6 @@
     <xs:attribute name="unusedCodeGenHelper" type="xs:string"/>
   </xs:complexType>
     
-  <xs:complexType name="getSyncStateRequest">
-        
-    <xs:sequence>
-            
-      <xs:element name="account" type="ns1:accountSelector"/>
-            
-      <xs:element name="device" type="ns4:deviceId"/>
-            
-      <xs:element minOccurs="0" name="folder" type="tns:folderId"/>
-            
-      <xs:element minOccurs="0" name="item" type="tns:itemId"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="folderId">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="id" type="xs:string" use="required"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="itemId">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="id" type="xs:string" use="required"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="getSyncStateResponse">
-        
-    <xs:sequence>
-            
-      <xs:element name="domain" type="tns:syncStateInfo"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="syncStateInfo">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="syncState" type="xs:string" use="required"/>
-      
-  </xs:complexType>
-    
   <xs:complexType name="getSystemRetentionPolicyRequest">
         
     <xs:sequence>
@@ -7792,34 +7269,6 @@
     <xs:sequence>
             
       <xs:element minOccurs="0" ref="ns3:retentionPolicy"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="getUCServiceRequest">
-        
-    <xs:complexContent>
-            
-      <xs:extension base="ns1:attributeSelectorImpl">
-                
-        <xs:sequence>
-                    
-          <xs:element minOccurs="0" name="ucservice" type="tns:ucServiceSelector"/>
-                  
-        </xs:sequence>
-              
-      </xs:extension>
-          
-    </xs:complexContent>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="getUCServiceResponse">
-        
-    <xs:sequence>
-            
-      <xs:element minOccurs="0" ref="tns:ucservice"/>
           
     </xs:sequence>
       
@@ -8721,34 +8170,6 @@
       
   </xs:complexType>
     
-  <xs:complexType name="modifyUCServiceRequest">
-        
-    <xs:complexContent>
-            
-      <xs:extension base="tns:adminAttrsImpl">
-                
-        <xs:sequence>
-                    
-          <xs:element name="id" type="xs:string"/>
-                  
-        </xs:sequence>
-              
-      </xs:extension>
-          
-    </xs:complexContent>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="modifyUCServiceResponse">
-        
-    <xs:sequence>
-            
-      <xs:element minOccurs="0" ref="tns:ucservice"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
   <xs:complexType name="modifyVolumeRequest">
         
     <xs:sequence>
@@ -9363,29 +8784,6 @@
       
   </xs:complexType>
     
-  <xs:complexType name="remoteWipeRequest">
-        
-    <xs:sequence>
-            
-      <xs:element name="account" type="ns1:accountSelector"/>
-            
-      <xs:element minOccurs="0" name="device" type="tns:deviceId"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="remoteWipeResponse">
-        
-    <xs:sequence>
-            
-      <xs:element maxOccurs="unbounded" minOccurs="0" name="device" type="tns:deviceStatusInfo"/>
-          
-    </xs:sequence>
-      
-    <xs:attribute name="unusedCodeGenHelper" type="xs:string"/>
-  </xs:complexType>
-    
   <xs:complexType name="removeAccountAliasRequest">
         
     <xs:all/>
@@ -9422,24 +8820,6 @@
       
   </xs:complexType>
     
-  <xs:complexType name="removeDeviceRequest">
-        
-    <xs:sequence>
-            
-      <xs:element name="account" type="ns1:accountSelector"/>
-            
-      <xs:element minOccurs="0" name="device" type="tns:deviceId"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="removeDeviceResponse">
-        
-    <xs:sequence/>
-      
-  </xs:complexType>
-    
   <xs:complexType name="removeDistributionListAliasRequest">
         
     <xs:sequence/>
@@ -9471,20 +8851,6 @@
   </xs:complexType>
     
   <xs:complexType name="removeDistributionListMemberResponse">
-        
-    <xs:sequence/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="removeStaleDeviceMetadataRequest">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="lastUsedDateOlderThan" type="xs:int" use="required"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="removeStaleDeviceMetadataResponse">
         
     <xs:sequence/>
       
@@ -9594,28 +8960,6 @@
       
   </xs:complexType>
     
-  <xs:complexType name="renameUCServiceRequest">
-        
-    <xs:all>
-            
-      <xs:element name="id" type="xs:string"/>
-            
-      <xs:element name="newName" type="xs:string"/>
-          
-    </xs:all>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="renameUCServiceResponse">
-        
-    <xs:sequence>
-            
-      <xs:element minOccurs="0" ref="tns:ucservice"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
   <xs:complexType final="extension restriction" name="resetAllLoggersRequest">
         
     <xs:sequence/>
@@ -9696,29 +9040,6 @@
         
     <xs:attribute name="rebuiltSchema" type="xs:boolean"/>
       
-  </xs:complexType>
-    
-  <xs:complexType name="resumeDeviceRequest">
-        
-    <xs:sequence>
-            
-      <xs:element name="account" type="ns1:accountSelector"/>
-            
-      <xs:element minOccurs="0" name="device" type="tns:deviceId"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="resumeDeviceResponse">
-        
-    <xs:sequence>
-            
-      <xs:element maxOccurs="unbounded" minOccurs="0" name="device" type="tns:deviceStatusInfo"/>
-          
-    </xs:sequence>
-      
-    <xs:attribute name="unusedCodeGenHelper" type="xs:string"/>
   </xs:complexType>
     
   <xs:complexType name="revokeRightRequest">
@@ -10136,8 +9457,6 @@
         
     <xs:attribute name="includeTagMuted" type="xs:boolean"/>
         
-    <xs:attribute name="allowableTaskStatus" type="xs:string"/>
-        
     <xs:attribute name="calExpandInstStart" type="xs:long"/>
         
     <xs:attribute name="calExpandInstEnd" type="xs:long"/>
@@ -10399,10 +9718,6 @@
     <xs:attribute name="name" type="xs:string"/>
         
     <xs:attribute name="loc" type="xs:string"/>
-        
-    <xs:attribute name="percentComplete" type="xs:string"/>
-        
-    <xs:attribute name="completed" type="xs:string"/>
         
     <xs:attribute name="noBlob" type="xs:boolean"/>
         
@@ -11047,18 +10362,6 @@
       
   </xs:complexType>
     
-  <xs:complexType name="setLocalServerOnlineRequest">
-        
-    <xs:sequence/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="setLocalServerOnlineResponse">
-        
-    <xs:sequence/>
-      
-  </xs:complexType>
-    
   <xs:complexType name="setPasswordRequest">
         
     <xs:sequence>
@@ -11081,53 +10384,6 @@
           
     </xs:sequence>
       
-  </xs:complexType>
-    
-  <xs:complexType name="setServerOfflineRequest">
-        
-    <xs:complexContent>
-            
-      <xs:extension base="ns1:attributeSelectorImpl">
-                
-        <xs:sequence>
-                    
-          <xs:element minOccurs="0" name="server" type="tns:serverSelector"/>
-                  
-        </xs:sequence>
-              
-      </xs:extension>
-          
-    </xs:complexContent>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="setServerOfflineResponse">
-        
-    <xs:sequence/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="suspendDeviceRequest">
-        
-    <xs:sequence>
-            
-      <xs:element name="account" type="ns1:accountSelector"/>
-            
-      <xs:element minOccurs="0" name="device" type="tns:deviceId"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="suspendDeviceResponse">
-        
-    <xs:sequence>
-            
-      <xs:element maxOccurs="unbounded" minOccurs="0" name="device" type="tns:deviceStatusInfo"/>
-          
-    </xs:sequence>
-      
-    <xs:attribute name="unusedCodeGenHelper" type="xs:string"/>
   </xs:complexType>
     
   <xs:complexType name="syncGalAccountRequest">
@@ -11222,38 +10478,6 @@
   <xs:complexType name="unregisterMailboxMoveOutResponse">
         
     <xs:sequence/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="updatePresenceSessionIdRequest">
-        
-    <xs:complexContent>
-            
-      <xs:extension base="tns:adminAttrsImpl">
-                
-        <xs:sequence>
-                    
-          <xs:element name="ucservice" type="tns:ucServiceSelector"/>
-                    
-          <xs:element name="username" type="xs:string"/>
-                    
-          <xs:element name="password" type="xs:string"/>
-                  
-        </xs:sequence>
-              
-      </xs:extension>
-          
-    </xs:complexContent>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="updatePresenceSessionIdResponse">
-        
-    <xs:sequence>
-            
-      <xs:element minOccurs="0" name="a" type="ns1:keyValuePair"/>
-          
-    </xs:sequence>
       
   </xs:complexType>
     
@@ -11491,18 +10715,6 @@
       
   </xs:simpleType>
     
-  <xs:simpleType name="cosBy">
-        
-    <xs:restriction base="xs:string">
-            
-      <xs:enumeration value="id"/>
-            
-      <xs:enumeration value="name"/>
-          
-    </xs:restriction>
-      
-  </xs:simpleType>
-    
   <xs:simpleType name="operation">
         
     <xs:restriction base="xs:string">
@@ -11543,6 +10755,18 @@
       
   </xs:simpleType>
     
+  <xs:simpleType name="cosBy">
+        
+    <xs:restriction base="xs:string">
+            
+      <xs:enumeration value="id"/>
+            
+      <xs:enumeration value="name"/>
+          
+    </xs:restriction>
+      
+  </xs:simpleType>
+    
   <xs:simpleType name="countObjectsType">
         
     <xs:restriction base="xs:string">
@@ -11563,29 +10787,11 @@
             
       <xs:enumeration value="calresource"/>
             
-      <xs:enumeration value="accountOnUCService"/>
-            
-      <xs:enumeration value="cosOnUCService"/>
-            
-      <xs:enumeration value="domainOnUCService"/>
-            
       <xs:enumeration value="internalUserAccount"/>
             
       <xs:enumeration value="internalArchivingAccount"/>
             
       <xs:enumeration value="internalUserAccountX"/>
-          
-    </xs:restriction>
-      
-  </xs:simpleType>
-    
-  <xs:simpleType name="ucServiceBy">
-        
-    <xs:restriction base="xs:string">
-            
-      <xs:enumeration value="id"/>
-            
-      <xs:enumeration value="name"/>
           
     </xs:restriction>
       
@@ -11616,14 +10822,6 @@
       <xs:enumeration value="tagmap"/>
             
       <xs:enumeration value="unknown"/>
-            
-      <xs:enumeration value="oauth2contact"/>
-            
-      <xs:enumeration value="oauth2calendar"/>
-            
-      <xs:enumeration value="oauth2caldav"/>
-            
-      <xs:enumeration value="oauth2noop"/>
           
     </xs:restriction>
       

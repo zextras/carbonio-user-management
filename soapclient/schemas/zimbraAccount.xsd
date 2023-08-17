@@ -18,10 +18,6 @@
     
   <xs:element name="AutoCompleteGalResponse" type="tns:autoCompleteGalResponse"/>
     
-  <xs:element name="BootstrapMobileGatewayAppRequest" type="tns:bootstrapMobileGatewayAppRequest"/>
-    
-  <xs:element name="BootstrapMobileGatewayAppResponse" type="tns:bootstrapMobileGatewayAppResponse"/>
-    
   <xs:element name="ChangePasswordRequest" type="tns:changePasswordRequest"/>
     
   <xs:element name="ChangePasswordResponse" type="tns:changePasswordResponse"/>
@@ -33,10 +29,6 @@
   <xs:element name="ClientInfoRequest" type="tns:clientInfoRequest"/>
     
   <xs:element name="ClientInfoResponse" type="tns:clientInfoResponse"/>
-    
-  <xs:element name="CreateAppSpecificPasswordRequest" type="tns:createAppSpecificPasswordRequest"/>
-    
-  <xs:element name="CreateAppSpecificPasswordResponse" type="tns:createAppSpecificPasswordResponse"/>
     
   <xs:element name="CreateDistributionListRequest" type="tns:createDistributionListRequest"/>
     
@@ -58,10 +50,6 @@
     
   <xs:element name="DeleteSignatureResponse" type="tns:deleteSignatureResponse"/>
     
-  <xs:element name="DisableTwoFactorAuthRequest" type="tns:disableTwoFactorAuthRequest"/>
-    
-  <xs:element name="DisableTwoFactorAuthResponse" type="tns:disableTwoFactorAuthResponse"/>
-    
   <xs:element name="DiscoverRightsRequest" type="tns:discoverRightsRequest"/>
     
   <xs:element name="DiscoverRightsResponse" type="tns:discoverRightsResponse"/>
@@ -70,17 +58,9 @@
     
   <xs:element name="DistributionListActionResponse" type="tns:distributionListActionResponse"/>
     
-  <xs:element name="EnableTwoFactorAuthRequest" type="tns:enableTwoFactorAuthRequest"/>
-    
-  <xs:element name="EnableTwoFactorAuthResponse" type="tns:enableTwoFactorAuthResponse"/>
-    
   <xs:element name="EndSessionRequest" type="tns:endSessionRequest"/>
     
   <xs:element name="EndSessionResponse" type="tns:endSessionResponse"/>
-    
-  <xs:element name="GenerateScratchCodesRequest" type="tns:generateScratchCodesRequest"/>
-    
-  <xs:element name="GenerateScratchCodesResponse" type="tns:generateScratchCodesResponse"/>
     
   <xs:element name="GetAccountDistributionListsRequest" type="tns:getAccountDistributionListsRequest"/>
     
@@ -102,10 +82,6 @@
     
   <xs:element name="GetAllLocalesResponse" type="tns:getAllLocalesResponse"/>
     
-  <xs:element name="GetAppSpecificPasswordsRequest" type="tns:getAppSpecificPasswordsRequest"/>
-    
-  <xs:element name="GetAppSpecificPasswordsResponse" type="tns:getAppSpecificPasswordsResponse"/>
-    
   <xs:element name="GetAvailableCsvFormatsRequest" type="tns:getAvailableCsvFormatsRequest"/>
     
   <xs:element name="GetAvailableCsvFormatsResponse" type="tns:getAvailableCsvFormatsResponse"/>
@@ -114,10 +90,6 @@
     
   <xs:element name="GetAvailableLocalesResponse" type="tns:getAvailableLocalesResponse"/>
     
-  <xs:element name="GetAvailableSkinsRequest" type="tns:getAvailableSkinsRequest"/>
-    
-  <xs:element name="GetAvailableSkinsResponse" type="tns:getAvailableSkinsResponse"/>
-    
   <xs:element name="GetDistributionListMembersRequest" type="tns:getDistributionListMembersRequest"/>
     
   <xs:element name="GetDistributionListMembersResponse" type="tns:getDistributionListMembersResponse"/>
@@ -125,10 +97,6 @@
   <xs:element name="GetDistributionListRequest" type="tns:getDistributionListRequest"/>
     
   <xs:element name="GetDistributionListResponse" type="tns:getDistributionListResponse"/>
-    
-  <xs:element name="GetGcmSenderIdRequest" type="tns:getGcmSenderIdRequest"/>
-    
-  <xs:element name="GetGcmSenderIdResponse" type="tns:getGcmSenderIdResponse"/>
     
   <xs:element name="GetHABRequest" type="tns:getHABRequest"/>
     
@@ -142,10 +110,6 @@
     
   <xs:element name="GetInfoResponse" type="tns:getInfoResponse"/>
     
-  <xs:element name="GetOAuthConsumersRequest" type="tns:getOAuthConsumersRequest"/>
-    
-  <xs:element name="GetOAuthConsumersResponse" type="tns:getOAuthConsumersResponse"/>
-    
   <xs:element name="GetPrefsRequest" type="tns:getPrefsRequest"/>
     
   <xs:element name="GetPrefsResponse" type="tns:getPrefsResponse"/>
@@ -158,10 +122,6 @@
     
   <xs:element name="GetSMIMEPublicCertsResponse" type="tns:getSMIMEPublicCertsResponse"/>
     
-  <xs:element name="GetScratchCodesRequest" type="tns:getScratchCodesRequest"/>
-    
-  <xs:element name="GetScratchCodesResponse" type="tns:getScratchCodesResponse"/>
-    
   <xs:element name="GetShareInfoRequest" type="tns:getShareInfoRequest"/>
     
   <xs:element name="GetShareInfoResponse" type="tns:getShareInfoResponse"/>
@@ -173,10 +133,6 @@
   <xs:element name="GetSmimeCertificateInfoRequest" type="tns:getSmimeCertificateInfoRequest"/>
     
   <xs:element name="GetSmimeCertificateInfoResponse" type="tns:getSmimeCertificateInfoResponse"/>
-    
-  <xs:element name="GetTrustedDevicesRequest" type="tns:getTrustedDevicesRequest"/>
-    
-  <xs:element name="GetTrustedDevicesResponse" type="tns:getTrustedDevicesResponse"/>
     
   <xs:element name="GetVersionInfoRequest" type="tns:getVersionInfoRequest"/>
     
@@ -214,37 +170,13 @@
     
   <xs:element name="ModifyZimletPrefsResponse" type="tns:modifyZimletPrefsResponse"/>
     
-  <xs:element name="RegisterMobileGatewayAppRequest" type="tns:registerMobileGatewayAppRequest"/>
-    
-  <xs:element name="RegisterMobileGatewayAppResponse" type="tns:registerMobileGatewayAppResponse"/>
-    
-  <xs:element name="RenewMobileGatewayAppTokenRequest" type="tns:renewMobileGatewayAppTokenRequest"/>
-    
-  <xs:element name="RenewMobileGatewayAppTokenResponse" type="tns:renewMobileGatewayAppTokenResponse"/>
-    
   <xs:element name="ResetPasswordRequest" type="tns:resetPasswordRequest"/>
     
   <xs:element name="ResetPasswordResponse" type="tns:resetPasswordResponse"/>
     
-  <xs:element name="RevokeAppSpecificPasswordRequest" type="tns:revokeAppSpecificPasswordRequest"/>
-    
-  <xs:element name="RevokeAppSpecificPasswordResponse" type="tns:revokeAppSpecificPasswordResponse"/>
-    
-  <xs:element name="RevokeOAuthConsumerRequest" type="tns:revokeOAuthConsumerRequest"/>
-    
-  <xs:element name="RevokeOAuthConsumerResponse" type="tns:revokeOAuthConsumerResponse"/>
-    
-  <xs:element name="RevokeOtherTrustedDevicesRequest" type="tns:revokeOtherTrustedDevicesRequest"/>
-    
-  <xs:element name="RevokeOtherTrustedDevicesResponse" type="tns:revokeOtherTrustedDevicesResponse"/>
-    
   <xs:element name="RevokeRightsRequest" type="tns:revokeRightsRequest"/>
     
   <xs:element name="RevokeRightsResponse" type="tns:revokeRightsResponse"/>
-    
-  <xs:element name="RevokeTrustedDeviceRequest" type="tns:revokeTrustedDeviceRequest"/>
-    
-  <xs:element name="RevokeTrustedDeviceResponse" type="tns:revokeTrustedDeviceResponse"/>
     
   <xs:element name="SaveSmimeCertificateRequest" type="tns:saveSmimeCertificateRequest"/>
     
@@ -329,24 +261,12 @@
         </xs:complexType>
               
       </xs:element>
-            
-      <xs:element minOccurs="0" name="requestedSkin" type="xs:string"/>
-            
-      <xs:element minOccurs="0" name="twoFactorCode" type="xs:string"/>
-            
-      <xs:element minOccurs="0" name="trustedToken" type="xs:string"/>
-            
-      <xs:element minOccurs="0" name="deviceId" type="xs:string"/>
           
     </xs:all>
         
     <xs:attribute name="persistAuthTokenCookie" type="xs:boolean"/>
         
     <xs:attribute name="csrfTokenSecured" type="xs:boolean"/>
-        
-    <xs:attribute name="deviceTrusted" type="xs:boolean"/>
-        
-    <xs:attribute name="generateDeviceId" type="xs:boolean"/>
         
     <xs:attribute name="tokenType" type="xs:string"/>
         
@@ -422,24 +342,6 @@
         
     <xs:all>
             
-      <xs:element name="authToken" type="xs:string"/>
-            
-      <xs:element name="lifetime" type="xs:long"/>
-            
-      <xs:element minOccurs="0" name="trustLifetime" type="xs:long"/>
-            
-      <xs:element minOccurs="0" name="session" type="tns:session"/>
-            
-      <xs:element minOccurs="0" name="refer" type="xs:string"/>
-            
-      <xs:element minOccurs="0" name="skin" type="xs:string"/>
-            
-      <xs:element minOccurs="0" name="csrfToken" type="xs:string"/>
-            
-      <xs:element minOccurs="0" name="deviceId" type="xs:string"/>
-            
-      <xs:element minOccurs="0" name="trustedToken" type="xs:string"/>
-            
       <xs:element minOccurs="0" name="prefs">
                 
         <xs:complexType>
@@ -470,13 +372,19 @@
               
       </xs:element>
             
-      <xs:element minOccurs="0" name="twoFactorAuthRequired" type="xs:boolean"/>
+      <xs:element name="authToken" type="xs:string"/>
             
-      <xs:element minOccurs="0" name="trustedDevicesEnabled" type="xs:boolean"/>
+      <xs:element name="lifetime" type="xs:long"/>
+            
+      <xs:element minOccurs="0" name="trustLifetime" type="xs:long"/>
+            
+      <xs:element minOccurs="0" name="session" type="tns:session"/>
+            
+      <xs:element minOccurs="0" name="refer" type="xs:string"/>
+            
+      <xs:element minOccurs="0" name="csrfToken" type="xs:string"/>
           
     </xs:all>
-        
-    <xs:attribute name="zmgProxy" type="xs:boolean"/>
       
   </xs:complexType>
     
@@ -625,28 +533,6 @@
       
   </xs:complexType>
     
-  <xs:complexType name="bootstrapMobileGatewayAppRequest">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="wantAppToken" type="xs:boolean"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="bootstrapMobileGatewayAppResponse">
-        
-    <xs:sequence>
-            
-      <xs:element name="appId" type="xs:string"/>
-            
-      <xs:element name="appKey" type="xs:string"/>
-            
-      <xs:element minOccurs="0" name="authToken" type="tns:authToken"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
   <xs:complexType name="changePasswordRequest">
         
     <xs:all>
@@ -766,22 +652,6 @@
     </xs:sequence>
       
     <xs:attribute name="unusedCodeGenHelper" type="xs:string"/>
-  </xs:complexType>
-    
-  <xs:complexType name="createAppSpecificPasswordRequest">
-        
-    <xs:all/>
-        
-    <xs:attribute name="appName" type="xs:string"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="createAppSpecificPasswordResponse">
-        
-    <xs:all/>
-        
-    <xs:attribute name="pw" type="xs:string"/>
-      
   </xs:complexType>
     
   <xs:complexType name="createDistributionListRequest">
@@ -993,18 +863,6 @@
       
   </xs:complexType>
     
-  <xs:complexType name="disableTwoFactorAuthRequest">
-        
-    <xs:all/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="disableTwoFactorAuthResponse">
-        
-    <xs:all/>
-      
-  </xs:complexType>
-    
   <xs:complexType name="discoverRightsRequest">
         
     <xs:sequence>
@@ -1145,53 +1003,6 @@
       
   </xs:complexType>
     
-  <xs:complexType name="enableTwoFactorAuthRequest">
-        
-    <xs:all>
-            
-      <xs:element name="name" type="xs:string"/>
-            
-      <xs:element minOccurs="0" name="password" type="xs:string"/>
-            
-      <xs:element minOccurs="0" name="authToken" type="tns:authToken"/>
-            
-      <xs:element minOccurs="0" name="twoFactorCode" type="xs:string"/>
-          
-    </xs:all>
-        
-    <xs:attribute name="csrfTokenSecured" type="xs:boolean"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="enableTwoFactorAuthResponse">
-        
-    <xs:all>
-            
-      <xs:element minOccurs="0" name="secret" type="xs:string"/>
-            
-      <xs:element minOccurs="0" name="authToken" type="tns:authToken"/>
-            
-      <xs:element minOccurs="0" name="scratchCodes">
-                
-        <xs:complexType>
-                    
-          <xs:sequence>
-                        
-            <xs:element maxOccurs="unbounded" minOccurs="0" name="scratchCode" type="xs:string"/>
-                      
-          </xs:sequence>
-                  
-          <xs:attribute name="unusedCodeGenHelper" type="xs:string"/>
-        </xs:complexType>
-              
-      </xs:element>
-            
-      <xs:element minOccurs="0" name="csrfToken" type="xs:string"/>
-          
-    </xs:all>
-      
-  </xs:complexType>
-    
   <xs:complexType name="endSessionRequest">
         
     <xs:sequence/>
@@ -1209,35 +1020,6 @@
   <xs:complexType name="endSessionResponse">
         
     <xs:sequence/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="generateScratchCodesRequest">
-        
-    <xs:sequence/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="generateScratchCodesResponse">
-        
-    <xs:sequence>
-            
-      <xs:element minOccurs="0" name="scratchCodes">
-                
-        <xs:complexType>
-                    
-          <xs:sequence>
-                        
-            <xs:element maxOccurs="unbounded" minOccurs="0" name="scratchCode" type="xs:string"/>
-                      
-          </xs:sequence>
-                  
-          <xs:attribute name="unusedCodeGenHelper" type="xs:string"/>
-        </xs:complexType>
-              
-      </xs:element>
-          
-    </xs:sequence>
       
   </xs:complexType>
     
@@ -1288,8 +1070,6 @@
             
       <xs:element minOccurs="0" name="changePasswordURL" type="xs:string"/>
             
-      <xs:element minOccurs="0" name="communityURL" type="xs:string"/>
-            
       <xs:element minOccurs="0" name="adminURL" type="xs:string"/>
             
       <xs:element minOccurs="0" name="boshURL" type="xs:string"/>
@@ -1327,49 +1107,6 @@
       
   </xs:complexType>
     
-  <xs:complexType name="getAppSpecificPasswordsRequest">
-        
-    <xs:all/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="getAppSpecificPasswordsResponse">
-        
-    <xs:all>
-            
-      <xs:element minOccurs="0" name="appSpecificPasswords">
-                
-        <xs:complexType>
-                    
-          <xs:sequence>
-                        
-            <xs:element maxOccurs="unbounded" minOccurs="0" name="passwordData" type="tns:appSpecificPasswordData"/>
-                      
-          </xs:sequence>
-                  
-          <xs:attribute name="unusedCodeGenHelper" type="xs:string"/>
-        </xs:complexType>
-              
-      </xs:element>
-            
-      <xs:element minOccurs="0" name="maxAppPasswords" type="xs:int"/>
-          
-    </xs:all>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="appSpecificPasswordData">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="appName" type="xs:string"/>
-        
-    <xs:attribute name="created" type="xs:long"/>
-        
-    <xs:attribute name="lastUsed" type="xs:long"/>
-      
-  </xs:complexType>
-    
   <xs:complexType name="getAvailableCsvFormatsRequest">
         
     <xs:sequence/>
@@ -1398,23 +1135,6 @@
     <xs:sequence>
             
       <xs:element maxOccurs="unbounded" minOccurs="0" name="locale" type="tns:localeInfo"/>
-          
-    </xs:sequence>
-      
-    <xs:attribute name="unusedCodeGenHelper" type="xs:string"/>
-  </xs:complexType>
-    
-  <xs:complexType name="getAvailableSkinsRequest">
-        
-    <xs:sequence/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="getAvailableSkinsResponse">
-        
-    <xs:sequence>
-            
-      <xs:element maxOccurs="unbounded" minOccurs="0" name="skin" type="ns1:namedElement"/>
           
     </xs:sequence>
       
@@ -1602,22 +1322,6 @@
     </xs:sequence>
         
     <xs:attribute name="right" type="xs:string" use="required"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="getGcmSenderIdRequest">
-        
-    <xs:sequence/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="getGcmSenderIdResponse">
-        
-    <xs:sequence>
-            
-      <xs:element name="gcmSenderId" type="xs:string"/>
-          
-    </xs:sequence>
       
   </xs:complexType>
     
@@ -2092,10 +1796,6 @@
     <xs:attribute name="importClass" type="xs:string"/>
         
     <xs:attribute name="failingSince" type="xs:long"/>
-        
-    <xs:attribute name="refreshToken" type="xs:string"/>
-        
-    <xs:attribute name="refreshTokenUrl" type="xs:string"/>
       
   </xs:complexType>
     
@@ -2227,37 +1927,6 @@
     <xs:attribute name="visible" type="xs:boolean" use="required"/>
         
     <xs:attribute name="active" type="xs:boolean" use="required"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="getOAuthConsumersRequest">
-        
-    <xs:sequence/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="getOAuthConsumersResponse">
-        
-    <xs:sequence>
-            
-      <xs:element maxOccurs="unbounded" minOccurs="0" name="OAuthConsumer" type="tns:oAuthConsumer"/>
-          
-    </xs:sequence>
-      
-    <xs:attribute name="unusedCodeGenHelper" type="xs:string"/>
-  </xs:complexType>
-    
-  <xs:complexType name="oAuthConsumer">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="accessToken" type="xs:string"/>
-        
-    <xs:attribute name="approvedOn" type="xs:string"/>
-        
-    <xs:attribute name="appName" type="xs:string"/>
-        
-    <xs:attribute name="device" type="xs:string"/>
       
   </xs:complexType>
     
@@ -2399,35 +2068,6 @@
       </xs:extension>
           
     </xs:simpleContent>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="getScratchCodesRequest">
-        
-    <xs:sequence/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="getScratchCodesResponse">
-        
-    <xs:sequence>
-            
-      <xs:element minOccurs="0" name="scratchCodes">
-                
-        <xs:complexType>
-                    
-          <xs:sequence>
-                        
-            <xs:element maxOccurs="unbounded" minOccurs="0" name="scratchCode" type="xs:string"/>
-                      
-          </xs:sequence>
-                  
-          <xs:attribute name="unusedCodeGenHelper" type="xs:string"/>
-        </xs:complexType>
-              
-      </xs:element>
-          
-    </xs:sequence>
       
   </xs:complexType>
     
@@ -2593,22 +2233,6 @@
       <xs:element maxOccurs="unbounded" minOccurs="0" name="registeredID" type="xs:string"/>
           
     </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="getTrustedDevicesRequest">
-        
-    <xs:sequence/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="getTrustedDevicesResponse">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="nOtherDevices" type="xs:int"/>
-        
-    <xs:attribute name="thisDeviceTrusted" type="xs:boolean"/>
       
   </xs:complexType>
     
@@ -2850,62 +2474,6 @@
     <xs:attribute name="unusedCodeGenHelper" type="xs:string"/>
   </xs:complexType>
     
-  <xs:complexType name="registerMobileGatewayAppRequest">
-        
-    <xs:sequence>
-            
-      <xs:element name="zmgDevice" type="tns:zmgDeviceSpec"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="zmgDeviceSpec">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="appId" type="xs:string" use="required"/>
-        
-    <xs:attribute name="registrationId" type="xs:string" use="required"/>
-        
-    <xs:attribute name="pushProvider" type="xs:string" use="required"/>
-        
-    <xs:attribute name="osName" type="xs:string"/>
-        
-    <xs:attribute name="osVersion" type="xs:string"/>
-        
-    <xs:attribute name="maxPayloadSize" type="xs:int"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="registerMobileGatewayAppResponse">
-        
-    <xs:sequence/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="renewMobileGatewayAppTokenRequest">
-        
-    <xs:sequence>
-            
-      <xs:element name="appId" type="xs:string"/>
-            
-      <xs:element name="appKey" type="xs:string"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="renewMobileGatewayAppTokenResponse">
-        
-    <xs:sequence>
-            
-      <xs:element name="authToken" type="tns:authToken"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
   <xs:complexType name="resetPasswordRequest">
         
     <xs:sequence>
@@ -2939,46 +2507,6 @@
       
   </xs:complexType>
     
-  <xs:complexType name="revokeAppSpecificPasswordRequest">
-        
-    <xs:all/>
-        
-    <xs:attribute name="appName" type="xs:string"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="revokeAppSpecificPasswordResponse">
-        
-    <xs:all/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="revokeOAuthConsumerRequest">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="accessToken" type="xs:string" use="required"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="revokeOAuthConsumerResponse">
-        
-    <xs:sequence/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="revokeOtherTrustedDevicesRequest">
-        
-    <xs:sequence/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="revokeOtherTrustedDevicesResponse">
-        
-    <xs:sequence/>
-      
-  </xs:complexType>
-    
   <xs:complexType name="revokeRightsRequest">
         
     <xs:sequence>
@@ -2999,18 +2527,6 @@
     </xs:sequence>
       
     <xs:attribute name="unusedCodeGenHelper" type="xs:string"/>
-  </xs:complexType>
-    
-  <xs:complexType name="revokeTrustedDeviceRequest">
-        
-    <xs:sequence/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="revokeTrustedDeviceResponse">
-        
-    <xs:sequence/>
-      
   </xs:complexType>
     
   <xs:complexType name="saveSmimeCertificateRequest">

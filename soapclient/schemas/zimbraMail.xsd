@@ -12,17 +12,9 @@
     
   <xs:element name="AddAppointmentInviteResponse" type="tns:addAppointmentInviteResponse"/>
     
-  <xs:element name="AddCommentRequest" type="tns:addCommentRequest"/>
-    
-  <xs:element name="AddCommentResponse" type="tns:addCommentResponse"/>
-    
   <xs:element name="AddMsgRequest" type="tns:addMsgRequest"/>
     
   <xs:element name="AddMsgResponse" type="tns:addMsgResponse"/>
-    
-  <xs:element name="AddTaskInviteRequest" type="tns:addTaskInviteRequest"/>
-    
-  <xs:element name="AddTaskInviteResponse" type="tns:addTaskInviteResponse"/>
     
   <xs:element name="AnnounceOrganizerChangeRequest" type="tns:announceOrganizerChangeRequest"/>
     
@@ -56,10 +48,6 @@
     
   <xs:element name="CancelAppointmentResponse" type="tns:cancelAppointmentResponse"/>
     
-  <xs:element name="CancelTaskRequest" type="tns:cancelTaskRequest"/>
-    
-  <xs:element name="CancelTaskResponse" type="tns:cancelTaskResponse"/>
-    
   <xs:element name="CheckPermissionRequest" type="tns:checkPermissionRequest"/>
     
   <xs:element name="CheckPermissionResponse" type="tns:checkPermissionResponse"/>
@@ -71,10 +59,6 @@
   <xs:element name="CheckSpellingRequest" type="tns:checkSpellingRequest"/>
     
   <xs:element name="CheckSpellingResponse" type="tns:checkSpellingResponse"/>
-    
-  <xs:element name="CompleteTaskInstanceRequest" type="tns:completeTaskInstanceRequest"/>
-    
-  <xs:element name="CompleteTaskInstanceResponse" type="tns:completeTaskInstanceResponse"/>
     
   <xs:element name="ContactActionRequest" type="tns:contactActionRequest"/>
     
@@ -116,10 +100,6 @@
     
   <xs:element name="CreateMountpointResponse" type="tns:createMountpointResponse"/>
     
-  <xs:element name="CreateNoteRequest" type="tns:createNoteRequest"/>
-    
-  <xs:element name="CreateNoteResponse" type="tns:createNoteResponse"/>
-    
   <xs:element name="CreateSearchFolderRequest" type="tns:createSearchFolderRequest"/>
     
   <xs:element name="CreateSearchFolderResponse" type="tns:createSearchFolderResponse"/>
@@ -127,14 +107,6 @@
   <xs:element name="CreateTagRequest" type="tns:createTagRequest"/>
     
   <xs:element name="CreateTagResponse" type="tns:createTagResponse"/>
-    
-  <xs:element name="CreateTaskExceptionRequest" type="tns:createTaskExceptionRequest"/>
-    
-  <xs:element name="CreateTaskExceptionResponse" type="tns:createTaskExceptionResponse"/>
-    
-  <xs:element name="CreateTaskRequest" type="tns:createTaskRequest"/>
-    
-  <xs:element name="CreateTaskResponse" type="tns:createTaskResponse"/>
     
   <xs:element name="CreateWaitSetRequest" type="tns:createWaitSetRequest"/>
     
@@ -151,10 +123,6 @@
   <xs:element name="DestroyWaitSetRequest" type="tns:destroyWaitSetRequest"/>
     
   <xs:element name="DestroyWaitSetResponse" type="tns:destroyWaitSetResponse"/>
-    
-  <xs:element name="DiffDocumentRequest" type="tns:diffDocumentRequest"/>
-    
-  <xs:element name="DiffDocumentResponse" type="tns:diffDocumentResponse"/>
     
   <xs:element name="DismissCalendarItemAlarmRequest" type="tns:dismissCalendarItemAlarmRequest"/>
     
@@ -203,10 +171,6 @@
   <xs:element name="GetCalendarItemSummariesRequest" type="tns:getCalendarItemSummariesRequest"/>
     
   <xs:element name="GetCalendarItemSummariesResponse" type="tns:getCalendarItemSummariesResponse"/>
-    
-  <xs:element name="GetCommentsRequest" type="tns:getCommentsRequest"/>
-    
-  <xs:element name="GetCommentsResponse" type="tns:getCommentsResponse"/>
     
   <xs:element name="GetContactsRequest" type="tns:getContactsRequest"/>
     
@@ -288,10 +252,6 @@
     
   <xs:element name="GetMsgResponse" type="tns:getMsgResponse"/>
     
-  <xs:element name="GetNoteRequest" type="tns:getNoteRequest"/>
-    
-  <xs:element name="GetNoteResponse" type="tns:getNoteResponse"/>
-    
   <xs:element name="GetOutgoingFilterRulesRequest" type="tns:getOutgoingFilterRulesRequest"/>
     
   <xs:element name="GetOutgoingFilterRulesResponse" type="tns:getOutgoingFilterRulesResponse"/>
@@ -324,25 +284,9 @@
     
   <xs:element name="GetTagResponse" type="tns:getTagResponse"/>
     
-  <xs:element name="GetTaskRequest" type="tns:getTaskRequest"/>
-    
-  <xs:element name="GetTaskResponse" type="tns:getTaskResponse"/>
-    
-  <xs:element name="GetTaskSummariesRequest" type="tns:getTaskSummariesRequest"/>
-    
-  <xs:element name="GetTaskSummariesResponse" type="tns:getTaskSummariesResponse"/>
-    
   <xs:element name="GetWorkingHoursRequest" type="tns:getWorkingHoursRequest"/>
     
   <xs:element name="GetWorkingHoursResponse" type="tns:getWorkingHoursResponse"/>
-    
-  <xs:element name="GetYahooAuthTokenRequest" type="tns:getYahooAuthTokenRequest"/>
-    
-  <xs:element name="GetYahooAuthTokenResponse" type="tns:getYahooAuthTokenResponse"/>
-    
-  <xs:element name="GetYahooCookieRequest" type="tns:getYahooCookieRequest"/>
-    
-  <xs:element name="GetYahooCookieResponse" type="tns:getYahooCookieResponse"/>
     
   <xs:element name="GrantPermissionRequest" type="tns:grantPermissionRequest"/>
     
@@ -368,17 +312,9 @@
     
   <xs:element name="ImportDataResponse" type="tns:importDataResponse"/>
     
-  <xs:element name="InvalidateReminderDeviceRequest" type="tns:invalidateReminderDeviceRequest"/>
-    
-  <xs:element name="InvalidateReminderDeviceResponse" type="tns:invalidateReminderDeviceResponse"/>
-    
   <xs:element name="ItemActionRequest" type="tns:itemActionRequest"/>
     
   <xs:element name="ItemActionResponse" type="tns:itemActionResponse"/>
-    
-  <xs:element name="ListDocumentRevisionsRequest" type="tns:listDocumentRevisionsRequest"/>
-    
-  <xs:element name="ListDocumentRevisionsResponse" type="tns:listDocumentRevisionsResponse"/>
     
   <xs:element name="ListIMAPSubscriptionsRequest" type="tns:listIMAPSubscriptionsRequest"/>
     
@@ -408,17 +344,9 @@
     
   <xs:element name="ModifyOutgoingFilterRulesResponse" type="tns:modifyOutgoingFilterRulesResponse"/>
     
-  <xs:element name="ModifyProfileImageRequest" type="tns:modifyProfileImageRequest"/>
-    
-  <xs:element name="ModifyProfileImageResponse" type="tns:modifyProfileImageResponse"/>
-    
   <xs:element name="ModifySearchFolderRequest" type="tns:modifySearchFolderRequest"/>
     
   <xs:element name="ModifySearchFolderResponse" type="tns:modifySearchFolderResponse"/>
-    
-  <xs:element name="ModifyTaskRequest" type="tns:modifyTaskRequest"/>
-    
-  <xs:element name="ModifyTaskResponse" type="tns:modifyTaskResponse"/>
     
   <xs:element name="MsgActionRequest" type="tns:msgActionRequest"/>
     
@@ -428,17 +356,9 @@
     
   <xs:element name="NoOpResponse" type="tns:noOpResponse"/>
     
-  <xs:element name="NoteActionRequest" type="tns:noteActionRequest"/>
-    
-  <xs:element name="NoteActionResponse" type="tns:noteActionResponse"/>
-    
   <xs:element name="OpenIMAPFolderRequest" type="tns:openIMAPFolderRequest"/>
     
   <xs:element name="OpenIMAPFolderResponse" type="tns:openIMAPFolderResponse"/>
-    
-  <xs:element name="PurgeRevisionRequest" type="tns:purgeRevisionRequest"/>
-    
-  <xs:element name="PurgeRevisionResponse" type="tns:purgeRevisionResponse"/>
     
   <xs:element name="RankingActionRequest" type="tns:rankingActionRequest"/>
     
@@ -463,10 +383,6 @@
   <xs:element name="RevokePermissionRequest" type="tns:revokePermissionRequest"/>
     
   <xs:element name="RevokePermissionResponse" type="tns:revokePermissionResponse"/>
-    
-  <xs:element name="SaveDocumentRequest" type="tns:saveDocumentRequest"/>
-    
-  <xs:element name="SaveDocumentResponse" type="tns:saveDocumentResponse"/>
     
   <xs:element name="SaveDraftRequest" type="tns:saveDraftRequest"/>
     
@@ -508,10 +424,6 @@
     
   <xs:element name="SendShareNotificationResponse" type="tns:sendShareNotificationResponse"/>
     
-  <xs:element name="SendVerificationCodeRequest" type="tns:sendVerificationCodeRequest"/>
-    
-  <xs:element name="SendVerificationCodeResponse" type="tns:sendVerificationCodeResponse"/>
-    
   <xs:element name="SetAppointmentRequest" type="tns:setAppointmentRequest"/>
     
   <xs:element name="SetAppointmentResponse" type="tns:setAppointmentResponse"/>
@@ -527,10 +439,6 @@
   <xs:element name="SetRecoveryAccountRequest" type="tns:setRecoveryAccountRequest"/>
     
   <xs:element name="SetRecoveryAccountResponse" type="tns:setRecoveryAccountResponse"/>
-    
-  <xs:element name="SetTaskRequest" type="tns:setTaskRequest"/>
-    
-  <xs:element name="SetTaskResponse" type="tns:setTaskResponse"/>
     
   <xs:element name="SnoozeCalendarItemAlarmRequest" type="tns:snoozeCalendarItemAlarmRequest"/>
     
@@ -548,10 +456,6 @@
     
   <xs:element name="TestDataSourceResponse" type="tns:testDataSourceResponse"/>
     
-  <xs:element name="VerifyCodeRequest" type="tns:verifyCodeRequest"/>
-    
-  <xs:element name="VerifyCodeResponse" type="tns:verifyCodeResponse"/>
-    
   <xs:element name="WaitSetRequest" type="tns:waitSetRequest"/>
     
   <xs:element name="WaitSetResponse" type="tns:waitSetResponse"/>
@@ -559,8 +463,6 @@
   <xs:element name="cn" type="tns:contactAttachSpec"/>
     
   <xs:element name="content" type="tns:content"/>
-    
-  <xs:element name="doc" type="tns:docAttachSpec"/>
     
   <xs:element name="folder" type="tns:folder"/>
     
@@ -1810,8 +1712,6 @@
         <xs:element ref="tns:m"/>
                 
         <xs:element ref="tns:cn"/>
-                
-        <xs:element ref="tns:doc"/>
               
       </xs:choice>
             
@@ -1874,26 +1774,6 @@
         <xs:sequence/>
                 
         <xs:attribute name="id" type="xs:string" use="required"/>
-              
-      </xs:extension>
-          
-    </xs:complexContent>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="docAttachSpec">
-        
-    <xs:complexContent>
-            
-      <xs:extension base="tns:attachSpec">
-                
-        <xs:sequence/>
-                
-        <xs:attribute name="path" type="xs:string"/>
-                
-        <xs:attribute name="id" type="xs:string"/>
-                
-        <xs:attribute name="ver" type="xs:int"/>
               
       </xs:extension>
           
@@ -1996,10 +1876,6 @@
     <xs:attribute name="name" type="xs:string"/>
         
     <xs:attribute name="loc" type="xs:string"/>
-        
-    <xs:attribute name="percentComplete" type="xs:string"/>
-        
-    <xs:attribute name="completed" type="xs:string"/>
         
     <xs:attribute name="noBlob" type="xs:boolean"/>
         
@@ -2596,36 +2472,6 @@
       
   </xs:complexType>
     
-  <xs:complexType name="addCommentRequest">
-        
-    <xs:sequence>
-            
-      <xs:element name="comment" type="tns:addedComment"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="addedComment">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="parentId" type="xs:string" use="required"/>
-        
-    <xs:attribute name="text" type="xs:string" use="required"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="addCommentResponse">
-        
-    <xs:sequence>
-            
-      <xs:element name="comment" type="ns1:id"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
   <xs:complexType name="addMsgRequest">
         
     <xs:sequence>
@@ -2846,34 +2692,6 @@
     </xs:sequence>
       
     <xs:attribute name="unusedCodeGenHelper" type="xs:string"/>
-  </xs:complexType>
-    
-  <xs:complexType name="addTaskInviteRequest">
-        
-    <xs:complexContent>
-            
-      <xs:extension base="tns:setCalendarItemInfo">
-                
-        <xs:sequence/>
-              
-      </xs:extension>
-          
-    </xs:complexContent>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="addTaskInviteResponse">
-        
-    <xs:complexContent>
-            
-      <xs:extension base="tns:addAppointmentInviteResponse">
-                
-        <xs:sequence/>
-              
-      </xs:extension>
-          
-    </xs:complexContent>
-      
   </xs:complexType>
     
   <xs:complexType name="announceOrganizerChangeRequest">
@@ -3155,34 +2973,6 @@
       
   </xs:complexType>
     
-  <xs:complexType name="cancelTaskRequest">
-        
-    <xs:complexContent>
-            
-      <xs:extension base="tns:cancelAppointmentRequest">
-                
-        <xs:sequence/>
-              
-      </xs:extension>
-          
-    </xs:complexContent>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="cancelTaskResponse">
-        
-    <xs:complexContent>
-            
-      <xs:extension base="tns:cancelAppointmentResponse">
-                
-        <xs:sequence/>
-              
-      </xs:extension>
-          
-    </xs:complexContent>
-      
-  </xs:complexType>
-    
   <xs:complexType name="checkPermissionRequest">
         
     <xs:sequence>
@@ -3430,26 +3220,6 @@
     <xs:attribute name="word" type="xs:string" use="required"/>
         
     <xs:attribute name="suggestions" type="xs:string"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="completeTaskInstanceRequest">
-        
-    <xs:sequence>
-            
-      <xs:element name="exceptId" type="tns:dtTimeInfo"/>
-            
-      <xs:element minOccurs="0" name="tz" type="tns:calTZInfo"/>
-          
-    </xs:sequence>
-        
-    <xs:attribute name="id" type="xs:string" use="required"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="completeTaskInstanceResponse">
-        
-    <xs:sequence/>
       
   </xs:complexType>
     
@@ -4166,12 +3936,6 @@
                 
         <xs:sequence/>
                 
-        <xs:attribute name="oauthToken" type="xs:string"/>
-                
-        <xs:attribute name="clientId" type="xs:string"/>
-                
-        <xs:attribute name="clientSecret" type="xs:string"/>
-                
         <xs:attribute name="test" type="xs:boolean"/>
               
       </xs:extension>
@@ -4243,10 +4007,6 @@
     <xs:attribute name="importClass" type="xs:string"/>
         
     <xs:attribute name="failingSince" type="xs:long"/>
-        
-    <xs:attribute name="refreshToken" type="xs:string"/>
-        
-    <xs:attribute name="refreshTokenUrl" type="xs:string"/>
       
   </xs:complexType>
     
@@ -4757,76 +4517,6 @@
       
   </xs:complexType>
     
-  <xs:complexType name="createNoteRequest">
-        
-    <xs:sequence>
-            
-      <xs:element name="note" type="tns:newNoteSpec"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="newNoteSpec">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="l" type="xs:string" use="required"/>
-        
-    <xs:attribute name="content" type="xs:string" use="required"/>
-        
-    <xs:attribute name="color" type="xs:byte"/>
-        
-    <xs:attribute name="pos" type="xs:string"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="createNoteResponse">
-        
-    <xs:sequence>
-            
-      <xs:element minOccurs="0" name="note" type="tns:noteInfo"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="noteInfo">
-        
-    <xs:sequence>
-            
-      <xs:element minOccurs="0" name="content" type="xs:string"/>
-            
-      <xs:element maxOccurs="unbounded" minOccurs="0" ref="tns:meta"/>
-          
-    </xs:sequence>
-        
-    <xs:attribute name="id" type="xs:string"/>
-        
-    <xs:attribute name="rev" type="xs:int"/>
-        
-    <xs:attribute name="l" type="xs:string"/>
-        
-    <xs:attribute name="d" type="xs:long"/>
-        
-    <xs:attribute name="f" type="xs:string"/>
-        
-    <xs:attribute name="t" type="xs:string"/>
-        
-    <xs:attribute name="tn" type="xs:string"/>
-        
-    <xs:attribute name="pos" type="xs:string"/>
-        
-    <xs:attribute name="color" type="xs:byte"/>
-        
-    <xs:attribute name="rgb" type="xs:string"/>
-        
-    <xs:attribute name="md" type="xs:long"/>
-        
-    <xs:attribute name="ms" type="xs:int"/>
-      
-  </xs:complexType>
-    
   <xs:complexType name="createSearchFolderRequest">
         
     <xs:sequence>
@@ -4930,62 +4620,6 @@
     <xs:attribute name="md" type="xs:long"/>
         
     <xs:attribute name="ms" type="xs:int"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="createTaskExceptionRequest">
-        
-    <xs:complexContent>
-            
-      <xs:extension base="tns:createAppointmentExceptionRequest">
-                
-        <xs:sequence/>
-              
-      </xs:extension>
-          
-    </xs:complexContent>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="createTaskExceptionResponse">
-        
-    <xs:complexContent>
-            
-      <xs:extension base="tns:createCalendarItemResponse">
-                
-        <xs:sequence/>
-              
-      </xs:extension>
-          
-    </xs:complexContent>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="createTaskRequest">
-        
-    <xs:complexContent>
-            
-      <xs:extension base="tns:createAppointmentRequest">
-                
-        <xs:sequence/>
-              
-      </xs:extension>
-          
-    </xs:complexContent>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="createTaskResponse">
-        
-    <xs:complexContent>
-            
-      <xs:extension base="tns:createCalendarItemResponse">
-                
-        <xs:sequence/>
-              
-      </xs:extension>
-          
-    </xs:complexContent>
       
   </xs:complexType>
     
@@ -5220,67 +4854,15 @@
       
   </xs:complexType>
     
-  <xs:complexType name="diffDocumentRequest">
-        
-    <xs:sequence>
-            
-      <xs:element minOccurs="0" name="doc" type="tns:diffDocumentVersionSpec"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="diffDocumentVersionSpec">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="id" type="xs:string"/>
-        
-    <xs:attribute name="v1" type="xs:int"/>
-        
-    <xs:attribute name="v2" type="xs:int"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="diffDocumentResponse">
-        
-    <xs:sequence>
-            
-      <xs:element maxOccurs="unbounded" minOccurs="0" name="chunk" type="tns:dispositionAndText"/>
-          
-    </xs:sequence>
-      
-    <xs:attribute name="unusedCodeGenHelper" type="xs:string"/>
-  </xs:complexType>
-    
-  <xs:complexType name="dispositionAndText">
-        
-    <xs:simpleContent>
-            
-      <xs:extension base="xs:string">
-                
-        <xs:attribute name="disp" type="xs:string"/>
-              
-      </xs:extension>
-          
-    </xs:simpleContent>
-      
-  </xs:complexType>
-    
   <xs:complexType name="dismissCalendarItemAlarmRequest">
         
     <xs:sequence>
             
-      <xs:choice maxOccurs="unbounded" minOccurs="0">
-                
-        <xs:element name="appt" type="tns:dismissAppointmentAlarm"/>
-                
-        <xs:element name="task" type="tns:dismissTaskAlarm"/>
-              
-      </xs:choice>
+      <xs:element maxOccurs="unbounded" minOccurs="0" name="appt" type="tns:dismissAppointmentAlarm"/>
           
     </xs:sequence>
       
+    <xs:attribute name="unusedCodeGenHelper" type="xs:string"/>
   </xs:complexType>
     
   <xs:complexType name="dismissAppointmentAlarm">
@@ -5307,34 +4889,15 @@
       
   </xs:complexType>
     
-  <xs:complexType name="dismissTaskAlarm">
-        
-    <xs:complexContent>
-            
-      <xs:extension base="tns:dismissAlarm">
-                
-        <xs:sequence/>
-              
-      </xs:extension>
-          
-    </xs:complexContent>
-      
-  </xs:complexType>
-    
   <xs:complexType name="dismissCalendarItemAlarmResponse">
         
     <xs:sequence>
             
-      <xs:choice maxOccurs="unbounded" minOccurs="0">
-                
-        <xs:element name="appt" type="tns:updatedAppointmentAlarmInfo"/>
-                
-        <xs:element name="task" type="tns:updatedTaskAlarmInfo"/>
-              
-      </xs:choice>
+      <xs:element maxOccurs="unbounded" minOccurs="0" name="appt" type="tns:updatedAppointmentAlarmInfo"/>
           
     </xs:sequence>
       
+    <xs:attribute name="unusedCodeGenHelper" type="xs:string"/>
   </xs:complexType>
     
   <xs:complexType name="updatedAppointmentAlarmInfo">
@@ -5382,20 +4945,6 @@
     <xs:attribute name="name" type="xs:string"/>
         
     <xs:attribute name="loc" type="xs:string"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="updatedTaskAlarmInfo">
-        
-    <xs:complexContent>
-            
-      <xs:extension base="tns:updatedAlarmInfo">
-                
-        <xs:sequence/>
-              
-      </xs:extension>
-          
-    </xs:complexContent>
       
   </xs:complexType>
     
@@ -5604,13 +5153,7 @@
         
     <xs:sequence>
             
-      <xs:choice minOccurs="0">
-                
-        <xs:element name="appt" type="tns:calendarItemInfo"/>
-                
-        <xs:element name="task" type="tns:taskItemInfo"/>
-              
-      </xs:choice>
+      <xs:element minOccurs="0" name="appt" type="tns:calendarItemInfo"/>
           
     </xs:sequence>
       
@@ -5701,20 +5244,6 @@
       
   </xs:complexType>
     
-  <xs:complexType name="taskItemInfo">
-        
-    <xs:complexContent>
-            
-      <xs:extension base="tns:calendarItemInfo">
-                
-        <xs:sequence/>
-              
-      </xs:extension>
-          
-    </xs:complexContent>
-      
-  </xs:complexType>
-    
   <xs:complexType name="getApptSummariesRequest">
         
     <xs:sequence/>
@@ -5731,16 +5260,11 @@
         
     <xs:sequence>
             
-      <xs:choice maxOccurs="unbounded" minOccurs="0">
-                
-        <xs:element name="appt" type="tns:legacyAppointmentData"/>
-                
-        <xs:element name="task" type="tns:legacyTaskData"/>
-              
-      </xs:choice>
+      <xs:element maxOccurs="unbounded" minOccurs="0" name="appt" type="tns:legacyAppointmentData"/>
           
     </xs:sequence>
       
+    <xs:attribute name="unusedCodeGenHelper" type="xs:string"/>
   </xs:complexType>
     
   <xs:complexType name="legacyAppointmentData">
@@ -5849,8 +5373,6 @@
         
     <xs:attribute name="fba" type="xs:string"/>
         
-    <xs:attribute name="percentComplete" type="xs:string"/>
-        
     <xs:attribute name="recur" type="xs:boolean"/>
         
     <xs:attribute name="hasEx" type="xs:boolean"/>
@@ -5884,8 +5406,6 @@
     <xs:attribute name="draft" type="xs:boolean"/>
         
     <xs:attribute name="neverSent" type="xs:boolean"/>
-        
-    <xs:attribute name="dueDate" type="xs:long"/>
         
     <xs:attribute name="tzoDue" type="xs:int"/>
       
@@ -5935,20 +5455,6 @@
       
   </xs:complexType>
     
-  <xs:complexType name="legacyTaskData">
-        
-    <xs:complexContent>
-            
-      <xs:extension base="tns:legacyCalendaringData">
-                
-        <xs:sequence/>
-              
-      </xs:extension>
-          
-    </xs:complexContent>
-      
-  </xs:complexType>
-    
   <xs:complexType name="getCalendarItemSummariesRequest">
         
     <xs:sequence/>
@@ -5965,88 +5471,11 @@
         
     <xs:sequence>
             
-      <xs:choice maxOccurs="unbounded" minOccurs="0">
-                
-        <xs:element name="appt" type="tns:legacyAppointmentData"/>
-                
-        <xs:element name="task" type="tns:legacyTaskData"/>
-              
-      </xs:choice>
+      <xs:element maxOccurs="unbounded" minOccurs="0" name="appt" type="tns:legacyAppointmentData"/>
           
     </xs:sequence>
       
-  </xs:complexType>
-    
-  <xs:complexType name="getCommentsRequest">
-        
-    <xs:sequence>
-            
-      <xs:element name="comment" type="tns:parentId"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="parentId">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="parentId" type="xs:string" use="required"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="getCommentsResponse">
-        
-    <xs:sequence>
-            
-      <xs:element maxOccurs="unbounded" minOccurs="0" name="user" type="tns:idEmailName"/>
-            
-      <xs:element maxOccurs="unbounded" minOccurs="0" name="comment" type="tns:commentInfo"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="idEmailName">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="id" type="xs:string"/>
-        
-    <xs:attribute name="email" type="xs:string"/>
-        
-    <xs:attribute name="name" type="xs:string"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType mixed="true" name="commentInfo">
-        
-    <xs:sequence>
-            
-      <xs:element maxOccurs="unbounded" minOccurs="0" ref="tns:meta"/>
-          
-    </xs:sequence>
-        
-    <xs:attribute name="parentId" type="xs:string"/>
-        
-    <xs:attribute name="id" type="xs:string"/>
-        
-    <xs:attribute name="uuid" type="xs:string"/>
-        
-    <xs:attribute name="email" type="xs:string"/>
-        
-    <xs:attribute name="f" type="xs:string"/>
-        
-    <xs:attribute name="t" type="xs:string"/>
-        
-    <xs:attribute name="tn" type="xs:string"/>
-        
-    <xs:attribute name="color" type="xs:byte"/>
-        
-    <xs:attribute name="rgb" type="xs:string"/>
-        
-    <xs:attribute name="d" type="xs:long"/>
-      
+    <xs:attribute name="unusedCodeGenHelper" type="xs:string"/>
   </xs:complexType>
     
   <xs:complexType name="getContactsRequest">
@@ -6860,19 +6289,11 @@
                 
         <xs:element name="tag" type="tns:tagInfo"/>
                 
-        <xs:element name="note" type="tns:noteInfo"/>
-                
         <xs:element name="cn" type="tns:contactInfo"/>
                 
         <xs:element name="appt" type="tns:calendarItemInfo"/>
                 
-        <xs:element name="task" type="tns:taskItemInfo"/>
-                
         <xs:element name="c" type="tns:conversationSummary"/>
-                
-        <xs:element name="w" type="tns:commonDocumentInfo"/>
-                
-        <xs:element name="doc" type="tns:documentInfo"/>
                 
         <xs:element name="m" type="tns:messageSummary"/>
                 
@@ -6919,82 +6340,6 @@
     <xs:attribute name="md" type="xs:long"/>
         
     <xs:attribute name="ms" type="xs:int"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="commonDocumentInfo">
-        
-    <xs:sequence>
-            
-      <xs:element maxOccurs="unbounded" minOccurs="0" ref="tns:meta"/>
-            
-      <xs:element minOccurs="0" name="fr" type="xs:string"/>
-            
-      <xs:element minOccurs="0" name="acl" type="tns:acl"/>
-          
-    </xs:sequence>
-        
-    <xs:attribute name="id" type="xs:string"/>
-        
-    <xs:attribute name="uuid" type="xs:string"/>
-        
-    <xs:attribute name="name" type="xs:string"/>
-        
-    <xs:attribute name="s" type="xs:long"/>
-        
-    <xs:attribute name="d" type="xs:long"/>
-        
-    <xs:attribute name="l" type="xs:string"/>
-        
-    <xs:attribute name="luuid" type="xs:string"/>
-        
-    <xs:attribute name="ms" type="xs:int"/>
-        
-    <xs:attribute name="mdver" type="xs:int"/>
-        
-    <xs:attribute name="md" type="xs:long"/>
-        
-    <xs:attribute name="rev" type="xs:int"/>
-        
-    <xs:attribute name="f" type="xs:string"/>
-        
-    <xs:attribute name="t" type="xs:string"/>
-        
-    <xs:attribute name="tn" type="xs:string"/>
-        
-    <xs:attribute name="desc" type="xs:string"/>
-        
-    <xs:attribute name="ct" type="xs:string"/>
-        
-    <xs:attribute name="descEnabled" type="xs:boolean"/>
-        
-    <xs:attribute name="ver" type="xs:int"/>
-        
-    <xs:attribute name="leb" type="xs:string"/>
-        
-    <xs:attribute name="cr" type="xs:string"/>
-        
-    <xs:attribute name="cd" type="xs:long"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="documentInfo">
-        
-    <xs:complexContent>
-            
-      <xs:extension base="tns:commonDocumentInfo">
-                
-        <xs:sequence/>
-                
-        <xs:attribute name="loid" type="xs:string"/>
-                
-        <xs:attribute name="loe" type="xs:string"/>
-                
-        <xs:attribute name="lt" type="xs:string"/>
-              
-      </xs:extension>
-          
-    </xs:complexContent>
       
   </xs:complexType>
     
@@ -7340,26 +6685,6 @@
       
   </xs:complexType>
     
-  <xs:complexType name="getNoteRequest">
-        
-    <xs:sequence>
-            
-      <xs:element name="note" type="ns1:id"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="getNoteResponse">
-        
-    <xs:sequence>
-            
-      <xs:element name="note" type="tns:noteInfo"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
   <xs:complexType name="getOutgoingFilterRulesRequest">
         
     <xs:sequence/>
@@ -7566,8 +6891,6 @@
     <xs:sequence>
             
       <xs:element name="grantor" type="tns:grantor"/>
-            
-      <xs:element name="link" type="tns:linkInfo"/>
           
     </xs:sequence>
         
@@ -7588,22 +6911,6 @@
     <xs:attribute name="email" type="xs:string" use="required"/>
         
     <xs:attribute name="name" type="xs:string" use="required"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="linkInfo">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="id" type="xs:string" use="required"/>
-        
-    <xs:attribute name="uuid" type="xs:string" use="required"/>
-        
-    <xs:attribute name="name" type="xs:string" use="required"/>
-        
-    <xs:attribute name="view" type="xs:string" use="required"/>
-        
-    <xs:attribute name="perm" type="xs:string"/>
       
   </xs:complexType>
     
@@ -7657,64 +6964,6 @@
     <xs:attribute name="unusedCodeGenHelper" type="xs:string"/>
   </xs:complexType>
     
-  <xs:complexType name="getTaskRequest">
-        
-    <xs:complexContent>
-            
-      <xs:extension base="tns:getCalendarItemRequestBase">
-                
-        <xs:sequence/>
-              
-      </xs:extension>
-          
-    </xs:complexContent>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="getTaskResponse">
-        
-    <xs:sequence>
-            
-      <xs:choice minOccurs="0">
-                
-        <xs:element name="appt" type="tns:calendarItemInfo"/>
-                
-        <xs:element name="task" type="tns:taskItemInfo"/>
-              
-      </xs:choice>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="getTaskSummariesRequest">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="s" type="xs:long" use="required"/>
-        
-    <xs:attribute name="e" type="xs:long" use="required"/>
-        
-    <xs:attribute name="l" type="xs:string"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="getTaskSummariesResponse">
-        
-    <xs:sequence>
-            
-      <xs:choice maxOccurs="unbounded" minOccurs="0">
-                
-        <xs:element name="appt" type="tns:legacyAppointmentData"/>
-                
-        <xs:element name="task" type="tns:legacyTaskData"/>
-              
-      </xs:choice>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
   <xs:complexType name="getWorkingHoursRequest">
         
     <xs:sequence/>
@@ -7738,46 +6987,6 @@
     </xs:sequence>
       
     <xs:attribute name="unusedCodeGenHelper" type="xs:string"/>
-  </xs:complexType>
-    
-  <xs:complexType name="getYahooAuthTokenRequest">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="user" type="xs:string" use="required"/>
-        
-    <xs:attribute name="password" type="xs:string" use="required"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="getYahooAuthTokenResponse">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="failed" type="xs:boolean"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="getYahooCookieRequest">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="user" type="xs:string" use="required"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="getYahooCookieResponse">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="error" type="xs:string"/>
-        
-    <xs:attribute name="crumb" type="xs:string"/>
-        
-    <xs:attribute name="y" type="xs:string"/>
-        
-    <xs:attribute name="t" type="xs:string"/>
-      
   </xs:complexType>
     
   <xs:complexType name="grantPermissionRequest">
@@ -7969,20 +7178,6 @@
       
   </xs:complexType>
     
-  <xs:complexType name="invalidateReminderDeviceRequest">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="a" type="xs:string" use="required"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="invalidateReminderDeviceResponse">
-        
-    <xs:sequence/>
-      
-  </xs:complexType>
-    
   <xs:complexType name="itemActionRequest">
         
     <xs:sequence>
@@ -7998,40 +7193,6 @@
     <xs:sequence>
             
       <xs:element name="action" type="tns:actionResult"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="listDocumentRevisionsRequest">
-        
-    <xs:sequence>
-            
-      <xs:element name="doc" type="tns:listDocumentRevisionsSpec"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="listDocumentRevisionsSpec">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="id" type="xs:string" use="required"/>
-        
-    <xs:attribute name="ver" type="xs:int"/>
-        
-    <xs:attribute name="count" type="xs:int"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="listDocumentRevisionsResponse">
-        
-    <xs:sequence>
-            
-      <xs:element maxOccurs="unbounded" minOccurs="0" name="doc" type="tns:documentInfo"/>
-            
-      <xs:element maxOccurs="unbounded" minOccurs="0" name="user" type="tns:idEmailName"/>
           
     </xs:sequence>
       
@@ -8272,28 +7433,6 @@
       
   </xs:complexType>
     
-  <xs:complexType name="modifyProfileImageRequest">
-        
-    <xs:simpleContent>
-            
-      <xs:extension base="xs:string">
-                
-        <xs:attribute name="uid" type="xs:string"/>
-              
-      </xs:extension>
-          
-    </xs:simpleContent>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="modifyProfileImageResponse">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="itemId" type="xs:int" use="required"/>
-      
-  </xs:complexType>
-    
   <xs:complexType name="modifySearchFolderRequest">
         
     <xs:sequence>
@@ -8325,34 +7464,6 @@
       <xs:element ref="tns:search"/>
           
     </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="modifyTaskRequest">
-        
-    <xs:complexContent>
-            
-      <xs:extension base="tns:modifyAppointmentRequest">
-                
-        <xs:sequence/>
-              
-      </xs:extension>
-          
-    </xs:complexContent>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="modifyTaskResponse">
-        
-    <xs:complexContent>
-            
-      <xs:extension base="tns:modifyAppointmentResponse">
-                
-        <xs:sequence/>
-              
-      </xs:extension>
-          
-    </xs:complexContent>
       
   </xs:complexType>
     
@@ -8395,26 +7506,6 @@
     <xs:sequence/>
         
     <xs:attribute name="waitDisallowed" type="xs:boolean"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="noteActionRequest">
-        
-    <xs:sequence>
-            
-      <xs:element name="action" type="tns:noteActionSelector"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="noteActionResponse">
-        
-    <xs:sequence>
-            
-      <xs:element name="action" type="tns:actionResult"/>
-          
-    </xs:sequence>
       
   </xs:complexType>
     
@@ -8464,34 +7555,6 @@
     </xs:sequence>
         
     <xs:attribute name="more" type="xs:boolean"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="purgeRevisionRequest">
-        
-    <xs:sequence>
-            
-      <xs:element name="revision" type="tns:purgeRevisionSpec"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="purgeRevisionSpec">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="id" type="xs:string" use="required"/>
-        
-    <xs:attribute name="ver" type="xs:int" use="required"/>
-        
-    <xs:attribute name="includeOlderRevisions" type="xs:boolean"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="purgeRevisionResponse">
-        
-    <xs:sequence/>
       
   </xs:complexType>
     
@@ -8633,90 +7696,6 @@
     <xs:attribute name="unusedCodeGenHelper" type="xs:string"/>
   </xs:complexType>
     
-  <xs:complexType name="saveDocumentRequest">
-        
-    <xs:sequence>
-            
-      <xs:element name="doc" type="tns:documentSpec"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="documentSpec">
-        
-    <xs:sequence>
-            
-      <xs:element minOccurs="0" name="upload" type="ns1:id"/>
-            
-      <xs:element minOccurs="0" name="m" type="tns:messagePartSpec"/>
-            
-      <xs:element minOccurs="0" name="doc" type="tns:idVersion"/>
-          
-    </xs:sequence>
-        
-    <xs:attribute name="name" type="xs:string"/>
-        
-    <xs:attribute name="ct" type="xs:string"/>
-        
-    <xs:attribute name="desc" type="xs:string"/>
-        
-    <xs:attribute name="l" type="xs:string"/>
-        
-    <xs:attribute name="id" type="xs:string"/>
-        
-    <xs:attribute name="ver" type="xs:int"/>
-        
-    <xs:attribute name="content" type="xs:string"/>
-        
-    <xs:attribute name="descEnabled" type="xs:boolean"/>
-        
-    <xs:attribute name="f" type="xs:string"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="messagePartSpec">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="id" type="xs:string" use="required"/>
-        
-    <xs:attribute name="part" type="xs:string" use="required"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="idVersion">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="id" type="xs:string" use="required"/>
-        
-    <xs:attribute name="ver" type="xs:int"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="saveDocumentResponse">
-        
-    <xs:sequence>
-            
-      <xs:element minOccurs="0" name="doc" type="tns:idVersionName"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="idVersionName">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="id" type="xs:string" use="required"/>
-        
-    <xs:attribute name="ver" type="xs:int" use="required"/>
-        
-    <xs:attribute name="name" type="xs:string" use="required"/>
-      
-  </xs:complexType>
-    
   <xs:complexType name="saveDraftRequest">
         
     <xs:sequence>
@@ -8829,8 +7808,6 @@
     <xs:attribute name="includeTagDeleted" type="xs:boolean"/>
         
     <xs:attribute name="includeTagMuted" type="xs:boolean"/>
-        
-    <xs:attribute name="allowableTaskStatus" type="xs:string"/>
         
     <xs:attribute name="calExpandInstStart" type="xs:long"/>
         
@@ -9028,15 +8005,7 @@
                 
         <xs:element name="cn" type="tns:contactInfo"/>
                 
-        <xs:element name="note" type="tns:noteHitInfo"/>
-                
-        <xs:element name="doc" type="tns:documentHitInfo"/>
-                
-        <xs:element name="w" type="tns:wikiHitInfo"/>
-                
         <xs:element name="appt" type="tns:appointmentHitInfo"/>
-                
-        <xs:element name="task" type="tns:taskHitInfo"/>
               
       </xs:choice>
             
@@ -9154,54 +8123,6 @@
       
   </xs:complexType>
     
-  <xs:complexType name="noteHitInfo">
-        
-    <xs:complexContent>
-            
-      <xs:extension base="tns:noteInfo">
-                
-        <xs:sequence/>
-                
-        <xs:attribute name="sf" type="xs:string"/>
-              
-      </xs:extension>
-          
-    </xs:complexContent>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="documentHitInfo">
-        
-    <xs:complexContent>
-            
-      <xs:extension base="tns:documentInfo">
-                
-        <xs:sequence/>
-                
-        <xs:attribute name="sf" type="xs:string"/>
-              
-      </xs:extension>
-          
-    </xs:complexContent>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="wikiHitInfo">
-        
-    <xs:complexContent>
-            
-      <xs:extension base="tns:commonDocumentInfo">
-                
-        <xs:sequence/>
-                
-        <xs:attribute name="sf" type="xs:string"/>
-              
-      </xs:extension>
-          
-    </xs:complexContent>
-      
-  </xs:complexType>
-    
   <xs:complexType name="appointmentHitInfo">
         
     <xs:complexContent>
@@ -9314,20 +8235,6 @@
         <xs:attribute name="seq" type="xs:int" use="required"/>
                 
         <xs:attribute name="d" type="xs:int" use="required"/>
-              
-      </xs:extension>
-          
-    </xs:complexContent>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="taskHitInfo">
-        
-    <xs:complexContent>
-            
-      <xs:extension base="tns:calendarItemHitInfo">
-                
-        <xs:sequence/>
               
       </xs:extension>
           
@@ -9506,8 +8413,6 @@
       <xs:element minOccurs="0" name="item" type="ns1:id"/>
             
       <xs:element maxOccurs="unbounded" minOccurs="0" name="e" type="tns:emailAddrInfo"/>
-            
-      <xs:element minOccurs="0" name="notes" type="xs:string"/>
           
     </xs:sequence>
         
@@ -9516,20 +8421,6 @@
   </xs:complexType>
     
   <xs:complexType name="sendShareNotificationResponse">
-        
-    <xs:sequence/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="sendVerificationCodeRequest">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="a" type="xs:string"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="sendVerificationCodeResponse">
         
     <xs:sequence/>
       
@@ -9658,48 +8549,15 @@
       
   </xs:complexType>
     
-  <xs:complexType name="setTaskRequest">
-        
-    <xs:complexContent>
-            
-      <xs:extension base="tns:setAppointmentRequest">
-                
-        <xs:sequence/>
-              
-      </xs:extension>
-          
-    </xs:complexContent>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="setTaskResponse">
-        
-    <xs:complexContent>
-            
-      <xs:extension base="tns:setAppointmentResponse">
-                
-        <xs:sequence/>
-              
-      </xs:extension>
-          
-    </xs:complexContent>
-      
-  </xs:complexType>
-    
   <xs:complexType name="snoozeCalendarItemAlarmRequest">
         
     <xs:sequence>
             
-      <xs:choice maxOccurs="unbounded" minOccurs="0">
-                
-        <xs:element name="appt" type="tns:snoozeAppointmentAlarm"/>
-                
-        <xs:element name="task" type="tns:snoozeTaskAlarm"/>
-              
-      </xs:choice>
+      <xs:element maxOccurs="unbounded" minOccurs="0" name="appt" type="tns:snoozeAppointmentAlarm"/>
           
     </xs:sequence>
       
+    <xs:attribute name="unusedCodeGenHelper" type="xs:string"/>
   </xs:complexType>
     
   <xs:complexType final="extension restriction" name="snoozeAppointmentAlarm">
@@ -9726,34 +8584,15 @@
       
   </xs:complexType>
     
-  <xs:complexType final="extension restriction" name="snoozeTaskAlarm">
-        
-    <xs:complexContent>
-            
-      <xs:extension base="tns:snoozeAlarm">
-                
-        <xs:sequence/>
-              
-      </xs:extension>
-          
-    </xs:complexContent>
-      
-  </xs:complexType>
-    
   <xs:complexType name="snoozeCalendarItemAlarmResponse">
         
     <xs:sequence>
             
-      <xs:choice maxOccurs="unbounded" minOccurs="0">
-                
-        <xs:element name="appt" type="tns:updatedAppointmentAlarmInfo"/>
-                
-        <xs:element name="task" type="tns:updatedTaskAlarmInfo"/>
-              
-      </xs:choice>
+      <xs:element maxOccurs="unbounded" minOccurs="0" name="appt" type="tns:updatedAppointmentAlarmInfo"/>
           
     </xs:sequence>
       
+    <xs:attribute name="unusedCodeGenHelper" type="xs:string"/>
   </xs:complexType>
     
   <xs:complexType name="syncRequest">
@@ -9788,19 +8627,11 @@
                 
         <xs:element name="tag" type="tns:tagInfo"/>
                 
-        <xs:element name="note" type="tns:noteInfo"/>
-                
         <xs:element name="cn" type="tns:contactInfo"/>
                 
         <xs:element name="appt" type="tns:calendarItemInfo"/>
                 
-        <xs:element name="task" type="tns:taskItemInfo"/>
-                
         <xs:element name="c" type="tns:conversationSummary"/>
-                
-        <xs:element name="w" type="tns:commonDocumentInfo"/>
-                
-        <xs:element name="doc" type="tns:documentInfo"/>
                 
         <xs:element name="m" type="tns:messageSummary"/>
                 
@@ -9843,14 +8674,6 @@
         <xs:element name="cn" type="tns:contactIdsAttr"/>
                 
         <xs:element name="appt" type="tns:apptIdsAttr"/>
-                
-        <xs:element name="task" type="tns:taskIdsAttr"/>
-                
-        <xs:element name="notes" type="tns:noteIdsAttr"/>
-                
-        <xs:element name="w" type="tns:wikiIdsAttr"/>
-                
-        <xs:element name="doc" type="tns:docIdsAttr"/>
               
       </xs:choice>
           
@@ -9986,62 +8809,6 @@
       
   </xs:complexType>
     
-  <xs:complexType name="taskIdsAttr">
-        
-    <xs:complexContent>
-            
-      <xs:extension base="tns:idsAttr">
-                
-        <xs:sequence/>
-              
-      </xs:extension>
-          
-    </xs:complexContent>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="noteIdsAttr">
-        
-    <xs:complexContent>
-            
-      <xs:extension base="tns:idsAttr">
-                
-        <xs:sequence/>
-              
-      </xs:extension>
-          
-    </xs:complexContent>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="wikiIdsAttr">
-        
-    <xs:complexContent>
-            
-      <xs:extension base="tns:idsAttr">
-                
-        <xs:sequence/>
-              
-      </xs:extension>
-          
-    </xs:complexContent>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="docIdsAttr">
-        
-    <xs:complexContent>
-            
-      <xs:extension base="tns:idsAttr">
-                
-        <xs:sequence/>
-              
-      </xs:extension>
-          
-    </xs:complexContent>
-      
-  </xs:complexType>
-    
   <xs:complexType name="syncFolder">
         
     <xs:complexContent>
@@ -10063,14 +8830,6 @@
             <xs:element name="cn" type="tns:contactIdsAttr"/>
                         
             <xs:element name="appt" type="tns:apptIdsAttr"/>
-                        
-            <xs:element name="task" type="tns:taskIdsAttr"/>
-                        
-            <xs:element name="notes" type="tns:noteIdsAttr"/>
-                        
-            <xs:element name="w" type="tns:wikiIdsAttr"/>
-                        
-            <xs:element name="doc" type="tns:docIdsAttr"/>
                       
           </xs:choice>
                   
@@ -10195,24 +8954,6 @@
     <xs:attribute name="success" type="xs:int" use="required"/>
         
     <xs:attribute name="error" type="xs:string"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="verifyCodeRequest">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="a" type="xs:string"/>
-        
-    <xs:attribute name="code" type="xs:string"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="verifyCodeResponse">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="success" type="xs:boolean" use="required"/>
       
   </xs:complexType>
     
@@ -10401,15 +9142,11 @@
             
       <xs:enumeration value="contact"/>
             
-      <xs:enumeration value="document"/>
-            
       <xs:enumeration value="appointment"/>
             
       <xs:enumeration value="virtual conversation"/>
             
       <xs:enumeration value="remote folder"/>
-            
-      <xs:enumeration value="wiki"/>
             
       <xs:enumeration value="task"/>
             
