@@ -36,6 +36,26 @@ pipeline {
                 sh 'cp boot/target/carbonio-user-management-*-jar-with-dependencies.jar package/carbonio-user-management.jar'
             }
         }
+        stage("Tests") {
+            parallel {
+                stage("UTs") {
+                    steps {
+                        sh 'mvn -B --settings settings-jenkins.xml verify -P run-unit-tests'
+                    }
+                }
+                stage("ITs") {
+                    steps {
+                        sh 'mvn -B --settings settings-jenkins.xml verify -P run-integration-tests'
+                    }
+                }
+            }
+        }
+        stage('Coverage') {
+            steps {
+                sh 'mvn -B --settings settings-jenkins.xml verify -P generate-jacoco-full-report'
+                publishCoverage adapters: [jacocoAdapter('core/target/jacoco-full-report/jacoco.xml')]
+            }
+        }
         stage('Build deb/rpm') {
             stages {
                 // Replace the pkgrel value from SNAPSHOT with the git commit hash to ensure that
