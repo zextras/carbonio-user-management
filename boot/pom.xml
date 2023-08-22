@@ -33,12 +33,6 @@ SPDX-License-Identifier: AGPL-3.0-only
       <groupId>com.zextras.carbonio.user-management</groupId>
       <artifactId>carbonio-user-management-core</artifactId>
       <version>0.2.5-SNAPSHOT</version>
-      <exclusions>
-        <exclusion>
-          <groupId>javax.ws.rs</groupId>
-          <artifactId>jsr311-api</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
 
     <!-- Guice dependencies -->
@@ -69,10 +63,6 @@ SPDX-License-Identifier: AGPL-3.0-only
       <artifactId>resteasy-servlet-initializer</artifactId>
     </dependency>
 
-    <dependency>
-      <groupId>org.jboss.resteasy</groupId>
-      <artifactId>jaxrs-api</artifactId>
-    </dependency>
   </dependencies>
 
   <build>

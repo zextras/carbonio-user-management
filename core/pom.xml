@@ -31,6 +31,12 @@ SPDX-License-Identifier: AGPL-3.0-only
       <groupId>com.zextras.carbonio.user-management</groupId>
       <artifactId>carbonio-user-management-generated</artifactId>
       <version>${project.parent.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.ws.rs</groupId>
+          <artifactId>jsr311-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
@@ -61,21 +67,6 @@ SPDX-License-Identifier: AGPL-3.0-only
     <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-core</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.jboss.resteasy</groupId>
-      <artifactId>jaxrs-api</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.jboss.resteasy</groupId>
-      <artifactId>resteasy-validator-provider</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.jboss.resteasy</groupId>
-      <artifactId>resteasy-jaxb-provider</artifactId>
     </dependency>
 
     <dependency>
@@ -130,13 +121,11 @@ SPDX-License-Identifier: AGPL-3.0-only
       <scope>test</scope>
     </dependency>
 
-    <!--
     <dependency>
       <groupId>org.mock-server</groupId>
       <artifactId>mockserver-netty-no-dependencies</artifactId>
       <scope>test</scope>
     </dependency>
-    -->
 
     <dependency>
       <groupId>org.mock-server</groupId>
@@ -150,9 +139,45 @@ SPDX-License-Identifier: AGPL-3.0-only
       <artifactId>jsonassert</artifactId>
       <scope>test</scope>
     </dependency>
+
+    <!-- Jetty dependencies -->
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-server</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-servlet</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
+    <testResources>
+      <!--
+        Necessary to copy the ZimbraService.wsdl schema into the core/src/test/resources/soap
+        directory and be available in the test classes
+      -->
+      <testResource>
+        <directory>${project.basedir}/../soapclient/schemas/</directory>
+        <includes>
+          <include>ZimbraService.wsdl</include>
+        </includes>
+        <targetPath>${project.basedir}/src/test/resources/soap</targetPath>
+      </testResource>
+      <testResource>
+        <directory>${project.basedir}/src/test/resources</directory>
+      </testResource>
+    </testResources>
+
     <plugins>
       <!--
         Necessary to allow multiple source directories for tests. In this project there are
@@ -246,6 +271,7 @@ SPDX-License-Identifier: AGPL-3.0-only
               <goal>prepare-agent</goal>
             </goals>
           </execution>
+
           <execution>
             <id>post-unit-test</id>
             <configuration>
@@ -283,6 +309,7 @@ SPDX-License-Identifier: AGPL-3.0-only
               <destFile>${project.build.directory}/jacoco-full-report/merged.exec</destFile>
             </configuration>
           </execution>
+
           <execution>
             <id>full-report</id>
             <configuration>
@@ -307,6 +334,7 @@ SPDX-License-Identifier: AGPL-3.0-only
         <skip.integration.tests>true</skip.integration.tests>
       </properties>
     </profile>
+
     <profile>
       <id>run-integration-tests</id>
       <properties>
@@ -314,6 +342,7 @@ SPDX-License-Identifier: AGPL-3.0-only
         <skip.unit.tests>true</skip.unit.tests>
       </properties>
     </profile>
+
     <profile>
       <id>run-all-tests</id>
       <properties>
@@ -322,6 +351,7 @@ SPDX-License-Identifier: AGPL-3.0-only
         <skip.jacoco.full.report.generation>false</skip.jacoco.full.report.generation>
       </properties>
     </profile>
+
     <profile>
       <id>generate-jacoco-full-report</id>
       <properties>
