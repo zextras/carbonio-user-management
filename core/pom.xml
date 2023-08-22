@@ -56,6 +56,12 @@ SPDX-License-Identifier: AGPL-3.0-only
       <artifactId>resteasy-guice</artifactId>
     </dependency>
 
+    <!-- Logger -->
+    <dependency>
+      <artifactId>logback-classic</artifactId>
+      <groupId>ch.qos.logback</groupId>
+    </dependency>
+
     <!-- JavaEE API -->
     <dependency>
       <groupId>javax</groupId>
