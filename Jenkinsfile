@@ -29,9 +29,16 @@ pipeline {
                 checkout scm
             }
         }
+        stage('Setup') {
+            steps {
+                withCredentials([file(credentialsId: 'jenkins-maven-settings.xml', variable: 'SETTINGS_PATH')]) {
+                    sh "cp ${SETTINGS_PATH} settings-jenkins.xml"
+                }
+            }
+        }
         stage('Build jar') {
             steps {
-                sh 'mvn -B -DskipTests jaxws:wsimport package'
+                sh 'mvn -B --settings settings-jenkins.xml jaxws:wsimport package'
                 // having every file within the package directory is great simplification
                 sh 'cp boot/target/carbonio-user-management-*-jar-with-dependencies.jar package/carbonio-user-management.jar'
             }
