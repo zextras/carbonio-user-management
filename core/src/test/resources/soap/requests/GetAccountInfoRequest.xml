@@ -1,4 +1,11 @@
 <?xml version='1.0' encoding='UTF-8'?>
+
+<!--
+  SPDX-FileCopyrightText: 2023 Zextras <https://www.zextras.com>
+
+  SPDX-License-Identifier: AGPL-3.0-only
+ -->
+
 <S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/">
   <S:Header>
     <ns5:context xmlns="urn:zimbraAdminExt" xmlns:ns2="urn:zimbraAdmin" xmlns:ns3="urn:zimbraMail" xmlns:ns4="urn:zimbraAccount" xmlns:ns5="urn:zimbra">
