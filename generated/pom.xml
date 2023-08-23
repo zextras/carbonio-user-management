@@ -35,22 +35,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
     <dependency>
       <groupId>org.jboss.resteasy</groupId>
-      <artifactId>jaxrs-api</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.jboss.resteasy</groupId>
-      <artifactId>resteasy-validator-provider</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-jackson2-provider</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.jboss.resteasy</groupId>
-      <artifactId>resteasy-jaxb-provider</artifactId>
     </dependency>
 
     <!-- Jackson dependencies -->
@@ -67,11 +52,6 @@ SPDX-License-Identifier: AGPL-3.0-only
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>com.fasterxml.jackson.jaxrs</groupId>
-      <artifactId>jackson-jaxrs-json-provider</artifactId>
     </dependency>
 
     <dependency>

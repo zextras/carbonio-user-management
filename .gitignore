@@ -18,6 +18,7 @@ core/.settings/
 generated/.classpath                                                                                     
 generated/.project                                                                                       
 generated/.settings/ 
+core/src/test/resources/soap/ZimbraService.wsdl
 
 
 # JetBrains IDE

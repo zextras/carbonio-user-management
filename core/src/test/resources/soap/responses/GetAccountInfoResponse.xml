@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<!--
+  SPDX-FileCopyrightText: 2023 Zextras <https://www.zextras.com>
+
+  SPDX-License-Identifier: AGPL-3.0-only
+ -->
+
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+  <soap:Header>
+    <context xmlns="urn:zimbra">
+      <change token="45462"/>
+    </context>
+  </soap:Header>
+  <soap:Body>
+    <GetAccountInfoResponse xmlns="urn:zimbraAccount">
+      <name>%ACCOUNT_EMAIL%</name>
+      <attr name="zimbraId">%ACCOUNT_ID%</attr>
+      <attr name="zimbraMailHost">%ACCOUNT_DOMAIN%</attr>
+      <attr name="displayName">%ACCOUNT_FULL_NAME%</attr>
+      <soapURL>https://%ACCOUNT_DOMAIN%/service/soap/</soapURL>
+      <publicURL>%ACCOUNT_DOMAIN%</publicURL>
+    </GetAccountInfoResponse>
+  </soap:Body>
+</soap:Envelope>
