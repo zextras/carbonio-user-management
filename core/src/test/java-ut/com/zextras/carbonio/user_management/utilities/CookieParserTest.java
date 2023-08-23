@@ -31,7 +31,7 @@ class CookieParserTest {
 
   @ParameterizedTest
   @MethodSource("cookiesProvider")
-  void givenACookiesStringContainingMultipleCookiesTheTheGetCookiesShouldReturnAMapOfThem(
+  void givenACookiesStringContainingMultipleCookiesTheGetCookiesShouldReturnAMapOfThem(
     String cookies,
     Map<String, String> cookiesMap
   ) {
@@ -53,7 +53,22 @@ class CookieParserTest {
   }
 
   @Test
-  void givenACookiesStringTerminatingWithASemicolonTheTheGetCookiesShouldReturnAMapOfThem() {
+  void givenACookiesStringTerminatingWithASemicolonTheGetCookiesShouldReturnAMapOfThem() {
+    // Given
+    String cookies = "ZM_AUTH_TOKEN=fake-zm-token;";
+    // When
+    Map<String, String> expectedCookiesMap = CookieParser.getCookies(cookies);
+
+    // Then
+    Assertions
+      .assertThat(expectedCookiesMap)
+      .hasSize(1)
+      .containsEntry("ZM_AUTH_TOKEN", "fake-zm-token");
+  }
+
+
+  @Test
+  void givenACookiesStringTerminatingWithABlankStringAfterSemicolonTheGetCookiesShouldReturnAMapOfThem() {
     // Given
     String cookies = "ZM_AUTH_TOKEN=fake-zm-token;  ";
     // When
