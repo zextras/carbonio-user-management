@@ -64,13 +64,13 @@ public class UsersApiController implements UsersApiService {
   }
 
   @Override
-  public Response getUserInfoByCookie(String cookie, SecurityContext securityContext) {
+  public Response getMyselfByCookie(String cookie, SecurityContext securityContext) {
     Map<String, String> cookies = CookieParser.getCookies(cookie);
 
     if (cookies.containsKey("ZM_AUTH_TOKEN")) {
       return userService
         .getInfoByToken(cookies.get("ZM_AUTH_TOKEN"))
-        .map(userInfo -> Response.ok().entity(userInfo).build())
+        .map(userMyself -> Response.ok().entity(userMyself).build())
         .orElse(Response.status(Status.NOT_FOUND).build());
     }
 

@@ -13,6 +13,7 @@ import com.zextras.carbonio.user_management.exceptions.ServiceException;
 import com.zextras.carbonio.user_management.generated.model.Locale;
 import com.zextras.carbonio.user_management.generated.model.UserId;
 import com.zextras.carbonio.user_management.generated.model.UserInfo;
+import com.zextras.carbonio.user_management.generated.model.UserMyself;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -140,7 +141,7 @@ public class UserService {
     return Response.ok().entity(userInfo).build();
   }
 
-  public Optional<UserInfo> getInfoByToken(String token) {
+  public Optional<UserMyself> getInfoByToken(String token) {
     try {
       GetInfoResponse infoResponse = SoapClient
         .newClient()
@@ -159,13 +160,13 @@ public class UserService {
         .map(Pref::getValue)
         .orElse("en");
 
-      UserInfo userInfo = new UserInfo();
-      userInfo.setId(userId);
-      userInfo.setEmail(infoResponse.getName());
-      userInfo.setDomain(infoResponse.getPublicURL());
-      userInfo.setLocale(Locale.valueOf(locale.toUpperCase()));
+      UserMyself userMyself = new UserMyself();
+      userMyself.setId(userId);
+      userMyself.setEmail(infoResponse.getName());
+      userMyself.setDomain(infoResponse.getPublicURL());
+      userMyself.setLocale(Locale.valueOf(locale.toUpperCase()));
 
-      return Optional.of(userInfo);
+      return Optional.of(userMyself);
 
     } catch (ServerSOAPFaultException exception) {
       System.out.println(exception.getMessage());

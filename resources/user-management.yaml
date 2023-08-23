@@ -90,12 +90,12 @@ paths:
       summary: |
         Gets the detailed account info of the user making the request. The details are
         fetched by the requester cookie.
-      operationId: getUserInfoByCookie
+      operationId: getMyselfByCookie
       parameters:
         - $ref: '#/components/parameters/headerCookie'
       responses:
         '200':
-          $ref: '#/components/responses/200UserInfo'
+          $ref: '#/components/responses/200UsersMyself'
         '404':
           $ref: '#/components/responses/404NotFound'
   /auth/token/{tokenId}:
@@ -190,6 +190,12 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/UserInfo'
+    200UsersMyself:
+      description: Account complete of all the information of the requester
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UserMyself'
     204NoContent:
       description: The service is up and running
     400BadRequest:
@@ -215,6 +221,18 @@ components:
           type: string
         domain:
           type: string
+    UserMyself:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/UserId'
+        email:
+          type: string
+          format: email
+        fullName:
+          type: string
+        domain:
+          type: string
         locale:
           $ref: '#/components/schemas/Locale'
     UserId:
@@ -225,20 +243,20 @@ components:
     Locale:
       type: string
       enum:
-        - zh_CN
-        - nl
-        - en
-        - de
-        - hi
-        - it
-        - ja
-        - pt
-        - pl
-        - pt_BR
-        - ro
-        - ru
-        - es
-        - th
-        - tr
-        - fr
-        - vi
+        - DE
+        - EN
+        - ES
+        - FR
+        - HI
+        - IT
+        - JA
+        - NL
+        - PL
+        - PT
+        - PT_BR
+        - RO
+        - RU
+        - TH
+        - TR
+        - VI
+        - ZH_CN
