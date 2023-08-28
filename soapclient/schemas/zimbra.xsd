@@ -502,8 +502,6 @@
             
       <xs:enumeration value="server"/>
             
-      <xs:enumeration value="ucservice"/>
-            
       <xs:enumeration value="xmppcomponent"/>
             
       <xs:enumeration value="zimlet"/>
@@ -783,18 +781,6 @@
     <xs:restriction base="xs:string">
             
       <xs:enumeration value="email"/>
-          
-    </xs:restriction>
-      
-  </xs:simpleType>
-    
-  <xs:simpleType name="trueOrFalse">
-        
-    <xs:restriction base="xs:string">
-            
-      <xs:enumeration value="true"/>
-            
-      <xs:enumeration value="false"/>
           
     </xs:restriction>
       
