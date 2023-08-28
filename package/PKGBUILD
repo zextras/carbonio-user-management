@@ -73,6 +73,9 @@ postinst() {
   getent passwd 'carbonio-user-management' >/dev/null ||
     useradd -r -M -g 'carbonio-user-management' -s /sbin/nologin 'carbonio-user-management'
 
+  mkdir -p "/var/log/carbonio/user-management/"
+  chown carbonio-user-management:carbonio-user-management "/var/log/carbonio/user-management"
+
   if [ -d /run/systemd/system ]; then
     systemctl daemon-reload >/dev/null 2>&1 || :
     systemctl enable carbonio-user-management.service >/dev/null 2>&1 || :
