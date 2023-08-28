@@ -1,0 +1,41 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: carbonio-user-management
+Upstream-Contact: Zextras <packages@zextras.com>
+Source: https://github.com/Zextras/carbonio-user-management
+
+Files: pacur.json
+Copyright: 2023 Zextras s.r.l
+License: AGPL-3.0-only
+
+Files: package/intentions.json
+Copyright: 2023 Zextras s.r.l
+License: AGPL-3.0-only
+
+Files: package/policies.json
+Copyright: 2023 Zextras s.r.l
+License: AGPL-3.0-only
+
+Files: package/service-protocol.json
+Copyright: 2023 Zextras s.r.l
+License: AGPL-3.0-only
+
+Files: core/src/test/resources/soap/requests/GetAccountInfoRequest.xml
+Copyright: 2023 Zextras s.r.l
+License: AGPL-3.0-only
+
+Files: core/src/test/resources/soap/requests/GetInfoRequest.xml
+Copyright: 2023 Zextras s.r.l
+License: AGPL-3.0-only
+
+Files: core/src/test/resources/soap/responses/GetAccountInfoResponse.xml
+Copyright: 2023 Zextras s.r.l
+License: AGPL-3.0-only
+
+Files: core/src/test/resources/soap/responses/GetInfoResponse.xml
+Copyright: 2023 Zextras s.r.l
+License: AGPL-3.0-only
+
+Files: core/src/test/resources/soap/responses/SoapNotFoundError.xml
+Copyright: 2023 Zextras s.r.l
+License: AGPL-3.0-only
+
