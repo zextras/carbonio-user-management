@@ -20,6 +20,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import zimbraaccount.Attr;
 import zimbraaccount.GetAccountInfoResponse;
 import zimbraaccount.GetInfoResponse;
 import zimbraaccount.Pref;
@@ -141,7 +142,7 @@ public class UserService {
     return Response.ok().entity(userInfo).build();
   }
 
-  public Optional<UserMyself> getInfoByToken(String token) {
+  public Optional<UserMyself> getMyselfByToken(String token) {
     try {
       GetInfoResponse infoResponse = SoapClient
         .newClient()
@@ -160,10 +161,20 @@ public class UserService {
         .map(Pref::getValue)
         .orElse("en");
 
+      String fullName = infoResponse
+        .getAttrs()
+        .getAttr()
+        .stream()
+        .filter(attribute -> attribute.getName().equals("displayName"))
+        .findFirst()
+        .map(Attr::getValue)
+        .orElse("");
+
       UserMyself userMyself = new UserMyself();
       userMyself.setId(userId);
       userMyself.setEmail(infoResponse.getName());
       userMyself.setDomain(infoResponse.getPublicURL());
+      userMyself.setFullName(fullName);
       userMyself.setLocale(Locale.valueOf(locale.toUpperCase()));
 
       return Optional.of(userMyself);
@@ -173,7 +184,8 @@ public class UserService {
       return Optional.empty();
     } catch (Exception exception) {
       exception.printStackTrace();
-      throw new ServiceException("Unable to get account user info due to an internal service error");
+      throw new ServiceException(
+        "Unable to get account user info due to an internal service error");
     }
   }
 

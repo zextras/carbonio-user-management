@@ -137,7 +137,7 @@ public class SoapClient {
   }
 
   public GetInfoResponse getAccountInfoByAuthToken()
-    throws JAXBException, ParserConfigurationException {
+    throws JAXBException, ParserConfigurationException, ServerSOAPFaultException {
 
     GetInfoRequest infoRequest = new GetInfoRequest();
     infoRequest.setSections("children,prefs");

@@ -18,13 +18,12 @@ import org.eclipse.jetty.http.HttpTester.Response;
 import org.eclipse.jetty.server.LocalConnector;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockserver.client.MockServerClient;
 import org.mockserver.model.HttpRequest;
 import org.mockserver.model.HttpResponse;
 
-class UsersApiIT {
+class GetUserByIdApiIT {
 
   private static Simulator simulator;
 
@@ -43,7 +42,6 @@ class UsersApiIT {
     simulator.close();
   }
 
-  @Disabled // Re-enabled it after the soap schema alignment
   @Test
   void givenAnExistingUserIdTheGetUserByIdApiShouldReturnTheRequestedUserInfo() throws Exception {
     // Given
@@ -78,13 +76,13 @@ class UsersApiIT {
     request.setURI(("/users/id/a28fdb4d-9f4b-4c7f-a572-43cef33f1d8b"));
 
     // When
-    Response httpFields =
+    Response response =
       HttpTester.parseResponse(HttpTester.from(localConnector.getResponse(request.generate())));
 
     // Then
-    Assertions.assertThat(httpFields.getStatus()).isEqualTo(HttpStatus.OK_200);
+    Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.OK_200);
 
-    UserInfo userInfo = new ObjectMapper().readValue(httpFields.getContent(), UserInfo.class);
+    UserInfo userInfo = new ObjectMapper().readValue(response.getContent(), UserInfo.class);
 
     Assertions
       .assertThat(userInfo.getId().getUserId())

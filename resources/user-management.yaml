@@ -89,7 +89,7 @@ paths:
         - User
       summary: |
         Gets the detailed account info of the user making the request. The details are
-        fetched by the requester cookie.
+        fetched with the requester cookie.
       operationId: getMyselfByCookie
       parameters:
         - $ref: '#/components/parameters/headerCookie'

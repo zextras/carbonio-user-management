@@ -5,7 +5,6 @@
 package com.zextras.carbonio.user_management.controllers;
 
 import com.google.inject.Inject;
-import com.zextras.carbonio.user_management.exceptions.ServiceException;
 import com.zextras.carbonio.user_management.generated.NotFoundException;
 import com.zextras.carbonio.user_management.generated.UsersApiService;
 import com.zextras.carbonio.user_management.services.UserService;
@@ -69,7 +68,7 @@ public class UsersApiController implements UsersApiService {
 
     if (cookies.containsKey("ZM_AUTH_TOKEN")) {
       return userService
-        .getInfoByToken(cookies.get("ZM_AUTH_TOKEN"))
+        .getMyselfByToken(cookies.get("ZM_AUTH_TOKEN"))
         .map(userMyself -> Response.ok().entity(userMyself).build())
         .orElse(Response.status(Status.NOT_FOUND).build());
     }
