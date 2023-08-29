@@ -140,7 +140,7 @@ public class SoapClient {
     throws JAXBException, ParserConfigurationException, ServerSOAPFaultException {
 
     GetInfoRequest infoRequest = new GetInfoRequest();
-    infoRequest.setSections("children,prefs");
+    infoRequest.setSections("children,attrs,prefs");
 
     ZcsPortType zimbraService = getZimbraService();
 
