@@ -8,6 +8,13 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.3.0](https://github.com/Zextras/carbonio-user-management/compare/v0.2.4...v0.3.0) (2023-08-31)
+
+
+### Features
+
+* implement /users/myself API to expose the user locale prefs ([#25](https://github.com/Zextras/carbonio-user-management/issues/25)) ([a24b7c0](https://github.com/Zextras/carbonio-user-management/commit/a24b7c02e5b87062da40c7fce97449948b837fc9))
+
 ### [0.2.4](https://github.com/Zextras/carbonio-user-management/compare/v0.2.3...v0.2.4) (2023-07-06)
 
 ### [0.2.3](https://github.com/Zextras/carbonio-user-management/compare/v0.2.2...v0.2.3) (2023-05-25)
