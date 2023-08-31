@@ -1,0 +1,29 @@
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+  <soap:Header>
+    <context xmlns="urn:zimbra">
+      <change token="48259"/>
+    </context>
+  </soap:Header>
+  <soap:Body>
+    <GetInfoResponse docSizeLimit="10485760" attSizeLimit="10240000" xmlns="urn:zimbraAccount">
+      <version>23.9.0_ZEXTRAS_202309 carbonio 20230816-0759 FOSS</version>
+      <id>%ACCOUNT_ID%</id>
+      <name>%ACCOUNT_EMAIL%</name>
+      <crumb>a32b032208b7e0d53eb7a6559e74f2d3</crumb>
+      <lifetime>172778688</lifetime>
+      <cos name="default" id="e00428a1-0c00-11d9-836a-000d93afea2a"/>
+      <prefs>
+        <!-- Here only the used prefs are listed -->
+        <pref name="zimbraPrefLocale">%ACCOUNT_LOCALE%</pref>
+      </prefs>
+      <attrs>
+        <!-- Here only the used attrs are listed -->
+        <attr name="displayName">%ACCOUNT_FULL_NAME%</attr>
+      </attrs>
+      <soapURL>https://%ACCOUNT_DOMAIN%/service/soap/</soapURL>
+      <publicURL>%ACCOUNT_DOMAIN%</publicURL>
+      <adminURL>https://%ACCOUNT_DOMAIN%:9071/carbonioAdmin</adminURL>
+      <pasteitcleanedEnabled>0</pasteitcleanedEnabled>
+    </GetInfoResponse>
+  </soap:Body>
+</soap:Envelope>

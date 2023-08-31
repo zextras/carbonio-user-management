@@ -62,4 +62,17 @@ public class UsersApiController implements UsersApiService {
       : Response.status(Status.BAD_REQUEST).build();
   }
 
+  @Override
+  public Response getMyselfByCookie(String cookie, SecurityContext securityContext) {
+    Map<String, String> cookies = CookieParser.getCookies(cookie);
+
+    if (cookies.containsKey("ZM_AUTH_TOKEN")) {
+      return userService
+        .getMyselfByToken(cookies.get("ZM_AUTH_TOKEN"))
+        .map(userMyself -> Response.ok().entity(userMyself).build())
+        .orElse(Response.status(Status.NOT_FOUND).build());
+    }
+
+    return Response.status(Status.BAD_REQUEST).build();
+  }
 }

@@ -9,15 +9,21 @@ import com.google.inject.Inject;
 import com.sun.xml.ws.fault.ServerSOAPFaultException;
 import com.zextras.carbonio.user_management.cache.CacheManager;
 import com.zextras.carbonio.user_management.entities.UserToken;
+import com.zextras.carbonio.user_management.exceptions.ServiceException;
+import com.zextras.carbonio.user_management.generated.model.Locale;
 import com.zextras.carbonio.user_management.generated.model.UserId;
 import com.zextras.carbonio.user_management.generated.model.UserInfo;
+import com.zextras.carbonio.user_management.generated.model.UserMyself;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import zimbraaccount.Attr;
 import zimbraaccount.GetAccountInfoResponse;
 import zimbraaccount.GetInfoResponse;
+import zimbraaccount.Pref;
 
 public class UserService {
 
@@ -134,6 +140,53 @@ public class UserService {
     System.out.println(userInfo.getId().getUserId());
 
     return Response.ok().entity(userInfo).build();
+  }
+
+  public Optional<UserMyself> getMyselfByToken(String token) {
+    try {
+      GetInfoResponse infoResponse = SoapClient
+        .newClient()
+        .setAuthToken(token)
+        .getAccountInfoByAuthToken();
+
+      UserId userId = new UserId();
+      userId.setUserId(infoResponse.getId());
+
+      String locale = infoResponse
+        .getPrefs()
+        .getPref()
+        .stream()
+        .filter(perf -> perf.getName().equals("zimbraPrefLocale"))
+        .findFirst()
+        .map(Pref::getValue)
+        .orElse("en");
+
+      String fullName = infoResponse
+        .getAttrs()
+        .getAttr()
+        .stream()
+        .filter(attribute -> attribute.getName().equals("displayName"))
+        .findFirst()
+        .map(Attr::getValue)
+        .orElse("");
+
+      UserMyself userMyself = new UserMyself();
+      userMyself.setId(userId);
+      userMyself.setEmail(infoResponse.getName());
+      userMyself.setDomain(infoResponse.getPublicURL());
+      userMyself.setFullName(fullName);
+      userMyself.setLocale(Locale.valueOf(locale.toUpperCase()));
+
+      return Optional.of(userMyself);
+
+    } catch (ServerSOAPFaultException exception) {
+      System.out.println(exception.getMessage());
+      return Optional.empty();
+    } catch (Exception exception) {
+      exception.printStackTrace();
+      throw new ServiceException(
+        "Unable to get account user info due to an internal service error");
+    }
   }
 
   public Response validateUserToken(String token) {

@@ -11,8 +11,6 @@
     </context>
   </S:Header>
   <S:Body>
-    <ns4:GetAccountInfoRequest xmlns="urn:zimbraAdminExt" xmlns:ns2="urn:zimbraAdmin" xmlns:ns3="urn:zimbraMail" xmlns:ns4="urn:zimbraAccount" xmlns:ns5="urn:zimbra">
-      <ns4:account by="id">%ACCOUNT_ID%</ns4:account>
-    </ns4:GetAccountInfoRequest>
+    <ns4:GetInfoRequest xmlns="urn:zimbraAdminExt" xmlns:ns2="urn:zimbraAdmin" xmlns:ns3="urn:zimbraMail" xmlns:ns4="urn:zimbraAccount" xmlns:ns5="urn:zimbra" sections="children,attrs,prefs"/>
   </S:Body>
 </S:Envelope>

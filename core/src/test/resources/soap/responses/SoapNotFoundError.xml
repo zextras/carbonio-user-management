@@ -1,0 +1,17 @@
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+  <soap:Header>
+    <context xmlns="urn:zimbra"/>
+  </soap:Header>
+  <soap:Body>
+    <soap:Fault>
+      <faultcode>soap:Client</faultcode>
+      <faultstring>no valid authtoken present</faultstring>
+      <detail>
+        <Error xmlns="urn:zimbra">
+          <Code>service.AUTH_REQUIRED</Code>
+          <Trace>qtp560549459-94091:1693211656675:09cbc00a5bd780ff</Trace>
+        </Error>
+      </detail>
+    </soap:Fault>
+  </soap:Body>
+</soap:Envelope>

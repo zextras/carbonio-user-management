@@ -6,7 +6,7 @@ openapi: 3.0.3
 info:
   title: UserManagement API
   description: UserManagement API
-  version: 0.1.0
+  version: 0.2.5
 servers:
   - url: 'https://example.com/services/user-management/'
 tags:
@@ -81,6 +81,21 @@ paths:
           $ref: '#/components/responses/400BadRequest'
         '403':
           $ref: '#/components/responses/403Forbidden'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+  /users/myself:
+    get:
+      tags:
+        - User
+      summary: |
+        Gets the detailed account info of the user making the request. The details are
+        fetched with the requester cookie.
+      operationId: getMyselfByCookie
+      parameters:
+        - $ref: '#/components/parameters/headerCookie'
+      responses:
+        '200':
+          $ref: '#/components/responses/200UsersMyself'
         '404':
           $ref: '#/components/responses/404NotFound'
   /auth/token/{tokenId}:
@@ -175,6 +190,12 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/UserInfo'
+    200UsersMyself:
+      description: Account complete of all the information of the requester
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UserMyself'
     204NoContent:
       description: The service is up and running
     400BadRequest:
@@ -200,8 +221,42 @@ components:
           type: string
         domain:
           type: string
+    UserMyself:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/UserId'
+        email:
+          type: string
+          format: email
+        fullName:
+          type: string
+        domain:
+          type: string
+        locale:
+          $ref: '#/components/schemas/Locale'
     UserId:
       type: object
       properties:
         userId:
           type: string
+    Locale:
+      type: string
+      enum:
+        - DE
+        - EN
+        - ES
+        - FR
+        - HI
+        - IT
+        - JA
+        - NL
+        - PL
+        - PT
+        - PT_BR
+        - RO
+        - RU
+        - TH
+        - TR
+        - VI
+        - ZH_CN

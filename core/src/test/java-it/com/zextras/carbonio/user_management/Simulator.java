@@ -110,6 +110,10 @@ public final class Simulator implements AutoCloseable {
     return this;
   }
 
+  public void resetAll() {
+    mailboxServiceMock.reset();
+  }
+
   public void stopAll() {
     stopJettyServer();
     stopMailboxService();
