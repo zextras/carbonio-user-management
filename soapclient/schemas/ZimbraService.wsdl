@@ -232,12 +232,6 @@
   <wsdl:message name="AccountModifyPrefsResponseMessage">
     <wsdl:part name="params" element="zimbraAccount:ModifyPrefsResponse"/>
   </wsdl:message>
-  <wsdl:message name="AccountModifyPropertiesRequestMessage">
-    <wsdl:part name="params" element="zimbraAccount:ModifyPropertiesRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AccountModifyPropertiesResponseMessage">
-    <wsdl:part name="params" element="zimbraAccount:ModifyPropertiesResponse"/>
-  </wsdl:message>
   <wsdl:message name="AccountModifySignatureRequestMessage">
     <wsdl:part name="params" element="zimbraAccount:ModifySignatureRequest"/>
   </wsdl:message>
@@ -249,12 +243,6 @@
   </wsdl:message>
   <wsdl:message name="AccountModifyWhiteBlackListResponseMessage">
     <wsdl:part name="params" element="zimbraAccount:ModifyWhiteBlackListResponse"/>
-  </wsdl:message>
-  <wsdl:message name="AccountModifyZimletPrefsRequestMessage">
-    <wsdl:part name="params" element="zimbraAccount:ModifyZimletPrefsRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AccountModifyZimletPrefsResponseMessage">
-    <wsdl:part name="params" element="zimbraAccount:ModifyZimletPrefsResponse"/>
   </wsdl:message>
   <wsdl:message name="AccountResetPasswordRequestMessage">
     <wsdl:part name="params" element="zimbraAccount:ResetPasswordRequest"/>
@@ -1150,12 +1138,6 @@
   <wsdl:message name="AdminComputeAggregateQuotaUsageResponseMessage">
     <wsdl:part name="params" element="zimbraAdmin:ComputeAggregateQuotaUsageResponse"/>
   </wsdl:message>
-  <wsdl:message name="AdminConfigureZimletRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:ConfigureZimletRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminConfigureZimletResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:ConfigureZimletResponse"/>
-  </wsdl:message>
   <wsdl:message name="AdminContactBackupRequestMessage">
     <wsdl:part name="params" element="zimbraAdmin:ContactBackupRequest"/>
   </wsdl:message>
@@ -1270,12 +1252,6 @@
   <wsdl:message name="AdminCreateXMbxSearchResponseMessage">
     <wsdl:part name="params" element="zimbraAdmin:CreateXMbxSearchResponse"/>
   </wsdl:message>
-  <wsdl:message name="AdminCreateZimletRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:CreateZimletRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminCreateZimletResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:CreateZimletResponse"/>
-  </wsdl:message>
   <wsdl:message name="AdminDedupeBlobsRequestMessage">
     <wsdl:part name="params" element="zimbraAdmin:DedupeBlobsRequest"/>
   </wsdl:message>
@@ -1371,18 +1347,6 @@
   </wsdl:message>
   <wsdl:message name="AdminDeleteXMbxSearchResponseMessage">
     <wsdl:part name="params" element="zimbraAdmin:DeleteXMbxSearchResponse"/>
-  </wsdl:message>
-  <wsdl:message name="AdminDeleteZimletRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:DeleteZimletRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminDeleteZimletResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:DeleteZimletResponse"/>
-  </wsdl:message>
-  <wsdl:message name="AdminDeployZimletRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:DeployZimletRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminDeployZimletResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:DeployZimletResponse"/>
   </wsdl:message>
   <wsdl:message name="AdminDisableArchiveRequestMessage">
     <wsdl:part name="params" element="zimbraAdmin:DisableArchiveRequest"/>
@@ -1485,12 +1449,6 @@
   </wsdl:message>
   <wsdl:message name="AdminGetAdminConsoleUICompResponseMessage">
     <wsdl:part name="params" element="zimbraAdmin:GetAdminConsoleUICompResponse"/>
-  </wsdl:message>
-  <wsdl:message name="AdminGetAdminExtensionZimletsRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:GetAdminExtensionZimletsRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminGetAdminExtensionZimletsResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:GetAdminExtensionZimletsResponse"/>
   </wsdl:message>
   <wsdl:message name="AdminGetAdminSavedSearchesRequestMessage">
     <wsdl:part name="params" element="zimbraAdmin:GetAdminSavedSearchesRequest"/>
@@ -1605,12 +1563,6 @@
   </wsdl:message>
   <wsdl:message name="AdminGetAllXMPPComponentsResponseMessage">
     <wsdl:part name="params" element="zimbraAdmin:GetAllXMPPComponentsResponse"/>
-  </wsdl:message>
-  <wsdl:message name="AdminGetAllZimletsRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:GetAllZimletsRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminGetAllZimletsResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:GetAllZimletsResponse"/>
   </wsdl:message>
   <wsdl:message name="AdminGetApplianceHSMFSRequestMessage">
     <wsdl:part name="params" element="zimbraAdmin:GetApplianceHSMFSRequest"/>
@@ -1894,18 +1846,6 @@
   <wsdl:message name="AdminGetXMbxSearchesListResponseMessage">
     <wsdl:part name="params" element="zimbraAdmin:GetXMbxSearchesListResponse"/>
   </wsdl:message>
-  <wsdl:message name="AdminGetZimletRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:GetZimletRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminGetZimletResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:GetZimletResponse"/>
-  </wsdl:message>
-  <wsdl:message name="AdminGetZimletStatusRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:GetZimletStatusRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminGetZimletStatusResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:GetZimletStatusResponse"/>
-  </wsdl:message>
   <wsdl:message name="AdminGrantRightRequestMessage">
     <wsdl:part name="params" element="zimbraAdmin:GrantRightRequest"/>
   </wsdl:message>
@@ -2061,12 +2001,6 @@
   </wsdl:message>
   <wsdl:message name="AdminModifyVolumeResponseMessage">
     <wsdl:part name="params" element="zimbraAdmin:ModifyVolumeResponse"/>
-  </wsdl:message>
-  <wsdl:message name="AdminModifyZimletRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:ModifyZimletRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminModifyZimletResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:ModifyZimletResponse"/>
   </wsdl:message>
   <wsdl:message name="AdminMoveBlobsRequestMessage">
     <wsdl:part name="params" element="zimbraAdmin:MoveBlobsRequest"/>
@@ -2320,12 +2254,6 @@
   <wsdl:message name="AdminSyncGalAccountResponseMessage">
     <wsdl:part name="params" element="zimbraAdmin:SyncGalAccountResponse"/>
   </wsdl:message>
-  <wsdl:message name="AdminUndeployZimletRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:UndeployZimletRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminUndeployZimletResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:UndeployZimletResponse"/>
-  </wsdl:message>
   <wsdl:message name="AdminUnloadMailboxRequestMessage">
     <wsdl:part name="params" element="zimbraAdmin:UnloadMailboxRequest"/>
   </wsdl:message>
@@ -2510,10 +2438,6 @@
       <wsdl:input message="svc:AdminComputeAggregateQuotaUsageRequestMessage"/>
       <wsdl:output message="svc:AdminComputeAggregateQuotaUsageResponseMessage"/>
     </wsdl:operation>
-    <wsdl:operation name="configureZimletRequest">
-      <wsdl:input message="svc:AdminConfigureZimletRequestMessage"/>
-      <wsdl:output message="svc:AdminConfigureZimletResponseMessage"/>
-    </wsdl:operation>
     <wsdl:operation name="contactBackupRequest">
       <wsdl:input message="svc:AdminContactBackupRequestMessage"/>
       <wsdl:output message="svc:AdminContactBackupResponseMessage"/>
@@ -2590,10 +2514,6 @@
       <wsdl:input message="svc:AdminCreateXMbxSearchRequestMessage"/>
       <wsdl:output message="svc:AdminCreateXMbxSearchResponseMessage"/>
     </wsdl:operation>
-    <wsdl:operation name="createZimletRequest">
-      <wsdl:input message="svc:AdminCreateZimletRequestMessage"/>
-      <wsdl:output message="svc:AdminCreateZimletResponseMessage"/>
-    </wsdl:operation>
     <wsdl:operation name="dedupeBlobsRequest">
       <wsdl:input message="svc:AdminDedupeBlobsRequestMessage"/>
       <wsdl:output message="svc:AdminDedupeBlobsResponseMessage"/>
@@ -2657,14 +2577,6 @@
     <wsdl:operation name="deleteXMbxSearchRequest">
       <wsdl:input message="svc:AdminDeleteXMbxSearchRequestMessage"/>
       <wsdl:output message="svc:AdminDeleteXMbxSearchResponseMessage"/>
-    </wsdl:operation>
-    <wsdl:operation name="deleteZimletRequest">
-      <wsdl:input message="svc:AdminDeleteZimletRequestMessage"/>
-      <wsdl:output message="svc:AdminDeleteZimletResponseMessage"/>
-    </wsdl:operation>
-    <wsdl:operation name="deployZimletRequest">
-      <wsdl:input message="svc:AdminDeployZimletRequestMessage"/>
-      <wsdl:output message="svc:AdminDeployZimletResponseMessage"/>
     </wsdl:operation>
     <wsdl:operation name="disableArchiveRequest">
       <wsdl:input message="svc:AdminDisableArchiveRequestMessage"/>
@@ -2733,10 +2645,6 @@
     <wsdl:operation name="getAdminConsoleUICompRequest">
       <wsdl:input message="svc:AdminGetAdminConsoleUICompRequestMessage"/>
       <wsdl:output message="svc:AdminGetAdminConsoleUICompResponseMessage"/>
-    </wsdl:operation>
-    <wsdl:operation name="getAdminExtensionZimletsRequest">
-      <wsdl:input message="svc:AdminGetAdminExtensionZimletsRequestMessage"/>
-      <wsdl:output message="svc:AdminGetAdminExtensionZimletsResponseMessage"/>
     </wsdl:operation>
     <wsdl:operation name="getAdminSavedSearchesRequest">
       <wsdl:input message="svc:AdminGetAdminSavedSearchesRequestMessage"/>
@@ -2813,10 +2721,6 @@
     <wsdl:operation name="getAllXMPPComponentsRequest">
       <wsdl:input message="svc:AdminGetAllXMPPComponentsRequestMessage"/>
       <wsdl:output message="svc:AdminGetAllXMPPComponentsResponseMessage"/>
-    </wsdl:operation>
-    <wsdl:operation name="getAllZimletsRequest">
-      <wsdl:input message="svc:AdminGetAllZimletsRequestMessage"/>
-      <wsdl:output message="svc:AdminGetAllZimletsResponseMessage"/>
     </wsdl:operation>
     <wsdl:operation name="getApplianceHSMFSRequest">
       <wsdl:input message="svc:AdminGetApplianceHSMFSRequestMessage"/>
@@ -3006,14 +2910,6 @@
       <wsdl:input message="svc:AdminGetXMbxSearchesListRequestMessage"/>
       <wsdl:output message="svc:AdminGetXMbxSearchesListResponseMessage"/>
     </wsdl:operation>
-    <wsdl:operation name="getZimletRequest">
-      <wsdl:input message="svc:AdminGetZimletRequestMessage"/>
-      <wsdl:output message="svc:AdminGetZimletResponseMessage"/>
-    </wsdl:operation>
-    <wsdl:operation name="getZimletStatusRequest">
-      <wsdl:input message="svc:AdminGetZimletStatusRequestMessage"/>
-      <wsdl:output message="svc:AdminGetZimletStatusResponseMessage"/>
-    </wsdl:operation>
     <wsdl:operation name="grantRightRequest">
       <wsdl:input message="svc:AdminGrantRightRequestMessage"/>
       <wsdl:output message="svc:AdminGrantRightResponseMessage"/>
@@ -3117,10 +3013,6 @@
     <wsdl:operation name="modifyVolumeRequest">
       <wsdl:input message="svc:AdminModifyVolumeRequestMessage"/>
       <wsdl:output message="svc:AdminModifyVolumeResponseMessage"/>
-    </wsdl:operation>
-    <wsdl:operation name="modifyZimletRequest">
-      <wsdl:input message="svc:AdminModifyZimletRequestMessage"/>
-      <wsdl:output message="svc:AdminModifyZimletResponseMessage"/>
     </wsdl:operation>
     <wsdl:operation name="moveBlobsRequest">
       <wsdl:input message="svc:AdminMoveBlobsRequestMessage"/>
@@ -3289,10 +3181,6 @@
     <wsdl:operation name="syncGalAccountRequest">
       <wsdl:input message="svc:AdminSyncGalAccountRequestMessage"/>
       <wsdl:output message="svc:AdminSyncGalAccountResponseMessage"/>
-    </wsdl:operation>
-    <wsdl:operation name="undeployZimletRequest">
-      <wsdl:input message="svc:AdminUndeployZimletRequestMessage"/>
-      <wsdl:output message="svc:AdminUndeployZimletResponseMessage"/>
     </wsdl:operation>
     <wsdl:operation name="unloadMailboxRequest">
       <wsdl:input message="svc:AdminUnloadMailboxRequestMessage"/>
@@ -3480,10 +3368,6 @@
       <wsdl:input message="svc:AccountModifyPrefsRequestMessage"/>
       <wsdl:output message="svc:AccountModifyPrefsResponseMessage"/>
     </wsdl:operation>
-    <wsdl:operation name="modifyPropertiesRequest">
-      <wsdl:input message="svc:AccountModifyPropertiesRequestMessage"/>
-      <wsdl:output message="svc:AccountModifyPropertiesResponseMessage"/>
-    </wsdl:operation>
     <wsdl:operation name="modifySignatureRequest">
       <wsdl:input message="svc:AccountModifySignatureRequestMessage"/>
       <wsdl:output message="svc:AccountModifySignatureResponseMessage"/>
@@ -3491,10 +3375,6 @@
     <wsdl:operation name="modifyWhiteBlackListRequest">
       <wsdl:input message="svc:AccountModifyWhiteBlackListRequestMessage"/>
       <wsdl:output message="svc:AccountModifyWhiteBlackListResponseMessage"/>
-    </wsdl:operation>
-    <wsdl:operation name="modifyZimletPrefsRequest">
-      <wsdl:input message="svc:AccountModifyZimletPrefsRequestMessage"/>
-      <wsdl:output message="svc:AccountModifyZimletPrefsResponseMessage"/>
     </wsdl:operation>
     <wsdl:operation name="resetPasswordRequest">
       <wsdl:input message="svc:AccountResetPasswordRequestMessage"/>
@@ -4275,16 +4155,6 @@
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="configureZimletRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/ConfigureZimlet" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="contactBackupRequest">
       <soap:operation soapAction="urn:zimbraAdmin/ContactBackup" style="document"/>
       <wsdl:input>
@@ -4475,16 +4345,6 @@
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="createZimletRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/CreateZimlet" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="dedupeBlobsRequest">
       <soap:operation soapAction="urn:zimbraAdmin/DedupeBlobs" style="document"/>
       <wsdl:input>
@@ -4637,26 +4497,6 @@
     </wsdl:operation>
     <wsdl:operation name="deleteXMbxSearchRequest">
       <soap:operation soapAction="urn:zimbraAdmin/DeleteXMbxSearch" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="deleteZimletRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/DeleteZimlet" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="deployZimletRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/DeployZimlet" style="document"/>
       <wsdl:input>
         <soap:body use="literal"/>
         <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
@@ -4827,16 +4667,6 @@
     </wsdl:operation>
     <wsdl:operation name="getAdminConsoleUICompRequest">
       <soap:operation soapAction="urn:zimbraAdmin/GetAdminConsoleUIComp" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="getAdminExtensionZimletsRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/GetAdminExtensionZimlets" style="document"/>
       <wsdl:input>
         <soap:body use="literal"/>
         <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
@@ -5027,16 +4857,6 @@
     </wsdl:operation>
     <wsdl:operation name="getAllXMPPComponentsRequest">
       <soap:operation soapAction="urn:zimbraAdmin/GetAllXMPPComponents" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="getAllZimletsRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/GetAllZimlets" style="document"/>
       <wsdl:input>
         <soap:body use="literal"/>
         <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
@@ -5515,26 +5335,6 @@
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="getZimletRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/GetZimlet" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="getZimletStatusRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/GetZimletStatus" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="grantRightRequest">
       <soap:operation soapAction="urn:zimbraAdmin/GrantRight" style="document"/>
       <wsdl:input>
@@ -5787,16 +5587,6 @@
     </wsdl:operation>
     <wsdl:operation name="modifyVolumeRequest">
       <soap:operation soapAction="urn:zimbraAdmin/ModifyVolume" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="modifyZimletRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/ModifyZimlet" style="document"/>
       <wsdl:input>
         <soap:body use="literal"/>
         <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
@@ -6217,16 +6007,6 @@
     </wsdl:operation>
     <wsdl:operation name="syncGalAccountRequest">
       <soap:operation soapAction="urn:zimbraAdmin/SyncGalAccount" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="undeployZimletRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/UndeployZimlet" style="document"/>
       <wsdl:input>
         <soap:body use="literal"/>
         <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
@@ -6698,16 +6478,6 @@
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="modifyPropertiesRequest">
-      <soap:operation soapAction="urn:zimbraAccount/ModifyProperties" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="modifySignatureRequest">
       <soap:operation soapAction="urn:zimbraAccount/ModifySignature" style="document"/>
       <wsdl:input>
@@ -6720,16 +6490,6 @@
     </wsdl:operation>
     <wsdl:operation name="modifyWhiteBlackListRequest">
       <soap:operation soapAction="urn:zimbraAccount/ModifyWhiteBlackList" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="modifyZimletPrefsRequest">
-      <soap:operation soapAction="urn:zimbraAccount/ModifyZimletPrefs" style="document"/>
       <wsdl:input>
         <soap:body use="literal"/>
         <soap:header message="svc:soapHdrContext" part="context" use="literal"/>

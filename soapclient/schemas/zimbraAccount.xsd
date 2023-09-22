@@ -154,10 +154,6 @@
     
   <xs:element name="ModifyPrefsResponse" type="tns:modifyPrefsResponse"/>
     
-  <xs:element name="ModifyPropertiesRequest" type="tns:modifyPropertiesRequest"/>
-    
-  <xs:element name="ModifyPropertiesResponse" type="tns:modifyPropertiesResponse"/>
-    
   <xs:element name="ModifySignatureRequest" type="tns:modifySignatureRequest"/>
     
   <xs:element name="ModifySignatureResponse" type="tns:modifySignatureResponse"/>
@@ -165,10 +161,6 @@
   <xs:element name="ModifyWhiteBlackListRequest" type="tns:modifyWhiteBlackListRequest"/>
     
   <xs:element name="ModifyWhiteBlackListResponse" type="tns:modifyWhiteBlackListResponse"/>
-    
-  <xs:element name="ModifyZimletPrefsRequest" type="tns:modifyZimletPrefsRequest"/>
-    
-  <xs:element name="ModifyZimletPrefsResponse" type="tns:modifyZimletPrefsResponse"/>
     
   <xs:element name="ResetPasswordRequest" type="tns:resetPasswordRequest"/>
     
@@ -202,17 +194,9 @@
     
   <xs:element name="dl" type="tns:distributionListInfo"/>
     
-  <xs:element name="include" type="tns:accountZimletInclude"/>
-    
-  <xs:element name="includeCSS" type="tns:accountZimletIncludeCSS"/>
-    
   <xs:element name="meta" type="tns:accountCustomMetadata"/>
     
-  <xs:element name="serverExtension" type="tns:zimletServerExtension"/>
-    
   <xs:element name="signature" type="tns:signature"/>
-    
-  <xs:element name="target" type="tns:accountZimletTarget"/>
     
   <xs:complexType name="authRequest">
         
@@ -1414,36 +1398,6 @@
               
       </xs:element>
             
-      <xs:element minOccurs="0" name="zimlets">
-                
-        <xs:complexType>
-                    
-          <xs:sequence>
-                        
-            <xs:element maxOccurs="unbounded" minOccurs="0" name="zimlet" type="tns:accountZimletInfo"/>
-                      
-          </xs:sequence>
-                  
-          <xs:attribute name="unusedCodeGenHelper" type="xs:string"/>
-        </xs:complexType>
-              
-      </xs:element>
-            
-      <xs:element minOccurs="0" name="props">
-                
-        <xs:complexType>
-                    
-          <xs:sequence>
-                        
-            <xs:element maxOccurs="unbounded" minOccurs="0" name="prop" type="tns:prop"/>
-                      
-          </xs:sequence>
-                  
-          <xs:attribute name="unusedCodeGenHelper" type="xs:string"/>
-        </xs:complexType>
-              
-      </xs:element>
-            
       <xs:element minOccurs="0" name="identities">
                 
         <xs:complexType>
@@ -1561,175 +1515,6 @@
     <xs:attribute name="id" type="xs:string"/>
         
     <xs:attribute name="name" type="xs:string"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="accountZimletInfo">
-        
-    <xs:sequence>
-            
-      <xs:element minOccurs="0" name="zimletContext" type="tns:accountZimletContext"/>
-            
-      <xs:element minOccurs="0" name="zimlet" type="tns:accountZimletDesc"/>
-            
-      <xs:element minOccurs="0" name="zimletConfig" type="tns:accountZimletConfigInfo"/>
-            
-      <xs:any namespace="##other" processContents="skip"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="accountZimletContext">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="baseUrl" type="xs:string" use="required"/>
-        
-    <xs:attribute name="priority" type="xs:int"/>
-        
-    <xs:attribute name="presence" type="xs:string" use="required"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="accountZimletDesc">
-        
-    <xs:sequence>
-            
-      <xs:choice maxOccurs="unbounded" minOccurs="0">
-                
-        <xs:element ref="tns:serverExtension"/>
-                
-        <xs:element ref="tns:include"/>
-                
-        <xs:element ref="tns:includeCSS"/>
-                
-        <xs:element ref="tns:target"/>
-                
-        <xs:any namespace="##other" processContents="skip"/>
-              
-      </xs:choice>
-          
-    </xs:sequence>
-        
-    <xs:attribute name="name" type="xs:string"/>
-        
-    <xs:attribute name="version" type="xs:string"/>
-        
-    <xs:attribute name="description" type="xs:string"/>
-        
-    <xs:attribute name="extension" type="xs:string"/>
-        
-    <xs:attribute name="target" type="xs:string"/>
-        
-    <xs:attribute name="label" type="xs:string"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="zimletServerExtension">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="hasKeyword" type="xs:string"/>
-        
-    <xs:attribute name="extensionClass" type="xs:string"/>
-        
-    <xs:attribute name="regex" type="xs:string"/>
-      
-  </xs:complexType>
-    
-  <xs:simpleType name="accountZimletInclude">
-        
-    <xs:restriction base="xs:string"/>
-      
-  </xs:simpleType>
-    
-  <xs:simpleType name="accountZimletIncludeCSS">
-        
-    <xs:restriction base="xs:string"/>
-      
-  </xs:simpleType>
-    
-  <xs:simpleType name="accountZimletTarget">
-        
-    <xs:restriction base="xs:string"/>
-      
-  </xs:simpleType>
-    
-  <xs:complexType name="accountZimletConfigInfo">
-        
-    <xs:all>
-            
-      <xs:element minOccurs="0" name="global" type="tns:accountZimletGlobalConfigInfo"/>
-            
-      <xs:element minOccurs="0" name="host" type="tns:accountZimletHostConfigInfo"/>
-          
-    </xs:all>
-        
-    <xs:attribute name="name" type="xs:string"/>
-        
-    <xs:attribute name="version" type="xs:string"/>
-        
-    <xs:attribute name="description" type="xs:string"/>
-        
-    <xs:attribute name="extension" type="xs:string"/>
-        
-    <xs:attribute name="target" type="xs:string"/>
-        
-    <xs:attribute name="label" type="xs:string"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="accountZimletGlobalConfigInfo">
-        
-    <xs:sequence>
-            
-      <xs:element maxOccurs="unbounded" minOccurs="0" name="property" type="tns:accountZimletProperty"/>
-          
-    </xs:sequence>
-      
-    <xs:attribute name="unusedCodeGenHelper" type="xs:string"/>
-  </xs:complexType>
-    
-  <xs:complexType name="accountZimletProperty">
-        
-    <xs:simpleContent>
-            
-      <xs:extension base="xs:string">
-                
-        <xs:attribute name="name" type="xs:string"/>
-              
-      </xs:extension>
-          
-    </xs:simpleContent>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="accountZimletHostConfigInfo">
-        
-    <xs:sequence>
-            
-      <xs:element maxOccurs="unbounded" minOccurs="0" name="property" type="tns:accountZimletProperty"/>
-          
-    </xs:sequence>
-        
-    <xs:attribute name="name" type="xs:string"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="prop">
-        
-    <xs:simpleContent>
-            
-      <xs:extension base="xs:string">
-                
-        <xs:attribute name="zimlet" type="xs:string" use="required"/>
-                
-        <xs:attribute name="name" type="xs:string" use="required"/>
-              
-      </xs:extension>
-          
-    </xs:simpleContent>
       
   </xs:complexType>
     
@@ -2365,23 +2150,6 @@
       
   </xs:complexType>
     
-  <xs:complexType name="modifyPropertiesRequest">
-        
-    <xs:sequence>
-            
-      <xs:element maxOccurs="unbounded" name="prop" type="tns:prop"/>
-          
-    </xs:sequence>
-      
-    <xs:attribute name="unusedCodeGenHelper" type="xs:string"/>
-  </xs:complexType>
-    
-  <xs:complexType name="modifyPropertiesResponse">
-        
-    <xs:sequence/>
-      
-  </xs:complexType>
-    
   <xs:complexType name="modifySignatureRequest">
         
     <xs:sequence>
@@ -2440,38 +2208,6 @@
         
     <xs:sequence/>
       
-  </xs:complexType>
-    
-  <xs:complexType name="modifyZimletPrefsRequest">
-        
-    <xs:sequence>
-            
-      <xs:element maxOccurs="unbounded" minOccurs="0" name="zimlet" type="tns:modifyZimletPrefsSpec"/>
-          
-    </xs:sequence>
-      
-    <xs:attribute name="unusedCodeGenHelper" type="xs:string"/>
-  </xs:complexType>
-    
-  <xs:complexType name="modifyZimletPrefsSpec">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="name" type="xs:string" use="required"/>
-        
-    <xs:attribute name="presence" type="xs:string" use="required"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="modifyZimletPrefsResponse">
-        
-    <xs:sequence>
-            
-      <xs:element maxOccurs="unbounded" minOccurs="0" name="zimlet" type="xs:string"/>
-          
-    </xs:sequence>
-      
-    <xs:attribute name="unusedCodeGenHelper" type="xs:string"/>
   </xs:complexType>
     
   <xs:complexType name="resetPasswordRequest">

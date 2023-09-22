@@ -132,10 +132,6 @@
     
   <xs:element name="ComputeAggregateQuotaUsageResponse" type="tns:computeAggregateQuotaUsageResponse"/>
     
-  <xs:element name="ConfigureZimletRequest" type="tns:configureZimletRequest"/>
-    
-  <xs:element name="ConfigureZimletResponse" type="tns:configureZimletResponse"/>
-    
   <xs:element name="ContactBackupRequest" type="tns:contactBackupRequest"/>
     
   <xs:element name="ContactBackupResponse" type="tns:contactBackupResponse"/>
@@ -212,10 +208,6 @@
     
   <xs:element name="CreateXMbxSearchResponse" type="tns:createXMbxSearchResponse"/>
     
-  <xs:element name="CreateZimletRequest" type="tns:createZimletRequest"/>
-    
-  <xs:element name="CreateZimletResponse" type="tns:createZimletResponse"/>
-    
   <xs:element name="DedupeBlobsRequest" type="tns:dedupeBlobsRequest"/>
     
   <xs:element name="DedupeBlobsResponse" type="tns:dedupeBlobsResponse"/>
@@ -279,14 +271,6 @@
   <xs:element name="DeleteXMbxSearchRequest" type="tns:deleteXMbxSearchRequest"/>
     
   <xs:element name="DeleteXMbxSearchResponse" type="tns:deleteXMbxSearchResponse"/>
-    
-  <xs:element name="DeleteZimletRequest" type="tns:deleteZimletRequest"/>
-    
-  <xs:element name="DeleteZimletResponse" type="tns:deleteZimletResponse"/>
-    
-  <xs:element name="DeployZimletRequest" type="tns:deployZimletRequest"/>
-    
-  <xs:element name="DeployZimletResponse" type="tns:deployZimletResponse"/>
     
   <xs:element name="DisableArchiveRequest" type="tns:disableArchiveRequest"/>
     
@@ -355,10 +339,6 @@
   <xs:element name="GetAdminConsoleUICompRequest" type="tns:getAdminConsoleUICompRequest"/>
     
   <xs:element name="GetAdminConsoleUICompResponse" type="tns:getAdminConsoleUICompResponse"/>
-    
-  <xs:element name="GetAdminExtensionZimletsRequest" type="tns:getAdminExtensionZimletsRequest"/>
-    
-  <xs:element name="GetAdminExtensionZimletsResponse" type="tns:getAdminExtensionZimletsResponse"/>
     
   <xs:element name="GetAdminSavedSearchesRequest" type="tns:getAdminSavedSearchesRequest"/>
     
@@ -435,10 +415,6 @@
   <xs:element name="GetAllXMPPComponentsRequest" type="tns:getAllXMPPComponentsRequest"/>
     
   <xs:element name="GetAllXMPPComponentsResponse" type="tns:getAllXMPPComponentsResponse"/>
-    
-  <xs:element name="GetAllZimletsRequest" type="tns:getAllZimletsRequest"/>
-    
-  <xs:element name="GetAllZimletsResponse" type="tns:getAllZimletsResponse"/>
     
   <xs:element name="GetApplianceHSMFSRequest" type="tns:getApplianceHSMFSRequest"/>
     
@@ -628,14 +604,6 @@
     
   <xs:element name="GetXMbxSearchesListResponse" type="tns:getXMbxSearchesListResponse"/>
     
-  <xs:element name="GetZimletRequest" type="tns:getZimletRequest"/>
-    
-  <xs:element name="GetZimletResponse" type="tns:getZimletResponse"/>
-    
-  <xs:element name="GetZimletStatusRequest" type="tns:getZimletStatusRequest"/>
-    
-  <xs:element name="GetZimletStatusResponse" type="tns:getZimletStatusResponse"/>
-    
   <xs:element name="GrantRightRequest" type="tns:grantRightRequest"/>
     
   <xs:element name="GrantRightResponse" type="tns:grantRightResponse"/>
@@ -739,10 +707,6 @@
   <xs:element name="ModifyVolumeRequest" type="tns:modifyVolumeRequest"/>
     
   <xs:element name="ModifyVolumeResponse" type="tns:modifyVolumeResponse"/>
-    
-  <xs:element name="ModifyZimletRequest" type="tns:modifyZimletRequest"/>
-    
-  <xs:element name="ModifyZimletResponse" type="tns:modifyZimletResponse"/>
     
   <xs:element name="MoveBlobsRequest" type="tns:moveBlobsRequest"/>
     
@@ -912,10 +876,6 @@
     
   <xs:element name="SyncGalAccountResponse" type="tns:syncGalAccountResponse"/>
     
-  <xs:element name="UndeployZimletRequest" type="tns:undeployZimletRequest"/>
-    
-  <xs:element name="UndeployZimletResponse" type="tns:undeployZimletResponse"/>
-    
   <xs:element name="UnloadMailboxRequest" type="tns:unloadMailboxRequest"/>
     
   <xs:element name="UnloadMailboxResponse" type="tns:unloadMailboxResponse"/>
@@ -948,10 +908,6 @@
     
   <xs:element name="cos" type="tns:dlInfo"/>
     
-  <xs:element name="include" type="tns:adminZimletInclude"/>
-    
-  <xs:element name="includeCSS" type="tns:adminZimletIncludeCSS"/>
-    
   <xs:element name="mbox" type="tns:mailboxQuotaInfo"/>
     
   <xs:element name="meta" type="tns:adminCustomMetadata"/>
@@ -959,10 +915,6 @@
   <xs:element name="query" type="tns:queueQuery"/>
     
   <xs:element name="server" type="tns:serverInfo"/>
-    
-  <xs:element name="serverExtension" type="tns:zimletServerExtension"/>
-    
-  <xs:element name="target" type="tns:adminZimletTarget"/>
     
   <xs:element name="values" type="tns:statsValueWrapper"/>
     
@@ -2640,30 +2592,6 @@
       
   </xs:complexType>
     
-  <xs:complexType name="configureZimletRequest">
-        
-    <xs:sequence>
-            
-      <xs:element name="content" type="tns:attachmentIdAttrib"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="attachmentIdAttrib">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="aid" type="xs:string"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="configureZimletResponse">
-        
-    <xs:sequence/>
-      
-  </xs:complexType>
-    
   <xs:complexType name="contactBackupRequest">
         
     <xs:sequence>
@@ -3540,48 +3468,6 @@
       
   </xs:complexType>
     
-  <xs:complexType name="createZimletRequest">
-        
-    <xs:complexContent>
-            
-      <xs:extension base="tns:adminAttrsImpl">
-                
-        <xs:sequence/>
-                
-        <xs:attribute name="name" type="xs:string" use="required"/>
-              
-      </xs:extension>
-          
-    </xs:complexContent>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="createZimletResponse">
-        
-    <xs:sequence>
-            
-      <xs:element name="zimlet" type="tns:zimletInfo"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="zimletInfo">
-        
-    <xs:complexContent>
-            
-      <xs:extension base="tns:adminObjectInfo">
-                
-        <xs:sequence/>
-                
-        <xs:attribute name="hasKeyword" type="xs:string"/>
-              
-      </xs:extension>
-          
-    </xs:complexContent>
-      
-  </xs:complexType>
-    
   <xs:complexType name="dedupeBlobsRequest">
         
     <xs:sequence>
@@ -3885,61 +3771,6 @@
   <xs:complexType name="deleteXMbxSearchResponse">
         
     <xs:sequence/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="deleteZimletRequest">
-        
-    <xs:sequence>
-            
-      <xs:element name="zimlet" type="ns1:namedElement"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="deleteZimletResponse">
-        
-    <xs:sequence/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="deployZimletRequest">
-        
-    <xs:sequence>
-            
-      <xs:element name="content" type="tns:attachmentIdAttrib"/>
-          
-    </xs:sequence>
-        
-    <xs:attribute name="action" type="xs:string" use="required"/>
-        
-    <xs:attribute name="flush" type="xs:boolean"/>
-        
-    <xs:attribute name="synchronous" type="xs:boolean"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="deployZimletResponse">
-        
-    <xs:sequence>
-            
-      <xs:element maxOccurs="unbounded" minOccurs="0" name="progress" type="tns:zimletDeploymentStatus"/>
-          
-    </xs:sequence>
-      
-    <xs:attribute name="unusedCodeGenHelper" type="xs:string"/>
-  </xs:complexType>
-    
-  <xs:complexType name="zimletDeploymentStatus">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="server" type="xs:string" use="required"/>
-        
-    <xs:attribute name="status" type="xs:string" use="required"/>
-        
-    <xs:attribute name="error" type="xs:string"/>
       
   </xs:complexType>
     
@@ -4627,188 +4458,6 @@
       
   </xs:complexType>
     
-  <xs:complexType name="getAdminExtensionZimletsRequest">
-        
-    <xs:sequence/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="getAdminExtensionZimletsResponse">
-        
-    <xs:sequence>
-            
-      <xs:element name="zimlets">
-                
-        <xs:complexType>
-                    
-          <xs:sequence>
-                        
-            <xs:element maxOccurs="unbounded" minOccurs="0" name="zimlet" type="tns:adminZimletInfo"/>
-                      
-          </xs:sequence>
-                  
-          <xs:attribute name="unusedCodeGenHelper" type="xs:string"/>
-        </xs:complexType>
-              
-      </xs:element>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="adminZimletInfo">
-        
-    <xs:sequence>
-            
-      <xs:element minOccurs="0" name="zimletContext" type="tns:adminZimletContext"/>
-            
-      <xs:element minOccurs="0" name="zimlet" type="tns:adminZimletDesc"/>
-            
-      <xs:element minOccurs="0" name="zimletConfig" type="tns:adminZimletConfigInfo"/>
-            
-      <xs:any namespace="##other" processContents="skip"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="adminZimletContext">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="baseUrl" type="xs:string" use="required"/>
-        
-    <xs:attribute name="priority" type="xs:int"/>
-        
-    <xs:attribute name="presence" type="xs:string" use="required"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="adminZimletDesc">
-        
-    <xs:sequence>
-            
-      <xs:choice maxOccurs="unbounded" minOccurs="0">
-                
-        <xs:element ref="tns:serverExtension"/>
-                
-        <xs:element ref="tns:include"/>
-                
-        <xs:element ref="tns:includeCSS"/>
-                
-        <xs:element ref="tns:target"/>
-                
-        <xs:any namespace="##other" processContents="skip"/>
-              
-      </xs:choice>
-          
-    </xs:sequence>
-        
-    <xs:attribute name="name" type="xs:string"/>
-        
-    <xs:attribute name="version" type="xs:string"/>
-        
-    <xs:attribute name="description" type="xs:string"/>
-        
-    <xs:attribute name="extension" type="xs:string"/>
-        
-    <xs:attribute name="target" type="xs:string"/>
-        
-    <xs:attribute name="label" type="xs:string"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="zimletServerExtension">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="hasKeyword" type="xs:string"/>
-        
-    <xs:attribute name="extensionClass" type="xs:string"/>
-        
-    <xs:attribute name="regex" type="xs:string"/>
-      
-  </xs:complexType>
-    
-  <xs:simpleType name="adminZimletInclude">
-        
-    <xs:restriction base="xs:string"/>
-      
-  </xs:simpleType>
-    
-  <xs:simpleType name="adminZimletIncludeCSS">
-        
-    <xs:restriction base="xs:string"/>
-      
-  </xs:simpleType>
-    
-  <xs:simpleType name="adminZimletTarget">
-        
-    <xs:restriction base="xs:string"/>
-      
-  </xs:simpleType>
-    
-  <xs:complexType name="adminZimletConfigInfo">
-        
-    <xs:all>
-            
-      <xs:element minOccurs="0" name="global" type="tns:adminZimletGlobalConfigInfo"/>
-            
-      <xs:element minOccurs="0" name="host" type="tns:adminZimletHostConfigInfo"/>
-          
-    </xs:all>
-        
-    <xs:attribute name="name" type="xs:string"/>
-        
-    <xs:attribute name="version" type="xs:string"/>
-        
-    <xs:attribute name="description" type="xs:string"/>
-        
-    <xs:attribute name="extension" type="xs:string"/>
-        
-    <xs:attribute name="target" type="xs:string"/>
-        
-    <xs:attribute name="label" type="xs:string"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="adminZimletGlobalConfigInfo">
-        
-    <xs:sequence>
-            
-      <xs:element maxOccurs="unbounded" minOccurs="0" name="property" type="tns:adminZimletProperty"/>
-          
-    </xs:sequence>
-      
-    <xs:attribute name="unusedCodeGenHelper" type="xs:string"/>
-  </xs:complexType>
-    
-  <xs:complexType name="adminZimletProperty">
-        
-    <xs:simpleContent>
-            
-      <xs:extension base="xs:string">
-                
-        <xs:attribute name="name" type="xs:string"/>
-              
-      </xs:extension>
-          
-    </xs:simpleContent>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="adminZimletHostConfigInfo">
-        
-    <xs:sequence>
-            
-      <xs:element maxOccurs="unbounded" minOccurs="0" name="property" type="tns:adminZimletProperty"/>
-          
-    </xs:sequence>
-        
-    <xs:attribute name="name" type="xs:string"/>
-      
-  </xs:complexType>
-    
   <xs:complexType name="getAdminSavedSearchesRequest">
         
     <xs:sequence>
@@ -5426,25 +5075,6 @@
     <xs:sequence>
             
       <xs:element maxOccurs="unbounded" minOccurs="0" name="xmppcomponent" type="tns:xmppComponentInfo"/>
-          
-    </xs:sequence>
-      
-    <xs:attribute name="unusedCodeGenHelper" type="xs:string"/>
-  </xs:complexType>
-    
-  <xs:complexType name="getAllZimletsRequest">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="exclude" type="xs:string"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="getAllZimletsResponse">
-        
-    <xs:sequence>
-            
-      <xs:element maxOccurs="unbounded" minOccurs="0" name="zimlet" type="tns:zimletInfo"/>
           
     </xs:sequence>
       
@@ -7377,89 +7007,6 @@
     <xs:attribute name="unusedCodeGenHelper" type="xs:string"/>
   </xs:complexType>
     
-  <xs:complexType name="getZimletRequest">
-        
-    <xs:complexContent>
-            
-      <xs:extension base="ns1:attributeSelectorImpl">
-                
-        <xs:sequence>
-                    
-          <xs:element name="zimlet" type="ns1:namedElement"/>
-                  
-        </xs:sequence>
-              
-      </xs:extension>
-          
-    </xs:complexContent>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="getZimletResponse">
-        
-    <xs:sequence>
-            
-      <xs:element name="zimlet" type="tns:zimletInfo"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="getZimletStatusRequest">
-        
-    <xs:sequence/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="getZimletStatusResponse">
-        
-    <xs:sequence>
-            
-      <xs:element name="zimlets" type="tns:zimletStatusParent"/>
-            
-      <xs:element maxOccurs="unbounded" minOccurs="0" name="cos" type="tns:zimletStatusCos"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="zimletStatusParent">
-        
-    <xs:sequence>
-            
-      <xs:element maxOccurs="unbounded" minOccurs="0" name="zimlet" type="tns:zimletStatus"/>
-          
-    </xs:sequence>
-      
-    <xs:attribute name="unusedCodeGenHelper" type="xs:string"/>
-  </xs:complexType>
-    
-  <xs:complexType name="zimletStatus">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="name" type="xs:string" use="required"/>
-        
-    <xs:attribute name="status" type="tns:zimletStatusSetting" use="required"/>
-        
-    <xs:attribute name="extension" type="xs:boolean" use="required"/>
-        
-    <xs:attribute name="priority" type="xs:int"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="zimletStatusCos">
-        
-    <xs:sequence>
-            
-      <xs:element maxOccurs="unbounded" minOccurs="0" name="zimlet" type="tns:zimletStatus"/>
-          
-    </xs:sequence>
-        
-    <xs:attribute name="name" type="xs:string" use="required"/>
-      
-  </xs:complexType>
-    
   <xs:complexType name="grantRightRequest">
         
     <xs:sequence>
@@ -8183,56 +7730,6 @@
   </xs:complexType>
     
   <xs:complexType name="modifyVolumeResponse">
-        
-    <xs:sequence/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="modifyZimletRequest">
-        
-    <xs:sequence>
-            
-      <xs:element name="zimlet" type="tns:zimletAclStatusPri"/>
-          
-    </xs:sequence>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="zimletAclStatusPri">
-        
-    <xs:sequence>
-            
-      <xs:element minOccurs="0" name="acl" type="tns:zimletAcl"/>
-            
-      <xs:element minOccurs="0" name="status" type="tns:valueAttrib"/>
-            
-      <xs:element minOccurs="0" name="priority" type="tns:integerValueAttrib"/>
-          
-    </xs:sequence>
-        
-    <xs:attribute name="name" type="xs:string" use="required"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="zimletAcl">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="cos" type="xs:string"/>
-        
-    <xs:attribute name="acl" type="xs:string"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="integerValueAttrib">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="value" type="xs:int"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="modifyZimletResponse">
         
     <xs:sequence/>
       
@@ -10433,22 +9930,6 @@
       
   </xs:complexType>
     
-  <xs:complexType name="undeployZimletRequest">
-        
-    <xs:sequence/>
-        
-    <xs:attribute name="name" type="xs:string" use="required"/>
-        
-    <xs:attribute name="action" type="xs:string"/>
-      
-  </xs:complexType>
-    
-  <xs:complexType name="undeployZimletResponse">
-        
-    <xs:sequence/>
-      
-  </xs:complexType>
-    
   <xs:complexType name="unloadMailboxRequest">
         
     <xs:sequence>
@@ -10952,18 +10433,6 @@
       <xs:enumeration value="accessedAsc"/>
             
       <xs:enumeration value="accessedDesc"/>
-          
-    </xs:restriction>
-      
-  </xs:simpleType>
-    
-  <xs:simpleType name="zimletStatusSetting">
-        
-    <xs:restriction base="xs:string">
-            
-      <xs:enumeration value="enabled"/>
-            
-      <xs:enumeration value="disabled"/>
           
     </xs:restriction>
       
