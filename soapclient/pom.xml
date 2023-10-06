@@ -14,7 +14,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
   <groupId>com.zextras.carbonio.soap-client</groupId>
   <artifactId>carbonio-soap-client</artifactId>
-  <version>0.3.0-1</version>
+  <version>0.3.1-SNAPSHOT</version>
 
   <name>carbonio-soap-client</name>
 
