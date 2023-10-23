@@ -19,6 +19,7 @@ SPDX-License-Identifier: AGPL-3.0-only
   <name>carbonio-soap-client</name>
 
   <properties>
+    <carbonio-mailbox-sdk.version>23.11.0-SNAPSHOT</carbonio-mailbox-sdk.version>
     <jaxb-impl.version>4.0.3</jaxb-impl.version>
     <jaxb-runtime.version>2.3.8</jaxb-runtime.version>
     <!--
@@ -35,6 +36,11 @@ SPDX-License-Identifier: AGPL-3.0-only
   </properties>
 
   <dependencies>
+    <dependency>
+      <groupId>zextras</groupId>
+      <artifactId>carbonio-mailbox-sdk</artifactId>
+      <version>${carbonio-mailbox-sdk.version}</version>
+    </dependency>
     <dependency>
       <groupId>com.sun.xml.ws</groupId>
       <artifactId>jaxws-rt</artifactId>
