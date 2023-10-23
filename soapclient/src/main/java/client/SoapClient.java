@@ -9,17 +9,7 @@ import com.sun.xml.ws.api.message.Headers;
 import com.sun.xml.ws.developer.WSBindingProvider;
 import com.sun.xml.ws.fault.ServerSOAPFaultException;
 import https.www_zextras_com.wsdl.zimbraservice.ZcsPortType;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.stream.IntStream;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.namespace.QName;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.ws.Service;
+import https.www_zextras_com.wsdl.zimbraservice.ZcsService;
 import org.w3c.dom.Document;
 import zimbra.AccountBy;
 import zimbra.AccountSelector;
@@ -30,6 +20,16 @@ import zimbraaccount.GetAccountInfoRequest;
 import zimbraaccount.GetAccountInfoResponse;
 import zimbraaccount.GetInfoRequest;
 import zimbraaccount.GetInfoResponse;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.stream.IntStream;
 
 public class SoapClient {
 
@@ -46,12 +46,10 @@ public class SoapClient {
 
   public static void init(String mailboxUrl) {
     try {
-      QName qName = new QName("https://www.zextras.com/wsdl/ZimbraService.wsdl", "zcsService");
-      URL zimbraEndpoint = new URL(mailboxUrl + "/service/wsdl/ZimbraService.wsdl");
+      URL wsdlEndpoint = new URL(mailboxUrl + "/service/wsdl/ZimbraService.wsdl");
       IntStream.range(0, 5).forEach(i -> {
-        ZcsPortType service = Service
-          .create(zimbraEndpoint, qName)
-          .getPort(ZcsPortType.class);
+        ZcsPortType service = new ZcsService(wsdlEndpoint)
+            .getZcsServicePort();
 
         WSBindingProvider provider = ((WSBindingProvider) service);
         provider.setAddress(mailboxUrl + "/service/soap/");
