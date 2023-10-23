@@ -168,17 +168,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 
   <build>
     <testResources>
-      <!--
-        Necessary to copy the ZimbraService.wsdl schema into the core/src/test/resources/soap
-        directory and be available in the test classes
-      -->
-      <testResource>
-        <directory>${project.basedir}/../soapclient/schemas/</directory>
-        <includes>
-          <include>ZimbraService.wsdl</include>
-        </includes>
-        <targetPath>${project.basedir}/src/test/resources/soap</targetPath>
-      </testResource>
       <testResource>
         <directory>${project.basedir}/src/test/resources</directory>
       </testResource>
