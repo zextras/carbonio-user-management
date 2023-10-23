@@ -38,7 +38,7 @@ pipeline {
         }
         stage('Build jar') {
             steps {
-                sh 'mvn -B --settings settings-jenkins.xml jaxws:wsimport package'
+                sh 'mvn -B --settings settings-jenkins.xml package'
                 // having every file within the package directory is great simplification
                 sh 'cp boot/target/carbonio-user-management-*-jar-with-dependencies.jar package/carbonio-user-management.jar'
             }
