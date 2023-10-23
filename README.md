@@ -48,14 +48,7 @@ in `service-discover`.
 
 ## How to build ⚙
 
-First you need to generate the SOAP client (necessary to perform requests to `carbonio-mailbox`)
-executing the command:
-
-```bash
-mvn clean jaxws:wsimport package
-```
-
-then you can generate the fat-jar executing:
+Build using maven:
 
 ```bash
 mvn clean install
