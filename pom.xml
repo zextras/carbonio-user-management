@@ -250,27 +250,6 @@ SPDX-License-Identifier: AGPL-3.0-only
     <pluginManagement>
       <plugins>
         <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>jaxws-maven-plugin</artifactId>
-          <version>${jaxws-maven-plugin.version}</version>
-          <configuration>
-            <args>
-              <arg>-B-XautoNameResolution</arg>
-              <arg>-XadditionalHeaders</arg>
-            </args>
-            <sourceDestDir>${project.basedir}/soapclient/src/main/java</sourceDestDir>
-            <wsdlDirectory>${project.basedir}/soapclient/schemas/</wsdlDirectory>
-          </configuration>
-          <executions>
-            <execution>
-              <goals>
-                <goal>wsimport</goal>
-              </goals>
-            </execution>
-          </executions>
-        </plugin>
-
-        <plugin>
           <groupId>org.openapitools</groupId>
           <artifactId>openapi-generator-maven-plugin</artifactId>
           <version>${openapi-generator-maven-plugin.version}</version>
