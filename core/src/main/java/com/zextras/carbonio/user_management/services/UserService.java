@@ -10,22 +10,26 @@ import com.sun.xml.ws.fault.ServerSOAPFaultException;
 import com.zextras.carbonio.user_management.cache.CacheManager;
 import com.zextras.carbonio.user_management.entities.UserToken;
 import com.zextras.carbonio.user_management.exceptions.ServiceException;
-import com.zextras.carbonio.user_management.generated.model.Locale;
 import com.zextras.carbonio.user_management.generated.model.UserId;
 import com.zextras.carbonio.user_management.generated.model.UserInfo;
 import com.zextras.carbonio.user_management.generated.model.UserMyself;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import org.apache.commons.lang3.LocaleUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import zimbraaccount.Attr;
 import zimbraaccount.GetAccountInfoResponse;
 import zimbraaccount.GetInfoResponse;
-import zimbraaccount.Pref;
 
 public class UserService {
+
+  private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
   private final CacheManager cacheManager;
 
@@ -152,14 +156,31 @@ public class UserService {
       UserId userId = new UserId();
       userId.setUserId(infoResponse.getId());
 
-      String locale = infoResponse
-        .getPrefs()
-        .getPref()
-        .stream()
-        .filter(perf -> perf.getName().equals("zimbraPrefLocale"))
-        .findFirst()
-        .map(Pref::getValue)
-        .orElse("en");
+      // This old style try/catch is necessary because:
+      //  - the system cannot trust the user locale since it can be set manually by the sysadmin
+      //    and there is no check if the value is a valid one. So the LocaleUtils#toLocale method
+      //    can raise an exception if the Locale is malformed.
+      //  - the project doesn't have the Vavr dependency containing the Try construct to handle the
+      //    exception in a cleaner way and I don't want to add it now only for this.
+      Locale locale;
+      try {
+        locale = infoResponse
+          .getPrefs()
+          .getPref()
+          .stream()
+          .filter(perf -> perf.getName().equals("zimbraPrefLocale"))
+          .findFirst()
+          .map(pref -> LocaleUtils.toLocale(pref.getValue()))
+          .orElse(Locale.ENGLISH);
+      } catch (IllegalArgumentException exception) {
+        logger.error(
+          "The user id {} has a locale with an invalid format. The system falls back in '{}'",
+          userId.getUserId(),
+          Locale.ENGLISH
+        );
+
+        locale = Locale.ENGLISH;
+      }
 
       String fullName = infoResponse
         .getAttrs()
@@ -175,7 +196,7 @@ public class UserService {
       userMyself.setEmail(infoResponse.getName());
       userMyself.setDomain(infoResponse.getPublicURL());
       userMyself.setFullName(fullName);
-      userMyself.setLocale(Locale.valueOf(locale.toUpperCase()));
+      userMyself.setLocale(locale.toString());
 
       return Optional.of(userMyself);
 
