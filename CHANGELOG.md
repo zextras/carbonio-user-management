@@ -8,6 +8,22 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.4.0](https://github.com/Zextras/carbonio-user-management/compare/v0.3.0...v0.4.0) (2023-10-30)
+
+
+### ⚠ BREAKING CHANGES
+
+* The /users/myself API response is changed to follow the
+different format used to represent the locale value. Now it is a string
+(instead of an enumerator) and it can support all the values defined in
+the standard.
+
+refs: UM-25
+
+### Bug Fixes
+
+* change the format of a returned account locale to xx_YY ([#30](https://github.com/Zextras/carbonio-user-management/issues/30)) ([c7065ca](https://github.com/Zextras/carbonio-user-management/commit/c7065ca645721ed48ffa9fe4e64ebfcde602cd92))
+
 ## [0.3.0](https://github.com/Zextras/carbonio-user-management/compare/v0.2.4...v0.3.0) (2023-08-31)
 
 
