@@ -49,6 +49,7 @@ SPDX-License-Identifier: AGPL-3.0-only
     <mockito.version>5.4.0</mockito.version>
     <resteasy.version>4.7.9.Final</resteasy.version>
     <swagger-core-version>1.6.11</swagger-core-version>
+    <carbonio-mailbox-sdk.version>23.11.0-SNAPSHOT</carbonio-mailbox-sdk.version>
 
     <!-- Plugins -->
     <build-helper-maven-plugin.version>3.4.0</build-helper-maven-plugin.version>
@@ -184,6 +185,13 @@ SPDX-License-Identifier: AGPL-3.0-only
         <groupId>com.github.ben-manes.caffeine</groupId>
         <artifactId>caffeine</artifactId>
         <version>${caffeine.version}</version>
+      </dependency>
+
+      <!-- Mailbox -->
+      <dependency>
+        <groupId>zextras</groupId>
+        <artifactId>carbonio-mailbox-sdk</artifactId>
+        <version>${carbonio-mailbox-sdk.version}</version>
       </dependency>
 
       <!-- Test dependencies -->

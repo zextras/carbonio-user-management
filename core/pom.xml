@@ -102,6 +102,12 @@ SPDX-License-Identifier: AGPL-3.0-only
       <artifactId>caffeine</artifactId>
     </dependency>
 
+    <!-- Mailbox -->
+    <dependency>
+      <groupId>zextras</groupId>
+      <artifactId>carbonio-mailbox-sdk</artifactId>
+    </dependency>
+
     <!-- Test dependencies -->
     <dependency>
       <groupId>org.junit.jupiter</groupId>
