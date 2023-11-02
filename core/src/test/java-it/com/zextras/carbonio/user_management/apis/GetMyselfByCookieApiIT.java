@@ -42,6 +42,7 @@ public class GetMyselfByCookieApiIT {
   @BeforeEach
   void setup() {
     simulator.resetAll();
+    simulator.setupWsdl();
   }
 
   @AfterAll
