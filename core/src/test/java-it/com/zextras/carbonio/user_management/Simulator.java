@@ -47,7 +47,10 @@ public final class Simulator implements AutoCloseable {
   private void startMailboxService() {
     clientAndServer = ClientAndServer.startClientAndServer(MAILBOX_SERVICE_PORT);
     mailboxServiceMock = new MockServerClient(MAILBOX_SERVICE_IP, MAILBOX_SERVICE_PORT);
+    setUpWsdl();
+  }
 
+  private void setUpWsdl() {
     try {
       final byte[] wsdl = IOUtils.toByteArray(Objects.requireNonNull(
         getClass().getClassLoader().getResourceAsStream("soap/ZimbraService.wsdl")
@@ -111,6 +114,7 @@ public final class Simulator implements AutoCloseable {
 
   public void resetAll() {
     mailboxServiceMock.reset();
+    setUpWsdl();
   }
 
   public void stopAll() {

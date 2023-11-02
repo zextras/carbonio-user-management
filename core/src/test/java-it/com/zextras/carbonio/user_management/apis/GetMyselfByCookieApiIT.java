@@ -135,7 +135,6 @@ public class GetMyselfByCookieApiIT {
     Assertions.assertThat(response.getContent()).hasSize(0);
   }
 
-
   @Test
   void givenAValidUserCookieAndAnInvalidResponseFromTheMailboxTheGetUserMyselfApiShouldReturnANotFoundResponse()
     throws Exception {
