@@ -7,6 +7,7 @@ package com.zextras.carbonio.user_management;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.zextras.carbonio.user_management.config.UserManagementModule;
+import com.zextras.mailbox.client.service.ServiceClient;
 import io.swagger.models.HttpMethod;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.jetty.server.LocalConnector;
@@ -47,10 +48,16 @@ public final class Simulator implements AutoCloseable {
   private void startMailboxService() {
     clientAndServer = ClientAndServer.startClientAndServer(MAILBOX_SERVICE_PORT);
     mailboxServiceMock = new MockServerClient(MAILBOX_SERVICE_IP, MAILBOX_SERVICE_PORT);
-    setupWsdl();
+    initServiceClient();
   }
 
-  public void setupWsdl() {
+  private void initServiceClient() {
+    setupWsdl();
+    // NOTE: this line is used to initialize the ServiceClient with the mockServer properly configured for the WSDL
+    injector.getInstance(ServiceClient.class);
+  }
+
+  private void setupWsdl() {
     try {
       final byte[] wsdl = IOUtils.toByteArray(Objects.requireNonNull(
         getClass().getClassLoader().getResourceAsStream("soap/ZimbraService.wsdl")
