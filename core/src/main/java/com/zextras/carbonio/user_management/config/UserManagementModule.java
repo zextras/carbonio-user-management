@@ -17,6 +17,8 @@ import com.zextras.carbonio.user_management.generated.HealthApi;
 import com.zextras.carbonio.user_management.generated.HealthApiService;
 import com.zextras.carbonio.user_management.generated.UsersApi;
 import com.zextras.carbonio.user_management.generated.UsersApiService;
+import com.zextras.mailbox.client.MailboxClient;
+import com.zextras.mailbox.client.service.ServiceClient;
 import org.jboss.resteasy.plugins.guice.ext.RequestScopeModule;
 
 import javax.inject.Singleton;
@@ -44,5 +46,18 @@ public class UserManagementModule extends RequestScopeModule {
     final var config = new UserManagementConfig();
     config.loadConfig();
     return config;
+  }
+
+  @Provides
+  @Singleton
+  public ServiceClient proviceServiceClient(UserManagementConfig config) throws Exception {
+    final var carbonioMailboxUrl = config.getProperties().getProperty("carbonio.mailbox.url");
+    final var client = new MailboxClient.Builder()
+        .withServer(carbonioMailboxUrl)
+        .build();
+
+    return client.newServiceClientBuilder()
+        .withPool(5)
+        .build();
   }
 }
