@@ -4,7 +4,6 @@
 
 package com.zextras.carbonio.user_management.services;
 
-import client.SoapClient;
 import com.google.inject.Inject;
 import com.sun.xml.ws.fault.ServerSOAPFaultException;
 import com.zextras.carbonio.user_management.cache.CacheManager;
@@ -14,24 +13,30 @@ import com.zextras.carbonio.user_management.generated.model.Locale;
 import com.zextras.carbonio.user_management.generated.model.UserId;
 import com.zextras.carbonio.user_management.generated.model.UserInfo;
 import com.zextras.carbonio.user_management.generated.model.UserMyself;
+import com.zextras.mailbox.client.service.InfoRequests.Sections;
+import com.zextras.mailbox.client.service.ServiceClient;
+import zimbraaccount.Attr;
+import zimbraaccount.GetAccountInfoResponse;
+import zimbraaccount.Pref;
+
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import zimbraaccount.Attr;
-import zimbraaccount.GetAccountInfoResponse;
-import zimbraaccount.GetInfoResponse;
-import zimbraaccount.Pref;
+
+import static com.zextras.mailbox.client.service.ServiceRequests.AccountInfo;
+import static com.zextras.mailbox.client.service.ServiceRequests.Info;
 
 public class UserService {
 
   private final CacheManager cacheManager;
+  private final ServiceClient serviceClient;
 
   @Inject
-  public UserService(CacheManager cacheManager) {
+  public UserService(CacheManager cacheManager, ServiceClient serviceClient) {
     this.cacheManager = cacheManager;
+    this.serviceClient = serviceClient;
   }
 
   private UserInfo createUserInfo(GetAccountInfoResponse accountInfo) {
@@ -63,10 +68,8 @@ public class UserService {
 
         if (userInfo == null) {
           try {
-            GetAccountInfoResponse accountInfo = SoapClient
-              .newClient()
-              .setAuthToken(token)
-              .getAccountInfoById(userId);
+            final var request = AccountInfo.byId(userId).withAuthToken(token);
+            final var accountInfo = serviceClient.send(request);
 
             userInfo = createUserInfo(accountInfo);
             cacheManager.getUserByIdCache().put(userId, userInfo);
@@ -77,7 +80,7 @@ public class UserService {
           }
         }
         return userInfo;
-      }).filter(Objects::nonNull).collect(Collectors.toList())
+      }).filter(Objects::nonNull).toList()
     ).build();
   }
 
@@ -90,10 +93,8 @@ public class UserService {
 
     if (userInfo == null) {
       try {
-        GetAccountInfoResponse accountInfo = SoapClient
-          .newClient()
-          .setAuthToken(token)
-          .getAccountInfoById(userId);
+        final var request = AccountInfo.byId(userId).withAuthToken(token);
+        final var accountInfo = serviceClient.send(request);
 
         userInfo = createUserInfo(accountInfo);
         cacheManager.getUserByIdCache().put(userId, userInfo);
@@ -120,10 +121,8 @@ public class UserService {
 
     if (userInfo == null) {
       try {
-        GetAccountInfoResponse accountInfo = SoapClient
-          .newClient()
-          .setAuthToken(token)
-          .getAccountInfoByEmail(userEmail);
+        final var request = AccountInfo.byEmail(userEmail).withAuthToken(token);
+        final var accountInfo = serviceClient.send(request);
 
         userInfo = createUserInfo(accountInfo);
         cacheManager.getUserByEmailCache().put(userEmail, userInfo);
@@ -144,10 +143,8 @@ public class UserService {
 
   public Optional<UserMyself> getMyselfByToken(String token) {
     try {
-      GetInfoResponse infoResponse = SoapClient
-        .newClient()
-        .setAuthToken(token)
-        .getAccountInfoByAuthToken();
+      final var request = Info.sections(Sections.children, Sections.attrs, Sections.prefs).withAuthToken(token);
+      final var infoResponse = serviceClient.send(request);
 
       UserId userId = new UserId();
       userId.setUserId(infoResponse.getId());
@@ -197,10 +194,8 @@ public class UserService {
 
     if (userToken == null) {
       try {
-        GetInfoResponse infoResponse = SoapClient
-          .newClient()
-          .setAuthToken(token)
-          .validateAuthToken();
+        final var request = Info.sections(Sections.children).withAuthToken(token);
+        final var infoResponse = serviceClient.send(request);
 
         userToken = new UserToken(
           token,
