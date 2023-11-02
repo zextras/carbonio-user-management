@@ -6,7 +6,7 @@
   SPDX-License-Identifier: AGPL-3.0-only
 -->
 
-<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:svc="https://www.zextras.com/wsdl/ZimbraService.wsdl" xmlns:zimbraAccount="urn:zimbraAccount" xmlns:zimbraMail="urn:zimbraMail" xmlns:zimbraAdmin="urn:zimbraAdmin" xmlns:zimbraAdminExt="urn:zimbraAdminExt" xmlns:zimbra="urn:zimbra" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="https://www.zextras.com/wsdl/ZimbraService.wsdl" name="ZimbraService">
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:svc="https://www.zextras.com/wsdl/ZimbraService.wsdl" xmlns:zimbraAccount="urn:zimbraAccount" xmlns:zimbraMail="urn:zimbraMail" xmlns:zimbraAdmin="urn:zimbraAdmin" xmlns:zimbraAdminExt="urn:zimbraAdminExt" xmlns:zimbra="urn:zimbra" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="https://www.zextras.com/wsdl/ZimbraService.wsdl" name="ZimbraService">
   <wsdl:types>
     <xsd:schema>
       <xsd:import namespace="urn:zimbra" schemaLocation="zimbra.xsd"/>
@@ -7936,7 +7936,7 @@
   </wsdl:service>
   <wsdl:service name="zcsAdminService">
     <wsdl:port name="zcsAdminServicePort" binding="svc:zcsAdminPortBinding">
-      <soap:address location="http://localhost:7071/service/admin/soap"/>
+      <soap:address location="https://localhost:7071/service/admin/soap"/>
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>
