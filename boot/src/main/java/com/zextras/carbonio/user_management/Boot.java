@@ -5,17 +5,16 @@
 package com.zextras.carbonio.user_management;
 
 
-import client.SoapClient;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.zextras.carbonio.user_management.config.UserManagementConfig;
 import com.zextras.carbonio.user_management.config.UserManagementModule;
-import java.net.InetSocketAddress;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.jboss.resteasy.plugins.guice.GuiceResteasyBootstrapServletContextListener;
 import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;
+
+import java.net.InetSocketAddress;
 
 public class Boot {
 
@@ -24,8 +23,6 @@ public class Boot {
   public static void main(String[] args) throws Exception {
     injector = Guice.createInjector(new UserManagementModule());
 
-    UserManagementConfig config = injector.getInstance(UserManagementConfig.class);
-    SoapClient.init(config.getProperties().getProperty("carbonio.mailbox.url"));
     injector.getInstance(Boot.class).boot();
   }
 
