@@ -4,13 +4,10 @@
 
 package com.zextras.carbonio.user_management;
 
-import client.SoapClient;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.zextras.carbonio.user_management.config.UserManagementModule;
 import io.swagger.models.HttpMethod;
-import java.io.IOException;
-import java.util.Objects;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.jetty.server.LocalConnector;
 import org.eclipse.jetty.server.Server;
@@ -23,6 +20,9 @@ import org.mockserver.integration.ClientAndServer;
 import org.mockserver.model.BinaryBody;
 import org.mockserver.model.HttpRequest;
 import org.mockserver.model.HttpResponse;
+
+import java.io.IOException;
+import java.util.Objects;
 
 public final class Simulator implements AutoCloseable {
 
@@ -105,7 +105,6 @@ public final class Simulator implements AutoCloseable {
   }
 
   public Simulator start() {
-    SoapClient.init(MAILBOX_SERVICE_URI);
     startJettyServer();
     return this;
   }
