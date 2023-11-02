@@ -56,8 +56,9 @@ public class UserManagementModule extends RequestScopeModule {
         .withServer(carbonioMailboxUrl)
         .build();
 
+    final var POOL_SIZE = 5;
     return client.newServiceClientBuilder()
-        .withPool(5)
+        .withPool(POOL_SIZE)
         .build();
   }
 }
