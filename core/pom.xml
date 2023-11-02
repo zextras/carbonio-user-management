@@ -39,12 +39,6 @@ SPDX-License-Identifier: AGPL-3.0-only
       </exclusions>
     </dependency>
 
-    <dependency>
-      <groupId>com.zextras.carbonio.soap-client</groupId>
-      <artifactId>carbonio-soap-client</artifactId>
-      <version>0.3.0-1</version>
-    </dependency>
-
     <!-- Guice dependencies -->
     <dependency>
       <groupId>com.google.inject</groupId>
@@ -106,6 +100,10 @@ SPDX-License-Identifier: AGPL-3.0-only
     <dependency>
       <groupId>zextras</groupId>
       <artifactId>carbonio-mailbox-sdk</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jaxb</groupId>
+      <artifactId>jaxb-runtime</artifactId>
     </dependency>
 
     <!-- Test dependencies -->
