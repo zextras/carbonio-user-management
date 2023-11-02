@@ -25,8 +25,6 @@ public class Boot {
     injector = Guice.createInjector(new UserManagementModule());
 
     UserManagementConfig config = injector.getInstance(UserManagementConfig.class);
-    config.loadConfig();
-
     SoapClient.init(config.getProperties().getProperty("carbonio.mailbox.url"));
     injector.getInstance(Boot.class).boot();
   }

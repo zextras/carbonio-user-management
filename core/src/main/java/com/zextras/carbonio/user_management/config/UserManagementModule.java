@@ -6,6 +6,7 @@ package com.zextras.carbonio.user_management.config;
 
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
+import com.google.inject.Provides;
 import com.zextras.carbonio.user_management.controllers.AuthApiController;
 import com.zextras.carbonio.user_management.controllers.HealthApiController;
 import com.zextras.carbonio.user_management.controllers.UsersApiController;
@@ -17,6 +18,8 @@ import com.zextras.carbonio.user_management.generated.HealthApiService;
 import com.zextras.carbonio.user_management.generated.UsersApi;
 import com.zextras.carbonio.user_management.generated.UsersApiService;
 import org.jboss.resteasy.plugins.guice.ext.RequestScopeModule;
+
+import javax.inject.Singleton;
 
 public class UserManagementModule extends RequestScopeModule {
 
@@ -33,5 +36,13 @@ public class UserManagementModule extends RequestScopeModule {
 
     bind(AuthApi.class);
     bind(AuthApiService.class).to(AuthApiController.class);
+  }
+
+  @Provides
+  @Singleton
+  public UserManagementConfig provideConfig() throws Exception {
+    final var config = new UserManagementConfig();
+    config.loadConfig();
+    return config;
   }
 }
