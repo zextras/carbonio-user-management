@@ -5,10 +5,12 @@
 package com.zextras.carbonio.user_management.config;
 
 import com.google.inject.Singleton;
-import java.io.File;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Optional;
 import java.util.Properties;
 
 @Singleton
@@ -21,12 +23,36 @@ public class UserManagementConfig {
   }
 
   public void loadConfig() throws IOException {
+    final var config = loadFromEtc()
+      .or(this::loadFromCurrent)
+      .or(this::loadFromResources)
+      .orElseThrow(() -> new FileNotFoundException("No configuration properties file found"));
+
+    properties.load(config);
+  }
+
+  private Optional<InputStream> loadFromEtc() {
+    return loadFile("/etc/carbonio/user-management/config.properties");
+  }
+
+  private Optional<InputStream> loadFromCurrent() {
+    return loadFile("resources/carbonio-user-management.properties");
+  }
+
+  private Optional<InputStream> loadFromResources() {
+    return loadResource("carbonio-user-management.properties");
+  }
+
+  private Optional<InputStream> loadFile(String path) {
     try {
-      FileInputStream file = new FileInputStream("/etc/carbonio/user-management/config.properties");
-      properties.load(file);
+      return Optional.of(new FileInputStream(path));
     } catch (FileNotFoundException e) {
-      properties.load(new FileInputStream("resources/carbonio-user-management.properties"));
+      return Optional.empty();
     }
+  }
+
+  private Optional<InputStream> loadResource(String name) {
+    return Optional.ofNullable(getClass().getClassLoader().getResourceAsStream(name));
   }
 
   public Properties getProperties() {
