@@ -7,6 +7,7 @@ package com.zextras.carbonio.user_management.config;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.google.inject.Provides;
+import com.zextras.carbonio.user_management.Constants;
 import com.zextras.carbonio.user_management.controllers.AuthApiController;
 import com.zextras.carbonio.user_management.controllers.HealthApiController;
 import com.zextras.carbonio.user_management.controllers.UsersApiController;
@@ -19,9 +20,8 @@ import com.zextras.carbonio.user_management.generated.UsersApi;
 import com.zextras.carbonio.user_management.generated.UsersApiService;
 import com.zextras.mailbox.client.MailboxClient;
 import com.zextras.mailbox.client.service.ServiceClient;
-import org.jboss.resteasy.plugins.guice.ext.RequestScopeModule;
-
 import javax.inject.Singleton;
+import org.jboss.resteasy.plugins.guice.ext.RequestScopeModule;
 
 public class UserManagementModule extends RequestScopeModule {
 
@@ -43,22 +43,20 @@ public class UserManagementModule extends RequestScopeModule {
   @Provides
   @Singleton
   public UserManagementConfig provideConfig() throws Exception {
-    final var config = new UserManagementConfig();
+    final UserManagementConfig config = new UserManagementConfig();
     config.loadConfig();
     return config;
   }
 
   @Provides
   @Singleton
-  public ServiceClient proviceServiceClient(UserManagementConfig config) throws Exception {
-    final var carbonioMailboxUrl = config.getProperties().getProperty("carbonio.mailbox.url");
-    final var client = new MailboxClient.Builder()
-        .withServer(carbonioMailboxUrl)
-        .build();
-
-    final var POOL_SIZE = 5;
-    return client.newServiceClientBuilder()
-        .withPool(POOL_SIZE)
-        .build();
+  public ServiceClient provideServiceClient(UserManagementConfig config) throws Exception {
+    final String carbonioMailboxUrl = config.getProperties().getProperty("carbonio.mailbox.url");
+    return new MailboxClient.Builder()
+      .withServer(carbonioMailboxUrl)
+      .build()
+      .newServiceClientBuilder()
+      .withPool(Constants.MailboxClient.POOL_SIZE)
+      .build();
   }
 }
