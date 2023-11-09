@@ -98,7 +98,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
     <!-- Mailbox -->
     <dependency>
-      <groupId>zextras</groupId>
+      <groupId>com.zextras</groupId>
       <artifactId>carbonio-mailbox-sdk</artifactId>
     </dependency>
     <dependency>
