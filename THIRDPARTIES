@@ -20,7 +20,6 @@ jackson-core;
 jackson-databind;
 jackson-annotations;
 jackson-datatype-jsr310;
-jaxws-maven-plugin, 2006-2014, Copyright (c)  Oracle and/or its affiliates. All rights reserved;
 maven-jar-plugin;
 maven-resources-plugin;
 

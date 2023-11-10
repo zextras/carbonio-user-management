@@ -36,6 +36,7 @@ SPDX-License-Identifier: AGPL-3.0-only
   <properties>
     <assertj.version>3.24.2</assertj.version>
     <caffeine.version>3.1.6</caffeine.version>
+    <carbonio-mailbox-sdk.version>0.0.2</carbonio-mailbox-sdk.version>
     <commons-io.version>2.13.0</commons-io.version>
     <guice.version>6.0.0</guice.version>
     <jackson.version>2.15.2</jackson.version>
@@ -48,12 +49,10 @@ SPDX-License-Identifier: AGPL-3.0-only
     <mockito.version>5.4.0</mockito.version>
     <resteasy.version>4.7.9.Final</resteasy.version>
     <swagger-core-version>1.6.11</swagger-core-version>
-    <carbonio-mailbox-sdk.version>0.0.2</carbonio-mailbox-sdk.version>
     <jaxb-runtime.version>2.3.8</jaxb-runtime.version>
 
     <!-- Plugins -->
     <build-helper-maven-plugin.version>3.4.0</build-helper-maven-plugin.version>
-    <jaxws-maven-plugin.version>2.6</jaxws-maven-plugin.version>
     <maven-assembly-plugin.version>3.6.0</maven-assembly-plugin.version>
     <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
     <maven-failsafe.version>3.0.0-M9</maven-failsafe.version>
