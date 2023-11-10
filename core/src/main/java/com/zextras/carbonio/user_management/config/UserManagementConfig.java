@@ -5,7 +5,6 @@
 package com.zextras.carbonio.user_management.config;
 
 import com.google.inject.Singleton;
-
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -23,7 +22,7 @@ public class UserManagementConfig {
   }
 
   public void loadConfig() throws IOException {
-    final var config = loadFromEtc()
+    final InputStream config = loadFromEtc()
       .or(this::loadFromCurrent)
       .or(this::loadFromResources)
       .orElseThrow(() -> new FileNotFoundException("No configuration properties file found"));
@@ -40,7 +39,8 @@ public class UserManagementConfig {
   }
 
   private Optional<InputStream> loadFromResources() {
-    return loadResource("carbonio-user-management.properties");
+    return Optional.ofNullable(
+      getClass().getClassLoader().getResourceAsStream("carbonio-user-management.properties"));
   }
 
   private Optional<InputStream> loadFile(String path) {
@@ -49,10 +49,6 @@ public class UserManagementConfig {
     } catch (FileNotFoundException e) {
       return Optional.empty();
     }
-  }
-
-  private Optional<InputStream> loadResource(String name) {
-    return Optional.ofNullable(getClass().getClassLoader().getResourceAsStream(name));
   }
 
   public Properties getProperties() {
