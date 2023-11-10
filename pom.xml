@@ -49,7 +49,6 @@ SPDX-License-Identifier: AGPL-3.0-only
     <mockito.version>5.4.0</mockito.version>
     <resteasy.version>4.7.9.Final</resteasy.version>
     <swagger-core-version>1.6.11</swagger-core-version>
-    <jaxb-runtime.version>2.3.8</jaxb-runtime.version>
 
     <!-- Plugins -->
     <build-helper-maven-plugin.version>3.4.0</build-helper-maven-plugin.version>
@@ -191,11 +190,6 @@ SPDX-License-Identifier: AGPL-3.0-only
         <groupId>com.zextras</groupId>
         <artifactId>carbonio-mailbox-sdk</artifactId>
         <version>${carbonio-mailbox-sdk.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.glassfish.jaxb</groupId>
-        <artifactId>jaxb-runtime</artifactId>
-        <version>${jaxb-runtime.version}</version>
       </dependency>
 
       <!-- Test dependencies -->
