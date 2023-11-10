@@ -6,7 +6,7 @@ openapi: 3.0.3
 info:
   title: UserManagement API
   description: UserManagement API
-  version: 0.3.0
+  version: 0.4.0
 servers:
   - url: 'https://example.com/services/user-management/'
 tags:
@@ -234,29 +234,9 @@ components:
         domain:
           type: string
         locale:
-          $ref: '#/components/schemas/Locale'
+          type: string
     UserId:
       type: object
       properties:
         userId:
           type: string
-    Locale:
-      type: string
-      enum:
-        - DE
-        - EN
-        - ES
-        - FR
-        - HI
-        - IT
-        - JA
-        - NL
-        - PL
-        - PT
-        - PT_BR
-        - RO
-        - RU
-        - TH
-        - TR
-        - VI
-        - ZH_CN

@@ -8,7 +8,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zextras.carbonio.user_management.Simulator;
 import com.zextras.carbonio.user_management.Simulator.SimulatorBuilder;
 import com.zextras.carbonio.user_management.SoapHttpUtils;
-import com.zextras.carbonio.user_management.generated.model.Locale;
 import com.zextras.carbonio.user_management.generated.model.UserMyself;
 import org.assertj.core.api.Assertions;
 import org.eclipse.jetty.http.HttpHeader;
@@ -72,7 +71,7 @@ public class GetMyselfByCookieApiIT {
             "fake@example.com",
             "example.com",
             "Fake Account",
-            "en"
+            "pt_BR"
           )
         ));
 
@@ -96,7 +95,7 @@ public class GetMyselfByCookieApiIT {
     Assertions.assertThat(userMyself.getEmail()).isEqualTo("fake@example.com");
     Assertions.assertThat(userMyself.getDomain()).isEqualTo("example.com");
     Assertions.assertThat(userMyself.getFullName()).isEqualTo("Fake Account");
-    Assertions.assertThat(userMyself.getLocale()).isEqualTo(Locale.EN);
+    Assertions.assertThat(userMyself.getLocale()).isEqualTo("pt_BR");
   }
 
   @Test

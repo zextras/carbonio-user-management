@@ -2,19 +2,12 @@
 #
 # SPDX-License-Identifier: AGPL-3.0-only
 
-targets=(
-  "ubuntu"
-  "centos"
-)
 pkgname="carbonio-user-management"
-pkgver="0.3.0"
-pkgrel="1"
+pkgver="0.4.1"
+pkgrel="SNAPSHOT"
 pkgdesc="Carbonio User Management"
-pkgdesclong=(
-  "Carbonio User Management"
-)
 maintainer="Zextras <packages@zextras.com>"
-arch="amd64"
+arch=('x86_64')
 section="admin"
 priority="optional"
 url="https://www.zextras.com/"
@@ -24,7 +17,7 @@ depends=(
   "pending-setups"
   "carbonio-openjdk"
 )
-sources=(
+source=(
   "carbonio-user-management"
   "carbonio-user-management.hcl"
   "carbonio-user-management.jar"
@@ -36,21 +29,21 @@ sources=(
   "policies.json"
   "service-protocol.json"
 )
-hashsums=(
-  "skip"
-  "skip"
-  "skip"
-  "skip"
-  "skip"
-  "skip"
-  "skip"
-  "skip"
-  "skip"
-  "skip"
+sha256sums=(
+  "SKIP"
+  "SKIP"
+  "SKIP"
+  "SKIP"
+  "SKIP"
+  "SKIP"
+  "SKIP"
+  "SKIP"
+  "SKIP"
+  "SKIP"
 )
 backup=(
-    "/etc/zextras/service-discover/carbonio-user-management.hcl"
-    "/etc/carbonio/user-management/config.properties"
+  "etc/zextras/service-discover/carbonio-user-management.hcl"
+  "etc/carbonio/user-management/config.properties"
 )
 
 package() {
