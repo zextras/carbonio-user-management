@@ -13,10 +13,13 @@ import com.zextras.carbonio.user_management.generated.model.Locale;
 import com.zextras.carbonio.user_management.generated.model.UserId;
 import com.zextras.carbonio.user_management.generated.model.UserInfo;
 import com.zextras.carbonio.user_management.generated.model.UserMyself;
+import com.zextras.mailbox.client.requests.Request;
 import com.zextras.mailbox.client.service.InfoRequests.Sections;
 import com.zextras.mailbox.client.service.ServiceClient;
+import https.www_zextras_com.wsdl.zimbraservice.ZcsPortType;
 import zimbraaccount.Attr;
 import zimbraaccount.GetAccountInfoResponse;
+import zimbraaccount.GetInfoResponse;
 import zimbraaccount.Pref;
 
 import javax.ws.rs.core.Response;
@@ -31,12 +34,12 @@ import static com.zextras.mailbox.client.service.ServiceRequests.Info;
 public class UserService {
 
   private final CacheManager cacheManager;
-  private final ServiceClient serviceClient;
+  private final ServiceClient mailboxClient;
 
   @Inject
-  public UserService(CacheManager cacheManager, ServiceClient serviceClient) {
+  public UserService(CacheManager cacheManager, ServiceClient mailboxClient) {
     this.cacheManager = cacheManager;
-    this.serviceClient = serviceClient;
+    this.mailboxClient = mailboxClient;
   }
 
   private UserInfo createUserInfo(GetAccountInfoResponse accountInfo) {
@@ -68,8 +71,9 @@ public class UserService {
 
         if (userInfo == null) {
           try {
-            final var request = AccountInfo.byId(userId).withAuthToken(token);
-            final var accountInfo = serviceClient.send(request);
+            final Request<ZcsPortType, GetAccountInfoResponse> request =
+              AccountInfo.byId(userId).withAuthToken(token);
+            final GetAccountInfoResponse accountInfo = mailboxClient.send(request);
 
             userInfo = createUserInfo(accountInfo);
             cacheManager.getUserByIdCache().put(userId, userInfo);
@@ -93,8 +97,9 @@ public class UserService {
 
     if (userInfo == null) {
       try {
-        final var request = AccountInfo.byId(userId).withAuthToken(token);
-        final var accountInfo = serviceClient.send(request);
+        final Request<ZcsPortType, GetAccountInfoResponse> request =
+          AccountInfo.byId(userId).withAuthToken(token);
+        final GetAccountInfoResponse accountInfo = mailboxClient.send(request);
 
         userInfo = createUserInfo(accountInfo);
         cacheManager.getUserByIdCache().put(userId, userInfo);
@@ -121,8 +126,9 @@ public class UserService {
 
     if (userInfo == null) {
       try {
-        final var request = AccountInfo.byEmail(userEmail).withAuthToken(token);
-        final var accountInfo = serviceClient.send(request);
+        final Request<ZcsPortType, GetAccountInfoResponse> request =
+          AccountInfo.byEmail(userEmail).withAuthToken(token);
+        final GetAccountInfoResponse accountInfo = mailboxClient.send(request);
 
         userInfo = createUserInfo(accountInfo);
         cacheManager.getUserByEmailCache().put(userEmail, userInfo);
@@ -143,8 +149,9 @@ public class UserService {
 
   public Optional<UserMyself> getMyselfByToken(String token) {
     try {
-      final var request = Info.sections(Sections.children, Sections.attrs, Sections.prefs).withAuthToken(token);
-      final var infoResponse = serviceClient.send(request);
+      final Request<ZcsPortType, GetInfoResponse> request =
+        Info.sections(Sections.children, Sections.attrs, Sections.prefs).withAuthToken(token);
+      final GetInfoResponse infoResponse = mailboxClient.send(request);
 
       UserId userId = new UserId();
       userId.setUserId(infoResponse.getId());
@@ -194,8 +201,9 @@ public class UserService {
 
     if (userToken == null) {
       try {
-        final var request = Info.sections(Sections.children).withAuthToken(token);
-        final var infoResponse = serviceClient.send(request);
+        final Request<ZcsPortType, GetInfoResponse> request =
+          Info.sections(Sections.children).withAuthToken(token);
+        final GetInfoResponse infoResponse = mailboxClient.send(request);
 
         userToken = new UserToken(
           token,
