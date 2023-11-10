@@ -7,7 +7,7 @@ Files: .github/CODEOWNERS
 Copyright: 2023 Zextras <https://www.zextras.com>
 License: CC0-1.0
 
-Files: pacur.json
+Files: yap.json
 Copyright: 2023 Zextras s.r.l
 License: AGPL-3.0-only
 
@@ -42,4 +42,3 @@ License: AGPL-3.0-only
 Files: core/src/test/resources/soap/responses/SoapNotFoundError.xml
 Copyright: 2023 Zextras s.r.l
 License: AGPL-3.0-only
-
