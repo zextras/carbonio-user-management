@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import org.apache.commons.lang3.LocaleUtils;
@@ -29,12 +28,6 @@ import org.slf4j.LoggerFactory;
 import zimbraaccount.Attr;
 import zimbraaccount.GetAccountInfoResponse;
 import zimbraaccount.GetInfoResponse;
-
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 
 import static com.zextras.mailbox.client.service.ServiceRequests.AccountInfo;
 import static com.zextras.mailbox.client.service.ServiceRequests.Info;
