@@ -29,8 +29,6 @@ public final class Simulator implements AutoCloseable {
 
   private final static String MAILBOX_SERVICE_IP = "127.78.0.5";
   private final static int MAILBOX_SERVICE_PORT = 20_000;
-  private final static String MAILBOX_SERVICE_URI =
-    String.format("http://%s:%d", MAILBOX_SERVICE_IP, MAILBOX_SERVICE_PORT);
 
   private final Injector injector;
   private final SoapHttpUtils soapHttpUtils;
@@ -48,12 +46,13 @@ public final class Simulator implements AutoCloseable {
   private void startMailboxService() {
     clientAndServer = ClientAndServer.startClientAndServer(MAILBOX_SERVICE_PORT);
     mailboxServiceMock = new MockServerClient(MAILBOX_SERVICE_IP, MAILBOX_SERVICE_PORT);
-    initServiceClient();
+    initMailboxServiceClient();
   }
 
-  private void initServiceClient() {
+  private void initMailboxServiceClient() {
     setupWsdl();
-    // NOTE: this line is used to initialize the ServiceClient with the mockServer properly configured for the WSDL
+    // NOTE: this line is used to initialize the ServiceClient with the mockServer properly
+    // configured for the WSDL
     injector.getInstance(ServiceClient.class);
   }
 
