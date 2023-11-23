@@ -4,6 +4,9 @@
 
 package com.zextras.carbonio.user_management.services;
 
+import static com.zextras.mailbox.client.service.ServiceRequests.AccountInfo;
+import static com.zextras.mailbox.client.service.ServiceRequests.Info;
+
 import com.google.inject.Inject;
 import com.sun.xml.ws.fault.ServerSOAPFaultException;
 import com.zextras.carbonio.user_management.cache.CacheManager;
@@ -28,9 +31,6 @@ import org.slf4j.LoggerFactory;
 import zimbraaccount.Attr;
 import zimbraaccount.GetAccountInfoResponse;
 import zimbraaccount.GetInfoResponse;
-
-import static com.zextras.mailbox.client.service.ServiceRequests.AccountInfo;
-import static com.zextras.mailbox.client.service.ServiceRequests.Info;
 
 public class UserService {
 
@@ -83,7 +83,7 @@ public class UserService {
             cacheManager.getUserByEmailCache().put(userInfo.getEmail(), userInfo);
             System.out.println("Found: " + userId);
           } catch (Exception e) {
-            e.printStackTrace(System.out);
+            logger.error("GetUsers with userId {} and token {} falied: {}", userId, token, e);
           }
         }
         return userInfo;
@@ -109,9 +109,10 @@ public class UserService {
         cacheManager.getUserByEmailCache().put(userInfo.getEmail(), userInfo);
 
       } catch (ServerSOAPFaultException e) {
-        e.printStackTrace();
+        logger.error("GetInfoById with userId {} and token {} falied: {}", userId, token, e);
         return Response.status(Status.NOT_FOUND).build();
       } catch (Exception e) {
+        logger.error("GetInfoById with userId {} and token {} falied: {}", userId, token, e);
         return Response.status(Status.INTERNAL_SERVER_ERROR).build();
       }
     }
@@ -138,10 +139,12 @@ public class UserService {
         cacheManager.getUserByIdCache().put(userInfo.getId().getUserId(), userInfo);
 
       } catch (ServerSOAPFaultException e) {
-        e.printStackTrace();
+        logger.error("GetInfoByEmail with user email {} and token {} failed: {}", userEmail, token,
+          e);
         return Response.status(Status.NOT_FOUND).build();
       } catch (Exception e) {
-        e.printStackTrace();
+        logger.error("GetInfoByEmail with user email {} and token {} failed: {}", userEmail, token,
+          e);
         return Response.status(Status.INTERNAL_SERVER_ERROR).build();
       }
     }
@@ -204,10 +207,10 @@ public class UserService {
       return Optional.of(userMyself);
 
     } catch (ServerSOAPFaultException exception) {
-      System.out.println(exception.getMessage());
+      logger.error("GetMyselfByToken with token {} failed: {}", token, exception);
       return Optional.empty();
     } catch (Exception exception) {
-      exception.printStackTrace();
+      logger.error("GetMyselfByToken with token {} failed: {}", token, exception);
       throw new ServiceException(
         "Unable to get account user info due to an internal service error");
     }
@@ -234,10 +237,10 @@ public class UserService {
         cacheManager.getUserTokenCache().put(token, userToken);
 
       } catch (ServerSOAPFaultException e) {
-        e.printStackTrace();
+        logger.error("ValidateUserToken with token {} failed: {}", token, e);
         return Response.status(Status.UNAUTHORIZED).build();
       } catch (Exception e) {
-        e.printStackTrace();
+        logger.error("ValidateUserToken with token {} failed: {}", token, e);
         return Response.status(Status.INTERNAL_SERVER_ERROR).build();
       }
     }
