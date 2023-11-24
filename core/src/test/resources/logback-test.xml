@@ -17,5 +17,5 @@ SPDX-License-Identifier: AGPL-3.0-only
     <appender-ref ref="STDOUT"/>
   </root>
 
-  <logger name="org.mockserver.log.MockServerEventLog" level="WARN"/>
+  <logger name="org.mockserver.log.MockServerEventLog" level="INFO"/>
 </configuration>
