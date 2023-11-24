@@ -8,6 +8,14 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.5.0](https://github.com/Zextras/carbonio-user-management/compare/v0.4.0...v0.5.0) (2023-11-24)
+
+
+### Features
+
+* move to yap agent and add rhel9 support ([#33](https://github.com/Zextras/carbonio-user-management/issues/33)) ([bc67379](https://github.com/Zextras/carbonio-user-management/commit/bc67379f54c01e2b759cab9b9302f6d9001b75c3))
+* replace soapclient with carbonio-mailbox-sdk ([#32](https://github.com/Zextras/carbonio-user-management/issues/32)) ([0bc2ec5](https://github.com/Zextras/carbonio-user-management/commit/0bc2ec5b11d72dac1fd3459fd57f3683cb7a2292))
+
 ## [0.4.0](https://github.com/Zextras/carbonio-user-management/compare/v0.3.0...v0.4.0) (2023-10-30)
 
 
