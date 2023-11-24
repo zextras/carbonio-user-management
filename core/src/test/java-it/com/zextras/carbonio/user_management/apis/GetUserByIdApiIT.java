@@ -9,7 +9,6 @@ import com.zextras.carbonio.user_management.Simulator;
 import com.zextras.carbonio.user_management.Simulator.SimulatorBuilder;
 import com.zextras.carbonio.user_management.SoapHttpUtils;
 import com.zextras.carbonio.user_management.generated.model.UserInfo;
-import org.assertj.core.api.Assertions;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -22,6 +21,8 @@ import org.junit.jupiter.api.Test;
 import org.mockserver.client.MockServerClient;
 import org.mockserver.model.HttpRequest;
 import org.mockserver.model.HttpResponse;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class GetUserByIdApiIT {
 
@@ -80,15 +81,14 @@ class GetUserByIdApiIT {
       HttpTester.parseResponse(HttpTester.from(localConnector.getResponse(request.generate())));
 
     // Then
-    Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.OK_200);
+    assertThat(response.getStatus()).isEqualTo(HttpStatus.OK_200);
 
     UserInfo userInfo = new ObjectMapper().readValue(response.getContent(), UserInfo.class);
 
-    Assertions
-      .assertThat(userInfo.getId().getUserId())
+    assertThat(userInfo.getId().getUserId())
       .isEqualTo("a28fdb4d-9f4b-4c7f-a572-43cef33f1d8b");
-    Assertions.assertThat(userInfo.getEmail()).isEqualTo("fake@example.com");
-    Assertions.assertThat(userInfo.getFullName()).isEqualTo("Fake Account");
-    Assertions.assertThat(userInfo.getDomain()).isEqualTo("example.com");
+    assertThat(userInfo.getEmail()).isEqualTo("fake@example.com");
+    assertThat(userInfo.getFullName()).isEqualTo("Fake Account");
+    assertThat(userInfo.getDomain()).isEqualTo("example.com");
   }
 }

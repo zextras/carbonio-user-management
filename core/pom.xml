@@ -39,12 +39,6 @@ SPDX-License-Identifier: AGPL-3.0-only
       </exclusions>
     </dependency>
 
-    <dependency>
-      <groupId>com.zextras.carbonio.soap-client</groupId>
-      <artifactId>carbonio-soap-client</artifactId>
-      <version>0.4.1-SNAPSHOT</version>
-    </dependency>
-
     <!-- Guice dependencies -->
     <dependency>
       <groupId>com.google.inject</groupId>
@@ -100,6 +94,12 @@ SPDX-License-Identifier: AGPL-3.0-only
     <dependency>
       <groupId>com.github.ben-manes.caffeine</groupId>
       <artifactId>caffeine</artifactId>
+    </dependency>
+
+    <!-- Mailbox -->
+    <dependency>
+      <groupId>com.zextras</groupId>
+      <artifactId>carbonio-mailbox-sdk</artifactId>
     </dependency>
 
     <!-- Test dependencies -->
@@ -168,17 +168,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 
   <build>
     <testResources>
-      <!--
-        Necessary to copy the ZimbraService.wsdl schema into the core/src/test/resources/soap
-        directory and be available in the test classes
-      -->
-      <testResource>
-        <directory>${project.basedir}/../soapclient/schemas/</directory>
-        <includes>
-          <include>ZimbraService.wsdl</include>
-        </includes>
-        <targetPath>${project.basedir}/src/test/resources/soap</targetPath>
-      </testResource>
       <testResource>
         <directory>${project.basedir}/src/test/resources</directory>
       </testResource>

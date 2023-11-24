@@ -1,16 +1,15 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/">
+<S:Envelope xmlns:S="http://www.w3.org/2003/05/soap-envelope">
   <S:Header>
-    <ns5:context xmlns="urn:zimbraAdminExt" xmlns:ns2="urn:zimbraAdmin" xmlns:ns3="urn:zimbraMail" xmlns:ns4="urn:zimbraAccount" xmlns:ns5="urn:zimbra">
-      <ns5:authToken>%AUTH_TOKEN%</ns5:authToken>
-      <ns5:authTokenControl voidOnExpired="true"/>
-    </ns5:context>
+    <ns4:context xmlns="urn:zimbraAdmin" xmlns:ns2="urn:zimbraMail" xmlns:ns3="urn:zimbraAccount" xmlns:ns4="urn:zimbra">
+      <ns4:authToken>%AUTH_TOKEN%</ns4:authToken>
+      <ns4:authTokenControl voidOnExpired="true"/>
+    </ns4:context>
     <context xmlns="urn:zimbra">
-      <authToken>%AUTH_TOKEN%</authToken>
       <authTokenControl voidOnExpired="true"/>
     </context>
   </S:Header>
   <S:Body>
-    <ns4:GetInfoRequest xmlns="urn:zimbraAdminExt" xmlns:ns2="urn:zimbraAdmin" xmlns:ns3="urn:zimbraMail" xmlns:ns4="urn:zimbraAccount" xmlns:ns5="urn:zimbra" sections="children,attrs,prefs"/>
+    <ns3:GetInfoRequest xmlns="urn:zimbraAdmin" xmlns:ns2="urn:zimbraMail" xmlns:ns3="urn:zimbraAccount" xmlns:ns4="urn:zimbra" sections="children,attrs,prefs"/>
   </S:Body>
 </S:Envelope>

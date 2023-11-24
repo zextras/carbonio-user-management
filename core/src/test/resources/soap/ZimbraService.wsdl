@@ -1,19 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!--
-  SPDX-FileCopyrightText: 2022 Zextras <https://www.zextras.com>
-
-  SPDX-License-Identifier: AGPL-3.0-only
--->
-
-<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:svc="https://www.zextras.com/wsdl/ZimbraService.wsdl" xmlns:zimbraAccount="urn:zimbraAccount" xmlns:zimbraMail="urn:zimbraMail" xmlns:zimbraAdmin="urn:zimbraAdmin" xmlns:zimbraAdminExt="urn:zimbraAdminExt" xmlns:zimbra="urn:zimbra" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="https://www.zextras.com/wsdl/ZimbraService.wsdl" name="ZimbraService">
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:svc="https://www.zextras.com/wsdl/ZimbraService.wsdl" xmlns:zimbraAccount="urn:zimbraAccount" xmlns:zimbraMail="urn:zimbraMail" xmlns:zimbraAdmin="urn:zimbraAdmin" xmlns:zimbra="urn:zimbra" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="https://www.zextras.com/wsdl/ZimbraService.wsdl" name="ZimbraService">
   <wsdl:types>
     <xsd:schema>
       <xsd:import namespace="urn:zimbra" schemaLocation="zimbra.xsd"/>
       <xsd:import namespace="urn:zimbraAccount" schemaLocation="zimbraAccount.xsd"/>
       <xsd:import namespace="urn:zimbraMail" schemaLocation="zimbraMail.xsd"/>
       <xsd:import namespace="urn:zimbraAdmin" schemaLocation="zimbraAdmin.xsd"/>
-      <xsd:import namespace="urn:zimbraAdminExt" schemaLocation="zimbraAdminExt.xsd"/>
     </xsd:schema>
   </wsdl:types>
   <wsdl:message name="AccountAuthRequestMessage">
@@ -177,12 +170,6 @@
   </wsdl:message>
   <wsdl:message name="AccountGetRightsResponseMessage">
     <wsdl:part name="params" element="zimbraAccount:GetRightsResponse"/>
-  </wsdl:message>
-  <wsdl:message name="AccountGetSMIMEPublicCertsRequestMessage">
-    <wsdl:part name="params" element="zimbraAccount:GetSMIMEPublicCertsRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AccountGetSMIMEPublicCertsResponseMessage">
-    <wsdl:part name="params" element="zimbraAccount:GetSMIMEPublicCertsResponse"/>
   </wsdl:message>
   <wsdl:message name="AccountGetShareInfoRequestMessage">
     <wsdl:part name="params" element="zimbraAccount:GetShareInfoRequest"/>
@@ -970,18 +957,6 @@
   <wsdl:message name="MailWaitSetResponseMessage">
     <wsdl:part name="params" element="zimbraMail:WaitSetResponse"/>
   </wsdl:message>
-  <wsdl:message name="AdminAbortHsmRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:AbortHsmRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminAbortHsmResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:AbortHsmResponse"/>
-  </wsdl:message>
-  <wsdl:message name="AdminAbortXMbxSearchRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:AbortXMbxSearchRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminAbortXMbxSearchResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:AbortXMbxSearchResponse"/>
-  </wsdl:message>
   <wsdl:message name="AdminAddAccountAliasRequestMessage">
     <wsdl:part name="params" element="zimbraAdmin:AddAccountAliasRequest"/>
   </wsdl:message>
@@ -1053,24 +1028,6 @@
   </wsdl:message>
   <wsdl:message name="AdminAutoProvTaskControlResponseMessage">
     <wsdl:part name="params" element="zimbraAdmin:AutoProvTaskControlResponse"/>
-  </wsdl:message>
-  <wsdl:message name="AdminBackupAccountQueryRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:BackupAccountQueryRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminBackupAccountQueryResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:BackupAccountQueryResponse"/>
-  </wsdl:message>
-  <wsdl:message name="AdminBackupQueryRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:BackupQueryRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminBackupQueryResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:BackupQueryResponse"/>
-  </wsdl:message>
-  <wsdl:message name="AdminBackupRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:BackupRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminBackupResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:BackupResponse"/>
   </wsdl:message>
   <wsdl:message name="AdminChangePrimaryEmailRequestMessage">
     <wsdl:part name="params" element="zimbraAdmin:ChangePrimaryEmailRequest"/>
@@ -1192,12 +1149,6 @@
   <wsdl:message name="AdminCreateAddressListResponseMessage">
     <wsdl:part name="params" element="zimbraAdmin:CreateAddressListResponse"/>
   </wsdl:message>
-  <wsdl:message name="AdminCreateArchiveRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:CreateArchiveRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminCreateArchiveResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:CreateArchiveResponse"/>
-  </wsdl:message>
   <wsdl:message name="AdminCreateCalendarResourceRequestMessage">
     <wsdl:part name="params" element="zimbraAdmin:CreateCalendarResourceRequest"/>
   </wsdl:message>
@@ -1263,12 +1214,6 @@
   </wsdl:message>
   <wsdl:message name="AdminCreateXMPPComponentResponseMessage">
     <wsdl:part name="params" element="zimbraAdmin:CreateXMPPComponentResponse"/>
-  </wsdl:message>
-  <wsdl:message name="AdminCreateXMbxSearchRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:CreateXMbxSearchRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminCreateXMbxSearchResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:CreateXMbxSearchResponse"/>
   </wsdl:message>
   <wsdl:message name="AdminCreateZimletRequestMessage">
     <wsdl:part name="params" element="zimbraAdmin:CreateZimletRequest"/>
@@ -1366,12 +1311,6 @@
   <wsdl:message name="AdminDeleteXMPPComponentResponseMessage">
     <wsdl:part name="params" element="zimbraAdmin:DeleteXMPPComponentResponse"/>
   </wsdl:message>
-  <wsdl:message name="AdminDeleteXMbxSearchRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:DeleteXMbxSearchRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminDeleteXMbxSearchResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:DeleteXMbxSearchResponse"/>
-  </wsdl:message>
   <wsdl:message name="AdminDeleteZimletRequestMessage">
     <wsdl:part name="params" element="zimbraAdmin:DeleteZimletRequest"/>
   </wsdl:message>
@@ -1384,41 +1323,17 @@
   <wsdl:message name="AdminDeployZimletResponseMessage">
     <wsdl:part name="params" element="zimbraAdmin:DeployZimletResponse"/>
   </wsdl:message>
-  <wsdl:message name="AdminDisableArchiveRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:DisableArchiveRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminDisableArchiveResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:DisableArchiveResponse"/>
-  </wsdl:message>
   <wsdl:message name="AdminDumpSessionsRequestMessage">
     <wsdl:part name="params" element="zimbraAdmin:DumpSessionsRequest"/>
   </wsdl:message>
   <wsdl:message name="AdminDumpSessionsResponseMessage">
     <wsdl:part name="params" element="zimbraAdmin:DumpSessionsResponse"/>
   </wsdl:message>
-  <wsdl:message name="AdminEnableArchiveRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:EnableArchiveRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminEnableArchiveResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:EnableArchiveResponse"/>
-  </wsdl:message>
   <wsdl:message name="AdminExportAndDeleteItemsRequestMessage">
     <wsdl:part name="params" element="zimbraAdmin:ExportAndDeleteItemsRequest"/>
   </wsdl:message>
   <wsdl:message name="AdminExportAndDeleteItemsResponseMessage">
     <wsdl:part name="params" element="zimbraAdmin:ExportAndDeleteItemsResponse"/>
-  </wsdl:message>
-  <wsdl:message name="AdminExportMailboxRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:ExportMailboxRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminExportMailboxResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:ExportMailboxResponse"/>
-  </wsdl:message>
-  <wsdl:message name="AdminFailoverClusterServiceRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:FailoverClusterServiceRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminFailoverClusterServiceResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:FailoverClusterServiceResponse"/>
   </wsdl:message>
   <wsdl:message name="AdminFixCalendarEndTimeRequestMessage">
     <wsdl:part name="params" element="zimbraAdmin:FixCalendarEndTimeRequest"/>
@@ -1612,12 +1527,6 @@
   <wsdl:message name="AdminGetAllZimletsResponseMessage">
     <wsdl:part name="params" element="zimbraAdmin:GetAllZimletsResponse"/>
   </wsdl:message>
-  <wsdl:message name="AdminGetApplianceHSMFSRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:GetApplianceHSMFSRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminGetApplianceHSMFSResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:GetApplianceHSMFSResponse"/>
-  </wsdl:message>
   <wsdl:message name="AdminGetAttributeInfoRequestMessage">
     <wsdl:part name="params" element="zimbraAdmin:GetAttributeInfoRequest"/>
   </wsdl:message>
@@ -1641,12 +1550,6 @@
   </wsdl:message>
   <wsdl:message name="AdminGetCertResponseMessage">
     <wsdl:part name="params" element="zimbraAdmin:GetCertResponse"/>
-  </wsdl:message>
-  <wsdl:message name="AdminGetClusterStatusRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:GetClusterStatusRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminGetClusterStatusResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:GetClusterStatusResponse"/>
   </wsdl:message>
   <wsdl:message name="AdminGetConfigRequestMessage">
     <wsdl:part name="params" element="zimbraAdmin:GetConfigRequest"/>
@@ -1738,12 +1641,6 @@
   <wsdl:message name="AdminGetGrantsResponseMessage">
     <wsdl:part name="params" element="zimbraAdmin:GetGrantsResponse"/>
   </wsdl:message>
-  <wsdl:message name="AdminGetHsmStatusRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:GetHsmStatusRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminGetHsmStatusResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:GetHsmStatusResponse"/>
-  </wsdl:message>
   <wsdl:message name="AdminGetIndexStatsRequestMessage">
     <wsdl:part name="params" element="zimbraAdmin:GetIndexStatsRequest"/>
   </wsdl:message>
@@ -1780,18 +1677,6 @@
   <wsdl:message name="AdminGetMailboxStatsResponseMessage">
     <wsdl:part name="params" element="zimbraAdmin:GetMailboxStatsResponse"/>
   </wsdl:message>
-  <wsdl:message name="AdminGetMailboxVersionRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:GetMailboxVersionRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminGetMailboxVersionResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:GetMailboxVersionResponse"/>
-  </wsdl:message>
-  <wsdl:message name="AdminGetMailboxVolumesRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:GetMailboxVolumesRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminGetMailboxVolumesResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:GetMailboxVolumesResponse"/>
-  </wsdl:message>
   <wsdl:message name="AdminGetMemcachedClientConfigRequestMessage">
     <wsdl:part name="params" element="zimbraAdmin:GetMemcachedClientConfigRequest"/>
   </wsdl:message>
@@ -1821,12 +1706,6 @@
   </wsdl:message>
   <wsdl:message name="AdminGetRightsDocResponseMessage">
     <wsdl:part name="params" element="zimbraAdmin:GetRightsDocResponse"/>
-  </wsdl:message>
-  <wsdl:message name="AdminGetSMIMEConfigRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:GetSMIMEConfigRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminGetSMIMEConfigResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:GetSMIMEConfigResponse"/>
   </wsdl:message>
   <wsdl:message name="AdminGetServerNIfsRequestMessage">
     <wsdl:part name="params" element="zimbraAdmin:GetServerNIfsRequest"/>
@@ -1888,12 +1767,6 @@
   <wsdl:message name="AdminGetXMPPComponentResponseMessage">
     <wsdl:part name="params" element="zimbraAdmin:GetXMPPComponentResponse"/>
   </wsdl:message>
-  <wsdl:message name="AdminGetXMbxSearchesListRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:GetXMbxSearchesListRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminGetXMbxSearchesListResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:GetXMbxSearchesListResponse"/>
-  </wsdl:message>
   <wsdl:message name="AdminGetZimletRequestMessage">
     <wsdl:part name="params" element="zimbraAdmin:GetZimletRequest"/>
   </wsdl:message>
@@ -1917,18 +1790,6 @@
   </wsdl:message>
   <wsdl:message name="AdminHABOrgUnitResponseMessage">
     <wsdl:part name="params" element="zimbraAdmin:HABOrgUnitResponse"/>
-  </wsdl:message>
-  <wsdl:message name="AdminHsmRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:HsmRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminHsmResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:HsmResponse"/>
-  </wsdl:message>
-  <wsdl:message name="AdminInstallCertRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:InstallCertRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminInstallCertResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:InstallCertResponse"/>
   </wsdl:message>
   <wsdl:message name="AdminIssueCertRequestMessage">
     <wsdl:part name="params" element="zimbraAdmin:IssueCertRequest"/>
@@ -2038,12 +1899,6 @@
   <wsdl:message name="AdminModifyOutgoingFilterRulesResponseMessage">
     <wsdl:part name="params" element="zimbraAdmin:ModifyOutgoingFilterRulesResponse"/>
   </wsdl:message>
-  <wsdl:message name="AdminModifySMIMEConfigRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:ModifySMIMEConfigRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminModifySMIMEConfigResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:ModifySMIMEConfigResponse"/>
-  </wsdl:message>
   <wsdl:message name="AdminModifyServerRequestMessage">
     <wsdl:part name="params" element="zimbraAdmin:ModifyServerRequest"/>
   </wsdl:message>
@@ -2067,18 +1922,6 @@
   </wsdl:message>
   <wsdl:message name="AdminModifyZimletResponseMessage">
     <wsdl:part name="params" element="zimbraAdmin:ModifyZimletResponse"/>
-  </wsdl:message>
-  <wsdl:message name="AdminMoveBlobsRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:MoveBlobsRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminMoveBlobsResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:MoveBlobsResponse"/>
-  </wsdl:message>
-  <wsdl:message name="AdminMoveMailboxRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:MoveMailboxRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminMoveMailboxResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:MoveMailboxResponse"/>
   </wsdl:message>
   <wsdl:message name="AdminNoOpRequestMessage">
     <wsdl:part name="params" element="zimbraAdmin:NoOpRequest"/>
@@ -2110,23 +1953,11 @@
   <wsdl:message name="AdminPurgeMessagesResponseMessage">
     <wsdl:part name="params" element="zimbraAdmin:PurgeMessagesResponse"/>
   </wsdl:message>
-  <wsdl:message name="AdminPurgeMovedMailboxRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:PurgeMovedMailboxRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminPurgeMovedMailboxResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:PurgeMovedMailboxResponse"/>
-  </wsdl:message>
   <wsdl:message name="AdminPushFreeBusyRequestMessage">
     <wsdl:part name="params" element="zimbraAdmin:PushFreeBusyRequest"/>
   </wsdl:message>
   <wsdl:message name="AdminPushFreeBusyResponseMessage">
     <wsdl:part name="params" element="zimbraAdmin:PushFreeBusyResponse"/>
-  </wsdl:message>
-  <wsdl:message name="AdminQueryMailboxMoveRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:QueryMailboxMoveRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminQueryMailboxMoveResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:QueryMailboxMoveResponse"/>
   </wsdl:message>
   <wsdl:message name="AdminQueryWaitSetRequestMessage">
     <wsdl:part name="params" element="zimbraAdmin:QueryWaitSetRequest"/>
@@ -2151,18 +1982,6 @@
   </wsdl:message>
   <wsdl:message name="AdminRefreshRegisteredAuthTokensResponseMessage">
     <wsdl:part name="params" element="zimbraAdmin:RefreshRegisteredAuthTokensResponse"/>
-  </wsdl:message>
-  <wsdl:message name="AdminRegisterMailboxMoveOutRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:RegisterMailboxMoveOutRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminRegisterMailboxMoveOutResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:RegisterMailboxMoveOutResponse"/>
-  </wsdl:message>
-  <wsdl:message name="AdminReloadAccountRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:ReloadAccountRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminReloadAccountResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:ReloadAccountResponse"/>
   </wsdl:message>
   <wsdl:message name="AdminReloadLocalConfigRequestMessage">
     <wsdl:part name="params" element="zimbraAdmin:ReloadLocalConfigRequest"/>
@@ -2236,35 +2055,17 @@
   <wsdl:message name="AdminResetAllLoggersResponseMessage">
     <wsdl:part name="params" element="zimbraAdmin:ResetAllLoggersResponse"/>
   </wsdl:message>
-  <wsdl:message name="AdminRestoreRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:RestoreRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminRestoreResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:RestoreResponse"/>
-  </wsdl:message>
   <wsdl:message name="AdminRevokeRightRequestMessage">
     <wsdl:part name="params" element="zimbraAdmin:RevokeRightRequest"/>
   </wsdl:message>
   <wsdl:message name="AdminRevokeRightResponseMessage">
     <wsdl:part name="params" element="zimbraAdmin:RevokeRightResponse"/>
   </wsdl:message>
-  <wsdl:message name="AdminRolloverRedoLogRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:RolloverRedoLogRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminRolloverRedoLogResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:RolloverRedoLogResponse"/>
-  </wsdl:message>
   <wsdl:message name="AdminRunUnitTestsRequestMessage">
     <wsdl:part name="params" element="zimbraAdmin:RunUnitTestsRequest"/>
   </wsdl:message>
   <wsdl:message name="AdminRunUnitTestsResponseMessage">
     <wsdl:part name="params" element="zimbraAdmin:RunUnitTestsResponse"/>
-  </wsdl:message>
-  <wsdl:message name="AdminScheduleBackupsRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:ScheduleBackupsRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminScheduleBackupsResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:ScheduleBackupsResponse"/>
   </wsdl:message>
   <wsdl:message name="AdminSearchAccountsRequestMessage">
     <wsdl:part name="params" element="zimbraAdmin:SearchAccountsRequest"/>
@@ -2296,12 +2097,6 @@
   <wsdl:message name="AdminSearchGalResponseMessage">
     <wsdl:part name="params" element="zimbraAdmin:SearchGalResponse"/>
   </wsdl:message>
-  <wsdl:message name="AdminSearchMultiMailboxRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:SearchMultiMailboxRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminSearchMultiMailboxResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:SearchMultiMailboxResponse"/>
-  </wsdl:message>
   <wsdl:message name="AdminSetCurrentVolumeRequestMessage">
     <wsdl:part name="params" element="zimbraAdmin:SetCurrentVolumeRequest"/>
   </wsdl:message>
@@ -2325,18 +2120,6 @@
   </wsdl:message>
   <wsdl:message name="AdminUndeployZimletResponseMessage">
     <wsdl:part name="params" element="zimbraAdmin:UndeployZimletResponse"/>
-  </wsdl:message>
-  <wsdl:message name="AdminUnloadMailboxRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:UnloadMailboxRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminUnloadMailboxResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:UnloadMailboxResponse"/>
-  </wsdl:message>
-  <wsdl:message name="AdminUnregisterMailboxMoveOutRequestMessage">
-    <wsdl:part name="params" element="zimbraAdmin:UnregisterMailboxMoveOutRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminUnregisterMailboxMoveOutResponseMessage">
-    <wsdl:part name="params" element="zimbraAdmin:UnregisterMailboxMoveOutResponse"/>
   </wsdl:message>
   <wsdl:message name="AdminUploadDomCertRequestMessage">
     <wsdl:part name="params" element="zimbraAdmin:UploadDomCertRequest"/>
@@ -2368,36 +2151,10 @@
   <wsdl:message name="AdminVerifyStoreManagerResponseMessage">
     <wsdl:part name="params" element="zimbraAdmin:VerifyStoreManagerResponse"/>
   </wsdl:message>
-  <wsdl:message name="AdminExtBulkIMAPDataImportRequestMessage">
-    <wsdl:part name="params" element="zimbraAdminExt:BulkIMAPDataImportRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminExtBulkIMAPDataImportResponseMessage">
-    <wsdl:part name="params" element="zimbraAdminExt:BulkIMAPDataImportResponse"/>
-  </wsdl:message>
-  <wsdl:message name="AdminExtBulkImportAccountsRequestMessage">
-    <wsdl:part name="params" element="zimbraAdminExt:BulkImportAccountsRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminExtBulkImportAccountsResponseMessage">
-    <wsdl:part name="params" element="zimbraAdminExt:BulkImportAccountsResponse"/>
-  </wsdl:message>
-  <wsdl:message name="AdminExtGenerateBulkProvisionFileFromLDAPRequestMessage">
-    <wsdl:part name="params" element="zimbraAdminExt:GenerateBulkProvisionFileFromLDAPRequest"/>
-  </wsdl:message>
-  <wsdl:message name="AdminExtGenerateBulkProvisionFileFromLDAPResponseMessage">
-    <wsdl:part name="params" element="zimbraAdminExt:GenerateBulkProvisionFileFromLDAPResponse"/>
-  </wsdl:message>
   <wsdl:message name="soapHdrContext">
     <wsdl:part name="context" element="zimbra:context"/>
   </wsdl:message>
   <wsdl:portType name="zcsAdminPortType">
-    <wsdl:operation name="abortHsmRequest">
-      <wsdl:input message="svc:AdminAbortHsmRequestMessage"/>
-      <wsdl:output message="svc:AdminAbortHsmResponseMessage"/>
-    </wsdl:operation>
-    <wsdl:operation name="abortXMbxSearchRequest">
-      <wsdl:input message="svc:AdminAbortXMbxSearchRequestMessage"/>
-      <wsdl:output message="svc:AdminAbortXMbxSearchResponseMessage"/>
-    </wsdl:operation>
     <wsdl:operation name="addAccountAliasRequest">
       <wsdl:input message="svc:AdminAddAccountAliasRequestMessage"/>
       <wsdl:output message="svc:AdminAddAccountAliasResponseMessage"/>
@@ -2445,18 +2202,6 @@
     <wsdl:operation name="autoProvTaskControlRequest">
       <wsdl:input message="svc:AdminAutoProvTaskControlRequestMessage"/>
       <wsdl:output message="svc:AdminAutoProvTaskControlResponseMessage"/>
-    </wsdl:operation>
-    <wsdl:operation name="backupAccountQueryRequest">
-      <wsdl:input message="svc:AdminBackupAccountQueryRequestMessage"/>
-      <wsdl:output message="svc:AdminBackupAccountQueryResponseMessage"/>
-    </wsdl:operation>
-    <wsdl:operation name="backupQueryRequest">
-      <wsdl:input message="svc:AdminBackupQueryRequestMessage"/>
-      <wsdl:output message="svc:AdminBackupQueryResponseMessage"/>
-    </wsdl:operation>
-    <wsdl:operation name="backupRequest">
-      <wsdl:input message="svc:AdminBackupRequestMessage"/>
-      <wsdl:output message="svc:AdminBackupResponseMessage"/>
     </wsdl:operation>
     <wsdl:operation name="changePrimaryEmailRequest">
       <wsdl:input message="svc:AdminChangePrimaryEmailRequestMessage"/>
@@ -2538,10 +2283,6 @@
       <wsdl:input message="svc:AdminCreateAddressListRequestMessage"/>
       <wsdl:output message="svc:AdminCreateAddressListResponseMessage"/>
     </wsdl:operation>
-    <wsdl:operation name="createArchiveRequest">
-      <wsdl:input message="svc:AdminCreateArchiveRequestMessage"/>
-      <wsdl:output message="svc:AdminCreateArchiveResponseMessage"/>
-    </wsdl:operation>
     <wsdl:operation name="createCalendarResourceRequest">
       <wsdl:input message="svc:AdminCreateCalendarResourceRequestMessage"/>
       <wsdl:output message="svc:AdminCreateCalendarResourceResponseMessage"/>
@@ -2585,10 +2326,6 @@
     <wsdl:operation name="createXMPPComponentRequest">
       <wsdl:input message="svc:AdminCreateXMPPComponentRequestMessage"/>
       <wsdl:output message="svc:AdminCreateXMPPComponentResponseMessage"/>
-    </wsdl:operation>
-    <wsdl:operation name="createXMbxSearchRequest">
-      <wsdl:input message="svc:AdminCreateXMbxSearchRequestMessage"/>
-      <wsdl:output message="svc:AdminCreateXMbxSearchResponseMessage"/>
     </wsdl:operation>
     <wsdl:operation name="createZimletRequest">
       <wsdl:input message="svc:AdminCreateZimletRequestMessage"/>
@@ -2654,10 +2391,6 @@
       <wsdl:input message="svc:AdminDeleteXMPPComponentRequestMessage"/>
       <wsdl:output message="svc:AdminDeleteXMPPComponentResponseMessage"/>
     </wsdl:operation>
-    <wsdl:operation name="deleteXMbxSearchRequest">
-      <wsdl:input message="svc:AdminDeleteXMbxSearchRequestMessage"/>
-      <wsdl:output message="svc:AdminDeleteXMbxSearchResponseMessage"/>
-    </wsdl:operation>
     <wsdl:operation name="deleteZimletRequest">
       <wsdl:input message="svc:AdminDeleteZimletRequestMessage"/>
       <wsdl:output message="svc:AdminDeleteZimletResponseMessage"/>
@@ -2666,29 +2399,13 @@
       <wsdl:input message="svc:AdminDeployZimletRequestMessage"/>
       <wsdl:output message="svc:AdminDeployZimletResponseMessage"/>
     </wsdl:operation>
-    <wsdl:operation name="disableArchiveRequest">
-      <wsdl:input message="svc:AdminDisableArchiveRequestMessage"/>
-      <wsdl:output message="svc:AdminDisableArchiveResponseMessage"/>
-    </wsdl:operation>
     <wsdl:operation name="dumpSessionsRequest">
       <wsdl:input message="svc:AdminDumpSessionsRequestMessage"/>
       <wsdl:output message="svc:AdminDumpSessionsResponseMessage"/>
     </wsdl:operation>
-    <wsdl:operation name="enableArchiveRequest">
-      <wsdl:input message="svc:AdminEnableArchiveRequestMessage"/>
-      <wsdl:output message="svc:AdminEnableArchiveResponseMessage"/>
-    </wsdl:operation>
     <wsdl:operation name="exportAndDeleteItemsRequest">
       <wsdl:input message="svc:AdminExportAndDeleteItemsRequestMessage"/>
       <wsdl:output message="svc:AdminExportAndDeleteItemsResponseMessage"/>
-    </wsdl:operation>
-    <wsdl:operation name="exportMailboxRequest">
-      <wsdl:input message="svc:AdminExportMailboxRequestMessage"/>
-      <wsdl:output message="svc:AdminExportMailboxResponseMessage"/>
-    </wsdl:operation>
-    <wsdl:operation name="failoverClusterServiceRequest">
-      <wsdl:input message="svc:AdminFailoverClusterServiceRequestMessage"/>
-      <wsdl:output message="svc:AdminFailoverClusterServiceResponseMessage"/>
     </wsdl:operation>
     <wsdl:operation name="fixCalendarEndTimeRequest">
       <wsdl:input message="svc:AdminFixCalendarEndTimeRequestMessage"/>
@@ -2818,10 +2535,6 @@
       <wsdl:input message="svc:AdminGetAllZimletsRequestMessage"/>
       <wsdl:output message="svc:AdminGetAllZimletsResponseMessage"/>
     </wsdl:operation>
-    <wsdl:operation name="getApplianceHSMFSRequest">
-      <wsdl:input message="svc:AdminGetApplianceHSMFSRequestMessage"/>
-      <wsdl:output message="svc:AdminGetApplianceHSMFSResponseMessage"/>
-    </wsdl:operation>
     <wsdl:operation name="getAttributeInfoRequest">
       <wsdl:input message="svc:AdminGetAttributeInfoRequestMessage"/>
       <wsdl:output message="svc:AdminGetAttributeInfoResponseMessage"/>
@@ -2837,10 +2550,6 @@
     <wsdl:operation name="getCertRequest">
       <wsdl:input message="svc:AdminGetCertRequestMessage"/>
       <wsdl:output message="svc:AdminGetCertResponseMessage"/>
-    </wsdl:operation>
-    <wsdl:operation name="getClusterStatusRequest">
-      <wsdl:input message="svc:AdminGetClusterStatusRequestMessage"/>
-      <wsdl:output message="svc:AdminGetClusterStatusResponseMessage"/>
     </wsdl:operation>
     <wsdl:operation name="getConfigRequest">
       <wsdl:input message="svc:AdminGetConfigRequestMessage"/>
@@ -2902,10 +2611,6 @@
       <wsdl:input message="svc:AdminGetGrantsRequestMessage"/>
       <wsdl:output message="svc:AdminGetGrantsResponseMessage"/>
     </wsdl:operation>
-    <wsdl:operation name="getHsmStatusRequest">
-      <wsdl:input message="svc:AdminGetHsmStatusRequestMessage"/>
-      <wsdl:output message="svc:AdminGetHsmStatusResponseMessage"/>
-    </wsdl:operation>
     <wsdl:operation name="getIndexStatsRequest">
       <wsdl:input message="svc:AdminGetIndexStatsRequestMessage"/>
       <wsdl:output message="svc:AdminGetIndexStatsResponseMessage"/>
@@ -2930,14 +2635,6 @@
       <wsdl:input message="svc:AdminGetMailboxStatsRequestMessage"/>
       <wsdl:output message="svc:AdminGetMailboxStatsResponseMessage"/>
     </wsdl:operation>
-    <wsdl:operation name="getMailboxVersionRequest">
-      <wsdl:input message="svc:AdminGetMailboxVersionRequestMessage"/>
-      <wsdl:output message="svc:AdminGetMailboxVersionResponseMessage"/>
-    </wsdl:operation>
-    <wsdl:operation name="getMailboxVolumesRequest">
-      <wsdl:input message="svc:AdminGetMailboxVolumesRequestMessage"/>
-      <wsdl:output message="svc:AdminGetMailboxVolumesResponseMessage"/>
-    </wsdl:operation>
     <wsdl:operation name="getMemcachedClientConfigRequest">
       <wsdl:input message="svc:AdminGetMemcachedClientConfigRequestMessage"/>
       <wsdl:output message="svc:AdminGetMemcachedClientConfigResponseMessage"/>
@@ -2957,10 +2654,6 @@
     <wsdl:operation name="getRightsDocRequest">
       <wsdl:input message="svc:AdminGetRightsDocRequestMessage"/>
       <wsdl:output message="svc:AdminGetRightsDocResponseMessage"/>
-    </wsdl:operation>
-    <wsdl:operation name="getSMIMEConfigRequest">
-      <wsdl:input message="svc:AdminGetSMIMEConfigRequestMessage"/>
-      <wsdl:output message="svc:AdminGetSMIMEConfigResponseMessage"/>
     </wsdl:operation>
     <wsdl:operation name="getServerNIfsRequest">
       <wsdl:input message="svc:AdminGetServerNIfsRequestMessage"/>
@@ -3002,10 +2695,6 @@
       <wsdl:input message="svc:AdminGetXMPPComponentRequestMessage"/>
       <wsdl:output message="svc:AdminGetXMPPComponentResponseMessage"/>
     </wsdl:operation>
-    <wsdl:operation name="getXMbxSearchesListRequest">
-      <wsdl:input message="svc:AdminGetXMbxSearchesListRequestMessage"/>
-      <wsdl:output message="svc:AdminGetXMbxSearchesListResponseMessage"/>
-    </wsdl:operation>
     <wsdl:operation name="getZimletRequest">
       <wsdl:input message="svc:AdminGetZimletRequestMessage"/>
       <wsdl:output message="svc:AdminGetZimletResponseMessage"/>
@@ -3021,14 +2710,6 @@
     <wsdl:operation name="hABOrgUnitRequest">
       <wsdl:input message="svc:AdminHABOrgUnitRequestMessage"/>
       <wsdl:output message="svc:AdminHABOrgUnitResponseMessage"/>
-    </wsdl:operation>
-    <wsdl:operation name="hsmRequest">
-      <wsdl:input message="svc:AdminHsmRequestMessage"/>
-      <wsdl:output message="svc:AdminHsmResponseMessage"/>
-    </wsdl:operation>
-    <wsdl:operation name="installCertRequest">
-      <wsdl:input message="svc:AdminInstallCertRequestMessage"/>
-      <wsdl:output message="svc:AdminInstallCertResponseMessage"/>
     </wsdl:operation>
     <wsdl:operation name="issueCertRequest">
       <wsdl:input message="svc:AdminIssueCertRequestMessage"/>
@@ -3102,10 +2783,6 @@
       <wsdl:input message="svc:AdminModifyOutgoingFilterRulesRequestMessage"/>
       <wsdl:output message="svc:AdminModifyOutgoingFilterRulesResponseMessage"/>
     </wsdl:operation>
-    <wsdl:operation name="modifySMIMEConfigRequest">
-      <wsdl:input message="svc:AdminModifySMIMEConfigRequestMessage"/>
-      <wsdl:output message="svc:AdminModifySMIMEConfigResponseMessage"/>
-    </wsdl:operation>
     <wsdl:operation name="modifyServerRequest">
       <wsdl:input message="svc:AdminModifyServerRequestMessage"/>
       <wsdl:output message="svc:AdminModifyServerResponseMessage"/>
@@ -3121,14 +2798,6 @@
     <wsdl:operation name="modifyZimletRequest">
       <wsdl:input message="svc:AdminModifyZimletRequestMessage"/>
       <wsdl:output message="svc:AdminModifyZimletResponseMessage"/>
-    </wsdl:operation>
-    <wsdl:operation name="moveBlobsRequest">
-      <wsdl:input message="svc:AdminMoveBlobsRequestMessage"/>
-      <wsdl:output message="svc:AdminMoveBlobsResponseMessage"/>
-    </wsdl:operation>
-    <wsdl:operation name="moveMailboxRequest">
-      <wsdl:input message="svc:AdminMoveMailboxRequestMessage"/>
-      <wsdl:output message="svc:AdminMoveMailboxResponseMessage"/>
     </wsdl:operation>
     <wsdl:operation name="noOpRequest">
       <wsdl:input message="svc:AdminNoOpRequestMessage"/>
@@ -3150,17 +2819,9 @@
       <wsdl:input message="svc:AdminPurgeMessagesRequestMessage"/>
       <wsdl:output message="svc:AdminPurgeMessagesResponseMessage"/>
     </wsdl:operation>
-    <wsdl:operation name="purgeMovedMailboxRequest">
-      <wsdl:input message="svc:AdminPurgeMovedMailboxRequestMessage"/>
-      <wsdl:output message="svc:AdminPurgeMovedMailboxResponseMessage"/>
-    </wsdl:operation>
     <wsdl:operation name="pushFreeBusyRequest">
       <wsdl:input message="svc:AdminPushFreeBusyRequestMessage"/>
       <wsdl:output message="svc:AdminPushFreeBusyResponseMessage"/>
-    </wsdl:operation>
-    <wsdl:operation name="queryMailboxMoveRequest">
-      <wsdl:input message="svc:AdminQueryMailboxMoveRequestMessage"/>
-      <wsdl:output message="svc:AdminQueryMailboxMoveResponseMessage"/>
     </wsdl:operation>
     <wsdl:operation name="queryWaitSetRequest">
       <wsdl:input message="svc:AdminQueryWaitSetRequestMessage"/>
@@ -3177,14 +2838,6 @@
     <wsdl:operation name="refreshRegisteredAuthTokensRequest">
       <wsdl:input message="svc:AdminRefreshRegisteredAuthTokensRequestMessage"/>
       <wsdl:output message="svc:AdminRefreshRegisteredAuthTokensResponseMessage"/>
-    </wsdl:operation>
-    <wsdl:operation name="registerMailboxMoveOutRequest">
-      <wsdl:input message="svc:AdminRegisterMailboxMoveOutRequestMessage"/>
-      <wsdl:output message="svc:AdminRegisterMailboxMoveOutResponseMessage"/>
-    </wsdl:operation>
-    <wsdl:operation name="reloadAccountRequest">
-      <wsdl:input message="svc:AdminReloadAccountRequestMessage"/>
-      <wsdl:output message="svc:AdminReloadAccountResponseMessage"/>
     </wsdl:operation>
     <wsdl:operation name="reloadLocalConfigRequest">
       <wsdl:input message="svc:AdminReloadLocalConfigRequestMessage"/>
@@ -3234,25 +2887,13 @@
       <wsdl:input message="svc:AdminResetAllLoggersRequestMessage"/>
       <wsdl:output message="svc:AdminResetAllLoggersResponseMessage"/>
     </wsdl:operation>
-    <wsdl:operation name="restoreRequest">
-      <wsdl:input message="svc:AdminRestoreRequestMessage"/>
-      <wsdl:output message="svc:AdminRestoreResponseMessage"/>
-    </wsdl:operation>
     <wsdl:operation name="revokeRightRequest">
       <wsdl:input message="svc:AdminRevokeRightRequestMessage"/>
       <wsdl:output message="svc:AdminRevokeRightResponseMessage"/>
     </wsdl:operation>
-    <wsdl:operation name="rolloverRedoLogRequest">
-      <wsdl:input message="svc:AdminRolloverRedoLogRequestMessage"/>
-      <wsdl:output message="svc:AdminRolloverRedoLogResponseMessage"/>
-    </wsdl:operation>
     <wsdl:operation name="runUnitTestsRequest">
       <wsdl:input message="svc:AdminRunUnitTestsRequestMessage"/>
       <wsdl:output message="svc:AdminRunUnitTestsResponseMessage"/>
-    </wsdl:operation>
-    <wsdl:operation name="scheduleBackupsRequest">
-      <wsdl:input message="svc:AdminScheduleBackupsRequestMessage"/>
-      <wsdl:output message="svc:AdminScheduleBackupsResponseMessage"/>
     </wsdl:operation>
     <wsdl:operation name="searchAccountsRequest">
       <wsdl:input message="svc:AdminSearchAccountsRequestMessage"/>
@@ -3274,10 +2915,6 @@
       <wsdl:input message="svc:AdminSearchGalRequestMessage"/>
       <wsdl:output message="svc:AdminSearchGalResponseMessage"/>
     </wsdl:operation>
-    <wsdl:operation name="searchMultiMailboxRequest">
-      <wsdl:input message="svc:AdminSearchMultiMailboxRequestMessage"/>
-      <wsdl:output message="svc:AdminSearchMultiMailboxResponseMessage"/>
-    </wsdl:operation>
     <wsdl:operation name="setCurrentVolumeRequest">
       <wsdl:input message="svc:AdminSetCurrentVolumeRequestMessage"/>
       <wsdl:output message="svc:AdminSetCurrentVolumeResponseMessage"/>
@@ -3293,14 +2930,6 @@
     <wsdl:operation name="undeployZimletRequest">
       <wsdl:input message="svc:AdminUndeployZimletRequestMessage"/>
       <wsdl:output message="svc:AdminUndeployZimletResponseMessage"/>
-    </wsdl:operation>
-    <wsdl:operation name="unloadMailboxRequest">
-      <wsdl:input message="svc:AdminUnloadMailboxRequestMessage"/>
-      <wsdl:output message="svc:AdminUnloadMailboxResponseMessage"/>
-    </wsdl:operation>
-    <wsdl:operation name="unregisterMailboxMoveOutRequest">
-      <wsdl:input message="svc:AdminUnregisterMailboxMoveOutRequestMessage"/>
-      <wsdl:output message="svc:AdminUnregisterMailboxMoveOutResponseMessage"/>
     </wsdl:operation>
     <wsdl:operation name="uploadDomCertRequest">
       <wsdl:input message="svc:AdminUploadDomCertRequestMessage"/>
@@ -3321,18 +2950,6 @@
     <wsdl:operation name="verifyStoreManagerRequest">
       <wsdl:input message="svc:AdminVerifyStoreManagerRequestMessage"/>
       <wsdl:output message="svc:AdminVerifyStoreManagerResponseMessage"/>
-    </wsdl:operation>
-    <wsdl:operation name="bulkIMAPDataImportRequest">
-      <wsdl:input message="svc:AdminExtBulkIMAPDataImportRequestMessage"/>
-      <wsdl:output message="svc:AdminExtBulkIMAPDataImportResponseMessage"/>
-    </wsdl:operation>
-    <wsdl:operation name="bulkImportAccountsRequest">
-      <wsdl:input message="svc:AdminExtBulkImportAccountsRequestMessage"/>
-      <wsdl:output message="svc:AdminExtBulkImportAccountsResponseMessage"/>
-    </wsdl:operation>
-    <wsdl:operation name="generateBulkProvisionFileFromLDAPRequest">
-      <wsdl:input message="svc:AdminExtGenerateBulkProvisionFileFromLDAPRequestMessage"/>
-      <wsdl:output message="svc:AdminExtGenerateBulkProvisionFileFromLDAPResponseMessage"/>
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:portType name="zcsPortType">
@@ -3443,10 +3060,6 @@
     <wsdl:operation name="getRightsRequest">
       <wsdl:input message="svc:AccountGetRightsRequestMessage"/>
       <wsdl:output message="svc:AccountGetRightsResponseMessage"/>
-    </wsdl:operation>
-    <wsdl:operation name="getSMIMEPublicCertsRequest">
-      <wsdl:input message="svc:AccountGetSMIMEPublicCertsRequestMessage"/>
-      <wsdl:output message="svc:AccountGetSMIMEPublicCertsResponseMessage"/>
     </wsdl:operation>
     <wsdl:operation name="getShareInfoRequest">
       <wsdl:input message="svc:AccountGetShareInfoRequestMessage"/>
@@ -3975,26 +3588,6 @@
   </wsdl:portType>
   <wsdl:binding name="zcsAdminPortBinding" type="svc:zcsAdminPortType">
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
-    <wsdl:operation name="abortHsmRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/AbortHsm" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="abortXMbxSearchRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/AbortXMbxSearch" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="addAccountAliasRequest">
       <soap:operation soapAction="urn:zimbraAdmin/AddAccountAlias" style="document"/>
       <wsdl:input>
@@ -4107,36 +3700,6 @@
     </wsdl:operation>
     <wsdl:operation name="autoProvTaskControlRequest">
       <soap:operation soapAction="urn:zimbraAdmin/AutoProvTaskControl" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="backupAccountQueryRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/BackupAccountQuery" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="backupQueryRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/BackupQuery" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="backupRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/Backup" style="document"/>
       <wsdl:input>
         <soap:body use="literal"/>
         <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
@@ -4345,16 +3908,6 @@
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="createArchiveRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/CreateArchive" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="createCalendarResourceRequest">
       <soap:operation soapAction="urn:zimbraAdmin/CreateCalendarResource" style="document"/>
       <wsdl:input>
@@ -4457,16 +4010,6 @@
     </wsdl:operation>
     <wsdl:operation name="createXMPPComponentRequest">
       <soap:operation soapAction="urn:zimbraAdmin/CreateXMPPComponent" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="createXMbxSearchRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/CreateXMbxSearch" style="document"/>
       <wsdl:input>
         <soap:body use="literal"/>
         <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
@@ -4635,16 +4178,6 @@
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="deleteXMbxSearchRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/DeleteXMbxSearch" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="deleteZimletRequest">
       <soap:operation soapAction="urn:zimbraAdmin/DeleteZimlet" style="document"/>
       <wsdl:input>
@@ -4665,16 +4198,6 @@
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="disableArchiveRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/DisableArchive" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="dumpSessionsRequest">
       <soap:operation soapAction="urn:zimbraAdmin/DumpSessions" style="document"/>
       <wsdl:input>
@@ -4685,38 +4208,8 @@
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="enableArchiveRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/EnableArchive" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="exportAndDeleteItemsRequest">
       <soap:operation soapAction="urn:zimbraAdmin/ExportAndDeleteItems" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="exportMailboxRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/ExportMailbox" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="failoverClusterServiceRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/FailoverClusterService" style="document"/>
       <wsdl:input>
         <soap:body use="literal"/>
         <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
@@ -5045,16 +4538,6 @@
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="getApplianceHSMFSRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/GetApplianceHSMFS" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="getAttributeInfoRequest">
       <soap:operation soapAction="urn:zimbraAdmin/GetAttributeInfo" style="document"/>
       <wsdl:input>
@@ -5087,16 +4570,6 @@
     </wsdl:operation>
     <wsdl:operation name="getCertRequest">
       <soap:operation soapAction="urn:zimbraAdmin/GetCert" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="getClusterStatusRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/GetClusterStatus" style="document"/>
       <wsdl:input>
         <soap:body use="literal"/>
         <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
@@ -5255,16 +4728,6 @@
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="getHsmStatusRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/GetHsmStatus" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="getIndexStatsRequest">
       <soap:operation soapAction="urn:zimbraAdmin/GetIndexStats" style="document"/>
       <wsdl:input>
@@ -5325,26 +4788,6 @@
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="getMailboxVersionRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/GetMailboxVersion" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="getMailboxVolumesRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/GetMailboxVolumes" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="getMemcachedClientConfigRequest">
       <soap:operation soapAction="urn:zimbraAdmin/GetMemcachedClientConfig" style="document"/>
       <wsdl:input>
@@ -5387,16 +4830,6 @@
     </wsdl:operation>
     <wsdl:operation name="getRightsDocRequest">
       <soap:operation soapAction="urn:zimbraAdmin/GetRightsDoc" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="getSMIMEConfigRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/GetSMIMEConfig" style="document"/>
       <wsdl:input>
         <soap:body use="literal"/>
         <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
@@ -5505,16 +4938,6 @@
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="getXMbxSearchesListRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/GetXMbxSearchesList" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="getZimletRequest">
       <soap:operation soapAction="urn:zimbraAdmin/GetZimlet" style="document"/>
       <wsdl:input>
@@ -5547,26 +4970,6 @@
     </wsdl:operation>
     <wsdl:operation name="hABOrgUnitRequest">
       <soap:operation soapAction="urn:zimbraAdmin/HABOrgUnit" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="hsmRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/Hsm" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="installCertRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/InstallCert" style="document"/>
       <wsdl:input>
         <soap:body use="literal"/>
         <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
@@ -5755,16 +5158,6 @@
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="modifySMIMEConfigRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/ModifySMIMEConfig" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="modifyServerRequest">
       <soap:operation soapAction="urn:zimbraAdmin/ModifyServer" style="document"/>
       <wsdl:input>
@@ -5797,26 +5190,6 @@
     </wsdl:operation>
     <wsdl:operation name="modifyZimletRequest">
       <soap:operation soapAction="urn:zimbraAdmin/ModifyZimlet" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="moveBlobsRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/MoveBlobs" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="moveMailboxRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/MoveMailbox" style="document"/>
       <wsdl:input>
         <soap:body use="literal"/>
         <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
@@ -5875,28 +5248,8 @@
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="purgeMovedMailboxRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/PurgeMovedMailbox" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="pushFreeBusyRequest">
       <soap:operation soapAction="urn:zimbraAdmin/PushFreeBusy" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="queryMailboxMoveRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/QueryMailboxMove" style="document"/>
       <wsdl:input>
         <soap:body use="literal"/>
         <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
@@ -5937,26 +5290,6 @@
     </wsdl:operation>
     <wsdl:operation name="refreshRegisteredAuthTokensRequest">
       <soap:operation soapAction="urn:zimbraAdmin/RefreshRegisteredAuthTokens" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="registerMailboxMoveOutRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/RegisterMailboxMoveOut" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="reloadAccountRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/ReloadAccount" style="document"/>
       <wsdl:input>
         <soap:body use="literal"/>
         <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
@@ -6085,16 +5418,6 @@
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="restoreRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/Restore" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="revokeRightRequest">
       <soap:operation soapAction="urn:zimbraAdmin/RevokeRight" style="document"/>
       <wsdl:input>
@@ -6105,28 +5428,8 @@
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="rolloverRedoLogRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/RolloverRedoLog" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="runUnitTestsRequest">
       <soap:operation soapAction="urn:zimbraAdmin/RunUnitTests" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="scheduleBackupsRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/ScheduleBackups" style="document"/>
       <wsdl:input>
         <soap:body use="literal"/>
         <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
@@ -6185,16 +5488,6 @@
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="searchMultiMailboxRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/SearchMultiMailbox" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="setCurrentVolumeRequest">
       <soap:operation soapAction="urn:zimbraAdmin/SetCurrentVolume" style="document"/>
       <wsdl:input>
@@ -6227,26 +5520,6 @@
     </wsdl:operation>
     <wsdl:operation name="undeployZimletRequest">
       <soap:operation soapAction="urn:zimbraAdmin/UndeployZimlet" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="unloadMailboxRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/UnloadMailbox" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="unregisterMailboxMoveOutRequest">
-      <soap:operation soapAction="urn:zimbraAdmin/UnregisterMailboxMoveOut" style="document"/>
       <wsdl:input>
         <soap:body use="literal"/>
         <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
@@ -6297,36 +5570,6 @@
     </wsdl:operation>
     <wsdl:operation name="verifyStoreManagerRequest">
       <soap:operation soapAction="urn:zimbraAdmin/VerifyStoreManager" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="bulkIMAPDataImportRequest">
-      <soap:operation soapAction="urn:zimbraAdminExt/BulkIMAPDataImport" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="bulkImportAccountsRequest">
-      <soap:operation soapAction="urn:zimbraAdminExt/BulkImportAccounts" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="generateBulkProvisionFileFromLDAPRequest">
-      <soap:operation soapAction="urn:zimbraAdminExt/GenerateBulkProvisionFileFromLDAP" style="document"/>
       <wsdl:input>
         <soap:body use="literal"/>
         <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
@@ -6600,16 +5843,6 @@
     </wsdl:operation>
     <wsdl:operation name="getRightsRequest">
       <soap:operation soapAction="urn:zimbraAccount/GetRights" style="document"/>
-      <wsdl:input>
-        <soap:body use="literal"/>
-        <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="getSMIMEPublicCertsRequest">
-      <soap:operation soapAction="urn:zimbraAccount/GetSMIMEPublicCerts" style="document"/>
       <wsdl:input>
         <soap:body use="literal"/>
         <soap:header message="svc:soapHdrContext" part="context" use="literal"/>
@@ -7936,7 +7169,7 @@
   </wsdl:service>
   <wsdl:service name="zcsAdminService">
     <wsdl:port name="zcsAdminServicePort" binding="svc:zcsAdminPortBinding">
-      <soap:address location="http://localhost:7071/service/admin/soap"/>
+      <soap:address location="https://localhost:7071/service/admin/soap"/>
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

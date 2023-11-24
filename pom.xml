@@ -31,12 +31,12 @@ SPDX-License-Identifier: AGPL-3.0-only
     <module>boot</module>
     <module>core</module>
     <module>generated</module>
-    <module>soapclient</module>
   </modules>
 
   <properties>
     <assertj.version>3.24.2</assertj.version>
     <caffeine.version>3.1.6</caffeine.version>
+    <carbonio-mailbox-sdk.version>1.0.0</carbonio-mailbox-sdk.version>
     <commons-io.version>2.13.0</commons-io.version>
     <guice.version>6.0.0</guice.version>
     <jackson.version>2.15.2</jackson.version>
@@ -52,7 +52,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 
     <!-- Plugins -->
     <build-helper-maven-plugin.version>3.4.0</build-helper-maven-plugin.version>
-    <jaxws-maven-plugin.version>2.6</jaxws-maven-plugin.version>
     <maven-assembly-plugin.version>3.6.0</maven-assembly-plugin.version>
     <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
     <maven-failsafe.version>3.0.0-M9</maven-failsafe.version>
@@ -186,6 +185,13 @@ SPDX-License-Identifier: AGPL-3.0-only
         <version>${caffeine.version}</version>
       </dependency>
 
+      <!-- Mailbox -->
+      <dependency>
+        <groupId>com.zextras</groupId>
+        <artifactId>carbonio-mailbox-sdk</artifactId>
+        <version>${carbonio-mailbox-sdk.version}</version>
+      </dependency>
+
       <!-- Test dependencies -->
       <dependency>
         <groupId>org.junit.jupiter</groupId>
@@ -249,27 +255,6 @@ SPDX-License-Identifier: AGPL-3.0-only
   <build>
     <pluginManagement>
       <plugins>
-        <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>jaxws-maven-plugin</artifactId>
-          <version>${jaxws-maven-plugin.version}</version>
-          <configuration>
-            <args>
-              <arg>-B-XautoNameResolution</arg>
-              <arg>-XadditionalHeaders</arg>
-            </args>
-            <sourceDestDir>${project.basedir}/soapclient/src/main/java</sourceDestDir>
-            <wsdlDirectory>${project.basedir}/soapclient/schemas/</wsdlDirectory>
-          </configuration>
-          <executions>
-            <execution>
-              <goals>
-                <goal>wsimport</goal>
-              </goals>
-            </execution>
-          </executions>
-        </plugin>
-
         <plugin>
           <groupId>org.openapitools</groupId>
           <artifactId>openapi-generator-maven-plugin</artifactId>
@@ -341,4 +326,12 @@ SPDX-License-Identifier: AGPL-3.0-only
       </plugins>
     </pluginManagement>
   </build>
+
+  <repositories>
+    <repository>
+      <id>zextras-java-sdk</id>
+      <name>Zextras public maven repo</name>
+      <url>https://zextras.jfrog.io/artifactory/java-sdk</url>
+    </repository>
+  </repositories>
 </project>

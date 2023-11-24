@@ -42,3 +42,7 @@ License: AGPL-3.0-only
 Files: core/src/test/resources/soap/responses/SoapNotFoundError.xml
 Copyright: 2023 Zextras s.r.l
 License: AGPL-3.0-only
+
+Files: resources/carbonio-user-management.properties
+Copyright: 2023 Zextras s.r.l
+License: AGPL-3.0-only

@@ -16,9 +16,9 @@ import java.util.concurrent.TimeUnit;
 @Singleton
 public class CacheManager {
 
-  private Cache<String, UserInfo>  userByIdCache;
-  private Cache<String, UserInfo>  userByEmailCache;
-  private Cache<String, UserToken> userTokenCache;
+  private final Cache<String, UserInfo>  userByIdCache;
+  private final Cache<String, UserInfo>  userByEmailCache;
+  private final Cache<String, UserToken> userTokenCache;
 
   @Inject
   public CacheManager() {

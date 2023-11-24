@@ -4,7 +4,9 @@
 
 package com.zextras.carbonio.user_management.services;
 
-import client.SoapClient;
+import static com.zextras.mailbox.client.service.ServiceRequests.AccountInfo;
+import static com.zextras.mailbox.client.service.ServiceRequests.Info;
+
 import com.google.inject.Inject;
 import com.sun.xml.ws.fault.ServerSOAPFaultException;
 import com.zextras.carbonio.user_management.cache.CacheManager;
@@ -13,11 +15,14 @@ import com.zextras.carbonio.user_management.exceptions.ServiceException;
 import com.zextras.carbonio.user_management.generated.model.UserId;
 import com.zextras.carbonio.user_management.generated.model.UserInfo;
 import com.zextras.carbonio.user_management.generated.model.UserMyself;
+import com.zextras.mailbox.client.requests.Request;
+import com.zextras.mailbox.client.service.InfoRequests.Sections;
+import com.zextras.mailbox.client.service.ServiceClient;
+import https.www_zextras_com.wsdl.zimbraservice.ZcsPortType;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import org.apache.commons.lang3.LocaleUtils;
@@ -32,10 +37,12 @@ public class UserService {
   private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
   private final CacheManager cacheManager;
+  private final ServiceClient mailboxClient;
 
   @Inject
-  public UserService(CacheManager cacheManager) {
+  public UserService(CacheManager cacheManager, ServiceClient mailboxClient) {
     this.cacheManager = cacheManager;
+    this.mailboxClient = mailboxClient;
   }
 
   private UserInfo createUserInfo(GetAccountInfoResponse accountInfo) {
@@ -67,21 +74,20 @@ public class UserService {
 
         if (userInfo == null) {
           try {
-            GetAccountInfoResponse accountInfo = SoapClient
-              .newClient()
-              .setAuthToken(token)
-              .getAccountInfoById(userId);
+            final Request<ZcsPortType, GetAccountInfoResponse> request =
+              AccountInfo.byId(userId).withAuthToken(token);
+            final GetAccountInfoResponse accountInfo = mailboxClient.send(request);
 
             userInfo = createUserInfo(accountInfo);
             cacheManager.getUserByIdCache().put(userId, userInfo);
             cacheManager.getUserByEmailCache().put(userInfo.getEmail(), userInfo);
             System.out.println("Found: " + userId);
           } catch (Exception e) {
-            e.printStackTrace(System.out);
+            logger.error("GetUsers with userId {} and token {} falied: {}", userId, token, e);
           }
         }
         return userInfo;
-      }).filter(Objects::nonNull).collect(Collectors.toList())
+      }).filter(Objects::nonNull).toList()
     ).build();
   }
 
@@ -94,19 +100,19 @@ public class UserService {
 
     if (userInfo == null) {
       try {
-        GetAccountInfoResponse accountInfo = SoapClient
-          .newClient()
-          .setAuthToken(token)
-          .getAccountInfoById(userId);
+        final Request<ZcsPortType, GetAccountInfoResponse> request =
+          AccountInfo.byId(userId).withAuthToken(token);
+        final GetAccountInfoResponse accountInfo = mailboxClient.send(request);
 
         userInfo = createUserInfo(accountInfo);
         cacheManager.getUserByIdCache().put(userId, userInfo);
         cacheManager.getUserByEmailCache().put(userInfo.getEmail(), userInfo);
 
       } catch (ServerSOAPFaultException e) {
-        e.printStackTrace();
+        logger.error("GetInfoById with userId {} and token {} falied: {}", userId, token, e);
         return Response.status(Status.NOT_FOUND).build();
       } catch (Exception e) {
+        logger.error("GetInfoById with userId {} and token {} falied: {}", userId, token, e);
         return Response.status(Status.INTERNAL_SERVER_ERROR).build();
       }
     }
@@ -124,20 +130,21 @@ public class UserService {
 
     if (userInfo == null) {
       try {
-        GetAccountInfoResponse accountInfo = SoapClient
-          .newClient()
-          .setAuthToken(token)
-          .getAccountInfoByEmail(userEmail);
+        final Request<ZcsPortType, GetAccountInfoResponse> request =
+          AccountInfo.byEmail(userEmail).withAuthToken(token);
+        final GetAccountInfoResponse accountInfo = mailboxClient.send(request);
 
         userInfo = createUserInfo(accountInfo);
         cacheManager.getUserByEmailCache().put(userEmail, userInfo);
         cacheManager.getUserByIdCache().put(userInfo.getId().getUserId(), userInfo);
 
       } catch (ServerSOAPFaultException e) {
-        e.printStackTrace();
+        logger.error("GetInfoByEmail with user email {} and token {} failed: {}", userEmail, token,
+          e);
         return Response.status(Status.NOT_FOUND).build();
       } catch (Exception e) {
-        e.printStackTrace();
+        logger.error("GetInfoByEmail with user email {} and token {} failed: {}", userEmail, token,
+          e);
         return Response.status(Status.INTERNAL_SERVER_ERROR).build();
       }
     }
@@ -148,10 +155,9 @@ public class UserService {
 
   public Optional<UserMyself> getMyselfByToken(String token) {
     try {
-      GetInfoResponse infoResponse = SoapClient
-        .newClient()
-        .setAuthToken(token)
-        .getAccountInfoByAuthToken();
+      final Request<ZcsPortType, GetInfoResponse> request =
+        Info.sections(Sections.children, Sections.attrs, Sections.prefs).withAuthToken(token);
+      final GetInfoResponse infoResponse = mailboxClient.send(request);
 
       UserId userId = new UserId();
       userId.setUserId(infoResponse.getId());
@@ -201,10 +207,10 @@ public class UserService {
       return Optional.of(userMyself);
 
     } catch (ServerSOAPFaultException exception) {
-      System.out.println(exception.getMessage());
+      logger.error("GetMyselfByToken with token {} failed: {}", token, exception);
       return Optional.empty();
     } catch (Exception exception) {
-      exception.printStackTrace();
+      logger.error("GetMyselfByToken with token {} failed: {}", token, exception);
       throw new ServiceException(
         "Unable to get account user info due to an internal service error");
     }
@@ -218,10 +224,9 @@ public class UserService {
 
     if (userToken == null) {
       try {
-        GetInfoResponse infoResponse = SoapClient
-          .newClient()
-          .setAuthToken(token)
-          .validateAuthToken();
+        final Request<ZcsPortType, GetInfoResponse> request =
+          Info.sections(Sections.children).withAuthToken(token);
+        final GetInfoResponse infoResponse = mailboxClient.send(request);
 
         userToken = new UserToken(
           token,
@@ -232,10 +237,10 @@ public class UserService {
         cacheManager.getUserTokenCache().put(token, userToken);
 
       } catch (ServerSOAPFaultException e) {
-        e.printStackTrace();
+        logger.error("ValidateUserToken with token {} failed: {}", token, e);
         return Response.status(Status.UNAUTHORIZED).build();
       } catch (Exception e) {
-        e.printStackTrace();
+        logger.error("ValidateUserToken with token {} failed: {}", token, e);
         return Response.status(Status.INTERNAL_SERVER_ERROR).build();
       }
     }

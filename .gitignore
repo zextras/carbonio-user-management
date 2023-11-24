@@ -18,16 +18,11 @@ core/.settings/
 generated/.classpath                                                                                     
 generated/.project                                                                                       
 generated/.settings/ 
-core/src/test/resources/soap/ZimbraService.wsdl
-
+generated/.openapi-generator/
+generated/src
 
 # JetBrains IDE
 .idea/
 *.iml
-
-soapclient/src/main/java/https*
-soapclient/src/main/java/zimbra*
-generated/src
-generated/.openapi-generator/
 
 LICENSES

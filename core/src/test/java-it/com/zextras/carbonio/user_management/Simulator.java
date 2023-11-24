@@ -4,13 +4,11 @@
 
 package com.zextras.carbonio.user_management;
 
-import client.SoapClient;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.zextras.carbonio.user_management.config.UserManagementModule;
+import com.zextras.mailbox.client.service.ServiceClient;
 import io.swagger.models.HttpMethod;
-import java.io.IOException;
-import java.util.Objects;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.jetty.server.LocalConnector;
 import org.eclipse.jetty.server.Server;
@@ -24,12 +22,13 @@ import org.mockserver.model.BinaryBody;
 import org.mockserver.model.HttpRequest;
 import org.mockserver.model.HttpResponse;
 
+import java.io.IOException;
+import java.util.Objects;
+
 public final class Simulator implements AutoCloseable {
 
   private final static String MAILBOX_SERVICE_IP = "127.78.0.5";
   private final static int MAILBOX_SERVICE_PORT = 20_000;
-  private final static String MAILBOX_SERVICE_URI =
-    String.format("http://%s:%d", MAILBOX_SERVICE_IP, MAILBOX_SERVICE_PORT);
 
   private final Injector injector;
   private final SoapHttpUtils soapHttpUtils;
@@ -47,7 +46,17 @@ public final class Simulator implements AutoCloseable {
   private void startMailboxService() {
     clientAndServer = ClientAndServer.startClientAndServer(MAILBOX_SERVICE_PORT);
     mailboxServiceMock = new MockServerClient(MAILBOX_SERVICE_IP, MAILBOX_SERVICE_PORT);
+    initMailboxServiceClient();
+  }
 
+  private void initMailboxServiceClient() {
+    setupWsdl();
+    // NOTE: this line is used to initialize the ServiceClient with the mockServer properly
+    // configured for the WSDL
+    injector.getInstance(ServiceClient.class);
+  }
+
+  private void setupWsdl() {
     try {
       final byte[] wsdl = IOUtils.toByteArray(Objects.requireNonNull(
         getClass().getClassLoader().getResourceAsStream("soap/ZimbraService.wsdl")
@@ -105,7 +114,6 @@ public final class Simulator implements AutoCloseable {
   }
 
   public Simulator start() {
-    SoapClient.init(MAILBOX_SERVICE_URI);
     startJettyServer();
     return this;
   }
