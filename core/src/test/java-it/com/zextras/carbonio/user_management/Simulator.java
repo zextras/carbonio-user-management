@@ -7,9 +7,9 @@ package com.zextras.carbonio.user_management;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.zextras.carbonio.user_management.config.UserManagementModule;
+import com.zextras.mailbox.client.MailboxClient;
 import com.zextras.mailbox.client.service.ServiceClient;
 import io.swagger.models.HttpMethod;
-import org.apache.commons.io.IOUtils;
 import org.eclipse.jetty.server.LocalConnector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -18,12 +18,11 @@ import org.jboss.resteasy.plugins.guice.GuiceResteasyBootstrapServletContextList
 import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;
 import org.mockserver.client.MockServerClient;
 import org.mockserver.integration.ClientAndServer;
-import org.mockserver.model.BinaryBody;
 import org.mockserver.model.HttpRequest;
 import org.mockserver.model.HttpResponse;
 
 import java.io.IOException;
-import java.util.Objects;
+import java.nio.charset.StandardCharsets;
 
 public final class Simulator implements AutoCloseable {
 
@@ -57,20 +56,24 @@ public final class Simulator implements AutoCloseable {
   }
 
   private void setupWsdl() {
-    try {
-      final byte[] wsdl = IOUtils.toByteArray(Objects.requireNonNull(
-        getClass().getClassLoader().getResourceAsStream("soap/ZimbraService.wsdl")
-      ));
+    mailboxServiceMock
+      .when(HttpRequest
+        .request()
+        .withMethod(HttpMethod.GET.toString())
+        .withPath("/service/wsdl/ZimbraService.wsdl")
+      )
+      .respond(HttpResponse.response().withStatusCode(200).withBody(getWsdl()));
+  }
 
-      mailboxServiceMock
-        .when(HttpRequest
-          .request()
-          .withMethod(HttpMethod.GET.toString())
-          .withPath("/service/wsdl/ZimbraService.wsdl")
-        )
-        .respond(HttpResponse.response().withStatusCode(200).withBody(BinaryBody.binary(wsdl)));
-    } catch (IOException exception) {
-      throw new RuntimeException(exception);
+  private static String getWsdl() {
+    final var path = "schemas/ZimbraService.wsdl";
+    try {
+      try (var resourceAsStream = MailboxClient.class.getClassLoader().getResourceAsStream(path)) {
+        final var bytes = resourceAsStream.readAllBytes();
+        return new String(bytes, StandardCharsets.UTF_8);
+      }
+    } catch (NullPointerException | IOException ex) {
+      throw new RuntimeException("Missing Mailbox WSDL resource: " + path, ex);
     }
   }
 
