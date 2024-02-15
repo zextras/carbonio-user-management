@@ -8,8 +8,13 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [0.5.0](https://github.com/Zextras/carbonio-user-management/compare/v0.4.0...v0.5.0) (2023-11-24)
+### [0.5.1](https://github.com/Zextras/carbonio-user-management/compare/v0.5.0...v0.5.1) (2024-02-15)
 
+### Bug Fixes
+
+* *.hcl: apply corrections to validate with hclfmt ([#36](https://github.com/Zextras/carbonio-user-management/issues/36)) ([2b830ff](https://github.com/Zextras/carbonio-user-management/commit/2b830fffd073d63c51491b28545550326d823da0))
+
+## [0.5.0](https://github.com/Zextras/carbonio-user-management/compare/v0.4.0...v0.5.0) (2023-11-24)
 
 ### Features
 
@@ -17,7 +22,6 @@ All notable changes to this project will be documented in this file. See [standa
 * replace soapclient with carbonio-mailbox-sdk ([#32](https://github.com/Zextras/carbonio-user-management/issues/32)) ([0bc2ec5](https://github.com/Zextras/carbonio-user-management/commit/0bc2ec5b11d72dac1fd3459fd57f3683cb7a2292))
 
 ## [0.4.0](https://github.com/Zextras/carbonio-user-management/compare/v0.3.0...v0.4.0) (2023-10-30)
-
 
 ### ⚠ BREAKING CHANGES
 
@@ -34,7 +38,6 @@ refs: UM-25
 
 ## [0.3.0](https://github.com/Zextras/carbonio-user-management/compare/v0.2.4...v0.3.0) (2023-08-31)
 
-
 ### Features
 
 * implement /users/myself API to expose the user locale prefs ([#25](https://github.com/Zextras/carbonio-user-management/issues/25)) ([a24b7c0](https://github.com/Zextras/carbonio-user-management/commit/a24b7c02e5b87062da40c7fce97449948b837fc9))
@@ -47,13 +50,11 @@ refs: UM-25
 
 ### [0.2.1](https://github.com/Zextras/carbonio-user-management/compare/v0.2.0...v0.2.1) (2023-03-30)
 
-
 ### Bug Fixes
 
 * UM14 fix GetUsers API returning a list of UserInfo ([#12](https://github.com/Zextras/carbonio-user-management/issues/12)) ([ee5ed55](https://github.com/Zextras/carbonio-user-management/commit/ee5ed556043ab5c514b67c761f9f7c85991424e5))
 
 ### [0.2.0](https://github.com/Zextras/carbonio-user-management/compare/v0.1.3...v0.2.0) (2023-03-28)
-
 
 ### Features
 
@@ -73,4 +74,4 @@ refs: UM-25
 
 ### Features
 
-- carbonio release (4f3b9aa)
+* carbonio release (4f3b9aa)
