@@ -21,7 +21,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
   <groupId>com.zextras.carbonio.user-management</groupId>
   <artifactId>carbonio-user-management</artifactId>
-  <version>0.5.1-1</version>
+  <version>0.5.2-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>carbonio-user-management</name>
@@ -34,32 +34,32 @@ SPDX-License-Identifier: AGPL-3.0-only
   </modules>
 
   <properties>
-    <assertj.version>3.24.2</assertj.version>
-    <caffeine.version>3.1.6</caffeine.version>
-    <carbonio-mailbox-sdk.version>1.1.0</carbonio-mailbox-sdk.version>
-    <commons-io.version>2.13.0</commons-io.version>
+    <assertj.version>3.25.3</assertj.version>
+    <caffeine.version>3.1.8</caffeine.version>
+    <carbonio-mailbox-sdk.version>1.3.0</carbonio-mailbox-sdk.version>
+    <commons-io.version>2.15.1</commons-io.version>
     <guice.version>6.0.0</guice.version>
-    <jackson.version>2.15.2</jackson.version>
+    <jackson.version>2.16.1</jackson.version>
     <javaee-api.version>8.0.1</javaee-api.version>
-    <jetty-version>10.0.15</jetty-version>
+    <jetty-version>10.0.20</jetty-version>
     <jsonassert.version>1.5.1</jsonassert.version>
-    <junit5.version>5.10.0</junit5.version>
-    <logback-classic.version>1.4.8</logback-classic.version>
+    <junit5.version>5.10.2</junit5.version>
+    <logback-classic.version>1.4.14</logback-classic.version>
     <mock-server.version>5.15.0</mock-server.version>
-    <mockito.version>5.4.0</mockito.version>
+    <mockito.version>5.10.0</mockito.version>
     <resteasy.version>4.7.9.Final</resteasy.version>
-    <swagger-core-version>1.6.11</swagger-core-version>
+    <swagger-core-version>1.6.13</swagger-core-version>
 
     <!-- Plugins -->
-    <build-helper-maven-plugin.version>3.4.0</build-helper-maven-plugin.version>
+    <build-helper-maven-plugin.version>3.5.0</build-helper-maven-plugin.version>
     <maven-assembly-plugin.version>3.6.0</maven-assembly-plugin.version>
-    <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
-    <maven-failsafe.version>3.0.0-M9</maven-failsafe.version>
-    <maven-jacoco.version>0.8.8</maven-jacoco.version>
+    <maven-compiler-plugin.version>3.12.1</maven-compiler-plugin.version>
+    <maven-failsafe.version>3.2.5</maven-failsafe.version>
+    <maven-jacoco.version>0.8.11</maven-jacoco.version>
     <maven-jar-plugin.version>3.3.0</maven-jar-plugin.version>
-    <maven-surfire.version>3.0.0-M9</maven-surfire.version>
+    <maven-surfire.version>3.2.5</maven-surfire.version>
     <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
-    <openapi-generator-maven-plugin.version>6.6.0</openapi-generator-maven-plugin.version>
+    <openapi-generator-maven-plugin.version>7.3.0</openapi-generator-maven-plugin.version>
 
     <!-- Other properties -->
     <maven.compiler.source>17</maven.compiler.source>
