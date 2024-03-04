@@ -221,6 +221,29 @@
           }
         }
       ]
+    },
+    {
+      "Name": "carbonio-notification-push",
+      "Permissions": [
+        {
+          "Action": "allow",
+          "HTTP": {
+            "PathPrefix": "/auth/token/",
+            "Methods": [
+              "GET"
+            ]
+          }
+        },
+        {
+          "Action": "allow",
+          "HTTP": {
+            "PathPrefix": "/health/",
+            "Methods": [
+              "GET"
+            ]
+          }
+        }
+      ]
     }
   ]
 }
