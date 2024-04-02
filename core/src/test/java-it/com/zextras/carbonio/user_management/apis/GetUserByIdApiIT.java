@@ -4,10 +4,12 @@
 
 package com.zextras.carbonio.user_management.apis;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zextras.carbonio.user_management.Simulator;
 import com.zextras.carbonio.user_management.Simulator.SimulatorBuilder;
 import com.zextras.carbonio.user_management.SoapHttpUtils;
+import com.zextras.carbonio.user_management.generated.model.Status;
 import com.zextras.carbonio.user_management.generated.model.UserInfo;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
@@ -22,6 +24,10 @@ import org.mockserver.client.MockServerClient;
 import org.mockserver.model.HttpRequest;
 import org.mockserver.model.HttpResponse;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class GetUserByIdApiIT {
@@ -30,12 +36,7 @@ class GetUserByIdApiIT {
 
   @BeforeAll
   static void init() {
-    simulator = SimulatorBuilder
-      .aSimulator()
-      .init()
-      .withMailboxService()
-      .build()
-      .start();
+    simulator = SimulatorBuilder.aSimulator().init().withMailboxService().build().start();
   }
 
   @AfterAll
@@ -50,24 +51,22 @@ class GetUserByIdApiIT {
     MockServerClient mailboxServiceMock = simulator.getMailboxServiceMock();
 
     mailboxServiceMock
-      .when(HttpRequest
-        .request()
-        .withMethod(HttpMethod.POST.toString())
-        .withPath("/service/soap/")
-        .withBody(
-          soapHttpUtils.getAccountInfoRequest("fake-token", "a28fdb4d-9f4b-4c7f-a572-43cef33f1d8b"))
-      )
-      .respond(HttpResponse
-        .response()
-        .withStatusCode(HttpStatus.OK_200)
-        .withBody(
-          soapHttpUtils.getAccountInfoResponse(
-            "a28fdb4d-9f4b-4c7f-a572-43cef33f1d8b",
-            "fake@example.com",
-            "example.com",
-            "Fake Account"
-          )
-        ));
+        .when(
+            HttpRequest.request()
+                .withMethod(HttpMethod.POST.toString())
+                .withPath("/service/soap/")
+                .withBody(
+                    soapHttpUtils.getAccountInfoRequest(
+                        "fake-token", "a28fdb4d-9f4b-4c7f-a572-43cef33f1d8b")))
+        .respond(
+            HttpResponse.response()
+                .withStatusCode(HttpStatus.OK_200)
+                .withBody(
+                    soapHttpUtils.getAccountInfoResponse(
+                        "a28fdb4d-9f4b-4c7f-a572-43cef33f1d8b",
+                        "fake@example.com",
+                        "example.com",
+                        "Fake Account")));
 
     LocalConnector localConnector = simulator.getHttpLocalConnector();
     HttpTester.Request request = HttpTester.newRequest();
@@ -78,17 +77,116 @@ class GetUserByIdApiIT {
 
     // When
     Response response =
-      HttpTester.parseResponse(HttpTester.from(localConnector.getResponse(request.generate())));
+        HttpTester.parseResponse(HttpTester.from(localConnector.getResponse(request.generate())));
 
     // Then
     assertThat(response.getStatus()).isEqualTo(HttpStatus.OK_200);
 
     UserInfo userInfo = new ObjectMapper().readValue(response.getContent(), UserInfo.class);
 
-    assertThat(userInfo.getId().getUserId())
-      .isEqualTo("a28fdb4d-9f4b-4c7f-a572-43cef33f1d8b");
+    assertThat(userInfo.getId().getUserId()).isEqualTo("a28fdb4d-9f4b-4c7f-a572-43cef33f1d8b");
     assertThat(userInfo.getEmail()).isEqualTo("fake@example.com");
     assertThat(userInfo.getFullName()).isEqualTo("Fake Account");
     assertThat(userInfo.getDomain()).isEqualTo("example.com");
+    assertThat(userInfo.getStatus()).isEqualTo(Status.ACTIVE);
+  }
+
+  @Test
+  void givenAnExistingUserEmailTheGetUserByEmailApiShouldReturnTheRequestedUserInfo()
+      throws Exception {
+    // Given
+    SoapHttpUtils soapHttpUtils = simulator.getSoapHttpUtils();
+    MockServerClient mailboxServiceMock = simulator.getMailboxServiceMock();
+
+    mailboxServiceMock
+        .when(
+            HttpRequest.request()
+                .withMethod(HttpMethod.POST.toString())
+                .withPath("/service/soap/")
+                .withBody(
+                    soapHttpUtils.getAccountInfoRequest(
+                        "fake-token", "a28fdb4d-9f4b-4c7f-a572-43cef33f1d8b")))
+        .respond(
+            HttpResponse.response()
+                .withStatusCode(HttpStatus.OK_200)
+                .withBody(
+                    soapHttpUtils.getAccountInfoResponse(
+                        "a28fdb4d-9f4b-4c7f-a572-43cef33f1d8b",
+                        "fake@example.com",
+                        "example.com",
+                        "Fake Account")));
+
+    LocalConnector localConnector = simulator.getHttpLocalConnector();
+    HttpTester.Request request = HttpTester.newRequest();
+    request.setMethod(HttpMethod.GET.toString());
+    request.setHeader(HttpHeader.HOST.toString(), "test");
+    request.setHeader(HttpHeader.COOKIE.toString(), "ZM_AUTH_TOKEN=fake-token");
+    request.setURI(("/users/email/fake@example.com"));
+
+    // When
+    Response response =
+        HttpTester.parseResponse(HttpTester.from(localConnector.getResponse(request.generate())));
+
+    // Then
+    assertThat(response.getStatus()).isEqualTo(HttpStatus.OK_200);
+
+    UserInfo userInfo = new ObjectMapper().readValue(response.getContent(), UserInfo.class);
+
+    assertThat(userInfo.getId().getUserId()).isEqualTo("a28fdb4d-9f4b-4c7f-a572-43cef33f1d8b");
+    assertThat(userInfo.getEmail()).isEqualTo("fake@example.com");
+    assertThat(userInfo.getFullName()).isEqualTo("Fake Account");
+    assertThat(userInfo.getDomain()).isEqualTo("example.com");
+    assertThat(userInfo.getStatus()).isEqualTo(Status.ACTIVE);
+  }
+
+  @Test
+  void givenAnExistingUserIdTheGetUsersApiShouldReturnTheRequestedListOfUserInfo()
+      throws Exception {
+    // Given
+    SoapHttpUtils soapHttpUtils = simulator.getSoapHttpUtils();
+    MockServerClient mailboxServiceMock = simulator.getMailboxServiceMock();
+
+    mailboxServiceMock
+        .when(
+            HttpRequest.request()
+                .withMethod(HttpMethod.POST.toString())
+                .withPath("/service/soap/")
+                .withBody(
+                    soapHttpUtils.getAccountInfoRequest(
+                        "fake-token", "a28fdb4d-9f4b-4c7f-a572-43cef33f1d8b")))
+        .respond(
+            HttpResponse.response()
+                .withStatusCode(HttpStatus.OK_200)
+                .withBody(
+                    soapHttpUtils.getAccountInfoResponse(
+                        "a28fdb4d-9f4b-4c7f-a572-43cef33f1d8b",
+                        "fake@example.com",
+                        "example.com",
+                        "Fake Account")));
+
+    LocalConnector localConnector = simulator.getHttpLocalConnector();
+    HttpTester.Request request = HttpTester.newRequest();
+    request.setMethod(HttpMethod.GET.toString());
+    request.setHeader(HttpHeader.HOST.toString(), "test");
+    request.setHeader(HttpHeader.COOKIE.toString(), "ZM_AUTH_TOKEN=fake-token");
+    String[] userIds = {"a28fdb4d-9f4b-4c7f-a572-43cef33f1d8b"};
+    String userIdsQueryParam = String.join(",", userIds);
+    request.setURI("/users?userIds=" + userIdsQueryParam);
+
+    // When
+    Response response =
+        HttpTester.parseResponse(HttpTester.from(localConnector.getResponse(request.generate())));
+
+    // Then
+    assertThat(response.getStatus()).isEqualTo(HttpStatus.OK_200);
+    List<UserInfo> userInfoList =
+        new ObjectMapper().readValue(response.getContent(), new TypeReference<List<UserInfo>>() {});
+    UserInfo userInfo = userInfoList.get(0);
+
+    assertThat(userInfo.getId().getUserId()).isEqualTo("a28fdb4d-9f4b-4c7f-a572-43cef33f1d8b");
+    assertThat(userInfo.getEmail()).isEqualTo("fake@example.com");
+    assertThat(userInfo.getFullName()).isEqualTo("Fake Account");
+    assertThat(userInfo.getDomain()).isEqualTo("example.com");
+    assertThat(userInfo.getStatus()).isEqualTo(Status.ACTIVE);
   }
 }
