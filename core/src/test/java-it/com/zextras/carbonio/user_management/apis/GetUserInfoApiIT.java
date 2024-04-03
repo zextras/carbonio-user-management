@@ -187,4 +187,38 @@ class GetUserInfoApiIT {
     assertThat(userInfo.getDomain()).isEqualTo("example.com");
     assertThat(userInfo.getStatus()).isEqualTo(Status.ACTIVE);
   }
+
+  @Test
+  void givenANotExistingUserIdTheGetUserByIdApiShouldReturnNotFound() throws Exception {
+    // Given
+    SoapHttpUtils soapHttpUtils = simulator.getSoapHttpUtils();
+    MockServerClient mailboxServiceMock = simulator.getMailboxServiceMock();
+
+    mailboxServiceMock
+        .when(
+            HttpRequest.request()
+                .withMethod(HttpMethod.POST.toString())
+                .withPath("/service/soap/")
+                .withBody(
+                    soapHttpUtils.getAccountInfoRequest(
+                        "fake-token", "2fe6fedd-f640-40c8-bd8e-6b60a040776b")))
+        .respond(
+            HttpResponse.response()
+                .withStatusCode(HttpStatus.INTERNAL_SERVER_ERROR_500)
+                .withBody(soapHttpUtils.getSoapNotFoundErrorResponse()));
+
+    LocalConnector localConnector = simulator.getHttpLocalConnector();
+    HttpTester.Request request = HttpTester.newRequest();
+    request.setMethod(HttpMethod.GET.toString());
+    request.setHeader(HttpHeader.HOST.toString(), "test");
+    request.setHeader(HttpHeader.COOKIE.toString(), "ZM_AUTH_TOKEN=fake-token");
+    request.setURI(("/users/id/2fe6fedd-f640-40c8-bd8e-6b60a040776b"));
+
+    // When
+    Response response =
+        HttpTester.parseResponse(HttpTester.from(localConnector.getResponse(request.generate())));
+
+    // Then
+    assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND_404);
+  }
 }
