@@ -24,13 +24,11 @@ import org.mockserver.client.MockServerClient;
 import org.mockserver.model.HttpRequest;
 import org.mockserver.model.HttpResponse;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class GetUserByIdApiIT {
+class GetUserInfoApiIT {
 
   private static Simulator simulator;
 
