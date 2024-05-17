@@ -58,6 +58,10 @@ public class UserService {
         userId.setUserId(attribute.getValue());
         userInfo.setId(userId);
       }
+
+      if(attribute.getName().equals("zimbraAccountStatus")){
+        userInfo.setStatus(com.zextras.carbonio.user_management.generated.model.Status.valueOf(attribute.getValue()));
+      }
     });
 
     userInfo.setEmail(accountInfo.getName());
@@ -86,9 +90,6 @@ public class UserService {
             logger.error("GetUsers with userId {} and token {} falied: {}", userId, token, e);
           }
         }
-
-        //hardcode status to active for every user
-        userInfo.setStatus(com.zextras.carbonio.user_management.generated.model.Status.ACTIVE);
 
         return userInfo;
       }).filter(Objects::nonNull).toList()
@@ -120,10 +121,6 @@ public class UserService {
         return Response.status(Status.INTERNAL_SERVER_ERROR).build();
       }
     }
-
-    //hardcode status to active
-    userInfo.setStatus(com.zextras.carbonio.user_management.generated.model.Status.ACTIVE);
-
     System.out.println(userInfo.getId().getUserId());
     return Response.ok().entity(userInfo).build();
   }
@@ -155,10 +152,6 @@ public class UserService {
         return Response.status(Status.INTERNAL_SERVER_ERROR).build();
       }
     }
-
-    //hardcode status to active
-    userInfo.setStatus(com.zextras.carbonio.user_management.generated.model.Status.ACTIVE);
-
     System.out.println(userInfo.getId().getUserId());
     return Response.ok().entity(userInfo).build();
   }
