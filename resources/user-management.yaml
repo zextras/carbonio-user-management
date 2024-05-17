@@ -213,10 +213,10 @@ components:
       type: string
       enum:
         - Active
-        - Maintenance
-        - Locked
         - Closed
+        - Locked
         - Lockout
+        - Maintenance
     UserInfo:
       type: object
       properties:

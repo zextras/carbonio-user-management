@@ -159,7 +159,8 @@ public class UsersApiControllerTest {
   }
 
   @Test
-  void givenAValidAuthTokenTheGetUsersInfoShouldReturnTheServicesGetUsersResponse() {
+  void givenAValidAuthTokenTheGetUsersInfoShouldReturnTheServicesGetUsersResponse()
+      throws NotFoundException {
     // Given
     String[] userIds = {"fake_user_id"};
     String cookie = "ZM_AUTH_TOKEN=valid-token;";
@@ -169,34 +170,25 @@ public class UsersApiControllerTest {
     Mockito.when(userServiceMock.getUsers(List.of(userIds), token)).thenReturn(responseMock);
 
     // When
-    Response response = null;
-    try {
-      response =
-          usersApiController.getUsersInfo(
-              cookie, List.of(userIds), Mockito.mock(SecurityContext.class));
-    } catch (NotFoundException e) {
-      Assertions.fail("getusersinfo returned an exception");
-    }
+    Response response =
+        usersApiController.getUsersInfo(
+            cookie, List.of(userIds), Mockito.mock(SecurityContext.class));
 
     // Then
     Assertions.assertThat(response).isEqualTo(responseMock);
   }
 
   @Test
-  void givenAnInvalidCookieTheGetUsersInfoShouldReturnTheBadRequestStatusCode() {
+  void givenAnInvalidCookieTheGetUsersInfoShouldReturnTheBadRequestStatusCode()
+      throws NotFoundException {
     // Given
     String[] userIds = {"fake_user_id"};
     String cookie = "";
 
     // When
-    Response response = null;
-    try {
-      response =
-          usersApiController.getUsersInfo(
-              cookie, List.of(userIds), Mockito.mock(SecurityContext.class));
-    } catch (NotFoundException e) {
-      Assertions.fail("getusersinfo returned an exception");
-    }
+    Response response =
+        usersApiController.getUsersInfo(
+            cookie, List.of(userIds), Mockito.mock(SecurityContext.class));
 
     // Then
     Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST_400);
