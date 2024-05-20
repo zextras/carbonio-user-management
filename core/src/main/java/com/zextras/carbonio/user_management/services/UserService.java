@@ -48,21 +48,26 @@ public class UserService {
   private UserInfo createUserInfo(GetAccountInfoResponse accountInfo) {
     UserInfo userInfo = new UserInfo();
 
-    accountInfo.getAttr().forEach(attribute -> {
-      if (attribute.getName().equals("displayName")) {
-        userInfo.setFullName(attribute.getValue());
-      }
+    accountInfo
+        .getAttr()
+        .forEach(
+            attribute -> {
+              if (attribute.getName().equals("displayName")) {
+                userInfo.setFullName(attribute.getValue());
+              }
 
-      if (attribute.getName().equals("zimbraId")) {
-        UserId userId = new UserId();
-        userId.setUserId(attribute.getValue());
-        userInfo.setId(userId);
-      }
+              if (attribute.getName().equals("zimbraId")) {
+                UserId userId = new UserId();
+                userId.setUserId(attribute.getValue());
+                userInfo.setId(userId);
+              }
 
-      if(attribute.getName().equals("zimbraAccountStatus")){
-        userInfo.setStatus(com.zextras.carbonio.user_management.generated.model.Status.valueOf(attribute.getValue()));
-      }
-    });
+              if (attribute.getName().equals("zimbraAccountStatus")) {
+                userInfo.setStatus(
+                    com.zextras.carbonio.user_management.generated.model.Status.valueOf(
+                        attribute.getValue().toUpperCase()));
+              }
+            });
 
     userInfo.setEmail(accountInfo.getName());
     userInfo.setDomain(accountInfo.getPublicURL());
@@ -71,42 +76,46 @@ public class UserService {
   }
 
   public Response getUsers(List<String> userIds, String token) {
-    return Response.ok().entity(
-      userIds.stream().distinct().map(userId -> {
-        System.out.println("Requested: " + userId);
-        UserInfo userInfo = cacheManager.getUserByIdCache().getIfPresent(userId);
+    return Response.ok()
+        .entity(
+            userIds.stream()
+                .distinct()
+                .map(
+                    userId -> {
+                      System.out.println("Requested: " + userId);
+                      UserInfo userInfo = cacheManager.getUserByIdCache().getIfPresent(userId);
 
-        if (userInfo == null) {
-          try {
-            final Request<ZcsPortType, GetAccountInfoResponse> request =
-              AccountInfo.byId(userId).withAuthToken(token);
-            final GetAccountInfoResponse accountInfo = mailboxClient.send(request);
+                      if (userInfo == null) {
+                        try {
+                          final Request<ZcsPortType, GetAccountInfoResponse> request =
+                              AccountInfo.byId(userId).withAuthToken(token);
+                          final GetAccountInfoResponse accountInfo = mailboxClient.send(request);
 
-            userInfo = createUserInfo(accountInfo);
-            cacheManager.getUserByIdCache().put(userId, userInfo);
-            cacheManager.getUserByEmailCache().put(userInfo.getEmail(), userInfo);
-            System.out.println("Found: " + userId);
-          } catch (Exception e) {
-            logger.error("GetUsers with userId {} and token {} falied: {}", userId, token, e);
-          }
-        }
+                          userInfo = createUserInfo(accountInfo);
+                          cacheManager.getUserByIdCache().put(userId, userInfo);
+                          cacheManager.getUserByEmailCache().put(userInfo.getEmail(), userInfo);
+                          System.out.println("Found: " + userId);
+                        } catch (Exception e) {
+                          logger.error(
+                              "GetUsers with userId {} and token {} falied: {}", userId, token, e);
+                        }
+                      }
 
-        return userInfo;
-      }).filter(Objects::nonNull).toList()
-    ).build();
+                      return userInfo;
+                    })
+                .filter(Objects::nonNull)
+                .toList())
+        .build();
   }
 
-  public Response getInfoById(
-    String userId,
-    String token
-  ) {
+  public Response getInfoById(String userId, String token) {
     System.out.println("Requested: " + userId);
     UserInfo userInfo = cacheManager.getUserByIdCache().getIfPresent(userId);
 
     if (userInfo == null) {
       try {
         final Request<ZcsPortType, GetAccountInfoResponse> request =
-          AccountInfo.byId(userId).withAuthToken(token);
+            AccountInfo.byId(userId).withAuthToken(token);
         final GetAccountInfoResponse accountInfo = mailboxClient.send(request);
 
         userInfo = createUserInfo(accountInfo);
@@ -125,17 +134,14 @@ public class UserService {
     return Response.ok().entity(userInfo).build();
   }
 
-  public Response getInfoByEmail(
-    String userEmail,
-    String token
-  ) {
+  public Response getInfoByEmail(String userEmail, String token) {
     System.out.println("Requested: " + userEmail);
     UserInfo userInfo = cacheManager.getUserByEmailCache().getIfPresent(userEmail);
 
     if (userInfo == null) {
       try {
         final Request<ZcsPortType, GetAccountInfoResponse> request =
-          AccountInfo.byEmail(userEmail).withAuthToken(token);
+            AccountInfo.byEmail(userEmail).withAuthToken(token);
         final GetAccountInfoResponse accountInfo = mailboxClient.send(request);
 
         userInfo = createUserInfo(accountInfo);
@@ -143,12 +149,12 @@ public class UserService {
         cacheManager.getUserByIdCache().put(userInfo.getId().getUserId(), userInfo);
 
       } catch (ServerSOAPFaultException e) {
-        logger.error("GetInfoByEmail with user email {} and token {} failed: {}", userEmail, token,
-          e);
+        logger.error(
+            "GetInfoByEmail with user email {} and token {} failed: {}", userEmail, token, e);
         return Response.status(Status.NOT_FOUND).build();
       } catch (Exception e) {
-        logger.error("GetInfoByEmail with user email {} and token {} failed: {}", userEmail, token,
-          e);
+        logger.error(
+            "GetInfoByEmail with user email {} and token {} failed: {}", userEmail, token, e);
         return Response.status(Status.INTERNAL_SERVER_ERROR).build();
       }
     }
@@ -159,7 +165,7 @@ public class UserService {
   public Optional<UserMyself> getMyselfByToken(String token) {
     try {
       final Request<ZcsPortType, GetInfoResponse> request =
-        Info.sections(Sections.children, Sections.attrs, Sections.prefs).withAuthToken(token);
+          Info.sections(Sections.children, Sections.attrs, Sections.prefs).withAuthToken(token);
       final GetInfoResponse infoResponse = mailboxClient.send(request);
 
       UserId userId = new UserId();
@@ -173,32 +179,27 @@ public class UserService {
       //    exception in a cleaner way and I don't want to add it now only for this.
       Locale locale;
       try {
-        locale = infoResponse
-          .getPrefs()
-          .getPref()
-          .stream()
-          .filter(perf -> perf.getName().equals("zimbraPrefLocale"))
-          .findFirst()
-          .map(pref -> LocaleUtils.toLocale(pref.getValue()))
-          .orElse(Locale.ENGLISH);
+        locale =
+            infoResponse.getPrefs().getPref().stream()
+                .filter(perf -> perf.getName().equals("zimbraPrefLocale"))
+                .findFirst()
+                .map(pref -> LocaleUtils.toLocale(pref.getValue()))
+                .orElse(Locale.ENGLISH);
       } catch (IllegalArgumentException exception) {
         logger.error(
-          "The user id {} has a locale with an invalid format. The system falls back in '{}'",
-          userId.getUserId(),
-          Locale.ENGLISH
-        );
+            "The user id {} has a locale with an invalid format. The system falls back in '{}'",
+            userId.getUserId(),
+            Locale.ENGLISH);
 
         locale = Locale.ENGLISH;
       }
 
-      String fullName = infoResponse
-        .getAttrs()
-        .getAttr()
-        .stream()
-        .filter(attribute -> attribute.getName().equals("displayName"))
-        .findFirst()
-        .map(Attr::getValue)
-        .orElse("");
+      String fullName =
+          infoResponse.getAttrs().getAttr().stream()
+              .filter(attribute -> attribute.getName().equals("displayName"))
+              .findFirst()
+              .map(Attr::getValue)
+              .orElse("");
 
       UserMyself userMyself = new UserMyself();
       userMyself.setId(userId);
@@ -215,7 +216,7 @@ public class UserService {
     } catch (Exception exception) {
       logger.error("GetMyselfByToken with token {} failed: {}", token, exception);
       throw new ServiceException(
-        "Unable to get account user info due to an internal service error");
+          "Unable to get account user info due to an internal service error");
     }
   }
 
@@ -228,14 +229,10 @@ public class UserService {
     if (userToken == null) {
       try {
         final Request<ZcsPortType, GetInfoResponse> request =
-          Info.sections(Sections.children).withAuthToken(token);
+            Info.sections(Sections.children).withAuthToken(token);
         final GetInfoResponse infoResponse = mailboxClient.send(request);
 
-        userToken = new UserToken(
-          token,
-          infoResponse.getId(),
-          infoResponse.getLifetime()
-        );
+        userToken = new UserToken(token, infoResponse.getId(), infoResponse.getLifetime());
 
         cacheManager.getUserTokenCache().put(token, userToken);
 
