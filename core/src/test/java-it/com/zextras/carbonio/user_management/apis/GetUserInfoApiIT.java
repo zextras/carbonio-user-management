@@ -64,7 +64,8 @@ class GetUserInfoApiIT {
                         "a28fdb4d-9f4b-4c7f-a572-43cef33f1d8b",
                         "fake@example.com",
                         "example.com",
-                        "Fake Account")));
+                        "Fake Account",
+                        "active")));
 
     LocalConnector localConnector = simulator.getHttpLocalConnector();
     HttpTester.Request request = HttpTester.newRequest();
@@ -112,7 +113,8 @@ class GetUserInfoApiIT {
                         "a28fdb4d-9f4b-4c7f-a572-43cef33f1d8b",
                         "fake@example.com",
                         "example.com",
-                        "Fake Account")));
+                        "Fake Account",
+                        "active")));
 
     LocalConnector localConnector = simulator.getHttpLocalConnector();
     HttpTester.Request request = HttpTester.newRequest();
@@ -160,7 +162,8 @@ class GetUserInfoApiIT {
                         "a28fdb4d-9f4b-4c7f-a572-43cef33f1d8b",
                         "fake@example.com",
                         "example.com",
-                        "Fake Account")));
+                        "Fake Account",
+                        "active")));
 
     LocalConnector localConnector = simulator.getHttpLocalConnector();
     HttpTester.Request request = HttpTester.newRequest();
