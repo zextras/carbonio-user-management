@@ -36,31 +36,36 @@ public class SoapHttpUtils {
     String getAccountInfoRequest = getXmlFile("soap/requests/GetAccountInfoRequest.xml");
 
     return getAccountInfoRequest
-      .replaceAll("%AUTH_TOKEN%", authToken)
-      .replaceAll("%ACCOUNT_ID%", accountId);
+        .replaceAll("%AUTH_TOKEN%", authToken)
+        .replaceAll("%ACCOUNT_ID%", accountId);
   }
 
   /**
    * Creates the GetAccountInfoResponse XML body substituting the input parameters in the related
    * placeholders.
    *
-   * @param accountId       is a {@link String} representing the identifier of the retrieved
-   *                        account
-   * @param accountEmail    is a {@link String} representing the email of the retrieved account
-   * @param accountDomain   is a {@link String} representing the domain of the retrieved account
+   * @param accountId is a {@link String} representing the identifier of the retrieved account
+   * @param accountEmail is a {@link String} representing the email of the retrieved account
+   * @param accountDomain is a {@link String} representing the domain of the retrieved account
    * @param accountFullName is a {@link String} representing the full name of the retrieved account
    * @return a {@link String} representing the XML payload response for the GetAccountInfo API.
    */
-  public String getAccountInfoResponse(String accountId, String accountEmail, String accountDomain,
-    String accountFullName, String accountStatus) {
+  public String getAccountInfoResponse(
+      String accountId,
+      String accountEmail,
+      String accountDomain,
+      String accountFullName,
+      String accountStatus,
+      String virtualAccount) {
     String getAccountInfoResponse = getXmlFile("soap/responses/GetAccountInfoResponse.xml");
 
     return getAccountInfoResponse
-      .replaceAll("%ACCOUNT_ID%", accountId)
-      .replaceAll("%ACCOUNT_EMAIL%", accountEmail)
-      .replaceAll("%ACCOUNT_DOMAIN%", accountDomain)
-      .replaceAll("%ACCOUNT_FULL_NAME%", accountFullName)
-      .replaceAll("%ACCOUNT_STATUS%", accountStatus);
+        .replaceAll("%ACCOUNT_ID%", accountId)
+        .replaceAll("%ACCOUNT_EMAIL%", accountEmail)
+        .replaceAll("%ACCOUNT_DOMAIN%", accountDomain)
+        .replaceAll("%ACCOUNT_FULL_NAME%", accountFullName)
+        .replaceAll("%ACCOUNT_STATUS%", accountStatus)
+        .replaceAll("%IS_VIRTUAL_ACCOUNT%", virtualAccount);
   }
 
   /**
@@ -79,30 +84,30 @@ public class SoapHttpUtils {
    * Creates the GetInfoResponse XML body substituting the input parameters in the related
    * placeholders.
    *
-   * @param accountId       is a {@link String} representing the identifier of the retrieved
-   *                        account
-   * @param accountEmail    is a {@link String} representing the email of the retrieved account
-   * @param accountDomain   is a {@link String} representing the domain of the retrieved account
+   * @param accountId is a {@link String} representing the identifier of the retrieved account
+   * @param accountEmail is a {@link String} representing the email of the retrieved account
+   * @param accountDomain is a {@link String} representing the domain of the retrieved account
    * @param accountFullName is a {@link String} representing the full name of the retrieved account
-   * @param accountLocale   is a {@link String} representing the locale chosen by the retrieved
-   *                        account
+   * @param accountLocale is a {@link String} representing the locale chosen by the retrieved
+   *     account
    * @return a {@link String} representing the XML payload response for the GetInfo API.
    */
   public String getInfoResponse(
-    String accountId,
-    String accountEmail,
-    String accountDomain,
-    String accountFullName,
-    String accountLocale
-  ) {
+      String accountId,
+      String accountEmail,
+      String accountDomain,
+      String accountFullName,
+      String accountLocale,
+      String virtualAccount) {
     String getInfoResponse = getXmlFile("soap/responses/GetInfoResponse.xml");
 
     return getInfoResponse
-      .replaceAll("%ACCOUNT_ID%", accountId)
-      .replaceAll("%ACCOUNT_EMAIL%", accountEmail)
-      .replaceAll("%ACCOUNT_DOMAIN%", accountDomain)
-      .replaceAll("%ACCOUNT_FULL_NAME%", accountFullName)
-      .replaceAll("%ACCOUNT_LOCALE%", accountLocale);
+        .replaceAll("%ACCOUNT_ID%", accountId)
+        .replaceAll("%ACCOUNT_EMAIL%", accountEmail)
+        .replaceAll("%ACCOUNT_DOMAIN%", accountDomain)
+        .replaceAll("%ACCOUNT_FULL_NAME%", accountFullName)
+        .replaceAll("%ACCOUNT_LOCALE%", accountLocale)
+        .replaceAll("%IS_VIRTUAL_ACCOUNT%", virtualAccount);
   }
 
   /**
@@ -114,9 +119,9 @@ public class SoapHttpUtils {
   private String getXmlFile(String path) {
 
     try (InputStream resource = getClass().getClassLoader().getResourceAsStream(path)) {
-      return IOUtils
-        .toString(resource, StandardCharsets.UTF_8)
-        .replaceAll("\n( *)<", "<"); // This replacement is necessary to remove the XML indentation;
+      return IOUtils.toString(resource, StandardCharsets.UTF_8)
+          .replaceAll(
+              "\n( *)<", "<"); // This replacement is necessary to remove the XML indentation;
     } catch (IOException e) {
       throw new RuntimeException(e);
     }

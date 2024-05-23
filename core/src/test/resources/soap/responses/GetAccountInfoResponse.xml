@@ -12,6 +12,7 @@
       <attr name="zimbraMailHost">%ACCOUNT_DOMAIN%</attr>
       <attr name="displayName">%ACCOUNT_FULL_NAME%</attr>
       <attr name="zimbraAccountStatus">%ACCOUNT_STATUS%</attr>
+      <attr name="zimbraIsExternalVirtualAccount">%IS_VIRTUAL_ACCOUNT%</attr>
       <soapURL>https://%ACCOUNT_DOMAIN%/service/soap/</soapURL>
       <publicURL>%ACCOUNT_DOMAIN%</publicURL>
     </GetAccountInfoResponse>

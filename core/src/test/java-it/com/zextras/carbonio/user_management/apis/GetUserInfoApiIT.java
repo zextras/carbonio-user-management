@@ -11,6 +11,7 @@ import com.zextras.carbonio.user_management.Simulator.SimulatorBuilder;
 import com.zextras.carbonio.user_management.SoapHttpUtils;
 import com.zextras.carbonio.user_management.generated.model.Status;
 import com.zextras.carbonio.user_management.generated.model.UserInfo;
+import com.zextras.carbonio.user_management.generated.model.UserType;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -65,7 +66,8 @@ class GetUserInfoApiIT {
                         "fake@example.com",
                         "example.com",
                         "Fake Account",
-                        "active")));
+                        "active",
+                        "FALSE")));
 
     LocalConnector localConnector = simulator.getHttpLocalConnector();
     HttpTester.Request request = HttpTester.newRequest();
@@ -88,6 +90,7 @@ class GetUserInfoApiIT {
     assertThat(userInfo.getFullName()).isEqualTo("Fake Account");
     assertThat(userInfo.getDomain()).isEqualTo("example.com");
     assertThat(userInfo.getStatus()).isEqualTo(Status.ACTIVE);
+    assertThat(userInfo.getUserType()).isEqualTo(UserType.INTERNAL);
   }
 
   @Test
@@ -114,7 +117,8 @@ class GetUserInfoApiIT {
                         "fake@example.com",
                         "example.com",
                         "Fake Account",
-                        "active")));
+                        "active",
+                        "FALSE")));
 
     LocalConnector localConnector = simulator.getHttpLocalConnector();
     HttpTester.Request request = HttpTester.newRequest();
@@ -137,6 +141,7 @@ class GetUserInfoApiIT {
     assertThat(userInfo.getFullName()).isEqualTo("Fake Account");
     assertThat(userInfo.getDomain()).isEqualTo("example.com");
     assertThat(userInfo.getStatus()).isEqualTo(Status.ACTIVE);
+    assertThat(userInfo.getUserType()).isEqualTo(UserType.INTERNAL);
   }
 
   @Test
@@ -163,7 +168,8 @@ class GetUserInfoApiIT {
                         "fake@example.com",
                         "example.com",
                         "Fake Account",
-                        "active")));
+                        "active",
+                        "FALSE")));
 
     LocalConnector localConnector = simulator.getHttpLocalConnector();
     HttpTester.Request request = HttpTester.newRequest();
@@ -189,6 +195,7 @@ class GetUserInfoApiIT {
     assertThat(userInfo.getFullName()).isEqualTo("Fake Account");
     assertThat(userInfo.getDomain()).isEqualTo("example.com");
     assertThat(userInfo.getStatus()).isEqualTo(Status.ACTIVE);
+    assertThat(userInfo.getUserType()).isEqualTo(UserType.INTERNAL);
   }
 
   @Test

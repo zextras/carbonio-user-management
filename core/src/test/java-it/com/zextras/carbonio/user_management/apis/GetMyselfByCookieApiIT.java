@@ -9,6 +9,7 @@ import com.zextras.carbonio.user_management.Simulator;
 import com.zextras.carbonio.user_management.Simulator.SimulatorBuilder;
 import com.zextras.carbonio.user_management.SoapHttpUtils;
 import com.zextras.carbonio.user_management.generated.model.UserMyself;
+import com.zextras.carbonio.user_management.generated.model.UserType;
 import org.assertj.core.api.Assertions;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
@@ -71,7 +72,8 @@ public class GetMyselfByCookieApiIT {
             "fake@example.com",
             "example.com",
             "Fake Account",
-            "pt_BR"
+            "pt_BR",
+            "FALSE"
           )
         ));
 
@@ -96,6 +98,7 @@ public class GetMyselfByCookieApiIT {
     Assertions.assertThat(userMyself.getDomain()).isEqualTo("example.com");
     Assertions.assertThat(userMyself.getFullName()).isEqualTo("Fake Account");
     Assertions.assertThat(userMyself.getLocale()).isEqualTo("pt_BR");
+    Assertions.assertThat(userMyself.getUserType()).isEqualTo(UserType.INTERNAL);
   }
 
   @Test
