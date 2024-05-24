@@ -51,6 +51,9 @@ public class UserService {
 
     userInfo.setUserType(
         UserType.INTERNAL); // default value in case zimbraIsExternalVirtualAccount is not returned
+    userInfo.setStatus(
+        com.zextras.carbonio.user_management.generated.model.Status
+            .CLOSED); // default value in case status is not returned
 
     accountInfo
         .getAttr()
@@ -219,7 +222,7 @@ public class UserService {
                           attribute -> attribute.getName().equals("zimbraIsExternalVirtualAccount"))
                       .findFirst()
                       .map(Attr::getValue)
-                      .orElse("FALSE") //default value, will be translated to type internal
+                      .orElse("FALSE") // default value, will be translated to type internal
                       .toLowerCase())
               ? UserType.GUEST
               : UserType.INTERNAL;
