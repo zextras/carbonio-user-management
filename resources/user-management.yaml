@@ -214,7 +214,7 @@ components:
       enum:
         - Internal
         - Guest
-    Status:
+    UserStatus:
       type: string
       enum:
         - Active
@@ -234,8 +234,8 @@ components:
           type: string
         domain:
           type: string
-        status:
-          $ref: '#/components/schemas/Status'
+        userStatus:
+          $ref: '#/components/schemas/UserStatus'
         userType:
           $ref: '#/components/schemas/UserType'
     UserMyself:

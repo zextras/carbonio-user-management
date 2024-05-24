@@ -12,10 +12,7 @@ import com.sun.xml.ws.fault.ServerSOAPFaultException;
 import com.zextras.carbonio.user_management.cache.CacheManager;
 import com.zextras.carbonio.user_management.entities.UserToken;
 import com.zextras.carbonio.user_management.exceptions.ServiceException;
-import com.zextras.carbonio.user_management.generated.model.UserId;
-import com.zextras.carbonio.user_management.generated.model.UserInfo;
-import com.zextras.carbonio.user_management.generated.model.UserMyself;
-import com.zextras.carbonio.user_management.generated.model.UserType;
+import com.zextras.carbonio.user_management.generated.model.*;
 import com.zextras.mailbox.client.requests.Request;
 import com.zextras.mailbox.client.service.InfoRequests.Sections;
 import com.zextras.mailbox.client.service.ServiceClient;
@@ -51,9 +48,7 @@ public class UserService {
 
     userInfo.setUserType(
         UserType.INTERNAL); // default value in case zimbraIsExternalVirtualAccount is not returned
-    userInfo.setStatus(
-        com.zextras.carbonio.user_management.generated.model.Status
-            .CLOSED); // default value in case status is not returned
+    userInfo.setUserStatus(UserStatus.CLOSED); // default value in case status is not returned
 
     accountInfo
         .getAttr()
@@ -70,9 +65,7 @@ public class UserService {
               }
 
               if (attribute.getName().equals("zimbraAccountStatus")) {
-                userInfo.setStatus(
-                    com.zextras.carbonio.user_management.generated.model.Status.valueOf(
-                        attribute.getValue().toUpperCase()));
+                userInfo.setUserStatus(UserStatus.valueOf(attribute.getValue().toUpperCase()));
               }
 
               if (attribute.getName().equals("zimbraIsExternalVirtualAccount")) {

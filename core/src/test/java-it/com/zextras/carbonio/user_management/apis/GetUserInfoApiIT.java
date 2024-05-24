@@ -4,14 +4,17 @@
 
 package com.zextras.carbonio.user_management.apis;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zextras.carbonio.user_management.Simulator;
 import com.zextras.carbonio.user_management.Simulator.SimulatorBuilder;
 import com.zextras.carbonio.user_management.SoapHttpUtils;
-import com.zextras.carbonio.user_management.generated.model.Status;
 import com.zextras.carbonio.user_management.generated.model.UserInfo;
+import com.zextras.carbonio.user_management.generated.model.UserStatus;
 import com.zextras.carbonio.user_management.generated.model.UserType;
+import java.util.List;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -24,10 +27,6 @@ import org.junit.jupiter.api.Test;
 import org.mockserver.client.MockServerClient;
 import org.mockserver.model.HttpRequest;
 import org.mockserver.model.HttpResponse;
-
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 class GetUserInfoApiIT {
 
@@ -89,7 +88,7 @@ class GetUserInfoApiIT {
     assertThat(userInfo.getEmail()).isEqualTo("fake@example.com");
     assertThat(userInfo.getFullName()).isEqualTo("Fake Account");
     assertThat(userInfo.getDomain()).isEqualTo("example.com");
-    assertThat(userInfo.getStatus()).isEqualTo(Status.ACTIVE);
+    assertThat(userInfo.getUserStatus()).isEqualTo(UserStatus.ACTIVE);
     assertThat(userInfo.getUserType()).isEqualTo(UserType.INTERNAL);
   }
 
@@ -140,7 +139,7 @@ class GetUserInfoApiIT {
     assertThat(userInfo.getEmail()).isEqualTo("fake@example.com");
     assertThat(userInfo.getFullName()).isEqualTo("Fake Account");
     assertThat(userInfo.getDomain()).isEqualTo("example.com");
-    assertThat(userInfo.getStatus()).isEqualTo(Status.ACTIVE);
+    assertThat(userInfo.getUserStatus()).isEqualTo(UserStatus.ACTIVE);
     assertThat(userInfo.getUserType()).isEqualTo(UserType.INTERNAL);
   }
 
@@ -194,7 +193,7 @@ class GetUserInfoApiIT {
     assertThat(userInfo.getEmail()).isEqualTo("fake@example.com");
     assertThat(userInfo.getFullName()).isEqualTo("Fake Account");
     assertThat(userInfo.getDomain()).isEqualTo("example.com");
-    assertThat(userInfo.getStatus()).isEqualTo(Status.ACTIVE);
+    assertThat(userInfo.getUserStatus()).isEqualTo(UserStatus.ACTIVE);
     assertThat(userInfo.getUserType()).isEqualTo(UserType.INTERNAL);
   }
 
