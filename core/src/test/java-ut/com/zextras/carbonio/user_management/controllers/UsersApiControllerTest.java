@@ -5,8 +5,12 @@
 package com.zextras.carbonio.user_management.controllers;
 
 import com.zextras.carbonio.user_management.exceptions.ServiceException;
+import com.zextras.carbonio.user_management.generated.NotFoundException;
+import com.zextras.carbonio.user_management.generated.model.UserInfo;
 import com.zextras.carbonio.user_management.generated.model.UserMyself;
 import com.zextras.carbonio.user_management.services.UserService;
+
+import java.util.List;
 import java.util.Optional;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
@@ -24,7 +28,7 @@ public class UsersApiControllerTest {
   static UserService userServiceMock;
 
   @BeforeAll
-  static void  init() {
+  static void init() {
     userServiceMock = Mockito.mock(UserService.class);
     usersApiController = new UsersApiController(userServiceMock);
   }
@@ -44,14 +48,14 @@ public class UsersApiControllerTest {
     Mockito.when(userServiceMock.getMyselfByToken(token)).thenReturn(Optional.of(myselfMock));
 
     // When
-    Response response = usersApiController.getMyselfByCookie(cookie, Mockito.mock(SecurityContext.class));
+    Response response =
+        usersApiController.getMyselfByCookie(cookie, Mockito.mock(SecurityContext.class));
 
     // Then
     Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.OK_200);
-    Assertions
-      .assertThat(response.getEntity())
-      .isInstanceOf(UserMyself.class)
-      .isEqualTo(myselfMock);
+    Assertions.assertThat(response.getEntity())
+        .isInstanceOf(UserMyself.class)
+        .isEqualTo(myselfMock);
   }
 
   @Test
@@ -63,7 +67,8 @@ public class UsersApiControllerTest {
     Mockito.when(userServiceMock.getMyselfByToken(token)).thenReturn(Optional.empty());
 
     // When
-    Response response = usersApiController.getMyselfByCookie(cookie, Mockito.mock(SecurityContext.class));
+    Response response =
+        usersApiController.getMyselfByCookie(cookie, Mockito.mock(SecurityContext.class));
 
     // Then
     Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND_404);
@@ -71,7 +76,7 @@ public class UsersApiControllerTest {
   }
 
   @Test
-  void givenAValidTokenAndAServiceExceptionByTheUserServiceTheGetMyselfByCookieShouldThrowAServiceException() {
+  void givenAValidAuthTokenTheGetMyselfByCookieShouldReturnTheNotFoundStatusCode() {
     // Given
     String cookie = "ZM_AUTH_TOKEN=valid-token;";
     String token = "valid-token";
@@ -80,10 +85,112 @@ public class UsersApiControllerTest {
 
     // When
     ThrowableAssert.ThrowingCallable callable =
-      () -> usersApiController.getMyselfByCookie(cookie, Mockito.mock(SecurityContext.class));
+        () -> usersApiController.getMyselfByCookie(cookie, Mockito.mock(SecurityContext.class));
 
     // Then
     Assertions.assertThatExceptionOfType(ServiceException.class).isThrownBy(callable);
   }
 
+  @Test
+  void givenAValidAuthTokenTheGetUserInfoByIdShouldReturnTheServicesGetInfoByIdResponse() {
+    // Given
+    String userId = "fake_user_id";
+    String cookie = "ZM_AUTH_TOKEN=valid-token;";
+    String token = "valid-token";
+
+    Response responseMock = Mockito.mock(Response.class);
+    Mockito.when(userServiceMock.getInfoById(userId, token)).thenReturn(responseMock);
+
+    // When
+    Response response =
+        usersApiController.getUserInfoById(cookie, userId, Mockito.mock(SecurityContext.class));
+
+    // Then
+    Assertions.assertThat(response)
+        .isEqualTo(responseMock); // if ok should return exact same response
+  }
+
+  @Test
+  void givenAnInvalidCookieTheGetUserInfoByIdShouldReturnTheBadRequestStatusCode() {
+    // Given
+    String userId = "fake_user_id";
+    String cookie = "";
+
+    // When
+    Response response =
+        usersApiController.getUserInfoById(cookie, userId, Mockito.mock(SecurityContext.class));
+
+    // Then
+    Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST_400);
+  }
+
+  @Test
+  void givenAValidAuthTokenTheGetUserInfoByEmailShouldReturnTheServicesGetInfoByEmailResponse() {
+    // Given
+    String userEmail = "fake_user_email";
+    String cookie = "ZM_AUTH_TOKEN=valid-token;";
+    String token = "valid-token";
+
+    Response responseMock = Mockito.mock(Response.class);
+    Mockito.when(userServiceMock.getInfoByEmail(userEmail, token)).thenReturn(responseMock);
+
+    // When
+    Response response =
+        usersApiController.getUserInfoByEmail(
+            cookie, userEmail, Mockito.mock(SecurityContext.class));
+
+    // Then
+    Assertions.assertThat(response).isEqualTo(responseMock);
+  }
+
+  @Test
+  void givenAnInvalidCookieTheGetUserInfoByEmailShouldReturnTheBadRequestStatusCode() {
+    // Given
+    String userEmail = "fake_user_email";
+    String cookie = "";
+
+    // When
+    Response response =
+        usersApiController.getUserInfoByEmail(
+            cookie, userEmail, Mockito.mock(SecurityContext.class));
+
+    // Then
+    Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST_400);
+  }
+
+  @Test
+  void givenAValidAuthTokenTheGetUsersInfoShouldReturnTheServicesGetUsersResponse()
+      throws NotFoundException {
+    // Given
+    String[] userIds = {"fake_user_id"};
+    String cookie = "ZM_AUTH_TOKEN=valid-token;";
+    String token = "valid-token";
+
+    Response responseMock = Mockito.mock(Response.class);
+    Mockito.when(userServiceMock.getUsers(List.of(userIds), token)).thenReturn(responseMock);
+
+    // When
+    Response response =
+        usersApiController.getUsersInfo(
+            cookie, List.of(userIds), Mockito.mock(SecurityContext.class));
+
+    // Then
+    Assertions.assertThat(response).isEqualTo(responseMock);
+  }
+
+  @Test
+  void givenAnInvalidCookieTheGetUsersInfoShouldReturnTheBadRequestStatusCode()
+      throws NotFoundException {
+    // Given
+    String[] userIds = {"fake_user_id"};
+    String cookie = "";
+
+    // When
+    Response response =
+        usersApiController.getUsersInfo(
+            cookie, List.of(userIds), Mockito.mock(SecurityContext.class));
+
+    // Then
+    Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST_400);
+  }
 }

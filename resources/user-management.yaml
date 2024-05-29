@@ -209,6 +209,14 @@ components:
     500ServerError:
       description: The service is not available
   schemas:
+    Status:
+      type: string
+      enum:
+        - Active
+        - Closed
+        - Locked
+        - Lockout
+        - Maintenance
     UserInfo:
       type: object
       properties:
@@ -221,6 +229,8 @@ components:
           type: string
         domain:
           type: string
+        status:
+          $ref: '#/components/schemas/Status'
     UserMyself:
       type: object
       properties:

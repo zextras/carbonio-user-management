@@ -52,14 +52,15 @@ public class SoapHttpUtils {
    * @return a {@link String} representing the XML payload response for the GetAccountInfo API.
    */
   public String getAccountInfoResponse(String accountId, String accountEmail, String accountDomain,
-    String accountFullName) {
+    String accountFullName, String accountStatus) {
     String getAccountInfoResponse = getXmlFile("soap/responses/GetAccountInfoResponse.xml");
 
     return getAccountInfoResponse
       .replaceAll("%ACCOUNT_ID%", accountId)
       .replaceAll("%ACCOUNT_EMAIL%", accountEmail)
       .replaceAll("%ACCOUNT_DOMAIN%", accountDomain)
-      .replaceAll("%ACCOUNT_FULL_NAME%", accountFullName);
+      .replaceAll("%ACCOUNT_FULL_NAME%", accountFullName)
+      .replaceAll("%ACCOUNT_STATUS%", accountStatus);
   }
 
   /**

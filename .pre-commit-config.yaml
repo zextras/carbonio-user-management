@@ -47,14 +47,6 @@ repos:
     hooks:
       - id: pretty-format-java
 
-  - repo: https://github.com/igorshubovych/markdownlint-cli
-    rev: v0.37.0
-    hooks:
-      - id: markdownlint
-        language_version: 16.0.0
-      - id: markdownlint-fix
-        language_version: 16.0.0
-
   - repo: https://github.com/ejba/pre-commit-maven
     rev: v0.3.3
     hooks:
