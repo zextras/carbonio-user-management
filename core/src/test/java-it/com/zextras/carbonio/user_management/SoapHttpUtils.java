@@ -32,12 +32,30 @@ public class SoapHttpUtils {
    * @param accountId is a {@link String} representing the identifier of the account to retrieve
    * @return a {@link String} representing the XML body request for the GetAccountInfo API.
    */
-  public String getAccountInfoRequest(String authToken, String accountId) {
+  public String getAccountInfoRequestById(String authToken, String accountId) {
     String getAccountInfoRequest = getXmlFile("soap/requests/GetAccountInfoRequest.xml");
 
     return getAccountInfoRequest
         .replaceAll("%AUTH_TOKEN%", authToken)
+        .replaceAll("<ns3:account by=\"name\">%ACCOUNT_EMAIL%</ns3:account>", "")
         .replaceAll("%ACCOUNT_ID%", accountId);
+  }
+
+  /**
+   * Creates the GetAccountInfoRequest XML body substituting the auth token and the account id in
+   * the related placeholders.
+   *
+   * @param authToken is a {@links String} representing the auth token of the requester
+   * @param accountEmail is a {@link String} representing the email of the account to retrieve
+   * @return a {@link String} representing the XML body request for the GetAccountInfo API.
+   */
+  public String getAccountInfoRequestByEmail(String authToken, String accountEmail) {
+    String getAccountInfoRequest = getXmlFile("soap/requests/GetAccountInfoRequest.xml");
+
+    return getAccountInfoRequest
+        .replaceAll("%AUTH_TOKEN%", authToken)
+        .replaceAll("<ns3:account by=\"id\">%ACCOUNT_ID%</ns3:account>", "")
+        .replaceAll("%ACCOUNT_EMAIL%", accountEmail);
   }
 
   /**

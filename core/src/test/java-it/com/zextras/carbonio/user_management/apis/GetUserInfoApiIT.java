@@ -54,26 +54,26 @@ class GetUserInfoApiIT {
                 .withMethod(HttpMethod.POST.toString())
                 .withPath("/service/soap/")
                 .withBody(
-                    soapHttpUtils.getAccountInfoRequest(
-                        "fake-token", "a28fdb4d-9f4b-4c7f-a572-43cef33f1d8b")))
+                    soapHttpUtils.getAccountInfoRequestById(
+                        "fake-token", "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")))
         .respond(
             HttpResponse.response()
                 .withStatusCode(HttpStatus.OK_200)
                 .withBody(
                     soapHttpUtils.getAccountInfoResponse(
-                        "a28fdb4d-9f4b-4c7f-a572-43cef33f1d8b",
+                        "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
                         "fake@example.com",
                         "example.com",
                         "Fake Account",
                         "active",
-                        "FALSE")));
+                        "TRUE")));
 
     LocalConnector localConnector = simulator.getHttpLocalConnector();
     HttpTester.Request request = HttpTester.newRequest();
     request.setMethod(HttpMethod.GET.toString());
     request.setHeader(HttpHeader.HOST.toString(), "test");
     request.setHeader(HttpHeader.COOKIE.toString(), "ZM_AUTH_TOKEN=fake-token");
-    request.setURI(("/users/id/a28fdb4d-9f4b-4c7f-a572-43cef33f1d8b"));
+    request.setURI(("/users/id/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"));
 
     // When
     Response response =
@@ -84,12 +84,12 @@ class GetUserInfoApiIT {
 
     UserInfo userInfo = new ObjectMapper().readValue(response.getContent(), UserInfo.class);
 
-    assertThat(userInfo.getId().getUserId()).isEqualTo("a28fdb4d-9f4b-4c7f-a572-43cef33f1d8b");
+    assertThat(userInfo.getId().getUserId()).isEqualTo("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
     assertThat(userInfo.getEmail()).isEqualTo("fake@example.com");
     assertThat(userInfo.getFullName()).isEqualTo("Fake Account");
     assertThat(userInfo.getDomain()).isEqualTo("example.com");
     assertThat(userInfo.getUserStatus()).isEqualTo(UserStatus.ACTIVE);
-    assertThat(userInfo.getUserType()).isEqualTo(UserType.INTERNAL);
+    assertThat(userInfo.getUserType()).isEqualTo(UserType.GUEST);
   }
 
   @Test
@@ -105,15 +105,15 @@ class GetUserInfoApiIT {
                 .withMethod(HttpMethod.POST.toString())
                 .withPath("/service/soap/")
                 .withBody(
-                    soapHttpUtils.getAccountInfoRequest(
-                        "fake-token", "a28fdb4d-9f4b-4c7f-a572-43cef33f1d8b")))
+                    soapHttpUtils.getAccountInfoRequestByEmail(
+                        "fake-token", "accountemail@example.com")))
         .respond(
             HttpResponse.response()
                 .withStatusCode(HttpStatus.OK_200)
                 .withBody(
                     soapHttpUtils.getAccountInfoResponse(
-                        "a28fdb4d-9f4b-4c7f-a572-43cef33f1d8b",
-                        "fake@example.com",
+                        "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+                        "accountemail@example.com",
                         "example.com",
                         "Fake Account",
                         "active",
@@ -124,7 +124,7 @@ class GetUserInfoApiIT {
     request.setMethod(HttpMethod.GET.toString());
     request.setHeader(HttpHeader.HOST.toString(), "test");
     request.setHeader(HttpHeader.COOKIE.toString(), "ZM_AUTH_TOKEN=fake-token");
-    request.setURI(("/users/email/fake@example.com"));
+    request.setURI(("/users/email/accountemail@example.com"));
 
     // When
     Response response =
@@ -135,8 +135,8 @@ class GetUserInfoApiIT {
 
     UserInfo userInfo = new ObjectMapper().readValue(response.getContent(), UserInfo.class);
 
-    assertThat(userInfo.getId().getUserId()).isEqualTo("a28fdb4d-9f4b-4c7f-a572-43cef33f1d8b");
-    assertThat(userInfo.getEmail()).isEqualTo("fake@example.com");
+    assertThat(userInfo.getId().getUserId()).isEqualTo("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb");
+    assertThat(userInfo.getEmail()).isEqualTo("accountemail@example.com");
     assertThat(userInfo.getFullName()).isEqualTo("Fake Account");
     assertThat(userInfo.getDomain()).isEqualTo("example.com");
     assertThat(userInfo.getUserStatus()).isEqualTo(UserStatus.ACTIVE);
@@ -156,14 +156,14 @@ class GetUserInfoApiIT {
                 .withMethod(HttpMethod.POST.toString())
                 .withPath("/service/soap/")
                 .withBody(
-                    soapHttpUtils.getAccountInfoRequest(
-                        "fake-token", "a28fdb4d-9f4b-4c7f-a572-43cef33f1d8b")))
+                    soapHttpUtils.getAccountInfoRequestById(
+                        "fake-token", "cccccccc-cccc-cccc-cccc-cccccccccccc")))
         .respond(
             HttpResponse.response()
                 .withStatusCode(HttpStatus.OK_200)
                 .withBody(
                     soapHttpUtils.getAccountInfoResponse(
-                        "a28fdb4d-9f4b-4c7f-a572-43cef33f1d8b",
+                        "cccccccc-cccc-cccc-cccc-cccccccccccc",
                         "fake@example.com",
                         "example.com",
                         "Fake Account",
@@ -175,7 +175,7 @@ class GetUserInfoApiIT {
     request.setMethod(HttpMethod.GET.toString());
     request.setHeader(HttpHeader.HOST.toString(), "test");
     request.setHeader(HttpHeader.COOKIE.toString(), "ZM_AUTH_TOKEN=fake-token");
-    String[] userIds = {"a28fdb4d-9f4b-4c7f-a572-43cef33f1d8b"};
+    String[] userIds = {"cccccccc-cccc-cccc-cccc-cccccccccccc"};
     String userIdsQueryParam = String.join(",", userIds);
     request.setURI("/users?userIds=" + userIdsQueryParam);
 
@@ -189,7 +189,7 @@ class GetUserInfoApiIT {
         new ObjectMapper().readValue(response.getContent(), new TypeReference<List<UserInfo>>() {});
     UserInfo userInfo = userInfoList.get(0);
 
-    assertThat(userInfo.getId().getUserId()).isEqualTo("a28fdb4d-9f4b-4c7f-a572-43cef33f1d8b");
+    assertThat(userInfo.getId().getUserId()).isEqualTo("cccccccc-cccc-cccc-cccc-cccccccccccc");
     assertThat(userInfo.getEmail()).isEqualTo("fake@example.com");
     assertThat(userInfo.getFullName()).isEqualTo("Fake Account");
     assertThat(userInfo.getDomain()).isEqualTo("example.com");
@@ -209,8 +209,8 @@ class GetUserInfoApiIT {
                 .withMethod(HttpMethod.POST.toString())
                 .withPath("/service/soap/")
                 .withBody(
-                    soapHttpUtils.getAccountInfoRequest(
-                        "fake-token", "2fe6fedd-f640-40c8-bd8e-6b60a040776b")))
+                    soapHttpUtils.getAccountInfoRequestById(
+                        "fake-token", "dddddddd-dddd-dddd-dddd-dddddddddddd")))
         .respond(
             HttpResponse.response()
                 .withStatusCode(HttpStatus.INTERNAL_SERVER_ERROR_500)
@@ -221,7 +221,7 @@ class GetUserInfoApiIT {
     request.setMethod(HttpMethod.GET.toString());
     request.setHeader(HttpHeader.HOST.toString(), "test");
     request.setHeader(HttpHeader.COOKIE.toString(), "ZM_AUTH_TOKEN=fake-token");
-    request.setURI(("/users/id/2fe6fedd-f640-40c8-bd8e-6b60a040776b"));
+    request.setURI(("/users/id/dddddddd-dddd-dddd-dddd-dddddddddddd"));
 
     // When
     Response response =
