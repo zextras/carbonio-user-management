@@ -42,7 +42,6 @@ sha256sums=(
   "SKIP"
 )
 backup=(
-  "etc/zextras/service-discover/carbonio-user-management.hcl"
   "etc/carbonio/user-management/config.properties"
 )
 
@@ -92,13 +91,13 @@ prerm() {
 
 postrm() {
   rm -Rf /etc/carbonio/user-management/
-  rm -r "${pkgdir}/etc/zextras/service-discover/carbonio-user-management.hcl"
   rm -f /etc/zextras/pending-setups.d/carbonio-user-management.sh
   rm -f /etc/zextras/pending-setups.d/done/carbonio-user-management.sh
 
 
   if [ -d /run/systemd/system ]; then
     systemctl daemon-reload >/dev/null 2>&1 || :
-    systemctl reset-failed >/dev/null 2>&1 || :
+    systemctl reset-failed carbonio-user-management-sidecar.service >/dev/null 2>&1 || :
+    systemctl reset-failed carbonio-user-management.service >/dev/null 2>&1 || :
   fi
 }
