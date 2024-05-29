@@ -32,7 +32,7 @@ public class SoapHttpUtils {
    * @param accountId is a {@link String} representing the identifier of the account to retrieve
    * @return a {@link String} representing the XML body request for the GetAccountInfo API.
    */
-  public String getAccountInfoRequest(String authToken, String accountId) {
+  public String getAccountInfoRequestById(String authToken, String accountId) {
     String getAccountInfoRequest = getXmlFile("soap/requests/GetAccountInfoRequest.xml");
 
     return getAccountInfoRequest
