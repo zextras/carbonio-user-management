@@ -46,9 +46,10 @@ public class UserService {
   private UserInfo createUserInfo(GetAccountInfoResponse accountInfo) {
     UserInfo userInfo = new UserInfo();
 
-    userInfo.setUserType(
-        UserType.INTERNAL); // default value in case zimbraIsExternalVirtualAccount is not returned
-    userInfo.setUserStatus(UserStatus.CLOSED); // default value in case status is not returned
+    // default value in case zimbraIsExternalVirtualAccount is not returned
+    userInfo.setUserType(UserType.INTERNAL);
+    // default value in case status is not returned
+    userInfo.setUserStatus(UserStatus.CLOSED);
 
     accountInfo
         .getAttr()
