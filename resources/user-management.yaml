@@ -234,9 +234,9 @@ components:
           type: string
         domain:
           type: string
-        userStatus:
+        status:
           $ref: '#/components/schemas/UserStatus'
-        userType:
+        type:
           $ref: '#/components/schemas/UserType'
     UserMyself:
       type: object
@@ -252,7 +252,7 @@ components:
           type: string
         locale:
           type: string
-        userType:
+        type:
           $ref: '#/components/schemas/UserType'
     UserId:
       type: object

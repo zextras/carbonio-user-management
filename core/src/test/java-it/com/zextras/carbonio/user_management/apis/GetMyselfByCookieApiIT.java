@@ -98,7 +98,7 @@ public class GetMyselfByCookieApiIT {
     Assertions.assertThat(userMyself.getDomain()).isEqualTo("example.com");
     Assertions.assertThat(userMyself.getFullName()).isEqualTo("Fake Account");
     Assertions.assertThat(userMyself.getLocale()).isEqualTo("pt_BR");
-    Assertions.assertThat(userMyself.getUserType()).isEqualTo(UserType.INTERNAL);
+    Assertions.assertThat(userMyself.getType()).isEqualTo(UserType.INTERNAL);
   }
 
   @Test

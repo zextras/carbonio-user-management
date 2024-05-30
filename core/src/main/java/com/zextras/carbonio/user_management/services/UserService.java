@@ -47,9 +47,9 @@ public class UserService {
     UserInfo userInfo = new UserInfo();
 
     // default value in case zimbraIsExternalVirtualAccount is not returned
-    userInfo.setUserType(UserType.INTERNAL);
+    userInfo.setType(UserType.INTERNAL);
     // default value in case status is not returned
-    userInfo.setUserStatus(UserStatus.CLOSED);
+    userInfo.setStatus(UserStatus.CLOSED);
 
     accountInfo
         .getAttr()
@@ -66,11 +66,11 @@ public class UserService {
               }
 
               if (attribute.getName().equals("zimbraAccountStatus")) {
-                userInfo.setUserStatus(UserStatus.valueOf(attribute.getValue().toUpperCase()));
+                userInfo.setStatus(UserStatus.valueOf(attribute.getValue().toUpperCase()));
               }
 
               if (attribute.getName().equals("zimbraIsExternalVirtualAccount")) {
-                userInfo.setUserType(
+                userInfo.setType(
                     Boolean.parseBoolean(attribute.getValue().toLowerCase())
                         ? UserType.GUEST
                         : UserType.INTERNAL);
@@ -227,7 +227,7 @@ public class UserService {
       userMyself.setDomain(infoResponse.getPublicURL());
       userMyself.setFullName(fullName);
       userMyself.setLocale(locale.toString());
-      userMyself.setUserType(userType);
+      userMyself.setType(userType);
 
       return Optional.of(userMyself);
 

@@ -89,8 +89,8 @@ class GetUserInfoApiIT {
     assertThat(userInfo.getEmail()).isEqualTo("fake@example.com");
     assertThat(userInfo.getFullName()).isEqualTo("Fake Account");
     assertThat(userInfo.getDomain()).isEqualTo("example.com");
-    assertThat(userInfo.getUserStatus()).isEqualTo(UserStatus.ACTIVE);
-    assertThat(userInfo.getUserType()).isEqualTo(UserType.GUEST);
+    assertThat(userInfo.getStatus()).isEqualTo(UserStatus.ACTIVE);
+    assertThat(userInfo.getType()).isEqualTo(UserType.GUEST);
   }
 
   @Test
@@ -140,8 +140,8 @@ class GetUserInfoApiIT {
     assertThat(userInfo.getEmail()).isEqualTo("accountemail@example.com");
     assertThat(userInfo.getFullName()).isEqualTo("Fake Account");
     assertThat(userInfo.getDomain()).isEqualTo("example.com");
-    assertThat(userInfo.getUserStatus()).isEqualTo(UserStatus.ACTIVE);
-    assertThat(userInfo.getUserType()).isEqualTo(UserType.INTERNAL);
+    assertThat(userInfo.getStatus()).isEqualTo(UserStatus.ACTIVE);
+    assertThat(userInfo.getType()).isEqualTo(UserType.INTERNAL);
   }
 
   @Test
@@ -194,8 +194,8 @@ class GetUserInfoApiIT {
     assertThat(userInfo.getEmail()).isEqualTo("fake@example.com");
     assertThat(userInfo.getFullName()).isEqualTo("Fake Account");
     assertThat(userInfo.getDomain()).isEqualTo("example.com");
-    assertThat(userInfo.getUserStatus()).isEqualTo(UserStatus.ACTIVE);
-    assertThat(userInfo.getUserType()).isEqualTo(UserType.INTERNAL);
+    assertThat(userInfo.getStatus()).isEqualTo(UserStatus.ACTIVE);
+    assertThat(userInfo.getType()).isEqualTo(UserType.INTERNAL);
   }
 
   @Test
@@ -278,7 +278,7 @@ class GetUserInfoApiIT {
     assertThat(userMyself.getFullName()).isEqualTo("Fake Account");
     assertThat(userMyself.getDomain()).isEqualTo("example.com");
     assertThat(userMyself.getLocale()).isEqualTo("it");
-    assertThat(userMyself.getUserType()).isEqualTo(UserType.INTERNAL);
+    assertThat(userMyself.getType()).isEqualTo(UserType.INTERNAL);
   }
 
 }
