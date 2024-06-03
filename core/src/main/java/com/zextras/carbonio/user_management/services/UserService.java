@@ -12,9 +12,7 @@ import com.sun.xml.ws.fault.ServerSOAPFaultException;
 import com.zextras.carbonio.user_management.cache.CacheManager;
 import com.zextras.carbonio.user_management.entities.UserToken;
 import com.zextras.carbonio.user_management.exceptions.ServiceException;
-import com.zextras.carbonio.user_management.generated.model.UserId;
-import com.zextras.carbonio.user_management.generated.model.UserInfo;
-import com.zextras.carbonio.user_management.generated.model.UserMyself;
+import com.zextras.carbonio.user_management.generated.model.*;
 import com.zextras.mailbox.client.requests.Request;
 import com.zextras.mailbox.client.service.InfoRequests.Sections;
 import com.zextras.mailbox.client.service.ServiceClient;
@@ -48,6 +46,11 @@ public class UserService {
   private UserInfo createUserInfo(GetAccountInfoResponse accountInfo) {
     UserInfo userInfo = new UserInfo();
 
+    // default value in case zimbraIsExternalVirtualAccount is not returned
+    userInfo.setType(UserType.INTERNAL);
+    // default value in case status is not returned
+    userInfo.setStatus(UserStatus.CLOSED);
+
     accountInfo
         .getAttr()
         .forEach(
@@ -63,9 +66,14 @@ public class UserService {
               }
 
               if (attribute.getName().equals("zimbraAccountStatus")) {
-                userInfo.setStatus(
-                    com.zextras.carbonio.user_management.generated.model.Status.valueOf(
-                        attribute.getValue().toUpperCase()));
+                userInfo.setStatus(UserStatus.valueOf(attribute.getValue().toUpperCase()));
+              }
+
+              if (attribute.getName().equals("zimbraIsExternalVirtualAccount")) {
+                userInfo.setType(
+                    Boolean.parseBoolean(attribute.getValue().toLowerCase())
+                        ? UserType.GUEST
+                        : UserType.INTERNAL);
               }
             });
 
@@ -201,12 +209,25 @@ public class UserService {
               .map(Attr::getValue)
               .orElse("");
 
+      UserType userType =
+          Boolean.parseBoolean(
+                  infoResponse.getAttrs().getAttr().stream()
+                      .filter(
+                          attribute -> attribute.getName().equals("zimbraIsExternalVirtualAccount"))
+                      .findFirst()
+                      .map(Attr::getValue)
+                      .orElse("FALSE") // default value, will be translated to type internal
+                      .toLowerCase())
+              ? UserType.GUEST
+              : UserType.INTERNAL;
+
       UserMyself userMyself = new UserMyself();
       userMyself.setId(userId);
       userMyself.setEmail(infoResponse.getName());
       userMyself.setDomain(infoResponse.getPublicURL());
       userMyself.setFullName(fullName);
       userMyself.setLocale(locale.toString());
+      userMyself.setType(userType);
 
       return Optional.of(userMyself);
 

@@ -32,35 +32,58 @@ public class SoapHttpUtils {
    * @param accountId is a {@link String} representing the identifier of the account to retrieve
    * @return a {@link String} representing the XML body request for the GetAccountInfo API.
    */
-  public String getAccountInfoRequest(String authToken, String accountId) {
+  public String getAccountInfoRequestById(String authToken, String accountId) {
     String getAccountInfoRequest = getXmlFile("soap/requests/GetAccountInfoRequest.xml");
 
     return getAccountInfoRequest
-      .replaceAll("%AUTH_TOKEN%", authToken)
-      .replaceAll("%ACCOUNT_ID%", accountId);
+        .replaceAll("%AUTH_TOKEN%", authToken)
+        .replaceAll("<ns3:account by=\"name\">%ACCOUNT_EMAIL%</ns3:account>", "")
+        .replaceAll("%ACCOUNT_ID%", accountId);
+  }
+
+  /**
+   * Creates the GetAccountInfoRequest XML body substituting the auth token and the account id in
+   * the related placeholders.
+   *
+   * @param authToken is a {@links String} representing the auth token of the requester
+   * @param accountEmail is a {@link String} representing the email of the account to retrieve
+   * @return a {@link String} representing the XML body request for the GetAccountInfo API.
+   */
+  public String getAccountInfoRequestByEmail(String authToken, String accountEmail) {
+    String getAccountInfoRequest = getXmlFile("soap/requests/GetAccountInfoRequest.xml");
+
+    return getAccountInfoRequest
+        .replaceAll("%AUTH_TOKEN%", authToken)
+        .replaceAll("<ns3:account by=\"id\">%ACCOUNT_ID%</ns3:account>", "")
+        .replaceAll("%ACCOUNT_EMAIL%", accountEmail);
   }
 
   /**
    * Creates the GetAccountInfoResponse XML body substituting the input parameters in the related
    * placeholders.
    *
-   * @param accountId       is a {@link String} representing the identifier of the retrieved
-   *                        account
-   * @param accountEmail    is a {@link String} representing the email of the retrieved account
-   * @param accountDomain   is a {@link String} representing the domain of the retrieved account
+   * @param accountId is a {@link String} representing the identifier of the retrieved account
+   * @param accountEmail is a {@link String} representing the email of the retrieved account
+   * @param accountDomain is a {@link String} representing the domain of the retrieved account
    * @param accountFullName is a {@link String} representing the full name of the retrieved account
    * @return a {@link String} representing the XML payload response for the GetAccountInfo API.
    */
-  public String getAccountInfoResponse(String accountId, String accountEmail, String accountDomain,
-    String accountFullName, String accountStatus) {
+  public String getAccountInfoResponse(
+      String accountId,
+      String accountEmail,
+      String accountDomain,
+      String accountFullName,
+      String accountStatus,
+      String virtualAccount) {
     String getAccountInfoResponse = getXmlFile("soap/responses/GetAccountInfoResponse.xml");
 
     return getAccountInfoResponse
-      .replaceAll("%ACCOUNT_ID%", accountId)
-      .replaceAll("%ACCOUNT_EMAIL%", accountEmail)
-      .replaceAll("%ACCOUNT_DOMAIN%", accountDomain)
-      .replaceAll("%ACCOUNT_FULL_NAME%", accountFullName)
-      .replaceAll("%ACCOUNT_STATUS%", accountStatus);
+        .replaceAll("%ACCOUNT_ID%", accountId)
+        .replaceAll("%ACCOUNT_EMAIL%", accountEmail)
+        .replaceAll("%ACCOUNT_DOMAIN%", accountDomain)
+        .replaceAll("%ACCOUNT_FULL_NAME%", accountFullName)
+        .replaceAll("%ACCOUNT_STATUS%", accountStatus)
+        .replaceAll("%IS_VIRTUAL_ACCOUNT%", virtualAccount);
   }
 
   /**
@@ -79,30 +102,30 @@ public class SoapHttpUtils {
    * Creates the GetInfoResponse XML body substituting the input parameters in the related
    * placeholders.
    *
-   * @param accountId       is a {@link String} representing the identifier of the retrieved
-   *                        account
-   * @param accountEmail    is a {@link String} representing the email of the retrieved account
-   * @param accountDomain   is a {@link String} representing the domain of the retrieved account
+   * @param accountId is a {@link String} representing the identifier of the retrieved account
+   * @param accountEmail is a {@link String} representing the email of the retrieved account
+   * @param accountDomain is a {@link String} representing the domain of the retrieved account
    * @param accountFullName is a {@link String} representing the full name of the retrieved account
-   * @param accountLocale   is a {@link String} representing the locale chosen by the retrieved
-   *                        account
+   * @param accountLocale is a {@link String} representing the locale chosen by the retrieved
+   *     account
    * @return a {@link String} representing the XML payload response for the GetInfo API.
    */
   public String getInfoResponse(
-    String accountId,
-    String accountEmail,
-    String accountDomain,
-    String accountFullName,
-    String accountLocale
-  ) {
+      String accountId,
+      String accountEmail,
+      String accountDomain,
+      String accountFullName,
+      String accountLocale,
+      String virtualAccount) {
     String getInfoResponse = getXmlFile("soap/responses/GetInfoResponse.xml");
 
     return getInfoResponse
-      .replaceAll("%ACCOUNT_ID%", accountId)
-      .replaceAll("%ACCOUNT_EMAIL%", accountEmail)
-      .replaceAll("%ACCOUNT_DOMAIN%", accountDomain)
-      .replaceAll("%ACCOUNT_FULL_NAME%", accountFullName)
-      .replaceAll("%ACCOUNT_LOCALE%", accountLocale);
+        .replaceAll("%ACCOUNT_ID%", accountId)
+        .replaceAll("%ACCOUNT_EMAIL%", accountEmail)
+        .replaceAll("%ACCOUNT_DOMAIN%", accountDomain)
+        .replaceAll("%ACCOUNT_FULL_NAME%", accountFullName)
+        .replaceAll("%ACCOUNT_LOCALE%", accountLocale)
+        .replaceAll("%IS_VIRTUAL_ACCOUNT%", virtualAccount);
   }
 
   /**
@@ -114,9 +137,9 @@ public class SoapHttpUtils {
   private String getXmlFile(String path) {
 
     try (InputStream resource = getClass().getClassLoader().getResourceAsStream(path)) {
-      return IOUtils
-        .toString(resource, StandardCharsets.UTF_8)
-        .replaceAll("\n( *)<", "<"); // This replacement is necessary to remove the XML indentation;
+      return IOUtils.toString(resource, StandardCharsets.UTF_8)
+          .replaceAll(
+              "\n( *)<", "<"); // This replacement is necessary to remove the XML indentation;
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
