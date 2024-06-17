@@ -8,6 +8,15 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.6.0](https://github.com/Zextras/carbonio-user-management/compare/v0.5.2...v0.6.0) (2024-06-17)
+
+
+### Features
+
+* add intention to call myself user from files ([#43](https://github.com/Zextras/carbonio-user-management/issues/43)) ([0ceb876](https://github.com/Zextras/carbonio-user-management/commit/0ceb8761ef0099a6c1ab732e666c0483d470768c))
+* return the account type with GetMySelf, GetUserById and GetUserByEmail and adapt tests ([#44](https://github.com/Zextras/carbonio-user-management/issues/44)) ([17f56b5](https://github.com/Zextras/carbonio-user-management/commit/17f56b5a996d92a666e703de54e6b4ec25665567))
+* status is now returned when getting user info ([#41](https://github.com/Zextras/carbonio-user-management/issues/41)) ([605d080](https://github.com/Zextras/carbonio-user-management/commit/605d08014c7ec59bcdcda38e9d0dfab8862aec95))
+
 ### [0.5.2](https://github.com/Zextras/carbonio-user-management/compare/v0.5.1...v0.5.2) (2024-04-12)
 
 ### [0.5.1](https://github.com/Zextras/carbonio-user-management/compare/v0.5.0...v0.5.1) (2024-02-15)
