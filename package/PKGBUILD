@@ -19,17 +19,19 @@ depends=(
 )
 source=(
   "carbonio-user-management"
+  "carbonio-user-management-setup"
   "carbonio-user-management.hcl"
   "carbonio-user-management.jar"
   "carbonio-user-management.service"
   "carbonio-user-management-sidecar.service"
-  "carbonio-user-management-setup.sh"
+  "carbonio-user-management-pending-setup"
   "config.properties"
   "intentions.json"
   "policies.json"
   "service-protocol.json"
 )
 sha256sums=(
+  "SKIP"
   "SKIP"
   "SKIP"
   "SKIP"
@@ -49,11 +51,12 @@ backup=(
 package() {
   cd "${srcdir}"
   install -Dm 755 carbonio-user-management "${pkgdir}/usr/bin/carbonio-user-management"
-  install -Dm 755 carbonio-user-management.jar "${pkgdir}/usr/bin/carbonio/user-management/carbonio-user-management.jar"
+  install -Dm 755 carbonio-user-management-setup "${pkgdir}/usr/bin/carbonio-user-management-setup"
+  install -Dm 755 carbonio-user-management.jar "${pkgdir}/usr/share/carbonio/carbonio-user-management.jar"
   install -Dm 644 carbonio-user-management.service "${pkgdir}/lib/systemd/system/carbonio-user-management.service"
   install -Dm 644 carbonio-user-management-sidecar.service "${pkgdir}/lib/systemd/system/carbonio-user-management-sidecar.service"
   install -Dm 644 carbonio-user-management.hcl "${pkgdir}/etc/zextras/service-discover/carbonio-user-management.hcl"
-  install -Dm 644 carbonio-user-management-setup.sh "${pkgdir}/etc/zextras/pending-setups.d/carbonio-user-management.sh"
+  install -Dm 644 carbonio-user-management-pending-setup "${pkgdir}/etc/zextras/pending-setups.d/carbonio-user-management.sh"
   install -Dm 644 intentions.json "${pkgdir}/etc/carbonio/user-management/service-discover/intentions.json"
   install -Dm 644 policies.json "${pkgdir}/etc/carbonio/user-management/service-discover/policies.json"
   install -Dm 644 service-protocol.json "${pkgdir}/etc/carbonio/user-management/service-discover/service-protocol.json"
