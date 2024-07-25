@@ -6,7 +6,6 @@ package com.zextras.carbonio.user_management.controllers;
 
 import com.zextras.carbonio.user_management.exceptions.ServiceException;
 import com.zextras.carbonio.user_management.generated.NotFoundException;
-import com.zextras.carbonio.user_management.generated.model.UserInfo;
 import com.zextras.carbonio.user_management.generated.model.UserMyself;
 import com.zextras.carbonio.user_management.services.UserService;
 
@@ -22,7 +21,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-public class UsersApiControllerTest {
+class UsersApiControllerTest {
 
   static UsersApiController usersApiController;
   static UserService userServiceMock;

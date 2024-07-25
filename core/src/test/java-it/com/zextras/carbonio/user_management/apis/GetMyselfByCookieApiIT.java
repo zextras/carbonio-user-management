@@ -25,7 +25,7 @@ import org.mockserver.client.MockServerClient;
 import org.mockserver.model.HttpRequest;
 import org.mockserver.model.HttpResponse;
 
-public class GetMyselfByCookieApiIT {
+class GetMyselfByCookieApiIT {
 
   static Simulator simulator;
 
