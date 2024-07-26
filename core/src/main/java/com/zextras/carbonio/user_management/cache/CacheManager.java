@@ -69,10 +69,7 @@ public class CacheManager {
       })
       .build();
 
-    userMyselfCache = Caffeine
-      .newBuilder()
-      .expireAfterWrite(15, TimeUnit.MINUTES)
-      .build();
+    userMyselfCache = Caffeine.newBuilder().expireAfterWrite(5, TimeUnit.MINUTES).build();
   }
 
   public Cache<String, UserInfo> getUserByIdCache() {
