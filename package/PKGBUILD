@@ -19,10 +19,10 @@ depends=(
 )
 source=(
   "carbonio-user-management"
-  "carbonio-user-management-setup"
   "carbonio-user-management.hcl"
   "carbonio-user-management.jar"
   "carbonio-user-management.service"
+  "carbonio-user-management-setup"
   "carbonio-user-management-sidecar.service"
   "carbonio-user-management-pending-setup"
   "config.properties"
@@ -31,17 +31,17 @@ source=(
   "service-protocol.json"
 )
 sha256sums=(
+  "9321fd4f460b35c8643591a270eda07decb89aca89dcb210b1e03d88db297f61"
+  "f06c46b16c9b64ba3689d98a8e751c7ef7679bee6c927efc0ee926e61cc0cc5d"
   "SKIP"
-  "SKIP"
-  "SKIP"
-  "SKIP"
-  "SKIP"
-  "SKIP"
-  "SKIP"
-  "SKIP"
-  "SKIP"
-  "SKIP"
-  "SKIP"
+  "dae97efb72fc78bf9c2cf61f4306a3ee4ac686e30863218a16ea3431f8b1c759"
+  "786c6ea505fa5bffc23a5189a3035b19c392d3224901a079f710363efb6de7e8"
+  "aa36152fe2cc9ef96fa874c14b4510a3828bef055c8c0fa16437066d8707bd41"
+  "41e10587c1f04ef0a1d53608bc2ca94bb520177b0f39f42433cfae3e279c96a8"
+  "6988430e5876d8284e973c69ff5525fad5d089ce46687918503518487a086feb"
+  "1a58295f74dbcd34925394d1d3c4b906426759a41c754288dc01fbce971ab126"
+  "d4413a87bd9d2ec97799b31639d7ff539f9b91d0162468db09017b92b322dfc8"
+  "beae6d6f2e9d1ef926039319e5d9d2fb06ee07ac41bc445414be93443570c809"
 )
 backup=(
   "etc/zextras/service-discover/carbonio-user-management.hcl"
