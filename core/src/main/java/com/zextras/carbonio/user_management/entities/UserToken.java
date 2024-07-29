@@ -9,7 +9,7 @@ import java.util.Objects;
 public class UserToken {
 
   private final String token;
-  private final String   userId;
+  private final String userId;
   private final Long   lifeTimeInMillis;
 
   public UserToken(

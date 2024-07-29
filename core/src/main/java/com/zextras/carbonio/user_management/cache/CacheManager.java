@@ -11,14 +11,16 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.zextras.carbonio.user_management.entities.UserToken;
 import com.zextras.carbonio.user_management.generated.model.UserInfo;
+import com.zextras.carbonio.user_management.generated.model.UserMyself;
 import java.util.concurrent.TimeUnit;
 
 @Singleton
 public class CacheManager {
 
-  private final Cache<String, UserInfo>  userByIdCache;
-  private final Cache<String, UserInfo>  userByEmailCache;
-  private final Cache<String, UserToken> userTokenCache;
+  private final Cache<String, UserInfo>   userByIdCache;
+  private final Cache<String, UserInfo>   userByEmailCache;
+  private final Cache<String, UserToken>  userTokenCache;
+  private final Cache<String, UserMyself> userMyselfCache;
 
   @Inject
   public CacheManager() {
@@ -66,6 +68,11 @@ public class CacheManager {
         }
       })
       .build();
+
+    userMyselfCache = Caffeine
+      .newBuilder()
+      .expireAfterWrite(5, TimeUnit.MINUTES)
+      .build();
   }
 
   public Cache<String, UserInfo> getUserByIdCache() {
@@ -78,5 +85,9 @@ public class CacheManager {
 
   public Cache<String, UserToken> getUserTokenCache() {
     return userTokenCache;
+  }
+
+  public Cache<String, UserMyself> getUserMyselfCache() {
+    return userMyselfCache;
   }
 }
