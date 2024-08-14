@@ -8,6 +8,18 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.7.0](https://github.com/Zextras/carbonio-user-management/compare/v0.6.0...v0.7.0) (2024-08-14)
+
+
+### Features
+
+* add cache for getUserMyself response ([#48](https://github.com/Zextras/carbonio-user-management/issues/48)) ([cbc4f0c](https://github.com/Zextras/carbonio-user-management/commit/cbc4f0c7854884d6232f8b2db93a6017bfc9ad57))
+
+
+### Bug Fixes
+
+* move jar from /usr/bin to /usr/share to follow the FHS standard ([#47](https://github.com/Zextras/carbonio-user-management/issues/47)) ([06a933c](https://github.com/Zextras/carbonio-user-management/commit/06a933c75b72a79fe156a41bbbefead97c41cd0f))
+
 ## [0.6.0](https://github.com/Zextras/carbonio-user-management/compare/v0.5.2...v0.6.0) (2024-06-17)
 
 
