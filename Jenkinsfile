@@ -73,9 +73,7 @@ pipeline {
                 // Note that the pkgrel value will remain as it was in the codebase to avoid
                 // conflicts between multiple open PRs
                 stage('Add timestamp and commit hash') {
-                    when {
-                        branch 'develop'
-                    }
+
                     steps {
                         sh'''
                             export TIMESTAMP=$(date +%s)
