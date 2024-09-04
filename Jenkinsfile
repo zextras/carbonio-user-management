@@ -73,7 +73,9 @@ pipeline {
                 // Note that the pkgrel value will remain as it was in the codebase to avoid
                 // conflicts between multiple open PRs
                 stage('Add timestamp and commit hash') {
-
+                    when {
+                        branch 'develop'
+                    }
                     steps {
                         script {
                             def timestamp = sh(script: 'date +%s', returnStdout: true).trim()
