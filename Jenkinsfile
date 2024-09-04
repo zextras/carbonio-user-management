@@ -77,11 +77,11 @@ pipeline {
                         branch 'develop'
                     }
                     steps {
-                        sh"""
+                        sh'''
                             export TIMESTAMP=$(date +%s)
                             export GIT_COMMIT_SHORT=${env.GIT_COMMIT:0:8}
                             sed -i "s/pkgrel=\\".*\\"/pkgrel=\\"$TIMESTAMP+$GIT_COMMIT_SHORT\\"/" ./package/PKGBUILD
-                        """
+                        '''
                     }
                 }
                 stage('Stash') {
