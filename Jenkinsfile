@@ -75,11 +75,13 @@ pipeline {
                 stage('Add timestamp and commit hash') {
 
                     steps {
-                        sh'''
-                            export TIMESTAMP=$(date +%s)
-                            export GIT_COMMIT_SHORT=${env.GIT_COMMIT:0:8}
-                            sed -i "s/pkgrel=\\".*\\"/pkgrel=\\"$TIMESTAMP+$GIT_COMMIT_SHORT\\"/" ./package/PKGBUILD
-                        '''
+                        script {
+                            def timestamp = sh(script: 'date +%s', returnStdout: true).trim()
+                            def gitCommitShort = env.GIT_COMMIT.take(8)
+                            sh """
+                                sed -i "s/pkgrel=\\".*\\"/pkgrel=\\"${timestamp}+${gitCommitShort}\\"/" ./package/PKGBUILD
+                            """
+                        }
                     }
                 }
                 stage('Stash') {
