@@ -41,14 +41,14 @@ SPDX-License-Identifier: AGPL-3.0-only
     <guice.version>7.0.0</guice.version>
     <jackson.version>2.17.2</jackson.version>
     <javaee-api.version>8.0.1</javaee-api.version>
-    <jetty-version>12.0.12</jetty-version>
+    <jetty-version>11.0.24</jetty-version>
     <jsonassert.version>1.5.3</jsonassert.version>
     <junit5.version>5.11.0</junit5.version>
     <logback-classic.version>1.5.7</logback-classic.version>
     <mock-server.version>5.15.0</mock-server.version>
     <mockito.version>5.13.0</mockito.version>
-    <resteasy.version>6.2.10.Final</resteasy.version>
-    <swagger-core-version>2.2.22</swagger-core-version>
+    <resteasy.version>4.7.9.Final</resteasy.version>
+    <swagger-core-version>1.6.14</swagger-core-version>
 
     <!-- Plugins -->
     <build-helper-maven-plugin.version>3.6.0</build-helper-maven-plugin.version>
