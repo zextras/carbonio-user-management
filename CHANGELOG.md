@@ -8,6 +8,13 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.1](https://github.com/zextras/carbonio-user-management/compare/v0.7.0...v0.7.1) (2024-09-10)
+
+
+### Features
+
+* add ubuntu 24.04 (ubuntu-noble) support ([b85a491](https://github.com/zextras/carbonio-user-management/commit/b85a491597a9f84f4cf3a1c83baceda706c7dff8))
+
 ## [0.7.0](https://github.com/Zextras/carbonio-user-management/compare/v0.6.0...v0.7.0) (2024-08-14)
 
 
