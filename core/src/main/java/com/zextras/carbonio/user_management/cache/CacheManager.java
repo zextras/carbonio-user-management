@@ -12,6 +12,7 @@ import com.google.inject.Singleton;
 import com.zextras.carbonio.user_management.entities.UserToken;
 import com.zextras.carbonio.user_management.generated.model.UserInfo;
 import com.zextras.carbonio.user_management.generated.model.UserMyself;
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 @Singleton
@@ -44,7 +45,7 @@ public class CacheManager {
           UserToken value,
           long currentTime
         ) {
-          return currentTime + value.getLifeTimeInMillis() * 1000;
+          return Duration.ofMillis(value.getLifeTimeInMillis()).toNanos();
         }
 
         @Override
@@ -54,7 +55,7 @@ public class CacheManager {
           long currentTime,
           long currentDuration
         ) {
-          return currentTime + value.getLifeTimeInMillis() * 1000;
+          return currentDuration;
         }
 
         @Override
@@ -64,7 +65,7 @@ public class CacheManager {
           long currentTime,
           long currentDuration
         ) {
-          return currentTime + value.getLifeTimeInMillis() * 1000;
+          return currentDuration;
         }
       })
       .build();
