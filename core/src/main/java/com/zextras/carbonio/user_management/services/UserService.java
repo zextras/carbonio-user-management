@@ -20,7 +20,7 @@ import com.zextras.mailbox.client.MailboxServerException;
 import com.zextras.mailbox.client.requests.Request;
 import com.zextras.mailbox.client.service.InfoRequests.Sections;
 import com.zextras.mailbox.client.service.ServiceClient;
-import https.www_zextras_com.wsdl.zimbraservice.ZcsPortType;
+import com.zextras.wsdl.zimbraservice.ZcsPortType;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
