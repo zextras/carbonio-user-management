@@ -17,6 +17,7 @@ repos:
       - id: check-yaml
         args: [--allow-multiple-documents]
       - id: end-of-file-fixer
+        exclude: (?x)^(core/src/test/resources/soap/.*)$
       - id: mixed-line-ending
       - id: trailing-whitespace
 
