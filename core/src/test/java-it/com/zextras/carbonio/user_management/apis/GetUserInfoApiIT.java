@@ -232,53 +232,5 @@ class GetUserInfoApiIT {
     assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND_404);
   }
 
-  @Test
-  void givenAnExistingUserIdTheGetUserMyselfApiShouldReturnTheRequestedUserMyself() throws Exception {
-    // Given
-    SoapHttpUtils soapHttpUtils = simulator.getSoapHttpUtils();
-    MockServerClient mailboxServiceMock = simulator.getMailboxServiceMock();
-
-    mailboxServiceMock
-        .when(
-            HttpRequest.request()
-                .withMethod(HttpMethod.POST.toString())
-                .withPath("/service/soap/")
-                .withBody(
-                    soapHttpUtils.getInfoRequest("fake-token")))
-        .respond(
-            HttpResponse.response()
-                .withStatusCode(HttpStatus.OK_200)
-                .withBody(
-                    soapHttpUtils.getInfoResponse(
-                        "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee",
-                        "fake@example.com",
-                        "example.com",
-                        "Fake Account",
-                        "it",
-                        "FALSE")));
-
-    LocalConnector localConnector = simulator.getHttpLocalConnector();
-    HttpTester.Request request = HttpTester.newRequest();
-    request.setMethod(HttpMethod.GET.toString());
-    request.setHeader(HttpHeader.HOST.toString(), "test");
-    request.setHeader(HttpHeader.COOKIE.toString(), "ZM_AUTH_TOKEN=fake-token");
-    request.setURI(("/users/myself"));
-
-    // When
-    Response response =
-        HttpTester.parseResponse(HttpTester.from(localConnector.getResponse(request.generate())));
-
-    // Then
-    assertThat(response.getStatus()).isEqualTo(HttpStatus.OK_200);
-
-    UserMyself userMyself = new ObjectMapper().readValue(response.getContent(), UserMyself.class);
-
-    assertThat(userMyself.getId().getUserId()).isEqualTo("eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee");
-    assertThat(userMyself.getEmail()).isEqualTo("fake@example.com");
-    assertThat(userMyself.getFullName()).isEqualTo("Fake Account");
-    assertThat(userMyself.getDomain()).isEqualTo("example.com");
-    assertThat(userMyself.getLocale()).isEqualTo("it");
-    assertThat(userMyself.getType()).isEqualTo(UserType.INTERNAL);
-  }
 
 }

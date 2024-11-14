@@ -10,6 +10,7 @@ import com.zextras.carbonio.user_management.Simulator.SimulatorBuilder;
 import com.zextras.carbonio.user_management.SoapHttpUtils;
 import com.zextras.carbonio.user_management.generated.model.UserMyself;
 import com.zextras.carbonio.user_management.generated.model.UserType;
+import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
@@ -28,9 +29,11 @@ import org.mockserver.model.HttpResponse;
 class GetMyselfByCookieApiIT {
 
   static Simulator simulator;
+  static List<String> getInfoRequestSections;
 
   @BeforeAll
   static void init() {
+    getInfoRequestSections = List.of("children","attrs","prefs");
     simulator = SimulatorBuilder
       .aSimulator()
       .init()
@@ -61,7 +64,7 @@ class GetMyselfByCookieApiIT {
         .withMethod(HttpMethod.POST.toString())
         .withPath("/service/soap/")
         .withBody(
-          soapHttpUtils.getInfoRequest("valid-token"))
+          soapHttpUtils.getInfoRequest(getInfoRequestSections, "valid-token"))
       )
       .respond(HttpResponse
         .response()
@@ -113,7 +116,7 @@ class GetMyselfByCookieApiIT {
         .withMethod(HttpMethod.POST.toString())
         .withPath("/service/soap/")
         .withBody(
-          soapHttpUtils.getInfoRequest("invalid-token"))
+          soapHttpUtils.getInfoRequest(getInfoRequestSections, "invalid-token"))
       )
       .respond(HttpResponse
         .response()
@@ -150,7 +153,7 @@ class GetMyselfByCookieApiIT {
         .withMethod(HttpMethod.POST.toString())
         .withPath("/service/soap/")
         .withBody(
-          soapHttpUtils.getInfoRequest("valid-token"))
+          soapHttpUtils.getInfoRequest(getInfoRequestSections, "valid-token"))
       )
       .respond(HttpResponse
         .response()

@@ -7,6 +7,7 @@ package com.zextras.carbonio.user_management;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import org.apache.commons.io.IOUtils;
 
 /**
@@ -28,7 +29,7 @@ public class SoapHttpUtils {
    * Creates the GetAccountInfoRequest XML body substituting the auth token and the account id in
    * the related placeholders.
    *
-   * @param authToken is a {@links String} representing the auth token of the requester
+   * @param authToken is a {@link String} representing the auth token of the requester
    * @param accountId is a {@link String} representing the identifier of the account to retrieve
    * @return a {@link String} representing the XML body request for the GetAccountInfo API.
    */
@@ -45,7 +46,7 @@ public class SoapHttpUtils {
    * Creates the GetAccountInfoRequest XML body substituting the auth token and the account id in
    * the related placeholders.
    *
-   * @param authToken is a {@links String} representing the auth token of the requester
+   * @param authToken is a {@link String} representing the auth token of the requester
    * @param accountEmail is a {@link String} representing the email of the account to retrieve
    * @return a {@link String} representing the XML body request for the GetAccountInfo API.
    */
@@ -87,15 +88,19 @@ public class SoapHttpUtils {
   }
 
   /**
-   * Creates the GetInfoRequest XML body substituting the auth token in the related placeholders.
+   * Creates the GetInfoRequest XML body substituting the auth token and the requested sections in
+   * the related placeholders.
    *
-   * @param authToken is a {@links String} representing the auth token of the requester
+   * @param sections is a {@link List<String>} representing the attribute sections to fetch
+   * @param authToken is a {@link String} representing the auth token of the requester
    * @return a {@link String} representing the XML body request for the GetInfo API.
    */
-  public String getInfoRequest(String authToken) {
+  public String getInfoRequest(List<String> sections, String authToken) {
     String getInfoRequest = getXmlFile("soap/requests/GetInfoRequest.xml");
 
-    return getInfoRequest.replaceAll("%AUTH_TOKEN%", authToken);
+    return getInfoRequest
+      .replaceAll("%SECTIONS%", String.join(",", sections))
+      .replaceAll("%AUTH_TOKEN%", authToken);
   }
 
   /**
