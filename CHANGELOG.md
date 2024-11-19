@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: 2022 Zextras <https://www.zextras.com>
+SPDX-FileCopyrightText: 2023 Zextras <https://www.zextras.com>
 
 SPDX-License-Identifier: AGPL-3.0-only
 -->
@@ -7,6 +7,18 @@ SPDX-License-Identifier: AGPL-3.0-only
 # Changelog
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+## [0.8.0](https://github.com/Zextras/carbonio-user-management/compare/v0.7.1...v0.8.0) (2024-11-19)
+
+
+### Features
+
+* replace health checks from ready to live ([#56](https://github.com/Zextras/carbonio-user-management/issues/56)) ([b260b75](https://github.com/Zextras/carbonio-user-management/commit/b260b75eb9dfff0cbd6f80f746f433aada76dda3))
+
+
+### Bug Fixes
+
+* increase the token expiration in the user token cache ([#57](https://github.com/Zextras/carbonio-user-management/issues/57)) ([f4d7cb2](https://github.com/Zextras/carbonio-user-management/commit/f4d7cb2e4ef375fc9c61bb1da50c15bb7e15a404))
 
 ### [0.7.1](https://github.com/zextras/carbonio-user-management/compare/v0.7.0...v0.7.1) (2024-09-10)
 
