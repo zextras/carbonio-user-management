@@ -178,7 +178,7 @@ public class UserService {
     System.out.println("Requested: " + token);
 
     UserMyself userMyself = null;
-    if (!ignoreCache) {
+    if (ignoreCache == null || !ignoreCache) {
       userMyself = cacheManager.getUserMyselfCache().getIfPresent(token);
     }
 
