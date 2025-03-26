@@ -204,7 +204,10 @@ public class UserService {
               infoResponse.getPrefs().getPref().stream()
                   .filter(perf -> perf.getName().equals("zimbraPrefLocale"))
                   .findFirst()
-                  .map(pref -> LocaleUtils.toLocale(pref.getValue()))
+                  .map(pref -> {
+                    logger.debug("User myself {} requested, has locale {}", userId.getUserId(), pref.getValue());
+                    return LocaleUtils.toLocale(pref.getValue());
+                  })
                   .orElse(Locale.ENGLISH);
         } catch (IllegalArgumentException exception) {
           logger.error(
