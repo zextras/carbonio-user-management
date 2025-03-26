@@ -174,9 +174,13 @@ public class UserService {
     return Response.ok().entity(userInfo).build();
   }
 
-  public Optional<UserMyself> getMyselfByToken(String token) {
+  public Optional<UserMyself> getMyselfByToken(String token, Boolean ignoreCache) {
     System.out.println("Requested: " + token);
-    UserMyself userMyself = cacheManager.getUserMyselfCache().getIfPresent(token);
+
+    UserMyself userMyself = null;
+    if (!ignoreCache) {
+      userMyself = cacheManager.getUserMyselfCache().getIfPresent(token);
+    }
 
     if (userMyself == null) {
       try {

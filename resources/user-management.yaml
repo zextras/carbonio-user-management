@@ -93,6 +93,12 @@ paths:
       operationId: getMyselfByCookie
       parameters:
         - $ref: '#/components/parameters/headerCookie'
+        - name: ignoreCache
+          in: query
+          required: false
+          schema:
+            type: boolean
+          description: If true, ignores the cached data and fetches fresh from the server
       responses:
         '200':
           $ref: '#/components/responses/200UsersMyself'
