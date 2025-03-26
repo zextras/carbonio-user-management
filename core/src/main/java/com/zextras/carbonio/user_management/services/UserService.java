@@ -205,7 +205,7 @@ public class UserService {
                   .filter(perf -> perf.getName().equals("zimbraPrefLocale"))
                   .findFirst()
                   .map(pref -> {
-                    logger.debug("User myself {} requested, has locale {}", userId.getUserId(), pref.getValue());
+                    System.out.println("User myself " + userId.getUserId() + " requested, has locale " + pref.getValue());
                     return LocaleUtils.toLocale(pref.getValue());
                   })
                   .orElse(Locale.ENGLISH);
