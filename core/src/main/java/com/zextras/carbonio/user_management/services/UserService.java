@@ -174,9 +174,13 @@ public class UserService {
     return Response.ok().entity(userInfo).build();
   }
 
-  public Optional<UserMyself> getMyselfByToken(String token) {
+  public Optional<UserMyself> getMyselfByToken(String token, Boolean ignoreCache) {
     System.out.println("Requested: " + token);
-    UserMyself userMyself = cacheManager.getUserMyselfCache().getIfPresent(token);
+
+    UserMyself userMyself = null;
+    if (ignoreCache == null || !ignoreCache) {
+      userMyself = cacheManager.getUserMyselfCache().getIfPresent(token);
+    }
 
     if (userMyself == null) {
       try {
@@ -200,7 +204,10 @@ public class UserService {
               infoResponse.getPrefs().getPref().stream()
                   .filter(perf -> perf.getName().equals("zimbraPrefLocale"))
                   .findFirst()
-                  .map(pref -> LocaleUtils.toLocale(pref.getValue()))
+                  .map(pref -> {
+                    System.out.println("User myself " + userId.getUserId() + " requested, has locale " + pref.getValue());
+                    return LocaleUtils.toLocale(pref.getValue());
+                  })
                   .orElse(Locale.ENGLISH);
         } catch (IllegalArgumentException exception) {
           logger.error(

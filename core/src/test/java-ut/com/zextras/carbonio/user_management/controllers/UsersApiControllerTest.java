@@ -44,11 +44,11 @@ class UsersApiControllerTest {
     String token = "valid-token";
 
     UserMyself myselfMock = Mockito.mock(UserMyself.class);
-    Mockito.when(userServiceMock.getMyselfByToken(token)).thenReturn(Optional.of(myselfMock));
+    Mockito.when(userServiceMock.getMyselfByToken(token, false)).thenReturn(Optional.of(myselfMock));
 
     // When
     Response response =
-        usersApiController.getMyselfByCookie(cookie, Mockito.mock(SecurityContext.class));
+        usersApiController.getMyselfByCookie(cookie, false, Mockito.mock(SecurityContext.class));
 
     // Then
     Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.OK_200);
@@ -63,11 +63,11 @@ class UsersApiControllerTest {
     String cookie = "ZM_AUTH_TOKEN=invalid-token;";
     String token = "invalid-token";
 
-    Mockito.when(userServiceMock.getMyselfByToken(token)).thenReturn(Optional.empty());
+    Mockito.when(userServiceMock.getMyselfByToken(token, false)).thenReturn(Optional.empty());
 
     // When
     Response response =
-        usersApiController.getMyselfByCookie(cookie, Mockito.mock(SecurityContext.class));
+        usersApiController.getMyselfByCookie(cookie, false, Mockito.mock(SecurityContext.class));
 
     // Then
     Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND_404);
@@ -80,11 +80,11 @@ class UsersApiControllerTest {
     String cookie = "ZM_AUTH_TOKEN=valid-token;";
     String token = "valid-token";
 
-    Mockito.when(userServiceMock.getMyselfByToken(token)).thenThrow(ServiceException.class);
+    Mockito.when(userServiceMock.getMyselfByToken(token, false)).thenThrow(ServiceException.class);
 
     // When
     ThrowableAssert.ThrowingCallable callable =
-        () -> usersApiController.getMyselfByCookie(cookie, Mockito.mock(SecurityContext.class));
+        () -> usersApiController.getMyselfByCookie(cookie, false, Mockito.mock(SecurityContext.class));
 
     // Then
     Assertions.assertThatExceptionOfType(ServiceException.class).isThrownBy(callable);
