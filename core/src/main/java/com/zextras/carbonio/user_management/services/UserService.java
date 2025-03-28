@@ -87,7 +87,7 @@ public class UserService {
     return userInfo;
   }
 
-  public Response getUsers(List<String> userIds, String token) {
+  public Response getUsers(List<String> userIds, String token, Boolean ignoreCache) {
     return Response.ok()
         .entity(
             userIds.stream()
@@ -95,7 +95,11 @@ public class UserService {
                 .map(
                     userId -> {
                       System.out.println("Requested: " + userId);
-                      UserInfo userInfo = cacheManager.getUserByIdCache().getIfPresent(userId);
+
+                      UserInfo userInfo = null;
+                      if (ignoreCache == null || !ignoreCache) {
+                        userInfo = cacheManager.getUserByIdCache().getIfPresent(userId);
+                      }
 
                       if (userInfo == null) {
                         try {
@@ -120,9 +124,13 @@ public class UserService {
         .build();
   }
 
-  public Response getInfoById(String userId, String token) {
+  public Response getInfoById(String userId, String token, Boolean ignoreCache) {
     System.out.println("Requested: " + userId);
-    UserInfo userInfo = cacheManager.getUserByIdCache().getIfPresent(userId);
+
+    UserInfo userInfo = null;
+    if (ignoreCache == null || !ignoreCache) {
+      userInfo = cacheManager.getUserByIdCache().getIfPresent(userId);
+    }
 
     if (userInfo == null) {
       try {
@@ -146,9 +154,13 @@ public class UserService {
     return Response.ok().entity(userInfo).build();
   }
 
-  public Response getInfoByEmail(String userEmail, String token) {
+  public Response getInfoByEmail(String userEmail, String token, Boolean ignoreCache) {
     System.out.println("Requested: " + userEmail);
-    UserInfo userInfo = cacheManager.getUserByEmailCache().getIfPresent(userEmail);
+
+    UserInfo userInfo = null;
+    if (ignoreCache == null || !ignoreCache) {
+      userInfo = cacheManager.getUserByEmailCache().getIfPresent(userEmail);
+    }
 
     if (userInfo == null) {
       try {

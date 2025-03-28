@@ -98,11 +98,11 @@ class UsersApiControllerTest {
     String token = "valid-token";
 
     Response responseMock = Mockito.mock(Response.class);
-    Mockito.when(userServiceMock.getInfoById(userId, token)).thenReturn(responseMock);
+    Mockito.when(userServiceMock.getInfoById(userId, token, false)).thenReturn(responseMock);
 
     // When
     Response response =
-        usersApiController.getUserInfoById(cookie, userId, Mockito.mock(SecurityContext.class));
+        usersApiController.getUserInfoById(cookie, userId, false, Mockito.mock(SecurityContext.class));
 
     // Then
     Assertions.assertThat(response)
@@ -117,7 +117,7 @@ class UsersApiControllerTest {
 
     // When
     Response response =
-        usersApiController.getUserInfoById(cookie, userId, Mockito.mock(SecurityContext.class));
+        usersApiController.getUserInfoById(cookie, userId, false, Mockito.mock(SecurityContext.class));
 
     // Then
     Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST_400);
@@ -131,12 +131,12 @@ class UsersApiControllerTest {
     String token = "valid-token";
 
     Response responseMock = Mockito.mock(Response.class);
-    Mockito.when(userServiceMock.getInfoByEmail(userEmail, token)).thenReturn(responseMock);
+    Mockito.when(userServiceMock.getInfoByEmail(userEmail, token, false)).thenReturn(responseMock);
 
     // When
     Response response =
         usersApiController.getUserInfoByEmail(
-            cookie, userEmail, Mockito.mock(SecurityContext.class));
+            cookie, userEmail, false, Mockito.mock(SecurityContext.class));
 
     // Then
     Assertions.assertThat(response).isEqualTo(responseMock);
@@ -151,7 +151,7 @@ class UsersApiControllerTest {
     // When
     Response response =
         usersApiController.getUserInfoByEmail(
-            cookie, userEmail, Mockito.mock(SecurityContext.class));
+            cookie, userEmail, false, Mockito.mock(SecurityContext.class));
 
     // Then
     Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST_400);
@@ -166,12 +166,12 @@ class UsersApiControllerTest {
     String token = "valid-token";
 
     Response responseMock = Mockito.mock(Response.class);
-    Mockito.when(userServiceMock.getUsers(List.of(userIds), token)).thenReturn(responseMock);
+    Mockito.when(userServiceMock.getUsers(List.of(userIds), token, false)).thenReturn(responseMock);
 
     // When
     Response response =
         usersApiController.getUsersInfo(
-            cookie, List.of(userIds), Mockito.mock(SecurityContext.class));
+            cookie, List.of(userIds), false, Mockito.mock(SecurityContext.class));
 
     // Then
     Assertions.assertThat(response).isEqualTo(responseMock);
@@ -187,7 +187,7 @@ class UsersApiControllerTest {
     // When
     Response response =
         usersApiController.getUsersInfo(
-            cookie, List.of(userIds), Mockito.mock(SecurityContext.class));
+            cookie, List.of(userIds), false, Mockito.mock(SecurityContext.class));
 
     // Then
     Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST_400);
