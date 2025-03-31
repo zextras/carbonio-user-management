@@ -31,34 +31,36 @@ public class UsersApiController implements UsersApiService {
   public Response getUserInfoByEmail(
     String cookie,
     String userEmail,
+    Boolean ignoreCache,
     SecurityContext securityContext
   ) {
     Map<String, String> cookies = CookieParser.getCookies(cookie);
 
     return (cookies.containsKey("ZM_AUTH_TOKEN"))
-      ? userService.getInfoByEmail(userEmail, cookies.get("ZM_AUTH_TOKEN"))
+      ? userService.getInfoByEmail(userEmail, cookies.get("ZM_AUTH_TOKEN"), ignoreCache)
       : Response.status(Status.BAD_REQUEST).build();
   }
 
   public Response getUserInfoById(
     String cookie,
     String userId,
+    Boolean ignoreCache,
     SecurityContext securityContext
   ) {
     Map<String, String> cookies = CookieParser.getCookies(cookie);
 
     return (cookies.containsKey("ZM_AUTH_TOKEN"))
-      ? userService.getInfoById(userId, cookies.get("ZM_AUTH_TOKEN"))
+      ? userService.getInfoById(userId, cookies.get("ZM_AUTH_TOKEN"), ignoreCache)
       : Response.status(Status.BAD_REQUEST).build();
   }
 
   @Override
-  public Response getUsersInfo(String cookie, List<String> userIds, SecurityContext securityContext)
+  public Response getUsersInfo(String cookie, List<String> userIds, Boolean ignoreCache, SecurityContext securityContext)
     throws NotFoundException {
     Map<String, String> cookies = CookieParser.getCookies(cookie);
 
     return (cookies.containsKey("ZM_AUTH_TOKEN") && (!userIds.isEmpty() && userIds.size() <= MAX_USER_IDS))
-      ? userService.getUsers(userIds, cookies.get("ZM_AUTH_TOKEN"))
+      ? userService.getUsers(userIds, cookies.get("ZM_AUTH_TOKEN"), ignoreCache)
       : Response.status(Status.BAD_REQUEST).build();
   }
 
