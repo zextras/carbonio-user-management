@@ -8,6 +8,14 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.2](https://github.com/zextras/carbonio-user-management/compare/v0.8.1...v0.8.2) (2025-05-15)
+
+
+### Bug Fixes
+
+* add ignore cache to every get method ([#64](https://github.com/zextras/carbonio-user-management/issues/64)) ([16f7d11](https://github.com/zextras/carbonio-user-management/commit/16f7d118c5c95837b60d70f4156674b8ae822599))
+* make cache optional in user myself endpoint ([#63](https://github.com/zextras/carbonio-user-management/issues/63)) ([feff614](https://github.com/zextras/carbonio-user-management/commit/feff6145bfe3bfde196a276e3d3fe038901d95f6))
+
 ### [0.8.1](https://github.com/zextras/carbonio-user-management/compare/v0.8.0...v0.8.1) (2025-02-03)
 
 ## [0.8.0](https://github.com/Zextras/carbonio-user-management/compare/v0.7.1...v0.8.0) (2024-11-19)
