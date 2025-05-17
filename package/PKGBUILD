@@ -50,17 +50,28 @@ backup=(
 
 package() {
   cd "${srcdir}"
-  install -Dm 755 carbonio-user-management "${pkgdir}/usr/bin/carbonio-user-management"
-  install -Dm 755 carbonio-user-management-setup "${pkgdir}/usr/bin/carbonio-user-management-setup"
-  install -Dm 755 carbonio-user-management.jar "${pkgdir}/usr/share/carbonio/carbonio-user-management.jar"
-  install -Dm 644 carbonio-user-management.service "${pkgdir}/lib/systemd/system/carbonio-user-management.service"
-  install -Dm 644 carbonio-user-management-sidecar.service "${pkgdir}/lib/systemd/system/carbonio-user-management-sidecar.service"
-  install -Dm 644 carbonio-user-management.hcl "${pkgdir}/etc/zextras/service-discover/carbonio-user-management.hcl"
-  install -Dm 644 carbonio-user-management-pending-setup "${pkgdir}/etc/zextras/pending-setups.d/carbonio-user-management.sh"
-  install -Dm 644 intentions.json "${pkgdir}/etc/carbonio/user-management/service-discover/intentions.json"
-  install -Dm 644 policies.json "${pkgdir}/etc/carbonio/user-management/service-discover/policies.json"
-  install -Dm 644 service-protocol.json "${pkgdir}/etc/carbonio/user-management/service-discover/service-protocol.json"
-  install -Dm 644 config.properties "${pkgdir}/etc/carbonio/user-management/config.properties"
+  install -Dm 755 carbonio-user-management \
+    "${pkgdir}/usr/bin/carbonio-user-management"
+  install -Dm 755 carbonio-user-management-setup \
+    "${pkgdir}/usr/bin/carbonio-user-management-setup"
+  install -Dm 755 carbonio-user-management.jar \
+    "${pkgdir}/usr/share/carbonio/carbonio-user-management.jar"
+  install -Dm 644 carbonio-user-management.service \
+    "${pkgdir}/lib/systemd/system/carbonio-user-management.service"
+  install -Dm 644 carbonio-user-management-sidecar.service \
+    "${pkgdir}/lib/systemd/system/carbonio-user-management-sidecar.service"
+  install -Dm 644 carbonio-user-management.hcl \
+    "${pkgdir}/etc/zextras/service-discover/carbonio-user-management.hcl"
+  install -Dm 644 carbonio-user-management-pending-setup \
+    "${pkgdir}/etc/zextras/pending-setups.d/carbonio-user-management.sh"
+  install -Dm 644 intentions.json \
+    "${pkgdir}/etc/carbonio/user-management/service-discover/intentions.json"
+  install -Dm 644 policies.json \
+    "${pkgdir}/etc/carbonio/user-management/service-discover/policies.json"
+  install -Dm 644 service-protocol.json \
+    "${pkgdir}/etc/carbonio/user-management/service-discover/service-protocol.json"
+  install -Dm 644 config.properties \
+    "${pkgdir}/etc/carbonio/user-management/config.properties"
 }
 
 postinst() {
@@ -73,9 +84,9 @@ postinst() {
   chown carbonio-user-management:carbonio-user-management "/var/log/carbonio/user-management"
 
   if [ -d /run/systemd/system ]; then
-    systemctl daemon-reload >/dev/null 2>&1 || :
-    systemctl enable carbonio-user-management.service >/dev/null 2>&1 || :
-    systemctl enable carbonio-user-management-sidecar.service >/dev/null 2>&1 || :
+    systemctl daemon-reload &>/dev/null || :
+    systemctl enable carbonio-user-management.service &>/dev/null || :
+    systemctl enable carbonio-user-management-sidecar.service &>/dev/null || :
   fi
 
   echo "======================================================"
@@ -86,10 +97,8 @@ postinst() {
 
 prerm() {
   if [ -d /run/systemd/system ]; then
-    systemctl --no-reload disable carbonio-user-management.service >/dev/null 2>&1 || :
-    systemctl --no-reload disable carbonio-user-management-sidecar.service >/dev/null 2>&1 || :
-    systemctl stop carbonio-user-management.service >/dev/null 2>&1 || :
-    systemctl stop carbonio-user-management-sidecar.service >/dev/null 2>&1 || :
+    systemctl --no-reload disable --now carbonio-user-management.service &>/dev/null || :
+    systemctl --no-reload disable --now carbonio-user-management-sidecar.service &>/dev/null || :
   fi
 }
 
@@ -99,6 +108,6 @@ postrm() {
   rm -f /etc/zextras/pending-setups.d/done/carbonio-user-management.sh
 
   if [ -d /run/systemd/system ]; then
-    systemctl daemon-reload >/dev/null 2>&1 || :
+    systemctl daemon-reload &>/dev/null || :
   fi
 }
