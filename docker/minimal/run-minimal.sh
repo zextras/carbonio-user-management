@@ -1,19 +1,19 @@
 #!/bin/bash
 
 cleanup() {
-    echo -e "\n[INFO] Chiusura dei container in corso..."
+    echo -e "\n[INFO] Stopping containers..."
 
     if [ -d "../../../carbonio-mailbox/docker/standalone" ]; then
         pushd ../../../carbonio-mailbox/docker/standalone > /dev/null
-        echo "[INFO] Arresto dei container in ../../../carbonio-mailbox/docker/standalone..."
+        echo "[INFO] Shutting down containers in ../../../carbonio-mailbox/docker/standalone..."
         docker compose down
         popd > /dev/null
     else
-        echo "[WARNING] Directory ../../../carbonio-mailbox/docker/standalone non trovata."
+        echo "[WARNING] Directory ../../../carbonio-mailbox/docker/standalone not found."
     fi
 
     if [ -f "docker-compose.yml" ] || [ -f "docker-compose.yaml" ]; then
-        echo "[INFO] Arresto dei container nella directory corrente..."
+        echo "[INFO] Shutting down containers in current directory..."
         docker compose down
     fi
 
@@ -26,13 +26,13 @@ CURR_DIR=$(pwd)
 
 if [ -d "../../../carbonio-mailbox/docker/standalone" ]; then
     pushd ../../../carbonio-mailbox/docker/standalone > /dev/null
-    echo "[INFO] Avvio dei container in background in $(pwd)..."
+    echo "[INFO] Starting containers in background in $(pwd)..."
     docker compose up --build -d
     popd > /dev/null
 else
-    echo "[ERROR] La directory ../../../carbonio-mailbox/docker/standalone non esiste."
+    echo "[ERROR] Directory ../../../carbonio-mailbox/docker/standalone does not exist."
     exit 1
 fi
 
-echo "[INFO] Avvio dei container in modalità foreground in $(pwd)..."
+echo "[INFO] Starting containers in foreground mode in $(pwd)..."
 docker compose up --build
