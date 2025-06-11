@@ -5,6 +5,11 @@
 package com.zextras.carbonio.user_management.config;
 
 import com.google.inject.Singleton;
+import com.zextras.carbonio.user_management.Constants;
+import com.zextras.carbonio.user_management.services.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -15,19 +20,34 @@ import java.util.Properties;
 @Singleton
 public class UserManagementConfig {
 
+  private static final Logger logger = LoggerFactory.getLogger(UserManagementConfig.class);
+
   private final Properties properties;
 
   public UserManagementConfig() {
     properties = new Properties();
   }
 
+  // Load config from files or system properties.
+  // Crash if the config doesn't contain the required properties.
   public void loadConfig() throws IOException {
-    final InputStream config = loadFromEtc()
-      .or(this::loadFromCurrent)
-      .or(this::loadFromResources)
-      .orElseThrow(() -> new FileNotFoundException("No configuration properties file found"));
+    loadFromEtc() // the official way
+      .or(this::loadFromCurrent) // the fallback way
+      .or(this::loadFromResources) // the last resort way
+      .ifPresent(config -> {
+        try {
+          properties.load(config);
+        } catch (IOException e) {
+          logger.warn("Error loading configuration file: {}", e.getMessage());
+        }
+      });
 
-    properties.load(config);
+    properties.putAll(System.getProperties()); // the dev way
+    if (!isValidConfig()) throw new IOException("Configuration is missing required properties");
+  }
+
+  private boolean isValidConfig() {
+    return properties.containsKey(Constants.Config.Properties.MAILBOX_URL);
   }
 
   private Optional<InputStream> loadFromEtc() {

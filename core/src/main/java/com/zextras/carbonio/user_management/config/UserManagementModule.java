@@ -51,7 +51,7 @@ public class UserManagementModule extends RequestScopeModule {
   @Provides
   @Singleton
   public ServiceClient provideServiceClient(UserManagementConfig config) throws Exception {
-    final String carbonioMailboxUrl = config.getProperties().getProperty("carbonio.mailbox.url");
+    final String carbonioMailboxUrl = config.getProperties().getProperty(Constants.Config.Properties.MAILBOX_URL);
     return new MailboxClient.Builder()
       .withServer(carbonioMailboxUrl)
       .build()
