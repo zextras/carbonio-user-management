@@ -30,10 +30,8 @@ public class UserManagementConfig {
 
   // Load config from files or system properties.
   // Crash if the config doesn't contain the required properties.
-  public void loadConfig() throws IOException {
+  public void loadConfig() {
     loadFromEtc() // the official way
-      .or(this::loadFromCurrent) // the fallback way
-      .or(this::loadFromResources) // the last resort way
       .ifPresent(config -> {
         try {
           properties.load(config);
@@ -47,15 +45,6 @@ public class UserManagementConfig {
 
   private Optional<InputStream> loadFromEtc() {
     return loadFile("/etc/carbonio/user-management/config.properties");
-  }
-
-  private Optional<InputStream> loadFromCurrent() {
-    return loadFile("resources/carbonio-user-management.properties");
-  }
-
-  private Optional<InputStream> loadFromResources() {
-    return Optional.ofNullable(
-      getClass().getClassLoader().getResourceAsStream("carbonio-user-management.properties"));
   }
 
   private Optional<InputStream> loadFile(String path) {
