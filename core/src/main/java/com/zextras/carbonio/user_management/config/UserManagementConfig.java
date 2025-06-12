@@ -42,12 +42,7 @@ public class UserManagementConfig {
         }
       });
 
-    properties.putAll(System.getProperties()); // the dev way
-    if (!isValidConfig()) throw new IOException("Configuration is missing required properties");
-  }
-
-  private boolean isValidConfig() {
-    return properties.containsKey(Constants.Config.Properties.MAILBOX_URL);
+    properties.putAll(System.getProperties()); // the dev way, overriding existing properties
   }
 
   private Optional<InputStream> loadFromEtc() {

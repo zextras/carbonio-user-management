@@ -25,5 +25,14 @@ public final class Constants {
     public static final class Properties {
       public static final String MAILBOX_URL = "carbonio.mailbox.url";
     }
+
+    public static final class MailboxService {
+
+      public static final String PROTOCOL = "http";
+      public static final String URL = "127.78.0.5";
+      public static final int PORT = 20000;
+
+      private MailboxService() {}
+    }
   }
 }
