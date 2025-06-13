@@ -33,7 +33,7 @@ public class Boot {
   }
 
   public void boot() throws Exception {
-    Server server = new Server(InetSocketAddress.createUnresolved(Constants.Service.IP, Constants.Service.PORT));
+    Server server = new Server(InetSocketAddress.createUnresolved(Constants.UserManagement.IP, Constants.UserManagement.PORT));
     ServletContextHandler servletHandler = new ServletContextHandler(server, "/");
     servletHandler.addEventListener(
       injector.getInstance(GuiceResteasyBootstrapServletContextListener.class)

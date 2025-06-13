@@ -55,18 +55,18 @@ public class UserManagementModule extends RequestScopeModule {
         config
           .getProperties()
           .getProperty(
-              Constants.Config.Properties.MAILBOX_URL,
+              Constants.Config.Mailbox.URL_PROPERTY,
               String.format(
                   "%s://%s:%d",
-                  Constants.Config.MailboxService.PROTOCOL,
-                  Constants.Config.MailboxService.URL,
-                  Constants.Config.MailboxService.PORT));
+                  Constants.Config.Mailbox.DEFAULT_PROTOCOL,
+                  Constants.Config.Mailbox.DEFAULT_HOST,
+                  Constants.Config.Mailbox.DEFAULT_PORT));
 
     return new MailboxClient.Builder()
       .withServer(carbonioMailboxUrl)
       .build()
       .newServiceClientBuilder()
-      .withPool(Constants.MailboxClient.POOL_SIZE)
+      .withPool(Constants.Config.Mailbox.POOL_SIZE)
       .build();
   }
 }
