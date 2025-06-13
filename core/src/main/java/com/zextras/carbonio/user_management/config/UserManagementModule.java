@@ -51,16 +51,11 @@ public class UserManagementModule extends RequestScopeModule {
   @Provides
   @Singleton
   public ServiceClient provideServiceClient(UserManagementConfig config) throws Exception {
-    final String carbonioMailboxUrl =
-        config
-          .getProperties()
-          .getProperty(
-              Constants.Config.Mailbox.URL_PROPERTY,
-              String.format(
-                  "%s://%s:%d",
-                  Constants.Config.Mailbox.DEFAULT_PROTOCOL,
-                  Constants.Config.Mailbox.DEFAULT_HOST,
-                  Constants.Config.Mailbox.DEFAULT_PORT));
+    final String carbonioMailboxUrl = String.format(
+        "%s://%s:%s",
+        Constants.Config.Mailbox.DEFAULT_PROTOCOL,
+        config.getMailboxHost(),
+        config.getMailboxPort());
 
     return new MailboxClient.Builder()
       .withServer(carbonioMailboxUrl)

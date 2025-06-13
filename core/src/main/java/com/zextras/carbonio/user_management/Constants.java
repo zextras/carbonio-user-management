@@ -16,7 +16,8 @@ public final class Constants {
 
   public static final class Config {
     public static final class Mailbox {
-      public static final String URL_PROPERTY = "carbonio.mailbox.url";
+      public static final String HOST_PROPERTY = "carbonio.mailbox.host";
+      public static final String PORT_PROPERTY = "carbonio.mailbox.port";
       public static final int POOL_SIZE = 5;
 
       public static final String DEFAULT_PROTOCOL = "http";
