@@ -25,7 +25,6 @@ source=(
   "carbonio-user-management-setup"
   "carbonio-user-management-sidecar.service"
   "carbonio-user-management-pending-setup"
-  "config.properties"
   "intentions.json"
   "policies.json"
   "service-protocol.json"
@@ -38,14 +37,12 @@ sha256sums=(
   "786c6ea505fa5bffc23a5189a3035b19c392d3224901a079f710363efb6de7e8"
   "aa36152fe2cc9ef96fa874c14b4510a3828bef055c8c0fa16437066d8707bd41"
   "41e10587c1f04ef0a1d53608bc2ca94bb520177b0f39f42433cfae3e279c96a8"
-  "6988430e5876d8284e973c69ff5525fad5d089ce46687918503518487a086feb"
   "1a58295f74dbcd34925394d1d3c4b906426759a41c754288dc01fbce971ab126"
   "d4413a87bd9d2ec97799b31639d7ff539f9b91d0162468db09017b92b322dfc8"
   "beae6d6f2e9d1ef926039319e5d9d2fb06ee07ac41bc445414be93443570c809"
 )
 backup=(
   "etc/zextras/service-discover/carbonio-user-management.hcl"
-  "etc/carbonio/user-management/config.properties"
 )
 
 package() {
@@ -70,8 +67,6 @@ package() {
     "${pkgdir}/etc/carbonio/user-management/service-discover/policies.json"
   install -Dm 644 service-protocol.json \
     "${pkgdir}/etc/carbonio/user-management/service-discover/service-protocol.json"
-  install -Dm 644 config.properties \
-    "${pkgdir}/etc/carbonio/user-management/config.properties"
 }
 
 postinst() {
