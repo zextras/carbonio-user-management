@@ -10,8 +10,10 @@ public final class Constants {
 
   public static final class UserManagement {
 
-    public static final String IP = "127.78.0.5";
-    public static final int PORT = 10_000;
+    public static final String DEFAULT_HOST = "127.78.0.5";
+    public static final int DEFAULT_PORT = 10_000;
+    public static final String HOST_PROPERTY = "carbonio.user-management.host";
+    public static final String PORT_PROPERTY = "carbonio.user-management.port";
   }
 
   public static final class Config {

@@ -55,6 +55,18 @@ public class UserManagementConfig {
     }
   }
 
+  public String getUserManagementHost() {
+    return properties.getProperty(
+        Constants.UserManagement.HOST_PROPERTY,
+        Constants.UserManagement.DEFAULT_HOST);
+  }
+
+  public String getUserManagementPort() {
+    return properties.getProperty(
+        Constants.UserManagement.PORT_PROPERTY,
+        String.valueOf(Constants.UserManagement.DEFAULT_PORT));
+  }
+
   public String getMailboxHost() {
     return properties.getProperty(
         Constants.Config.Mailbox.HOST_PROPERTY,
