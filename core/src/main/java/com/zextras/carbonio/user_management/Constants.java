@@ -8,10 +8,25 @@ public final class Constants {
 
   private Constants(){}
 
-  public static final class MailboxClient {
+  public static final class UserManagement {
 
-    private MailboxClient() {}
+    public static final String DEFAULT_HOST = "127.78.0.5";
+    public static final int DEFAULT_PORT = 10_000;
+    public static final String HOST_PROPERTY = "carbonio.user-management.host";
+    public static final String PORT_PROPERTY = "carbonio.user-management.port";
+  }
 
-    public static final int POOL_SIZE = 5;
+  public static final class Config {
+    public static final class Mailbox {
+      public static final String HOST_PROPERTY = "carbonio.mailbox.host";
+      public static final String PORT_PROPERTY = "carbonio.mailbox.port";
+      public static final int POOL_SIZE = 5;
+
+      public static final String DEFAULT_PROTOCOL = "http";
+      public static final String DEFAULT_HOST = "127.78.0.5";
+      public static final int DEFAULT_PORT = 20000;
+
+      private Mailbox() {}
+    }
   }
 }

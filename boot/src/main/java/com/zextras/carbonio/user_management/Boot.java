@@ -9,6 +9,7 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.zextras.carbonio.user_management.config.UserManagementConfig;
 import com.zextras.carbonio.user_management.config.UserManagementModule;
 import com.zextras.mailbox.client.service.ServiceClient;
 import java.net.InetSocketAddress;
@@ -33,7 +34,8 @@ public class Boot {
   }
 
   public void boot() throws Exception {
-    Server server = new Server(InetSocketAddress.createUnresolved("127.78.0.5", 10_000));
+    UserManagementConfig config = injector.getInstance(UserManagementConfig.class);
+    Server server = new Server(InetSocketAddress.createUnresolved(config.getUserManagementHost(), Integer.parseInt(config.getUserManagementPort())));
     ServletContextHandler servletHandler = new ServletContextHandler(server, "/");
     servletHandler.addEventListener(
       injector.getInstance(GuiceResteasyBootstrapServletContextListener.class)
