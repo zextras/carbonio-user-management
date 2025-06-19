@@ -1,5 +1,7 @@
 services:
   mailbox:
+    networks:
+      - carbonio-user-management-network
     depends_on:
       openldap:
         condition: service_healthy
@@ -8,8 +10,6 @@ services:
     image: registry.dev.zextras.com/dev/carbonio-mailbox:latest
     hostname: docker.demo.zextras.io
     restart: on-failure
-    networks:
-      - mailbox
     healthcheck:
       interval: 60s
       retries: 10
@@ -24,6 +24,8 @@ services:
       - "7143:7143"
 
   openldap:
+    networks:
+      - carbonio-user-management-network
     image: registry.dev.zextras.com/dev/carbonio-openldap:latest
     restart: on-failure
     healthcheck:
@@ -32,15 +34,13 @@ services:
       start_period: 20s
       test: nc -z localhost 1389 || exit 1
       timeout: 10s
-    networks:
-      - mailbox
     ports:
       - "1389:1389"
 
   mariadb:
-    image: registry.dev.zextras.com/dev/carbonio-mariadb:latest
     networks:
-      - mailbox
+      - carbonio-user-management-network
+    image: registry.dev.zextras.com/dev/carbonio-mariadb:latest
     ports:
       - "3306:3306"
 
@@ -55,6 +55,8 @@ services:
       - "6071:6071"
 
   postfix:
+    networks:
+      - carbonio-user-management-network
     depends_on:
       openldap:
         condition: service_healthy
@@ -65,14 +67,12 @@ services:
       test: netcat -z localhost 25 || exit 1
       timeout: 10s
     image: registry.dev.zextras.com/dev/carbonio-mta:latest
-    networks:
-      - mailbox
     ports:
       - "20025:25"
 
   user-management:
     networks:
-      - mailbox
+      - carbonio-user-management-network
     depends_on:
       - mailbox
     build:
@@ -89,4 +89,4 @@ services:
       - "20001:10000"
 
 networks:
-  mailbox:
+  carbonio-user-management-network:
