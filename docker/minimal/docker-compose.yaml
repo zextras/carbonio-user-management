@@ -76,11 +76,9 @@ services:
     depends_on:
       - mailbox
     build:
-      context: ../minimal/carbonio-user-management
-      dockerfile: Dockerfile
+      context: ../..
+      dockerfile: docker/minimal/carbonio-user-management/Dockerfile
     container_name: carbonio-user-management
-    volumes:
-      - ../../boot/target:/app
     restart: on-failure
     environment:
       - CARBONIO_MAILBOX_HOST=mailbox

@@ -4,6 +4,8 @@ WORKDIR /app
 
 RUN mkdir -p /etc/carbonio/user-management
 
+COPY boot/target/carbonio-user-management-*-jar-with-dependencies.jar /app/
+
 # Default values
 ENV CARBONIO_USER_MANAGEMENT_HOST=0.0.0.0
 ENV CARBONIO_USER_MANAGEMENT_PORT=10000
