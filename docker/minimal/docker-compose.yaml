@@ -70,5 +70,23 @@ services:
     ports:
       - "20025:25"
 
+  user-management:
+    networks:
+      - mailbox
+    depends_on:
+      - mailbox
+    build:
+      context: ../minimal/carbonio-user-management
+      dockerfile: Dockerfile
+    container_name: carbonio-user-management
+    volumes:
+      - ../../boot/target:/app
+    restart: on-failure
+    environment:
+      - CARBONIO_MAILBOX_HOST=mailbox
+      - CARBONIO_MAILBOX_PORT=8080
+    ports:
+      - "20001:10000"
+
 networks:
   mailbox:
