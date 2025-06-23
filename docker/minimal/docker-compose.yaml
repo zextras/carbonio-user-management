@@ -9,6 +9,9 @@ services:
       - ../../boot/target:/app
     restart: on-failure
     environment:
+      - USER_MANAGEMENT_HOST=127.0.0.1
+      - USER_MANAGEMENT_PORT=10008
+      - USER_MANAGEMENT_PROTOCOL=http
       - MAILBOX_HOST=127.0.0.1
       - MAILBOX_PORT=8080
       - MAILBOX_PROTOCOL=http
