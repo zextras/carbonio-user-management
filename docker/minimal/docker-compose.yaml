@@ -76,7 +76,7 @@ services:
     depends_on:
       - mailbox
     build:
-      context: ../..
+      context: ../../
       dockerfile: docker/minimal/carbonio-user-management/Dockerfile
     container_name: carbonio-user-management
     restart: on-failure

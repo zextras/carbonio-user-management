@@ -4,7 +4,7 @@ WORKDIR /app
 
 RUN mkdir -p /etc/carbonio/user-management
 
-COPY boot/target/carbonio-user-management-*-jar-with-dependencies.jar /app/
+COPY ../../boot/target/carbonio-user-management-*-SNAPSHOT-jar-with-dependencies.jar .
 
 # Default values
 ENV CARBONIO_USER_MANAGEMENT_HOST=0.0.0.0
