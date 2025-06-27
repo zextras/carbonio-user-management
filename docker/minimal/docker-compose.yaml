@@ -23,6 +23,19 @@ services:
       postfix:
         condition: service_healthy
 
+  # This is useful to avoid having to manually launch provisioning each time
+  provisioner:
+    image: alpinelinux/docker-cli:latest
+    networks:
+      - carbonio-user-management-network
+    depends_on:
+      - mailbox
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./provisioning/provisioning.sh:/provisioning.sh:ro
+    command: sh provisioning.sh
+    restart: "no"
+
   openldap:
     image: registry.dev.zextras.com/dev/carbonio-openldap:latest
     restart: on-failure
