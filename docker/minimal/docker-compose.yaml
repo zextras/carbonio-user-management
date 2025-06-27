@@ -30,24 +30,10 @@ services:
       - carbonio-user-management-network
     depends_on:
       - mailbox
-    command: |
-      sh -c '
-      echo "Automatic provisioning started..."
-            
-      echo "Running provisioning on mailbox container..."
-      docker exec minimal-mailbox-1 bash -c "
-      cat > /tmp/prov.ls <<EOF
-      cd demo.zextras.io
-      ca test@demo.zextras.io password
-      ca admin@demo.zextras.io password zimbraIsAdminAccount TRUE
-      EOF
-      zmprov < /tmp/prov.ls
-      "
-      
-      echo "Provisioning completed!"
-      '
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./provisioning/provisioning.sh:/provisioning.sh:ro
+    command: sh provisioning.sh
     restart: "no"
 
   openldap:
