@@ -81,6 +81,8 @@ services:
     container_name: carbonio-user-management
     restart: on-failure
     environment:
+      - CARBONIO_USER_MANAGEMENT_HOST=0.0.0.0
+      - CARBONIO_USER_MANAGEMENT_PORT=10000
       - CARBONIO_MAILBOX_HOST=mailbox
       - CARBONIO_MAILBOX_PORT=8080
     ports:
