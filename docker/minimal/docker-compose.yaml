@@ -23,6 +23,33 @@ services:
       postfix:
         condition: service_healthy
 
+  # This is useful to avoid having to manually launch provisioning each time
+  provisioner:
+    image: alpinelinux/docker-cli:latest
+    networks:
+      - carbonio-user-management-network
+    depends_on:
+      - mailbox
+    command: |
+      sh -c '
+      echo "Automatic provisioning started..."
+            
+      echo "Running provisioning on mailbox container..."
+      docker exec minimal-mailbox-1 bash -c "
+      cat > /tmp/prov.ls <<EOF
+      cd demo.zextras.io
+      ca test@demo.zextras.io password
+      ca admin@demo.zextras.io password zimbraIsAdminAccount TRUE
+      EOF
+      zmprov < /tmp/prov.ls
+      "
+      
+      echo "Provisioning completed!"
+      '
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    restart: "no"
+
   openldap:
     image: registry.dev.zextras.com/dev/carbonio-openldap:latest
     restart: on-failure
