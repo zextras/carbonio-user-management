@@ -1,16 +1,16 @@
 # Run UM locally with Docker
 
-This minimal configuration runs the standalone version of Mailbox and User Management (UM) in Docker.
+This minimal setup includes all necessary dependencies without mocks.
 
 Steps:
     1. `mvn clean install -DskipTests=true`
     2. `cd docker/minimal`
     3. `docker compose up --build`
-    4. User management backend will be accessible on `127.0.0.1:20001`
+    4. Browse Carbonio on `http://localhost:9000/`, backend accessible on `http://localhost:20001`
+    5. Login using `test@demo.zextras.io`/`password`
 
-# Note:
-You can use a few ENV variables to configure the UM backend, in particular:
-    - CARBONIO_USER_MANAGEMENT_HOST
-    - CARBONIO_USER_MANAGEMENT_PORT
-    - CARBONIO_MAILBOX_HOST
-    - CARBONIO_MAILBOX_PORT
+Possible configs for UM:
+  - CARBONIO_USER_MANAGEMENT_HOST
+  - CARBONIO_USER_MANAGEMENT_PORT
+  - CARBONIO_MAILBOX_HOST
+  - CARBONIO_MAILBOX_PORT

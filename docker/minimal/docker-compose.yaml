@@ -1,92 +1,93 @@
 services:
   mailbox:
-    networks:
-      - carbonio-user-management-network
-    depends_on:
-      openldap:
-        condition: service_healthy
-      postfix:
-        condition: service_healthy
     image: registry.dev.zextras.com/dev/carbonio-mailbox:latest
     hostname: docker.demo.zextras.io
     restart: on-failure
-    healthcheck:
-      interval: 60s
-      retries: 10
-      start_period: 20s
-      test: netcat -z localhost 8080 || exit 1
-      timeout: 10s
+    networks:
+      - carbonio-user-management-network
     ports:
       - "7071:7071"
       - "8080:8080"
       - "5005:5005"
       - "7025:7025"
       - "7143:7143"
+    healthcheck:
+      interval: 60s
+      retries: 10
+      start_period: 20s
+      test: netcat -z localhost 8080 || exit 1
+      timeout: 10s
+    depends_on:
+      openldap:
+        condition: service_healthy
+      postfix:
+        condition: service_healthy
 
   openldap:
-    networks:
-      - carbonio-user-management-network
     image: registry.dev.zextras.com/dev/carbonio-openldap:latest
     restart: on-failure
+    networks:
+      - carbonio-user-management-network
+    ports:
+      - "1389:1389"
     healthcheck:
       interval: 60s
       retries: 10
       start_period: 20s
       test: nc -z localhost 1389 || exit 1
       timeout: 10s
-    ports:
-      - "1389:1389"
 
   mariadb:
+    image: registry.dev.zextras.com/dev/carbonio-mariadb:latest
     networks:
       - carbonio-user-management-network
-    image: registry.dev.zextras.com/dev/carbonio-mariadb:latest
     ports:
       - "3306:3306"
 
-  webui:
-    depends_on:
-      - mailbox
-    build:
-      dockerfile: webui/Dockerfile
-    network_mode: "host"
-    ports:
-      - "9000:9000"
-      - "6071:6071"
-
   postfix:
+    image: registry.dev.zextras.com/dev/carbonio-mta:latest
     networks:
       - carbonio-user-management-network
-    depends_on:
-      openldap:
-        condition: service_healthy
+    ports:
+      - "20025:25"
     healthcheck:
       interval: 60s
       retries: 10
       start_period: 20s
       test: netcat -z localhost 25 || exit 1
       timeout: 10s
-    image: registry.dev.zextras.com/dev/carbonio-mta:latest
-    ports:
-      - "20025:25"
+    depends_on:
+      openldap:
+        condition: service_healthy
 
   user-management:
-    networks:
-      - carbonio-user-management-network
-    depends_on:
-      - mailbox
-    build:
-      context: ../../
-      dockerfile: docker/minimal/carbonio-user-management/Dockerfile
     container_name: carbonio-user-management
     restart: on-failure
+    networks:
+      - carbonio-user-management-network
+    ports:
+      - "20001:10000"
     environment:
       - CARBONIO_USER_MANAGEMENT_HOST=0.0.0.0
       - CARBONIO_USER_MANAGEMENT_PORT=10000
       - CARBONIO_MAILBOX_HOST=mailbox
       - CARBONIO_MAILBOX_PORT=8080
+    build:
+      context: ../../
+      dockerfile: docker/minimal/carbonio-user-management/Dockerfile
+    depends_on:
+      - mailbox
+
+  webui:
+    networks:
+      - carbonio-user-management-network
     ports:
-      - "20001:10000"
+      - "9000:9000"
+      - "6071:6071"
+    build:
+      dockerfile: webui/Dockerfile
+    depends_on:
+      - mailbox
 
 networks:
   carbonio-user-management-network:
