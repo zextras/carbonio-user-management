@@ -2,6 +2,15 @@
 //
 // SPDX-License-Identifier: AGPL-3.0-only
 
+def buildContainer(String title, String description, String dockerfile, String tag) {
+    sh 'docker build ' +
+            '--label org.opencontainers.image.title="' + title + '" ' +
+            '--label org.opencontainers.image.description="' + description + '" ' +
+            '--label org.opencontainers.image.vendor="Zextras" ' +
+            '-f ' + dockerfile + ' -t ' + tag + ' .'
+    sh 'docker push ' + tag
+}
+
 pipeline {
     agent {
         node {
@@ -347,6 +356,60 @@ pipeline {
                     ]
                     Artifactory.addInteractivePromotion server: server, promotionConfig: config, displayName: 'RHEL9 Promotion to Release'
                     server.publishBuildInfo buildInfo
+                }
+            }
+        }
+        stage('Build and Publish Docker Image - Dev') {
+            when {
+                not {
+                    buildingTag()
+                }
+            }
+            steps {
+                container('dind') {
+                    withDockerRegistry(credentialsId: 'private-registry', url: 'https://registry.dev.zextras.com') {
+                        script {
+                            def branchTag = env.BRANCH_NAME.replaceAll('/', '-').toLowerCase()
+                            def imageTag = "registry.dev.zextras.com/dev/carbonio-user-management:${branchTag}"
+
+                            buildContainer(
+                                'Carbonio User Management',
+                                'Carbonio User Management',
+                                'docker/minimal/carbonio-user-management/Dockerfile',
+                                imageTag
+                            )
+
+                            // alias "latest" for last build of develop
+                            if (env.BRANCH_NAME == 'develop') {
+                                def latestTag = "registry.dev.zextras.com/dev/carbonio-user-management:latest"
+
+                                sh "docker tag ${imageTag} ${latestTag}"
+                                sh "docker push ${latestTag}"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        stage('Build and Publish Docker Image - Stable') {
+            when {
+                buildingTag()
+            }
+            steps {
+                container('dind') {
+                    withDockerRegistry(credentialsId: 'private-registry', url: 'https://registry.dev.zextras.com') {
+                        script {
+                            def releaseTag = env.TAG_NAME.startsWith('v') ? env.TAG_NAME.substring(1) : env.TAG_NAME
+                            def imageTag = "registry.dev.zextras.com/dev/carbonio-user-management:${releaseTag}"
+
+                            buildContainer(
+                                'Carbonio User Management',
+                                'Carbonio User Management',
+                                'docker/minimal/carbonio-user-management/Dockerfile',
+                                imageTag
+                            )
+                        }
+                    }
                 }
             }
         }

@@ -1,7 +1,7 @@
 services:
   mailbox:
     image: registry.dev.zextras.com/dev/carbonio-mailbox:latest
-    hostname: docker.demo.zextras.io
+    hostname: docker.carbonio.localhost
     restart: on-failure
     networks:
       - carbonio-user-management-network
@@ -91,14 +91,15 @@ services:
     depends_on:
       - mailbox
 
-  webui:
+  composed-ui:
+    build:
+      dockerfile: composed-ui/Dockerfile
+    restart: on-failure
     networks:
       - carbonio-user-management-network
     ports:
-      - "9000:9000"
+      - "80:80"
       - "6071:6071"
-    build:
-      dockerfile: webui/Dockerfile
     depends_on:
       - mailbox
 
