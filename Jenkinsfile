@@ -364,6 +364,9 @@ pipeline {
                 not {
                     buildingTag()
                 }
+                not {
+                    expression { env.BRANCH_NAME.startsWith("PR-") }
+                }
             }
             steps {
                 container('dind') {
