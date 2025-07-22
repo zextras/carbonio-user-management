@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 
 pkgname="carbonio-user-management"
-pkgver="0.8.3"
+pkgver="0.8.4"
 pkgrel="SNAPSHOT"
 pkgdesc="Carbonio User Management"
 maintainer="Zextras <packages@zextras.com>"
@@ -33,7 +33,7 @@ sha256sums=(
   "9321fd4f460b35c8643591a270eda07decb89aca89dcb210b1e03d88db297f61"
   "a031d2a771f307b86a4e61ad2fef5fa7953ca692612f7da83969c55609f7383e"
   "SKIP"
-  "dae97efb72fc78bf9c2cf61f4306a3ee4ac686e30863218a16ea3431f8b1c759"
+  "5242f35ef556592601349511d3a11742189ec3ff9a985f52743fcc34291275a6"
   "786c6ea505fa5bffc23a5189a3035b19c392d3224901a079f710363efb6de7e8"
   "aa36152fe2cc9ef96fa874c14b4510a3828bef055c8c0fa16437066d8707bd41"
   "41e10587c1f04ef0a1d53608bc2ca94bb520177b0f39f42433cfae3e279c96a8"
