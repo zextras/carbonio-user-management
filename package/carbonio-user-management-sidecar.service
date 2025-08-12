@@ -10,19 +10,15 @@ After=network-online.target
 PartOf=carbonio.target
 
 [Service]
-Type=simple
+User=carbonio-user-management
 ExecStart=/usr/bin/consul connect envoy \
     -token-file /etc/carbonio/user-management/service-discover/token \
     -admin-bind localhost:0 \
     -sidecar-for carbonio-user-management
 Restart=on-failure
 RestartSec=15
-User=carbonio-user-management
-KillMode=process
-KillSignal=SIGKILL
+KillSignal=SIGINT
 LimitNOFILE=65536
-TimeoutSec=120
-TimeoutStopSec=120
 
 [Install]
 WantedBy=carbonio.target
