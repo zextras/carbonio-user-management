@@ -8,6 +8,20 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.3](https://github.com/zextras/carbonio-user-management/compare/v0.8.2...v0.8.3) (2025-08-20)
+
+
+### Features
+
+* build packages from docker ([#77](https://github.com/zextras/carbonio-user-management/issues/77)) ([429eaef](https://github.com/zextras/carbonio-user-management/commit/429eaef99a3b08bf5f061e43ef70b9579b0a1f5f))
+* dockerize backend for local testing ([#67](https://github.com/zextras/carbonio-user-management/issues/67)) ([db8bb2f](https://github.com/zextras/carbonio-user-management/commit/db8bb2f76a0145fa453eed591daba36e184c474e))
+
+
+### Bug Fixes
+
+* include provisioning container for automation ([#70](https://github.com/zextras/carbonio-user-management/issues/70)) ([2505648](https://github.com/zextras/carbonio-user-management/commit/2505648d22e53ca579633d4b1d860e0987a6e185))
+* revert WantedBy for compatibility with older systems ([#75](https://github.com/zextras/carbonio-user-management/issues/75)) ([9cb7f8d](https://github.com/zextras/carbonio-user-management/commit/9cb7f8da079071d97d871e1620a8648e899152d0))
+
 ### [0.8.2](https://github.com/zextras/carbonio-user-management/compare/v0.8.1...v0.8.2) (2025-05-15)
 
 
