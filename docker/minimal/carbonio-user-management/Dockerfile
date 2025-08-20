@@ -4,7 +4,7 @@ WORKDIR /app
 
 RUN mkdir -p /etc/carbonio/user-management
 
-COPY ../../boot/target/carbonio-user-management-*-SNAPSHOT-jar-with-dependencies.jar .
+COPY ../../boot/target/carbonio-user-management-*-jar-with-dependencies.jar .
 
 CMD sh -c 'echo "\n\
 carbonio.user-management.host=${CARBONIO_USER_MANAGEMENT_HOST}\n\
