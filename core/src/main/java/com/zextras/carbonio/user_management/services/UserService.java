@@ -10,7 +10,6 @@ import static com.zextras.mailbox.client.service.ServiceRequests.Info;
 import com.google.inject.Inject;
 import com.zextras.carbonio.user_management.cache.CacheManager;
 import com.zextras.carbonio.user_management.entities.UserToken;
-import com.zextras.carbonio.user_management.exceptions.ServiceException;
 import com.zextras.carbonio.user_management.generated.model.UserId;
 import com.zextras.carbonio.user_management.generated.model.UserInfo;
 import com.zextras.carbonio.user_management.generated.model.UserMyself;
@@ -111,7 +110,7 @@ public class UserService {
                           cacheManager.getUserByIdCache().put(userId, userInfo);
                           cacheManager.getUserByEmailCache().put(userInfo.getEmail(), userInfo);
                           System.out.println("Found: " + userId);
-                        } catch (Exception e) {
+                        } catch (MailboxServerException e) {
                           logger.error(
                               "GetUsers with userId {} and token {} failed.", userId, token, e);
                         }
