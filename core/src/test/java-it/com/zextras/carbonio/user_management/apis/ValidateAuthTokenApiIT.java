@@ -31,7 +31,7 @@ public class ValidateAuthTokenApiIT {
   private static List<String>  getInfoRequestSections;
 
   @BeforeAll
-  static void init() {
+  static void init() throws Exception {
     simulator = SimulatorBuilder.aSimulator().init().withMailboxService().build().start();
     getInfoRequestSections = List.of("children");
   }

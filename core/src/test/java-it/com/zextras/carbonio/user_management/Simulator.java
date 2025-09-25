@@ -84,8 +84,7 @@ public final class Simulator implements AutoCloseable {
     }
   }
 
-  private void startJettyServer() {
-    try {
+  private void startJettyServer() throws Exception {
       jettyServer = new Server();
       httpLocalConnector = new LocalConnector(jettyServer);
       jettyServer.addConnector(httpLocalConnector);
@@ -101,9 +100,6 @@ public final class Simulator implements AutoCloseable {
       jettyServer.setHandler(servletHandler);
 
       jettyServer.start();
-    } catch (Exception exception) {
-      throw new RuntimeException(exception);
-    }
   }
 
   private void stopJettyServer() {
@@ -116,7 +112,7 @@ public final class Simulator implements AutoCloseable {
     }
   }
 
-  public Simulator start() {
+  public Simulator start() throws Exception {
     startJettyServer();
     return this;
   }

@@ -32,7 +32,7 @@ class GetMyselfByCookieApiIT {
   static List<String> getInfoRequestSections;
 
   @BeforeAll
-  static void init() {
+  static void init() throws Exception {
     getInfoRequestSections = List.of("children","attrs","prefs");
     simulator = SimulatorBuilder
       .aSimulator()
