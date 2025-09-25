@@ -37,7 +37,7 @@ public class ValidateAuthTokenApiIT {
   }
 
   @AfterAll
-  static void cleanUpAl() {
+  static void cleanUpAl() throws Exception {
     simulator.stopAll();
   }
 

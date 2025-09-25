@@ -39,7 +39,7 @@ class GetUserInfoApiIT {
   }
 
   @AfterAll
-  static void cleanUpAll() {
+  static void cleanUpAll() throws Exception {
     simulator.close();
   }
 

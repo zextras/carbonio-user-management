@@ -102,13 +102,9 @@ public final class Simulator implements AutoCloseable {
       jettyServer.start();
   }
 
-  private void stopJettyServer() {
+  private void stopJettyServer() throws Exception {
     if (jettyServer != null) {
-      try {
         jettyServer.stop();
-      } catch (Exception exception) {
-        throw new RuntimeException(exception);
-      }
     }
   }
 
@@ -121,13 +117,13 @@ public final class Simulator implements AutoCloseable {
     mailboxServiceMock.reset();
   }
 
-  public void stopAll() {
+  public void stopAll() throws Exception {
     stopJettyServer();
     stopMailboxService();
   }
 
   @Override
-  public void close() {
+  public void close() throws Exception {
     stopAll();
   }
 
