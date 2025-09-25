@@ -145,9 +145,6 @@ public class UserService {
       } catch (MailboxServerException e) {
         logger.error("GetInfoById with userId {} and token {} failed.", userId, token, e);
         return Response.status(Status.NOT_FOUND).build();
-      } catch (Exception e) {
-        logger.error("GetInfoById with userId {} and token {} failed.", userId, token, e);
-        return Response.status(Status.INTERNAL_SERVER_ERROR).build();
       }
     }
     System.out.println(userInfo.getId().getUserId());
@@ -176,10 +173,6 @@ public class UserService {
         logger.error(
             "GetInfoByEmail with user email {} and token {} failed.", userEmail, token, e);
         return Response.status(Status.NOT_FOUND).build();
-      } catch (Exception e) {
-        logger.error(
-            "GetInfoByEmail with user email {} and token {} failed.", userEmail, token, e);
-        return Response.status(Status.INTERNAL_SERVER_ERROR).build();
       }
     }
     System.out.println(userInfo.getId().getUserId());
@@ -263,10 +256,6 @@ public class UserService {
       } catch (MailboxServerException exception) {
         logger.error("GetMyselfByToken with token {} failed.", token, exception);
         return Optional.empty();
-      } catch (Exception exception) {
-        logger.error("GetMyselfByToken with token {} failed.", token, exception);
-        throw new ServiceException(
-            "Unable to get account user info due to an internal service error");
       }
     }
 
@@ -292,9 +281,6 @@ public class UserService {
       } catch (MailboxServerException e) {
         logger.error("ValidateUserToken with token {} failed.", token, e);
         return Response.status(Status.UNAUTHORIZED).build();
-      } catch (Exception e) {
-        logger.error("ValidateUserToken with token {} failed.", token, e);
-        return Response.status(Status.INTERNAL_SERVER_ERROR).build();
       }
     }
 
