@@ -64,6 +64,7 @@ SPDX-License-Identifier: AGPL-3.0-only
     <!-- Other properties -->
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
+    <maven.version.ignore>(?i).*-(alpha|beta|m|rc)([-.]?\d+)?</maven.version.ignore>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
     <!-- Flags to skip/run tests and the report generation -->
