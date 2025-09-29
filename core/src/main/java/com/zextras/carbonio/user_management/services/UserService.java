@@ -211,7 +211,7 @@ public class UserService {
     }
 
     UserId userId = new UserId();
-    userId.setUserId(userToken.getUserId());
+    userId.setUserId(userToken.userId());
     logger.info(userId.getUserId());
     return Optional.of(userId);
   }

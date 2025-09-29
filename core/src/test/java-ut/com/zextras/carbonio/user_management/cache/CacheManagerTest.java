@@ -34,7 +34,7 @@ class CacheManagerTest {
 
     // Then
     Assertions.assertThat(userToken).isNotNull();
-    Assertions.assertThat(userToken.getToken()).isEqualTo("fake-token");
+    Assertions.assertThat(userToken.token()).isEqualTo("fake-token");
   }
 
   @Test
