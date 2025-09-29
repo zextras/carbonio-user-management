@@ -28,6 +28,7 @@ public class UsersApiController implements UsersApiService {
     this.userService = usersService;
   }
 
+  @Override
   public Response getUserInfoByEmail(
     String cookie,
     String userEmail,
@@ -41,6 +42,7 @@ public class UsersApiController implements UsersApiService {
       : Response.status(Status.BAD_REQUEST).build();
   }
 
+  @Override
   public Response getUserInfoById(
     String cookie,
     String userId,

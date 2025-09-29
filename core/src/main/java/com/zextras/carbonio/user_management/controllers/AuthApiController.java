@@ -22,6 +22,7 @@ public class AuthApiController implements AuthApiService {
     this.userService = userService;
   }
 
+  @Override
   public Response authToken(
     String tokenId,
     SecurityContext securityContext
