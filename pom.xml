@@ -21,7 +21,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
   <groupId>com.zextras.carbonio.user-management</groupId>
   <artifactId>carbonio-user-management</artifactId>
-  <version>0.8.4-1</version>
+  <version>${revision}${changelist}</version>
   <packaging>pom</packaging>
 
   <name>carbonio-user-management</name>
@@ -34,6 +34,11 @@ SPDX-License-Identifier: AGPL-3.0-only
   </modules>
 
   <properties>
+    <!-- Maven CI Friendly -->
+    <revision>0.8.4</revision>
+    <changelist>-1</changelist>
+
+    <!-- Dependencies -->
     <assertj.version>3.26.3</assertj.version>
     <caffeine.version>3.2.0</caffeine.version>
     <carbonio-mailbox-sdk.version>1.11.0</carbonio-mailbox-sdk.version>
@@ -327,6 +332,32 @@ SPDX-License-Identifier: AGPL-3.0-only
               <id>add-source</id>
               <phase>generate-sources</phase>
             </execution>
+          </executions>
+        </plugin>
+
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>flatten-maven-plugin</artifactId>
+          <version>1.1.0</version>
+          <configuration>
+              <updatePomFile>true</updatePomFile>
+              <flattenMode>resolveCiFriendliesOnly</flattenMode>
+          </configuration>
+          <executions>
+              <execution>
+                  <id>flatten</id>
+                  <phase>process-resources</phase>
+                  <goals>
+                      <goal>flatten</goal>
+                  </goals>
+              </execution>
+              <execution>
+                  <id>flatten.clean</id>
+                  <phase>clean</phase>
+                  <goals>
+                      <goal>clean</goal>
+                  </goals>
+              </execution>
           </executions>
         </plugin>
       </plugins>
