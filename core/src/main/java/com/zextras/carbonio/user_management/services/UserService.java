@@ -48,46 +48,6 @@ public class UserService {
     this.mailboxClient = mailboxClient;
   }
 
-  private UserInfo createUserInfo(GetAccountInfoResponse accountInfo) {
-    UserInfo userInfo = new UserInfo();
-
-    // default value in case zimbraIsExternalVirtualAccount is not returned
-    userInfo.setType(UserType.INTERNAL);
-    // default value in case status is not returned
-    userInfo.setStatus(UserStatus.CLOSED);
-
-    accountInfo
-        .getAttr()
-        .forEach(
-            attribute -> {
-              if (attribute.getName().equals("displayName")) {
-                userInfo.setFullName(attribute.getValue());
-              }
-
-              if (attribute.getName().equals("zimbraId")) {
-                UserId userId = new UserId();
-                userId.setUserId(attribute.getValue());
-                userInfo.setId(userId);
-              }
-
-              if (attribute.getName().equals("zimbraAccountStatus")) {
-                userInfo.setStatus(UserStatus.valueOf(attribute.getValue().toUpperCase()));
-              }
-
-              if (attribute.getName().equals("zimbraIsExternalVirtualAccount")) {
-                userInfo.setType(
-                    Boolean.parseBoolean(attribute.getValue().toLowerCase())
-                        ? UserType.GUEST
-                        : UserType.INTERNAL);
-              }
-            });
-
-    userInfo.setEmail(accountInfo.getName());
-    userInfo.setDomain(accountInfo.getPublicURL());
-
-    return userInfo;
-  }
-
   public Response getUsers(List<String> userIds, String token, Boolean ignoreCache) {
     return Response.ok()
         .entity(
@@ -302,5 +262,45 @@ public class UserService {
         .toLowerCase())
       ? UserType.GUEST
       : UserType.INTERNAL;
+  }
+
+  private UserInfo createUserInfo(GetAccountInfoResponse accountInfo) {
+    UserInfo userInfo = new UserInfo();
+
+    // default value in case zimbraIsExternalVirtualAccount is not returned
+    userInfo.setType(UserType.INTERNAL);
+    // default value in case status is not returned
+    userInfo.setStatus(UserStatus.CLOSED);
+
+    accountInfo
+      .getAttr()
+      .forEach(
+        attribute -> {
+          if (attribute.getName().equals("displayName")) {
+            userInfo.setFullName(attribute.getValue());
+          }
+
+          if (attribute.getName().equals("zimbraId")) {
+            UserId userId = new UserId();
+            userId.setUserId(attribute.getValue());
+            userInfo.setId(userId);
+          }
+
+          if (attribute.getName().equals("zimbraAccountStatus")) {
+            userInfo.setStatus(UserStatus.valueOf(attribute.getValue().toUpperCase()));
+          }
+
+          if (attribute.getName().equals("zimbraIsExternalVirtualAccount")) {
+            userInfo.setType(
+              Boolean.parseBoolean(attribute.getValue().toLowerCase())
+                ? UserType.GUEST
+                : UserType.INTERNAL);
+          }
+        });
+
+    userInfo.setEmail(accountInfo.getName());
+    userInfo.setDomain(accountInfo.getPublicURL());
+
+    return userInfo;
   }
 }
