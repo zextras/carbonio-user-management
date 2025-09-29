@@ -4,11 +4,7 @@
 
 package com.zextras.carbonio.user_management.services;
 
-import static com.zextras.mailbox.client.service.ServiceRequests.AccountInfo;
-import static com.zextras.mailbox.client.service.ServiceRequests.Info;
-
 import com.google.inject.Inject;
-import com.sun.xml.ws.protocol.soap.MessageCreationException;
 import com.zextras.carbonio.user_management.cache.CacheManager;
 import com.zextras.carbonio.user_management.entities.UserToken;
 import com.zextras.carbonio.user_management.generated.model.UserId;
@@ -22,13 +18,6 @@ import com.zextras.mailbox.client.requests.Request;
 import com.zextras.mailbox.client.service.InfoRequests.Sections;
 import com.zextras.mailbox.client.service.ServiceClient;
 import com.zextras.wsdl.zimbraservice.ZcsPortType;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.Optional;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-
 import jakarta.xml.ws.WebServiceException;
 import org.apache.commons.lang3.LocaleUtils;
 import org.slf4j.Logger;
@@ -36,6 +25,15 @@ import org.slf4j.LoggerFactory;
 import zimbraaccount.Attr;
 import zimbraaccount.GetAccountInfoResponse;
 import zimbraaccount.GetInfoResponse;
+
+import javax.ws.rs.core.Response;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.Optional;
+
+import static com.zextras.mailbox.client.service.ServiceRequests.AccountInfo;
+import static com.zextras.mailbox.client.service.ServiceRequests.Info;
 
 public class UserService {
 
@@ -114,7 +112,7 @@ public class UserService {
                           cacheManager.getUserByIdCache().put(userId, userInfo);
                           cacheManager.getUserByEmailCache().put(userInfo.getEmail(), userInfo);
                           logger.info("Found: {}", userId);
-                        } catch (MailboxServerException e) {
+                        } catch (WebServiceException | MailboxServerException e) {
                           logger.error("GetUsers with userId {} and token {} server failed.", userId, token, e);
                         } catch (MailboxClientException e) {
                             logger.error("GetUsers with userId {} and token {} client failed.", userId, token, e);
@@ -146,7 +144,7 @@ public class UserService {
         cacheManager.getUserByIdCache().put(userId, userInfo);
         cacheManager.getUserByEmailCache().put(userInfo.getEmail(), userInfo);
 
-      } catch (MailboxServerException e) {
+      } catch (WebServiceException | MailboxServerException e) {
         logger.error("GetInfoById with userId {} and token {} server failed.", userId, token, e);
         return Optional.empty();
       } catch (MailboxClientException e) {
@@ -176,7 +174,7 @@ public class UserService {
         cacheManager.getUserByEmailCache().put(userEmail, userInfo);
         cacheManager.getUserByIdCache().put(userInfo.getId().getUserId(), userInfo);
 
-      } catch (MailboxServerException e) {
+      } catch (WebServiceException | MailboxServerException e) {
         logger.error("GetInfoByEmail with user email {} and token {} server failed.", userEmail, token, e);
         return Optional.empty();
       } catch (MailboxClientException e) {
@@ -243,7 +241,7 @@ public class UserService {
 
         cacheManager.getUserTokenCache().put(token, userToken);
 
-      } catch (MailboxServerException e) {
+      } catch (WebServiceException | MailboxServerException e) {
         logger.error("ValidateUserToken with token {} server failed.", token, e);
         return Optional.empty();
       } catch (MailboxClientException e) {
