@@ -173,10 +173,6 @@ class GetMyselfByCookieApiIT {
       .parseResponse(HttpTester.from(httpLocalConnector.getResponse(request.generate())));
 
     // Then
-    Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR_500);
-    Assertions
-      .assertThat(response.getContent())
-      .hasSize(64)
-      .isEqualTo("Unable to get account user info due to an internal service error");
+    Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND_404);
   }
 }

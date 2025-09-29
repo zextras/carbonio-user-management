@@ -8,6 +8,7 @@ import static com.zextras.mailbox.client.service.ServiceRequests.AccountInfo;
 import static com.zextras.mailbox.client.service.ServiceRequests.Info;
 
 import com.google.inject.Inject;
+import com.sun.xml.ws.protocol.soap.MessageCreationException;
 import com.zextras.carbonio.user_management.cache.CacheManager;
 import com.zextras.carbonio.user_management.entities.UserToken;
 import com.zextras.carbonio.user_management.generated.model.UserId;
@@ -27,6 +28,8 @@ import java.util.Objects;
 import java.util.Optional;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+
+import jakarta.xml.ws.WebServiceException;
 import org.apache.commons.lang3.LocaleUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -125,7 +128,7 @@ public class UserService {
         .build();
   }
 
-  public Response getInfoById(String userId, String token, Boolean ignoreCache) {
+  public Optional<UserInfo> getInfoById(String userId, String token, Boolean ignoreCache) {
     logger.info("Requested: {}", userId);
 
     UserInfo userInfo = null;
@@ -145,17 +148,17 @@ public class UserService {
 
       } catch (MailboxServerException e) {
         logger.error("GetInfoById with userId {} and token {} server failed.", userId, token, e);
-        return Response.status(Status.NOT_FOUND).build();
+        return Optional.empty();
       } catch (MailboxClientException e) {
         logger.error("GetInfoById with userId {} and token {} client failed.", userId, token, e);
-        return Response.status(Status.NOT_FOUND).build();
+        return Optional.empty();
       }
     }
     logger.info(userInfo.getId().getUserId());
-    return Response.ok().entity(userInfo).build();
+    return Optional.of(userInfo);
   }
 
-  public Response getInfoByEmail(String userEmail, String token, Boolean ignoreCache) {
+  public Optional<UserInfo> getInfoByEmail(String userEmail, String token, Boolean ignoreCache) {
     logger.info("Requested: {}", userEmail);
 
     UserInfo userInfo = null;
@@ -175,14 +178,14 @@ public class UserService {
 
       } catch (MailboxServerException e) {
         logger.error("GetInfoByEmail with user email {} and token {} server failed.", userEmail, token, e);
-        return Response.status(Status.NOT_FOUND).build();
+        return Optional.empty();
       } catch (MailboxClientException e) {
         logger.error("GetInfoByEmail with user email {} and token {} client failed.", userEmail, token, e);
-        return Response.status(Status.NOT_FOUND).build();
+        return Optional.empty();
       }
     }
     logger.info(userInfo.getId().getUserId());
-    return Response.ok().entity(userInfo).build();
+    return Optional.of(userInfo);
   }
 
   public Optional<UserMyself> getMyselfByToken(String token, Boolean ignoreCache) {
@@ -212,7 +215,7 @@ public class UserService {
 
         cacheManager.getUserMyselfCache().put(token, userMyself);
 
-      } catch (MailboxServerException exception) {
+      } catch (WebServiceException | MailboxServerException exception) {
         logger.error("GetMyselfByToken with token {} server failed.", token, exception);
         return Optional.empty();
       } catch (MailboxClientException exception) {
@@ -224,14 +227,13 @@ public class UserService {
     return Optional.of(userMyself);
   }
 
-public Response validateUserToken(String token) {
+  public Optional<UserId> validateUserToken(String token) {
     logger.info("Validate: {}", token);
     // We can't use Optional.ofNullable because validateAuthToken throws exceptions and
     // we need to return different status codes based on different exceptions
     UserToken userToken = cacheManager.getUserTokenCache().getIfPresent(token);
 
     if (userToken == null) {
-
       try {
         final Request<ZcsPortType, GetInfoResponse> request =
             Info.sections(Sections.children).withAuthToken(token);
@@ -243,17 +245,17 @@ public Response validateUserToken(String token) {
 
       } catch (MailboxServerException e) {
         logger.error("ValidateUserToken with token {} server failed.", token, e);
-        return Response.status(Status.UNAUTHORIZED).build();
+        return Optional.empty();
       } catch (MailboxClientException e) {
         logger.error("ValidateUserToken with token {} client failed.", token, e);
-        return Response.status(Status.UNAUTHORIZED).build();
+        return Optional.empty();
       }
     }
 
     UserId userId = new UserId();
     userId.setUserId(userToken.getUserId());
     logger.info(userId.getUserId());
-    return Response.ok().entity(userId).build();
+    return Optional.of(userId);
   }
 
   private static Locale readLocal(GetInfoResponse infoResponse, UserId userId) {

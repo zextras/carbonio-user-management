@@ -40,7 +40,10 @@ public class UsersApiController implements UsersApiService {
       return Response.status(Status.BAD_REQUEST).build();
     }
 
-    return userService.getInfoByEmail(userEmail, cookies.get("ZM_AUTH_TOKEN"), ignoreCache);
+    return userService
+      .getInfoByEmail(userEmail, cookies.get("ZM_AUTH_TOKEN"), ignoreCache)
+      .map(user -> Response.ok().entity(user).build())
+      .orElse(Response.status(Status.NOT_FOUND).build());
   }
 
   @Override
@@ -55,12 +58,16 @@ public class UsersApiController implements UsersApiService {
       return Response.status(Status.BAD_REQUEST).build();
     }
 
-    return userService.getInfoById(userId, cookies.get("ZM_AUTH_TOKEN"), ignoreCache);
+    return userService
+      .getInfoById(userId, cookies.get("ZM_AUTH_TOKEN"), ignoreCache)
+      .map(user -> Response.ok().entity(user).build())
+      .orElse(Response.status(Status.NOT_FOUND).build());
   }
 
   @Override
   public Response getUsersInfo(String cookie, List<String> userIds, Boolean ignoreCache, SecurityContext securityContext)
     throws NotFoundException {
+
     Map<String, String> cookies = CookieParser.getCookies(cookie);
     if (!cookies.containsKey("ZM_AUTH_TOKEN")) {
       return Response.status(Status.BAD_REQUEST).build();
@@ -81,7 +88,7 @@ public class UsersApiController implements UsersApiService {
 
     return userService
       .getMyselfByToken(cookies.get("ZM_AUTH_TOKEN"), ignoreCache)
-      .map(userMyself -> Response.ok().entity(userMyself).build())
+      .map(user -> Response.ok().entity(user).build())
       .orElse(Response.status(Status.NOT_FOUND).build());
   }
 }

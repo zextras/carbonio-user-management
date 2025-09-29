@@ -27,6 +27,8 @@ public class AuthApiController implements AuthApiService {
     String tokenId,
     SecurityContext securityContext
   ) {
-    return userService.validateUserToken(tokenId);
+    return userService.validateUserToken(tokenId)
+      .map(userId -> Response.ok().entity(userId).build())
+      .orElse(Response.status(Response.Status.UNAUTHORIZED).build());
   }
 }
