@@ -15,6 +15,7 @@ import com.zextras.carbonio.user_management.generated.model.UserInfo;
 import com.zextras.carbonio.user_management.generated.model.UserMyself;
 import com.zextras.carbonio.user_management.generated.model.UserStatus;
 import com.zextras.carbonio.user_management.generated.model.UserType;
+import com.zextras.mailbox.client.MailboxClientException;
 import com.zextras.mailbox.client.MailboxServerException;
 import com.zextras.mailbox.client.requests.Request;
 import com.zextras.mailbox.client.service.InfoRequests.Sections;
@@ -111,8 +112,9 @@ public class UserService {
                           cacheManager.getUserByEmailCache().put(userInfo.getEmail(), userInfo);
                           logger.info("Found: {}", userId);
                         } catch (MailboxServerException e) {
-                          logger.error(
-                              "GetUsers with userId {} and token {} failed.", userId, token, e);
+                          logger.error("GetUsers with userId {} and token {} server failed.", userId, token, e);
+                        } catch (MailboxClientException e) {
+                            logger.error("GetUsers with userId {} and token {} client failed.", userId, token, e);
                         }
                       }
 
@@ -142,7 +144,10 @@ public class UserService {
         cacheManager.getUserByEmailCache().put(userInfo.getEmail(), userInfo);
 
       } catch (MailboxServerException e) {
-        logger.error("GetInfoById with userId {} and token {} failed.", userId, token, e);
+        logger.error("GetInfoById with userId {} and token {} server failed.", userId, token, e);
+        return Response.status(Status.NOT_FOUND).build();
+      } catch (MailboxClientException e) {
+        logger.error("GetInfoById with userId {} and token {} client failed.", userId, token, e);
         return Response.status(Status.NOT_FOUND).build();
       }
     }
@@ -169,8 +174,10 @@ public class UserService {
         cacheManager.getUserByIdCache().put(userInfo.getId().getUserId(), userInfo);
 
       } catch (MailboxServerException e) {
-        logger.error(
-            "GetInfoByEmail with user email {} and token {} failed.", userEmail, token, e);
+        logger.error("GetInfoByEmail with user email {} and token {} server failed.", userEmail, token, e);
+        return Response.status(Status.NOT_FOUND).build();
+      } catch (MailboxClientException e) {
+        logger.error("GetInfoByEmail with user email {} and token {} client failed.", userEmail, token, e);
         return Response.status(Status.NOT_FOUND).build();
       }
     }
@@ -200,8 +207,7 @@ public class UserService {
         //    and there is no check if the value is a valid one. So the LocaleUtils#toLocale method
         //    can raise an exception if the Locale is malformed.
         //  - the project doesn't have the Vavr dependency containing the Try construct to handle
-        // the
-        //    exception in a cleaner way and I don't want to add it now only for this.
+        //    the exception in a cleaner way and I don't want to add it now only for this.
         Locale locale;
         try {
           locale =
@@ -253,7 +259,10 @@ public class UserService {
         cacheManager.getUserMyselfCache().put(token, userMyself);
 
       } catch (MailboxServerException exception) {
-        logger.error("GetMyselfByToken with token {} failed.", token, exception);
+        logger.error("GetMyselfByToken with token {} server failed.", token, exception);
+        return Optional.empty();
+      } catch (MailboxClientException exception) {
+        logger.error("GetMyselfByToken with token {} client failed.", token, exception);
         return Optional.empty();
       }
     }
@@ -268,6 +277,7 @@ public class UserService {
     UserToken userToken = cacheManager.getUserTokenCache().getIfPresent(token);
 
     if (userToken == null) {
+
       try {
         final Request<ZcsPortType, GetInfoResponse> request =
             Info.sections(Sections.children).withAuthToken(token);
@@ -278,7 +288,10 @@ public class UserService {
         cacheManager.getUserTokenCache().put(token, userToken);
 
       } catch (MailboxServerException e) {
-        logger.error("ValidateUserToken with token {} failed.", token, e);
+        logger.error("ValidateUserToken with token {} server failed.", token, e);
+        return Response.status(Status.UNAUTHORIZED).build();
+      } catch (MailboxClientException e) {
+        logger.error("ValidateUserToken with token {} client failed.", token, e);
         return Response.status(Status.UNAUTHORIZED).build();
       }
     }
