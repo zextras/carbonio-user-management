@@ -202,59 +202,13 @@ public class UserService {
         UserId userId = new UserId();
         userId.setUserId(infoResponse.getId());
 
-        // This old style try/catch is necessary because:
-        //  - the system cannot trust the user locale since it can be set manually by the sysadmin
-        //    and there is no check if the value is a valid one. So the LocaleUtils#toLocale method
-        //    can raise an exception if the Locale is malformed.
-        //  - the project doesn't have the Vavr dependency containing the Try construct to handle
-        //    the exception in a cleaner way and I don't want to add it now only for this.
-        Locale locale;
-        try {
-          locale =
-              infoResponse.getPrefs().getPref().stream()
-                  .filter(perf -> perf.getName().equals("zimbraPrefLocale"))
-                  .findFirst()
-                  .map(pref -> {
-                    logger.info("User myself {} requested, has locale {}", userId.getUserId(), pref.getValue());
-                    return LocaleUtils.toLocale(pref.getValue());
-                  })
-                  .orElse(Locale.ENGLISH);
-        } catch (IllegalArgumentException exception) {
-          logger.error(
-              "The user id {} has a locale with an invalid format. The system falls back in '{}'",
-              userId.getUserId(),
-              Locale.ENGLISH);
-
-          locale = Locale.ENGLISH;
-        }
-
-        String fullName =
-            infoResponse.getAttrs().getAttr().stream()
-                .filter(attribute -> attribute.getName().equals("displayName"))
-                .findFirst()
-                .map(Attr::getValue)
-                .orElse("");
-
-        UserType userType =
-            Boolean.parseBoolean(
-                    infoResponse.getAttrs().getAttr().stream()
-                        .filter(
-                            attribute ->
-                                attribute.getName().equals("zimbraIsExternalVirtualAccount"))
-                        .findFirst()
-                        .map(Attr::getValue)
-                        .orElse("FALSE") // default value, will be translated to type internal
-                        .toLowerCase())
-                ? UserType.GUEST
-                : UserType.INTERNAL;
-
         userMyself = new UserMyself();
         userMyself.setId(userId);
         userMyself.setEmail(infoResponse.getName());
         userMyself.setDomain(infoResponse.getPublicURL());
-        userMyself.setFullName(fullName);
-        userMyself.setLocale(locale.toString());
-        userMyself.setType(userType);
+        userMyself.setFullName(readFullName(infoResponse));
+        userMyself.setLocale(readLocal(infoResponse, userId).toString());
+        userMyself.setType(readUserType(infoResponse));
 
         cacheManager.getUserMyselfCache().put(token, userMyself);
 
@@ -270,7 +224,7 @@ public class UserService {
     return Optional.of(userMyself);
   }
 
-  public Response validateUserToken(String token) {
+public Response validateUserToken(String token) {
     logger.info("Validate: {}", token);
     // We can't use Optional.ofNullable because validateAuthToken throws exceptions and
     // we need to return different status codes based on different exceptions
@@ -300,5 +254,53 @@ public class UserService {
     userId.setUserId(userToken.getUserId());
     logger.info(userId.getUserId());
     return Response.ok().entity(userId).build();
+  }
+
+  private static Locale readLocal(GetInfoResponse infoResponse, UserId userId) {
+    // This old style try/catch is necessary because:
+    //  - the system cannot trust the user locale since it can be set manually by the sysadmin
+    //    and there is no check if the value is a valid one. So the LocaleUtils#toLocale method
+    //    can raise an exception if the Locale is malformed.
+    //  - the project doesn't have the Vavr dependency containing the Try construct to handle
+    //    the exception in a cleaner way and I don't want to add it now only for this.
+    try {
+      return infoResponse.getPrefs().getPref().stream()
+          .filter(perf -> perf.getName().equals("zimbraPrefLocale"))
+          .findFirst()
+          .map(pref -> {
+            logger.info("User myself {} requested, has locale {}", userId.getUserId(), pref.getValue());
+            return LocaleUtils.toLocale(pref.getValue());
+          })
+          .orElse(Locale.ENGLISH);
+    } catch (IllegalArgumentException exception) {
+      logger.error(
+        "The user id {} has a locale with an invalid format. The system falls back in '{}'",
+        userId.getUserId(),
+        Locale.ENGLISH);
+
+      return Locale.ENGLISH;
+    }
+  }
+
+  private static String readFullName(GetInfoResponse infoResponse) {
+    return infoResponse.getAttrs().getAttr().stream()
+      .filter(attribute -> attribute.getName().equals("displayName"))
+      .findFirst()
+      .map(Attr::getValue)
+      .orElse("");
+  }
+
+  private static UserType readUserType(GetInfoResponse infoResponse) {
+    return Boolean.parseBoolean(
+      infoResponse.getAttrs().getAttr().stream()
+        .filter(
+          attribute ->
+            attribute.getName().equals("zimbraIsExternalVirtualAccount"))
+        .findFirst()
+        .map(Attr::getValue)
+        .orElse("FALSE") // default value, will be translated to type internal
+        .toLowerCase())
+      ? UserType.GUEST
+      : UserType.INTERNAL;
   }
 }
