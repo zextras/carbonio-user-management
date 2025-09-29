@@ -93,7 +93,7 @@ public class UserService {
                 .distinct()
                 .map(
                     userId -> {
-                      System.out.println("Requested: " + userId);
+                      logger.info("Requested: {}", userId);
 
                       UserInfo userInfo = null;
                       if (ignoreCache == null || !ignoreCache) {
@@ -109,7 +109,7 @@ public class UserService {
                           userInfo = createUserInfo(accountInfo);
                           cacheManager.getUserByIdCache().put(userId, userInfo);
                           cacheManager.getUserByEmailCache().put(userInfo.getEmail(), userInfo);
-                          System.out.println("Found: " + userId);
+                          logger.info("Found: {}", userId);
                         } catch (MailboxServerException e) {
                           logger.error(
                               "GetUsers with userId {} and token {} failed.", userId, token, e);
@@ -124,7 +124,7 @@ public class UserService {
   }
 
   public Response getInfoById(String userId, String token, Boolean ignoreCache) {
-    System.out.println("Requested: " + userId);
+    logger.info("Requested: {}", userId);
 
     UserInfo userInfo = null;
     if (ignoreCache == null || !ignoreCache) {
@@ -146,12 +146,12 @@ public class UserService {
         return Response.status(Status.NOT_FOUND).build();
       }
     }
-    System.out.println(userInfo.getId().getUserId());
+    logger.info(userInfo.getId().getUserId());
     return Response.ok().entity(userInfo).build();
   }
 
   public Response getInfoByEmail(String userEmail, String token, Boolean ignoreCache) {
-    System.out.println("Requested: " + userEmail);
+    logger.info("Requested: {}", userEmail);
 
     UserInfo userInfo = null;
     if (ignoreCache == null || !ignoreCache) {
@@ -174,12 +174,12 @@ public class UserService {
         return Response.status(Status.NOT_FOUND).build();
       }
     }
-    System.out.println(userInfo.getId().getUserId());
+    logger.info(userInfo.getId().getUserId());
     return Response.ok().entity(userInfo).build();
   }
 
   public Optional<UserMyself> getMyselfByToken(String token, Boolean ignoreCache) {
-    System.out.println("Requested: " + token);
+    logger.info("Requested: {}", token);
 
     UserMyself userMyself = null;
     if (ignoreCache == null || !ignoreCache) {
@@ -209,7 +209,7 @@ public class UserService {
                   .filter(perf -> perf.getName().equals("zimbraPrefLocale"))
                   .findFirst()
                   .map(pref -> {
-                    System.out.println("User myself " + userId.getUserId() + " requested, has locale " + pref.getValue());
+                    logger.info("User myself {} requested, has locale {}", userId.getUserId(), pref.getValue());
                     return LocaleUtils.toLocale(pref.getValue());
                   })
                   .orElse(Locale.ENGLISH);
@@ -262,7 +262,7 @@ public class UserService {
   }
 
   public Response validateUserToken(String token) {
-    System.out.println("Validate: " + token);
+    logger.info("Validate: {}", token);
     // We can't use Optional.ofNullable because validateAuthToken throws exceptions and
     // we need to return different status codes based on different exceptions
     UserToken userToken = cacheManager.getUserTokenCache().getIfPresent(token);
@@ -285,7 +285,7 @@ public class UserService {
 
     UserId userId = new UserId();
     userId.setUserId(userToken.getUserId());
-    System.out.println(userId.getUserId());
+    logger.info(userId.getUserId());
     return Response.ok().entity(userId).build();
   }
 }
