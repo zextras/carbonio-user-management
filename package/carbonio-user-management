@@ -9,5 +9,5 @@ export JAVA_HOME
 /opt/zextras/common/bin/java \
   -Djava.net.preferIPv4Stack=true \
   -Xmx1024m \
-  -Xms1024m \
+  -Xmx2048m \
   -jar /usr/share/carbonio/carbonio-user-management.jar

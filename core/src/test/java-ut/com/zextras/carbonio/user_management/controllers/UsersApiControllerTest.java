@@ -6,6 +6,7 @@ package com.zextras.carbonio.user_management.controllers;
 
 import com.zextras.carbonio.user_management.exceptions.ServiceException;
 import com.zextras.carbonio.user_management.generated.NotFoundException;
+import com.zextras.carbonio.user_management.generated.model.UserInfo;
 import com.zextras.carbonio.user_management.generated.model.UserMyself;
 import com.zextras.carbonio.user_management.services.UserService;
 
@@ -97,16 +98,18 @@ class UsersApiControllerTest {
     String cookie = "ZM_AUTH_TOKEN=valid-token;";
     String token = "valid-token";
 
-    Response responseMock = Mockito.mock(Response.class);
-    Mockito.when(userServiceMock.getInfoById(userId, token, false)).thenReturn(responseMock);
+    UserInfo userInfoMock = Mockito.mock(UserInfo.class);
+    Mockito.when(userServiceMock.getInfoById(userId, token, false)).thenReturn(Optional.of(userInfoMock));
 
     // When
     Response response =
         usersApiController.getUserInfoById(cookie, userId, false, Mockito.mock(SecurityContext.class));
 
     // Then
-    Assertions.assertThat(response)
-        .isEqualTo(responseMock); // if ok should return exact same response
+    Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.OK_200);
+    Assertions.assertThat(response.getEntity())
+      .isInstanceOf(UserInfo.class)
+      .isEqualTo(userInfoMock);
   }
 
   @Test
@@ -130,8 +133,8 @@ class UsersApiControllerTest {
     String cookie = "ZM_AUTH_TOKEN=valid-token;";
     String token = "valid-token";
 
-    Response responseMock = Mockito.mock(Response.class);
-    Mockito.when(userServiceMock.getInfoByEmail(userEmail, token, false)).thenReturn(responseMock);
+    UserInfo userInfoMock = Mockito.mock(UserInfo.class);
+    Mockito.when(userServiceMock.getInfoByEmail(userEmail, token, false)).thenReturn(Optional.of(userInfoMock));
 
     // When
     Response response =
@@ -139,7 +142,10 @@ class UsersApiControllerTest {
             cookie, userEmail, false, Mockito.mock(SecurityContext.class));
 
     // Then
-    Assertions.assertThat(response).isEqualTo(responseMock);
+    Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.OK_200);
+    Assertions.assertThat(response.getEntity())
+      .isInstanceOf(UserInfo.class)
+      .isEqualTo(userInfoMock);
   }
 
   @Test

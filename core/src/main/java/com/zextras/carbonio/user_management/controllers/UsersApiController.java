@@ -28,6 +28,7 @@ public class UsersApiController implements UsersApiService {
     this.userService = usersService;
   }
 
+  @Override
   public Response getUserInfoByEmail(
     String cookie,
     String userEmail,
@@ -35,12 +36,17 @@ public class UsersApiController implements UsersApiService {
     SecurityContext securityContext
   ) {
     Map<String, String> cookies = CookieParser.getCookies(cookie);
+    if (!cookies.containsKey("ZM_AUTH_TOKEN")) {
+      return Response.status(Status.BAD_REQUEST).build();
+    }
 
-    return (cookies.containsKey("ZM_AUTH_TOKEN"))
-      ? userService.getInfoByEmail(userEmail, cookies.get("ZM_AUTH_TOKEN"), ignoreCache)
-      : Response.status(Status.BAD_REQUEST).build();
+    return userService
+      .getInfoByEmail(userEmail, cookies.get("ZM_AUTH_TOKEN"), ignoreCache)
+      .map(user -> Response.ok().entity(user).build())
+      .orElse(Response.status(Status.NOT_FOUND).build());
   }
 
+  @Override
   public Response getUserInfoById(
     String cookie,
     String userId,
@@ -48,33 +54,41 @@ public class UsersApiController implements UsersApiService {
     SecurityContext securityContext
   ) {
     Map<String, String> cookies = CookieParser.getCookies(cookie);
+    if (!cookies.containsKey("ZM_AUTH_TOKEN")) {
+      return Response.status(Status.BAD_REQUEST).build();
+    }
 
-    return (cookies.containsKey("ZM_AUTH_TOKEN"))
-      ? userService.getInfoById(userId, cookies.get("ZM_AUTH_TOKEN"), ignoreCache)
-      : Response.status(Status.BAD_REQUEST).build();
+    return userService
+      .getInfoById(userId, cookies.get("ZM_AUTH_TOKEN"), ignoreCache)
+      .map(user -> Response.ok().entity(user).build())
+      .orElse(Response.status(Status.NOT_FOUND).build());
   }
 
   @Override
   public Response getUsersInfo(String cookie, List<String> userIds, Boolean ignoreCache, SecurityContext securityContext)
     throws NotFoundException {
-    Map<String, String> cookies = CookieParser.getCookies(cookie);
 
-    return (cookies.containsKey("ZM_AUTH_TOKEN") && (!userIds.isEmpty() && userIds.size() <= MAX_USER_IDS))
-      ? userService.getUsers(userIds, cookies.get("ZM_AUTH_TOKEN"), ignoreCache)
-      : Response.status(Status.BAD_REQUEST).build();
+    Map<String, String> cookies = CookieParser.getCookies(cookie);
+    if (!cookies.containsKey("ZM_AUTH_TOKEN")) {
+      return Response.status(Status.BAD_REQUEST).build();
+    }
+    if (userIds.isEmpty() || userIds.size() > MAX_USER_IDS) {
+      return Response.status(Status.BAD_REQUEST).entity("userIds list must contain between 1 and " + MAX_USER_IDS + " items").build();
+    }
+
+    return userService.getUsers(userIds, cookies.get("ZM_AUTH_TOKEN"), ignoreCache);
   }
 
   @Override
   public Response getMyselfByCookie(String cookie, Boolean ignoreCache, SecurityContext securityContext) {
     Map<String, String> cookies = CookieParser.getCookies(cookie);
-
-    if (cookies.containsKey("ZM_AUTH_TOKEN")) {
-      return userService
-        .getMyselfByToken(cookies.get("ZM_AUTH_TOKEN"), ignoreCache)
-        .map(userMyself -> Response.ok().entity(userMyself).build())
-        .orElse(Response.status(Status.NOT_FOUND).build());
+    if (!cookies.containsKey("ZM_AUTH_TOKEN")) {
+      return Response.status(Status.BAD_REQUEST).build();
     }
 
-    return Response.status(Status.BAD_REQUEST).build();
+    return userService
+      .getMyselfByToken(cookies.get("ZM_AUTH_TOKEN"), ignoreCache)
+      .map(user -> Response.ok().entity(user).build())
+      .orElse(Response.status(Status.NOT_FOUND).build());
   }
 }

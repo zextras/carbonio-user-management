@@ -45,7 +45,7 @@ public class CacheManager {
           UserToken value,
           long currentTime
         ) {
-          return Duration.ofMillis(value.getLifeTimeInMillis()).toNanos();
+          return Duration.ofMillis(value.lifeTimeInMillis()).toNanos();
         }
 
         @Override

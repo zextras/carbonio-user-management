@@ -34,12 +34,12 @@ class GetUserInfoApiIT {
   private static Simulator simulator;
 
   @BeforeAll
-  static void init() {
+  static void init() throws Exception {
     simulator = SimulatorBuilder.aSimulator().init().withMailboxService().build().start();
   }
 
   @AfterAll
-  static void cleanUpAll() {
+  static void cleanUpAll() throws Exception {
     simulator.close();
   }
 
