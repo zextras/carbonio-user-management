@@ -28,3 +28,5 @@ generated/src
 LICENSES
 artifacts/
 /package/carbonio-user-management.jar
+
+.vscode/
