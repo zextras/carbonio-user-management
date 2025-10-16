@@ -52,12 +52,19 @@ pipeline {
 
         stage('Build jar') {
             steps {
-                container('jdk-17') {
-                    sh '''
-                        mvn -B package
-                        cp boot/target/carbonio-user-management-*-jar-with-dependencies.jar \
-                            package/carbonio-user-management.jar
-                    '''
+                script {
+                    def profile = '-P dev'
+                    if (env.TAG_NAME) {
+                        profile = '-P prod'
+                    }
+
+                    container('jdk-17') {
+                        sh """
+                            mvn -B package ${profile}
+                            cp boot/target/carbonio-user-management-*-jar-with-dependencies.jar \
+                                package/carbonio-user-management.jar
+                        """
+                    }
                 }
             }
         }
@@ -82,7 +89,7 @@ pipeline {
             steps {
                 container('jdk-17') {
                     sh 'mvn -B verify -P generate-jacoco-full-report'
-                    recordCoverage(tools: [[parser: 'JACOCO']],sourceCodeRetention: 'MODIFIED')
+                    recordCoverage(tools: [[parser: 'JACOCO']], sourceCodeRetention: 'MODIFIED')
                 }
             }
         }
@@ -113,7 +120,7 @@ pipeline {
                 not {
                     anyOf {
                         buildingTag()
-                        expression { env.BRANCH_NAME.startsWith("PR-") }
+                        expression { env.BRANCH_NAME.startsWith('PR-') }
                     }
                 }
             }
@@ -148,5 +155,5 @@ pipeline {
                 }
             }
         }
+        }
     }
-}
