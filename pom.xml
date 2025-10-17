@@ -36,7 +36,6 @@ SPDX-License-Identifier: AGPL-3.0-only
   <properties>
     <!-- Maven CI Friendly -->
     <revision>0.8.4</revision>
-    <changelist>-1</changelist>
 
     <!-- Dependencies -->
     <assertj.version>3.26.3</assertj.version>
@@ -371,4 +370,22 @@ SPDX-License-Identifier: AGPL-3.0-only
       <url>https://zextras.jfrog.io/artifactory/java-sdk</url>
     </repository>
   </repositories>
+
+  <profiles>
+    <profile>
+      <id>dev</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <properties>
+        <changelist>-SNAPSHOT</changelist>
+      </properties>
+    </profile>
+    <profile>
+      <id>prod</id>
+      <properties>
+        <changelist></changelist>
+      </properties>
+    </profile>
+  </profiles>
 </project>
