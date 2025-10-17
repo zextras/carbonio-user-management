@@ -38,4 +38,4 @@ spec:
   lifecycle: production
   owner: shuffled-waffles
   definition:
-    $text: https://github.com/Zextras/carbonio-user-management/blob/develop/resources/user-management.yaml
+    $text: https://github.com/Zextras/carbonio-user-management/blob/devel/resources/user-management.yaml
