@@ -22,15 +22,18 @@ import jakarta.xml.ws.WebServiceException;
 import org.apache.commons.lang3.LocaleUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import zimbra.NamedValue;
 import zimbraaccount.Attr;
 import zimbraaccount.GetAccountInfoResponse;
 import zimbraaccount.GetInfoResponse;
+import zimbraaccount.Pref;
 
 import javax.ws.rs.core.Response;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
 
 import static com.zextras.mailbox.client.service.ServiceRequests.AccountInfo;
 import static com.zextras.mailbox.client.service.ServiceRequests.Info;
@@ -68,7 +71,7 @@ public class UserService {
                               AccountInfo.byId(userId).withAuthToken(token);
                           final GetAccountInfoResponse accountInfo = mailboxClient.send(request);
 
-                          userInfo = createUserInfo(accountInfo);
+                          userInfo = createUserInfoFromAccountInfoResponse(accountInfo);
                           cacheManager.getUserByIdCache().put(userId, userInfo);
                           cacheManager.getUserByEmailCache().put(userInfo.getEmail(), userInfo);
                           logger.debug("Found: {}", userId);
@@ -100,7 +103,7 @@ public class UserService {
             AccountInfo.byId(userId).withAuthToken(token);
         final GetAccountInfoResponse accountInfo = mailboxClient.send(request);
 
-        userInfo = createUserInfo(accountInfo);
+        userInfo = createUserInfoFromAccountInfoResponse(accountInfo);
         cacheManager.getUserByIdCache().put(userId, userInfo);
         cacheManager.getUserByEmailCache().put(userInfo.getEmail(), userInfo);
 
@@ -130,7 +133,7 @@ public class UserService {
             AccountInfo.byEmail(userEmail).withAuthToken(token);
         final GetAccountInfoResponse accountInfo = mailboxClient.send(request);
 
-        userInfo = createUserInfo(accountInfo);
+        userInfo = createUserInfoFromAccountInfoResponse(accountInfo);
         cacheManager.getUserByEmailCache().put(userEmail, userInfo);
         cacheManager.getUserByIdCache().put(userInfo.getId().getUserId(), userInfo);
 
@@ -160,17 +163,7 @@ public class UserService {
             Info.sections(Sections.children, Sections.attrs, Sections.prefs).withAuthToken(token);
         final GetInfoResponse infoResponse = mailboxClient.send(request);
 
-        UserId userId = new UserId();
-        userId.setUserId(infoResponse.getId());
-
-        userMyself = new UserMyself();
-        userMyself.setId(userId);
-        userMyself.setEmail(infoResponse.getName());
-        userMyself.setDomain(infoResponse.getPublicURL());
-        userMyself.setFullName(readFullName(infoResponse));
-        userMyself.setLocale(readLocal(infoResponse, userId).toString());
-        userMyself.setType(readUserType(infoResponse));
-
+        userMyself = createUserMyselfFromInfoResponse(infoResponse);
         cacheManager.getUserMyselfCache().put(token, userMyself);
 
       } catch (WebServiceException | MailboxServerException exception) {
@@ -216,91 +209,99 @@ public class UserService {
     return Optional.of(userId);
   }
 
-  private static Locale readLocal(GetInfoResponse infoResponse, UserId userId) {
-    // This old style try/catch is necessary because:
-    //  - the system cannot trust the user locale since it can be set manually by the sysadmin
-    //    and there is no check if the value is a valid one. So the LocaleUtils#toLocale method
-    //    can raise an exception if the Locale is malformed.
-    //  - the project doesn't have the Vavr dependency containing the Try construct to handle
-    //    the exception in a cleaner way and I don't want to add it now only for this.
-    try {
-      return infoResponse.getPrefs().getPref().stream()
-          .filter(perf -> perf.getName().equals("zimbraPrefLocale"))
-          .findFirst()
-          .map(pref -> {
-            logger.debug("User myself {} requested, has locale {}", userId.getUserId(), pref.getValue());
-            return LocaleUtils.toLocale(pref.getValue());
-          })
-          .orElse(Locale.ENGLISH);
-    } catch (IllegalArgumentException exception) {
-      logger.error(
-        "The user id {} has a locale with an invalid format. The system falls back in '{}'",
-        userId.getUserId(),
-        Locale.ENGLISH);
-
-      return Locale.ENGLISH;
-    }
-  }
-
-  private static String readFullName(GetInfoResponse infoResponse) {
-    return infoResponse.getAttrs().getAttr().stream()
-      .filter(attribute -> attribute.getName().equals("displayName"))
-      .findFirst()
-      .map(Attr::getValue)
-      .orElse("");
-  }
-
-  private static UserType readUserType(GetInfoResponse infoResponse) {
-    return Boolean.parseBoolean(
-      infoResponse.getAttrs().getAttr().stream()
-        .filter(
-          attribute ->
-            attribute.getName().equals("zimbraIsExternalVirtualAccount"))
-        .findFirst()
-        .map(Attr::getValue)
-        .orElse("FALSE") // default value, will be translated to type internal
-        .toLowerCase())
-      ? UserType.GUEST
-      : UserType.INTERNAL;
-  }
-
-  private UserInfo createUserInfo(GetAccountInfoResponse accountInfo) {
+  /*
+  These methods are useful to generalize the account info extraction, since UserMyself is essentially UserInfo
+  with some more parameters.
+  The responses that the mailbox returns are different but very similar, so we can generalize this operation.
+  This gives us a single point where attributes and preferences are extracted, so in the future these can be easily
+  modified to include or remove values.
+  Handling attributes this way, we can make sure that the list is iterated only one time per call and
+  not every time we want to extract an attribute.
+   */
+  private UserInfo createUserInfoFromAccountInfoResponse(GetAccountInfoResponse accountInfo) {
     UserInfo userInfo = new UserInfo();
-
-    // default value in case zimbraIsExternalVirtualAccount is not returned
-    userInfo.setType(UserType.INTERNAL);
-    // default value in case status is not returned
-    userInfo.setStatus(UserStatus.CLOSED);
-
-    accountInfo
-      .getAttr()
-      .forEach(
-        attribute -> {
-          if (attribute.getName().equals("displayName")) {
-            userInfo.setFullName(attribute.getValue());
-          }
-
-          if (attribute.getName().equals("zimbraId")) {
-            UserId userId = new UserId();
-            userId.setUserId(attribute.getValue());
-            userInfo.setId(userId);
-          }
-
-          if (attribute.getName().equals("zimbraAccountStatus")) {
-            userInfo.setStatus(UserStatus.valueOf(attribute.getValue().toUpperCase()));
-          }
-
-          if (attribute.getName().equals("zimbraIsExternalVirtualAccount")) {
-            userInfo.setType(
-              Boolean.parseBoolean(attribute.getValue().toLowerCase())
-                ? UserType.GUEST
-                : UserType.INTERNAL);
-          }
-        });
-
     userInfo.setEmail(accountInfo.getName());
     userInfo.setDomain(accountInfo.getPublicURL());
 
+    extractAttributes(userInfo, accountInfo.getAttr(), NamedValue::getName, NamedValue::getValue);
+
     return userInfo;
+  }
+
+  private UserMyself createUserMyselfFromInfoResponse(GetInfoResponse infoResponse) {
+    UserId userId = new UserId();
+    userId.setUserId(infoResponse.getId());
+
+    UserMyself userMyself = new UserMyself();
+    userMyself.setId(userId);
+    userMyself.setEmail(infoResponse.getName());
+    userMyself.setDomain(infoResponse.getPublicURL());
+
+    extractAttributes(userMyself, infoResponse.getAttrs().getAttr(), Attr::getName, Attr::getValue);
+    extractPreferences(userMyself, infoResponse.getPrefs().getPref());
+
+    return userMyself;
+  }
+
+  private <T> void extractAttributes(
+      UserInfo user,
+      List<T> attrs,
+      Function<T, String> nameExtractor,
+      Function<T, String> valueExtractor) {
+
+    boolean isUserMyself = user instanceof UserMyself;
+
+    for (T attribute : attrs) {
+      String name = nameExtractor.apply(attribute);
+      String value = valueExtractor.apply(attribute);
+
+      switch (name) {
+        case "displayName":
+          user.setFullName(value);
+          break;
+        case "zimbraId":
+          UserId userId = new UserId();
+          userId.setUserId(value);
+          user.setId(userId);
+          break;
+        case "zimbraAccountStatus":
+          user.setStatus(UserStatus.valueOf(value.toUpperCase()));
+          break;
+        case "zimbraIsExternalVirtualAccount":
+          user.setType(Boolean.parseBoolean(value.toLowerCase())
+            ? UserType.GUEST
+            : UserType.INTERNAL);
+          break;
+        default:
+          if (isUserMyself && name.startsWith("carbonio")) {
+            ((UserMyself) user).getCarbonioAttributes().put(name, value);
+          }
+          break;
+      }
+    }
+  }
+
+  private void extractPreferences(UserMyself user, List<Pref> prefs) {
+    for (Pref pref : prefs) {
+      if (pref.getName().equals("zimbraPrefLocale")) {
+        // This old style try/catch is necessary because:
+        //  - the system cannot trust the user locale since it can be set manually by the sysadmin
+        //    and there is no check if the value is a valid one. So the LocaleUtils#toLocale method
+        //    can raise an exception if the Locale is malformed.
+        //  - the project doesn't have the Vavr dependency containing the Try construct to handle
+        //    the exception in a cleaner way and I don't want to add it now only for this.
+        try {
+          logger.debug("User myself {} requested, has locale {}", user.getId().getUserId(), pref.getValue());
+          user.setLocale(LocaleUtils.toLocale(pref.getValue()).toString());
+        } catch (IllegalArgumentException exception) {
+          logger.error(
+            "The user id {} has a locale with an invalid format. The system falls back in '{}'",
+            user.getId().getUserId(),
+            Locale.ENGLISH);
+          user.setLocale(Locale.ENGLISH.toString());
+        }
+        break;
+      }
+    }
   }
 }
