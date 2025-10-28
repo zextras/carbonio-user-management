@@ -248,6 +248,8 @@ components:
         - Maintenance
     UserInfo:
       type: object
+      discriminator:
+        propertyName: objectType
       properties:
         id:
           $ref: '#/components/schemas/UserId'
@@ -263,21 +265,17 @@ components:
         type:
           $ref: '#/components/schemas/UserType'
     UserMyself:
-      type: object
-      properties:
-        id:
-          $ref: '#/components/schemas/UserId'
-        email:
-          type: string
-          format: email
-        fullName:
-          type: string
-        domain:
-          type: string
-        locale:
-          type: string
-        type:
-          $ref: '#/components/schemas/UserType'
+      allOf:
+        - $ref: '#/components/schemas/UserInfo'
+        - type: object
+          properties:
+            locale:
+              type: string
+            carbonioAttributes:
+              type: object
+              additionalProperties:
+                type: string
+              description: All attributes that start with "carbonio"
     UserId:
       type: object
       properties:
