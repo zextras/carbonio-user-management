@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Function;
 
 import static com.zextras.mailbox.client.service.ServiceRequests.AccountInfo;
 import static com.zextras.mailbox.client.service.ServiceRequests.Info;
@@ -209,51 +208,53 @@ public class UserService {
     return Optional.of(userId);
   }
 
-  /*
-  These methods are useful to generalize the account info extraction, since UserMyself is essentially UserInfo
-  with some more parameters.
-  The responses that the mailbox returns are different but very similar, so we can generalize this operation.
-  This gives us a single point where attributes and preferences are extracted, so in the future these can be easily
-  modified to include or remove values.
-  Handling attributes this way, we can make sure that the list is iterated only one time per call and
-  not every time we want to extract an attribute.
-   */
   private UserInfo createUserInfoFromAccountInfoResponse(GetAccountInfoResponse accountInfo) {
     UserInfo userInfo = new UserInfo();
     userInfo.setEmail(accountInfo.getName());
     userInfo.setDomain(accountInfo.getPublicURL());
-
-    extractAttributes(userInfo, accountInfo.getAttr(), NamedValue::getName, NamedValue::getValue);
-
+    extractAttributesIntoUserInfo(userInfo, accountInfo.getAttr());
     return userInfo;
   }
 
   private UserMyself createUserMyselfFromInfoResponse(GetInfoResponse infoResponse) {
-    UserId userId = new UserId();
-    userId.setUserId(infoResponse.getId());
-
     UserMyself userMyself = new UserMyself();
-    userMyself.setId(userId);
     userMyself.setEmail(infoResponse.getName());
     userMyself.setDomain(infoResponse.getPublicURL());
-
-    extractAttributes(userMyself, infoResponse.getAttrs().getAttr(), Attr::getName, Attr::getValue);
-    extractPreferences(userMyself, infoResponse.getPrefs().getPref());
-
+    extractAttributesIntoUserMyself(userMyself, infoResponse.getAttrs().getAttr());
+    extractPreferencesIntoUserMyself(userMyself, infoResponse.getPrefs().getPref());
     return userMyself;
   }
 
-  private <T> void extractAttributes(
-      UserInfo user,
-      List<T> attrs,
-      Function<T, String> nameExtractor,
-      Function<T, String> valueExtractor) {
+  private void extractAttributesIntoUserInfo(UserInfo user, List<NamedValue> attrs) {
+    for (NamedValue attribute : attrs) {
+      String name = attribute.getName();
+      String value = attribute.getValue();
 
-    boolean isUserMyself = user instanceof UserMyself;
+      switch (name) {
+        case "displayName":
+          user.setFullName(value);
+          break;
+        case "zimbraId":
+          UserId userId = new UserId();
+          userId.setUserId(value);
+          user.setId(userId);
+          break;
+        case "zimbraAccountStatus":
+          user.setStatus(UserStatus.valueOf(value.toUpperCase()));
+          break;
+        case "zimbraIsExternalVirtualAccount":
+          user.setType(Boolean.parseBoolean(value.toLowerCase())
+            ? UserType.GUEST
+            : UserType.INTERNAL);
+          break;
+      }
+    }
+  }
 
-    for (T attribute : attrs) {
-      String name = nameExtractor.apply(attribute);
-      String value = valueExtractor.apply(attribute);
+  private void extractAttributesIntoUserMyself(UserMyself user, List<Attr> attrs) {
+    for (Attr attribute : attrs) {
+      String name = attribute.getName();
+      String value = attribute.getValue();
 
       switch (name) {
         case "displayName":
@@ -273,17 +274,17 @@ public class UserService {
             : UserType.INTERNAL);
           break;
         default:
-          if (isUserMyself && name.startsWith("carbonio")) {
-            ((UserMyself) user).getCarbonioAttributes().put(name, value);
+          if (name.startsWith("carbonio")) {
+            user.getCarbonioAttributes().put(name, value);
           }
           break;
       }
     }
   }
 
-  private void extractPreferences(UserMyself user, List<Pref> prefs) {
-    for (Pref pref : prefs) {
-      if (pref.getName().equals("zimbraPrefLocale")) {
+  private void extractPreferencesIntoUserMyself(UserMyself user, List<Pref> prefs) {
+    for (Pref preference : prefs) {
+      if (preference.getName().equals("zimbraPrefLocale")) {
         // This old style try/catch is necessary because:
         //  - the system cannot trust the user locale since it can be set manually by the sysadmin
         //    and there is no check if the value is a valid one. So the LocaleUtils#toLocale method
@@ -291,8 +292,8 @@ public class UserService {
         //  - the project doesn't have the Vavr dependency containing the Try construct to handle
         //    the exception in a cleaner way and I don't want to add it now only for this.
         try {
-          logger.debug("User myself {} requested, has locale {}", user.getId().getUserId(), pref.getValue());
-          user.setLocale(LocaleUtils.toLocale(pref.getValue()).toString());
+          logger.debug("User myself {} requested, has locale {}", user.getId().getUserId(), preference.getValue());
+          user.setLocale(LocaleUtils.toLocale(preference.getValue()).toString());
         } catch (IllegalArgumentException exception) {
           logger.error(
             "The user id {} has a locale with an invalid format. The system falls back in '{}'",

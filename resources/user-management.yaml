@@ -248,8 +248,6 @@ components:
         - Maintenance
     UserInfo:
       type: object
-      discriminator:
-        propertyName: objectType
       properties:
         id:
           $ref: '#/components/schemas/UserId'

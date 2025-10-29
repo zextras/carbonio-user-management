@@ -280,7 +280,7 @@ SPDX-License-Identifier: AGPL-3.0-only
                 <modelPackage>com.zextras.carbonio.user_management.generated.model</modelPackage>
                 <configOptions>
                   <artifactDescription>User Management generated</artifactDescription>
-                  <librart>resteasy</librart>
+                  <library>resteasy</library>
                   <serializationLibrary>jackson</serializationLibrary>
                   <dateLibrary>java8</dateLibrary>
                 </configOptions>
