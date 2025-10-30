@@ -295,6 +295,9 @@ public class UserService {
   }
 
   private void extractPreferencesIntoUserMyself(UserMyself user, List<Pref> prefs) {
+    // Default value for user's locale is english
+    user.setLocale(Locale.ENGLISH.toString());
+
     for (Pref preference : prefs) {
       if (preference.getName().equals("zimbraPrefLocale")) {
         // This old style try/catch is necessary because:
