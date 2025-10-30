@@ -229,6 +229,8 @@ public class UserService {
     // The attribute zimbraIsExternalVirtualAccount is not returned if it doesn't have a value;
     // in that case the user is internal, so we default to internal and eventually it will get overwritten.
     user.setType(UserType.INTERNAL);
+    // Not every user has a name, set to empty as default for compatibility
+    user.setFullName("");
 
     for (NamedValue attribute : attrs) {
       String name = attribute.getName();
@@ -259,6 +261,8 @@ public class UserService {
     // The attribute zimbraIsExternalVirtualAccount is not returned if it doesn't have a value;
     // in that case the user is internal, so we default to internal and eventually it will get overwritten.
     user.setType(UserType.INTERNAL);
+    // Not every user has a name, set to empty as default for compatibility
+    user.setFullName("");
 
     for (Attr attribute : attrs) {
       String name = attribute.getName();
