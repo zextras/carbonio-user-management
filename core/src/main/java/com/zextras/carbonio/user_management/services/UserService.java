@@ -226,6 +226,10 @@ public class UserService {
   }
 
   private void extractAttributesIntoUserInfo(UserInfo user, List<NamedValue> attrs) {
+    // The attribute zimbraIsExternalVirtualAccount is not returned if it doesn't have a value;
+    // in that case the user is internal, so we default to internal and eventually it will get overwritten.
+    user.setType(UserType.INTERNAL);
+
     for (NamedValue attribute : attrs) {
       String name = attribute.getName();
       String value = attribute.getValue();
@@ -252,6 +256,10 @@ public class UserService {
   }
 
   private void extractAttributesIntoUserMyself(UserMyself user, List<Attr> attrs) {
+    // The attribute zimbraIsExternalVirtualAccount is not returned if it doesn't have a value;
+    // in that case the user is internal, so we default to internal and eventually it will get overwritten.
+    user.setType(UserType.INTERNAL);
+
     for (Attr attribute : attrs) {
       String name = attribute.getName();
       String value = attribute.getValue();
