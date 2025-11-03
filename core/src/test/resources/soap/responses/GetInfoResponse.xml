@@ -17,7 +17,7 @@
         <pref name="zimbraPrefLocale">%ACCOUNT_LOCALE%</pref>
       </prefs>
       <attrs>
-        <!-- Here only the used attrs are listed -->
+        <attr name="zimbraId">%ACCOUNT_ID%</attr>
         <attr name="displayName">%ACCOUNT_FULL_NAME%</attr>
         <attr name="zimbraIsExternalVirtualAccount">%IS_VIRTUAL_ACCOUNT%</attr>
       </attrs>
