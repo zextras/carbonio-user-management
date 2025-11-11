@@ -18,25 +18,25 @@ depends=(
   "service-discover"
 )
 source=(
+  "121-carbonio-user-management.sh"
   "carbonio-user-management"
   "carbonio-user-management.hcl"
   "carbonio-user-management.jar"
   "carbonio-user-management.service"
   "carbonio-user-management-setup"
   "carbonio-user-management-sidecar.service"
-  "carbonio-user-management-pending-setup"
   "intentions.json"
   "policies.json"
   "service-protocol.json"
 )
 sha256sums=(
+  "41e10587c1f04ef0a1d53608bc2ca94bb520177b0f39f42433cfae3e279c96a8"
   "ac85003d32f0be73f6b2efb9f4098f92f039b5e398c223ad7fca81077ec13abf"
   "a031d2a771f307b86a4e61ad2fef5fa7953ca692612f7da83969c55609f7383e"
   "SKIP"
   "32085e584ed8616f80764ccc079316f8d7b465d3ec14a74275002aa332fa7d67"
   "786c6ea505fa5bffc23a5189a3035b19c392d3224901a079f710363efb6de7e8"
   "aa4214f4950bbad86af04f394551a8041132b6c3375caca49d8401024b92851c"
-  "41e10587c1f04ef0a1d53608bc2ca94bb520177b0f39f42433cfae3e279c96a8"
   "1a58295f74dbcd34925394d1d3c4b906426759a41c754288dc01fbce971ab126"
   "d4413a87bd9d2ec97799b31639d7ff539f9b91d0162468db09017b92b322dfc8"
   "beae6d6f2e9d1ef926039319e5d9d2fb06ee07ac41bc445414be93443570c809"
@@ -48,6 +48,8 @@ backup=(
 
 package() {
   cd "${srcdir}"
+  install -Dm 644 121-carbonio-user-management.sh \
+    "${pkgdir}/etc/zextras/pending-setups.d/121-carbonio-user-management.sh"
   install -Dm 755 carbonio-user-management \
     "${pkgdir}/usr/bin/carbonio-user-management"
   install -Dm 755 carbonio-user-management-setup \
@@ -60,8 +62,6 @@ package() {
     "${pkgdir}/lib/systemd/system/carbonio-user-management-sidecar.service"
   install -Dm 644 carbonio-user-management.hcl \
     "${pkgdir}/etc/zextras/service-discover/carbonio-user-management.hcl"
-  install -Dm 644 carbonio-user-management-pending-setup \
-    "${pkgdir}/etc/zextras/pending-setups.d/carbonio-user-management.sh"
   install -Dm 644 intentions.json \
     "${pkgdir}/etc/carbonio/user-management/service-discover/intentions.json"
   install -Dm 644 policies.json \
@@ -100,8 +100,8 @@ prerm() {
 
 postrm() {
   rm -Rf /etc/carbonio/user-management/
-  rm -f /etc/zextras/pending-setups.d/carbonio-user-management.sh
-  rm -f /etc/zextras/pending-setups.d/done/carbonio-user-management.sh
+  rm -f /etc/zextras/pending-setups.d/121-carbonio-user-management.sh
+  rm -f /etc/zextras/pending-setups.d/done/121-carbonio-user-management.sh
 
   if [ -d /run/systemd/system ]; then
     systemctl daemon-reload &>/dev/null || :
