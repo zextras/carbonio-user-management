@@ -3,6 +3,15 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 
 library(
+    identifier: 'jenkins-dt3-lib@v1.2.0',
+    retriever: modernSCM([
+        $class: 'GitSCMSource',
+        remote: 'git@github.com:zextras/jenkins-dt3-lib.git',
+        credentialsId: 'jenkins-integration-with-github-account'
+    ])
+)
+
+library(
     identifier: 'jenkins-packages-build-library@1.0.4',
     retriever: modernSCM([
         $class: 'GitSCMSource',
@@ -34,6 +43,21 @@ pipeline {
         booleanParam defaultValue: false,
             description: 'Whether to upload the packages in playground repositories',
             name: 'PLAYGROUND'
+        booleanParam(
+            name: 'PREPARE_RELEASE',
+            defaultValue: false,
+            description: 'Check this to prepare a new release (creates pre-release branch and PR)'
+        )
+        booleanParam(
+            name: 'SKIP_TESTS',
+            defaultValue: false,
+            description: 'Skip unit tests and integration tests'
+        )
+        booleanParam(
+            name: 'SKIP_CHECKS',
+            defaultValue: false,
+            description: 'Skip coverage and SonarQube analysis'
+        )
     }
 
     tools {
@@ -43,9 +67,8 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                checkout scm
                 script {
-                    gitMetadata()
+                    checkoutWithMetadata()
                 }
             }
         }
@@ -70,6 +93,9 @@ pipeline {
         }
 
         stage('UTs') {
+            when {
+                expression { params.SKIP_TESTS == false }
+            }
             steps {
                 container('jdk-17') {
                     sh 'mvn -B verify -P run-unit-tests'
@@ -78,6 +104,9 @@ pipeline {
         }
 
         stage('ITs') {
+            when {
+                expression { params.SKIP_TESTS == false }
+            }
             steps {
                 container('jdk-17') {
                     sh 'mvn -B verify -P run-integration-tests'
@@ -86,26 +115,54 @@ pipeline {
         }
 
         stage('Coverage') {
+            when {
+                expression { params.SKIP_CHECKS == false }
+            }
             steps {
                 container('jdk-17') {
                     sh 'mvn -B verify -P generate-jacoco-full-report'
-                    recordCoverage(tools: [[parser: 'JACOCO']], sourceCodeRetention: 'MODIFIED')
+                    recordCoverage(
+                        tools: [[parser: 'JACOCO']],
+                        sourceCodeRetention: 'MODIFIED'
+                    )
+                }
+            }
+        }
+
+        stage('SonarQube analysis') {
+            when {
+               allOf {
+                   expression { params.SKIP_CHECKS == false }
+                   anyOf {
+                       branch 'devel'
+                       expression { env.BRANCH_NAME.contains("PR") }
+                   }
+               }
+            }
+            steps {
+                container('jdk-17') {
+                    withSonarQubeEnv(credentialsId: 'sonarqube-user-token', installationName: 'SonarQube instance') {
+                        sh 'mvn -B sonar:sonar'
+                    }
                 }
             }
         }
 
         stage('Build deb/rpm') {
             steps {
-                echo 'Building deb/rpm packages'
-                buildStage([
-                    rockySinglePkg: true,
-                    ubuntuSinglePkg: true
-                ])
+                script {
+                    buildPackages([
+                        pkgbuildPath: 'package/PKGBUILD',
+                        buildStageConfig: [
+                            rockySinglePkg: true,
+                            ubuntuSinglePkg: true
+                        ]
+                    ])
+                }
             }
         }
 
-        stage('Upload artifacts')
-        {
+        stage('Upload artifacts') {
             steps {
                 uploadStage(
                     packages: yapHelper.getPackageNames(),
@@ -115,45 +172,66 @@ pipeline {
             }
         }
 
-        stage('Build and Publish Docker Image') {
-            when {
-                not {
-                    anyOf {
-                        buildingTag()
-                        expression { env.BRANCH_NAME.startsWith('PR-') }
-                    }
+        stage('Prepare Release') {
+            agent {
+                node {
+                    label 'nodejs-v1'
                 }
             }
-            steps {
-                container('dind') {
-                    withDockerRegistry([
-                        credentialsId: 'private-registry',
-                        url: 'https://registry.dev.zextras.com'
-                    ]) {
-                        script {
-                            String branchTag = env.BRANCH_NAME.replaceAll('/', '-').toLowerCase()
-                            Set<String> imageTags = [ branchTag ]
-
-                            if (env.BRANCH_NAME == 'devel') {
-                                imageTags.add('latest')
-                            } else if (buildingTag() && env.TAG_NAME?.trim()) {
-                                imageTags.add(env.TAG_NAME?.startsWith('v') ? env.TAG_NAME.substring(1) : env.TAG_NAME)
-                            }
-
-                            dockerHelper.buildImage([
-                                imageName: 'registry.dev.zextras.com/dev/carbonio-user-management',
-                                imageTags: imageTags,
-                                dockerfile: 'docker/minimal/carbonio-user-management/Dockerfile',
-                                ocLabels: [
-                                    title: 'Carbonio User Management',
-                                    description: 'Carbonio User Management',
-                                    version: branchTag
-                                ]
-                            ])
+            when {
+                allOf {
+                    branch 'devel'
+                    expression { params.PREPARE_RELEASE == true }
+                    not {
+                        expression {
+                            return env.GIT_COMMIT_MSG.contains('[skip ci]') ||
+                                   env.GIT_COMMIT_MSG.contains('chore(release):')
                         }
                     }
                 }
             }
+            steps {
+                script {
+                    container('nodejs-20') {
+                        prepareRelease(
+                            repoName: 'carbonio-user-management'
+                        )
+                    }
+                }
+            }
         }
+
+        stage('Tag for release') {
+            when {
+                allOf {
+                    branch 'devel'
+                    expression {
+                        return env.GIT_COMMIT_MSG.contains('chore(release):') &&
+                               env.GIT_COMMIT_MSG.contains('[skip ci]')
+                    }
+                }
+            }
+            steps {
+                script {
+                    tagRelease()
+                }
+            }
+        }
+
+        stage('Build and Publish Docker Image') {
+            when {
+                not {
+                    expression { env.BRANCH_NAME.startsWith('PR-') }
+                }
+            }
+            steps {
+                buildAndPublishDockerImage(
+                    projectName: 'carbonio-user-management',
+                    dockerfile: 'docker/minimal/carbonio-user-management/Dockerfile',
+                    imageTitle: 'Carbonio User Management',
+                    imageDescription: 'Carbonio User Management'
+                )
+            }
         }
     }
+}
