@@ -35,7 +35,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
   <properties>
     <!-- Maven CI Friendly -->
-    <revision>0.8.5</revision>
+    <revision>1.0.0</revision>
 
     <!-- Dependencies -->
     <assertj.version>3.26.3</assertj.version>
