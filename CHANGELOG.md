@@ -1,3 +1,17 @@
+## [1.0.0](https://github.com/zextras/carbonio-user-management/compare/v0.8.4...v1.0.0) (2025-11-14)
+
+### ⚠ BREAKING CHANGES
+
+* update release config and trigger first major bump (#87)
+
+### Features
+
+* handle carbonio attributes on user myself ([#85](https://github.com/zextras/carbonio-user-management/issues/85)) ([6ea4938](https://github.com/zextras/carbonio-user-management/commit/6ea4938beb49600bc5a4e5e845f5a83145c412a4))
+
+### Bug Fixes
+
+* update release config and trigger first major bump ([#87](https://github.com/zextras/carbonio-user-management/issues/87)) ([0ee3154](https://github.com/zextras/carbonio-user-management/commit/0ee315467c1905060ef33e69b795db59e7b367dd))
+
 ## [0.8.4](https://github.com/zextras/carbonio-user-management/compare/v0.8.3...v0.8.4) (2025-10-02)
 ## [0.8.3](https://github.com/zextras/carbonio-user-management/compare/v0.8.2...v0.8.3) (2025-08-20)
 
