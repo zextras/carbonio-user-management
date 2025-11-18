@@ -1,3 +1,9 @@
+## [1.0.1](https://github.com/zextras/carbonio-user-management/compare/v1.0.0...v1.0.1) (2025-11-18)
+
+### Bug Fixes
+
+* let every service call the user myself endpoint ([#90](https://github.com/zextras/carbonio-user-management/issues/90)) ([309cb74](https://github.com/zextras/carbonio-user-management/commit/309cb74fd9e39411fdb573ad120cf4898e29d551))
+
 ## [1.0.0](https://github.com/zextras/carbonio-user-management/compare/v0.8.4...v1.0.0) (2025-11-14)
 
 ### ⚠ BREAKING CHANGES
