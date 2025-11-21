@@ -81,7 +81,7 @@ pipeline {
                         profile = '-P prod'
                     }
 
-                    container('jdk-17') {
+                    container('jdk-21') {
                         sh """
                             mvn -B package ${profile}
                             cp boot/target/carbonio-user-management-*-jar-with-dependencies.jar \
@@ -97,7 +97,7 @@ pipeline {
                 expression { params.SKIP_TESTS == false }
             }
             steps {
-                container('jdk-17') {
+                container('jdk-21') {
                     sh 'mvn -B verify -P run-unit-tests'
                 }
             }
@@ -108,7 +108,7 @@ pipeline {
                 expression { params.SKIP_TESTS == false }
             }
             steps {
-                container('jdk-17') {
+                container('jdk-21') {
                     sh 'mvn -B verify -P run-integration-tests'
                 }
             }
@@ -119,7 +119,7 @@ pipeline {
                 expression { params.SKIP_CHECKS == false }
             }
             steps {
-                container('jdk-17') {
+                container('jdk-21') {
                     sh 'mvn -B verify -P generate-jacoco-full-report'
                     recordCoverage(
                         tools: [[parser: 'JACOCO']],
@@ -140,7 +140,7 @@ pipeline {
                }
             }
             steps {
-                container('jdk-17') {
+                container('jdk-21') {
                     withSonarQubeEnv(credentialsId: 'sonarqube-user-token', installationName: 'SonarQube instance') {
                         sh 'mvn -B sonar:sonar'
                     }
