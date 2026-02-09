@@ -246,6 +246,7 @@ components:
         - Locked
         - Lockout
         - Maintenance
+        - Pending
     UserInfo:
       type: object
       properties:
