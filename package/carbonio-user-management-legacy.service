@@ -7,7 +7,6 @@ Description=Carbonio User Management Daemon
 Wants=network.target
 Requires=network-online.target
 After=network-online.target
-PartOf=carbonio-directory-server.target
 
 [Service]
 Type=simple
@@ -20,4 +19,4 @@ TimeoutSec=60s
 TimeoutStopSec=120s
 
 [Install]
-WantedBy=carbonio-directory-server.target
+WantedBy=multi-user.target
