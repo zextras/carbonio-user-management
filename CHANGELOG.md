@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/zextras/carbonio-user-management/compare/v1.0.1...v1.0.2) (2026-02-24)
+
+### Bug Fixes
+
+* **docker:** generate proper config.properties ([#92](https://github.com/zextras/carbonio-user-management/issues/92)) ([51f4549](https://github.com/zextras/carbonio-user-management/commit/51f4549f6e673fb94443468d11061f92acce9cef))
+* handle pending status ([#105](https://github.com/zextras/carbonio-user-management/issues/105)) ([c7468aa](https://github.com/zextras/carbonio-user-management/commit/c7468aa1951b10c088f6996167bf3aa98d56c5aa))
+
 ## [1.0.1](https://github.com/zextras/carbonio-user-management/compare/v1.0.0...v1.0.1) (2025-11-18)
 
 ### Bug Fixes
