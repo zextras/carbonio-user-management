@@ -17,6 +17,18 @@ import java.time.Duration;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Cache for {@link UserInfo}, keyed by userId with a secondary index by email.
+ *
+ * <p>Each entry's TTL is read from config ({@code cache.userinfo-ttl}) at insertion time via
+ * Caffeine's {@code VarExpiration} API, so config changes on Consul take effect immediately
+ * without restart.
+ *
+ * <p>Caffeine doesn't support multi-key lookup natively. The secondary index
+ * ({@code emailToUserId}) is a ConcurrentHashMap kept in sync via Caffeine's
+ * {@code removalListener}: when an entry expires or is invalidated, the listener automatically
+ * removes the corresponding email mapping.
+ */
 @Singleton
 public class UserInfoCache {
 
