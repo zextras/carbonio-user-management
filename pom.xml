@@ -28,9 +28,8 @@ SPDX-License-Identifier: AGPL-3.0-only
   <url>https://www.github.com/Zextras/carbonio-user-management</url>
 
   <modules>
-    <module>boot</module>
-    <module>core</module>
-    <module>generated</module>
+    <module>sdk</module>
+    <module>app</module>
   </modules>
 
   <properties>
