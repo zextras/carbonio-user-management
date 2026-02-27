@@ -65,15 +65,6 @@ class UserDetailsCacheTest {
   }
 
   @Test
-  void entryExpiresAfterTokenLifetime() {
-    cache.put("user-1", "token-abc", sampleDetails(), 10000);
-
-    currentTime.set(TimeUnit.MILLISECONDS.toNanos(10001));
-
-    assertThat(cache.getByUserId("user-1")).isEmpty();
-  }
-
-  @Test
   void ttlUsesMinOfConfigAndRemaining() {
     // Config = 5 seconds, remaining = 30 seconds → should use 5s
     when(configService.get("cache.userdetails-ttl")).thenReturn(Optional.of("5"));
@@ -98,17 +89,19 @@ class UserDetailsCacheTest {
   }
 
   @Test
-  void usesOnlyRemainingWhenConfigAbsent() {
-    // No config set (setUp default) → uses remaining only
-    cache.put("user-1", "token-abc", sampleDetails(), 20000);
+  void entryAvailableBeforeExpiryAndGoneAfter() {
+    // No config → uses remaining only (500ms)
+    cache.put("user-1", "token-abc", sampleDetails(), 500);
 
-    // Still present at 19s
-    currentTime.set(TimeUnit.SECONDS.toNanos(19));
-    assertThat(cache.getByUserId("user-1")).isPresent();
+    // 400ms → still in cache (both access paths)
+    currentTime.set(TimeUnit.MILLISECONDS.toNanos(400));
+    assertThat(cache.getByUserId("user-1")).contains(sampleDetails());
+    assertThat(cache.getByToken("token-abc")).contains(sampleDetails());
 
-    // Expired at 21s
-    currentTime.set(TimeUnit.SECONDS.toNanos(21));
+    // 1s → expired (both access paths)
+    currentTime.set(TimeUnit.MILLISECONDS.toNanos(1000));
     assertThat(cache.getByUserId("user-1")).isEmpty();
+    assertThat(cache.getByToken("token-abc")).isEmpty();
   }
 
   @Test

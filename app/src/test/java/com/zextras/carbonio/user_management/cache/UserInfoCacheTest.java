@@ -64,13 +64,19 @@ class UserInfoCacheTest {
   }
 
   @Test
-  void entryExpiresAfterTtl() {
+  void entryAvailableBeforeExpiryAndGoneAfter() {
     UserInfo user = sampleUser("user-1", "user@example.com");
     cache.put(user);
 
-    currentTime.set(TimeUnit.SECONDS.toNanos(61));
+    // 50s → still in cache (both access paths)
+    currentTime.set(TimeUnit.SECONDS.toNanos(50));
+    assertThat(cache.getByUserId("user-1")).contains(user);
+    assertThat(cache.getByEmail("user@example.com")).contains(user);
 
+    // 61s → expired (both access paths)
+    currentTime.set(TimeUnit.SECONDS.toNanos(61));
     assertThat(cache.getByUserId("user-1")).isEmpty();
+    assertThat(cache.getByEmail("user@example.com")).isEmpty();
   }
 
   @Test
@@ -85,7 +91,7 @@ class UserInfoCacheTest {
   }
 
   @Test
-  void updateDoesNotResetTtl() {
+  void updateResetsTtl() {
     UserInfo user1 = sampleUser("user-1", "user@example.com");
     cache.put(user1);
 
@@ -95,16 +101,21 @@ class UserInfoCacheTest {
         "user-1", "user@example.com", "Updated Name", "example.com", "ACTIVE", "INTERNAL");
     cache.put(user1Updated);
 
+    // 61s from original put, but only 11s from re-put → still alive (TTL reset to 60s)
     currentTime.set(TimeUnit.SECONDS.toNanos(61));
+    assertThat(cache.getByUserId("user-1")).contains(user1Updated);
 
+    // 111s from original put, 61s from re-put → expired
+    currentTime.set(TimeUnit.SECONDS.toNanos(111));
     assertThat(cache.getByUserId("user-1")).isEmpty();
   }
 
   @Test
-  void throwsWhenConfigMissing() {
+  void throwsWhenConfigMissingOnPut() {
     when(configService.get("cache.userinfo-ttl")).thenReturn(Optional.empty());
+    UserInfoCache cacheNoConfig = new UserInfoCache(configService, currentTime::get);
 
-    assertThatThrownBy(() -> new UserInfoCache(configService, currentTime::get))
+    assertThatThrownBy(() -> cacheNoConfig.put(sampleUser("user-1", "u@x.com")))
         .isInstanceOf(IllegalStateException.class)
         .hasMessageContaining("cache.userinfo-ttl");
   }

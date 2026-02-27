@@ -15,16 +15,14 @@ import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import java.time.Duration;
 import java.util.Optional;
-import java.util.OptionalLong;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Singleton
 public class UserDetailsCache {
 
-  private final Cache<String, UserDetails> primaryCache;
+  private final Cache<String, UserDetails> cache;
   private final ConcurrentHashMap<String, String> tokenToUserId;
-  private final ConcurrentHashMap<String, Long> entryTtlNanos;
-  private final OptionalLong configTtlSeconds;
+  private final ApplicationConfigService configService;
 
   @Inject
   public UserDetailsCache(ApplicationConfigService configService) {
@@ -32,48 +30,19 @@ public class UserDetailsCache {
   }
 
   UserDetailsCache(ApplicationConfigService configService, Ticker ticker) {
+    this.configService = configService;
     this.tokenToUserId = new ConcurrentHashMap<>();
-    this.entryTtlNanos = new ConcurrentHashMap<>();
-    this.configTtlSeconds = configService.get(ApplicationConfig.CACHE_DETAILS_TTL)
-        .map(Long::parseLong)
-        .map(OptionalLong::of)
-        .orElse(OptionalLong.empty());
 
-    this.primaryCache = Caffeine.newBuilder()
+    this.cache = Caffeine.newBuilder()
         .ticker(ticker)
-        .expireAfter(new Expiry<String, UserDetails>() {
-          @Override
-          public long expireAfterCreate(String key, UserDetails value, long currentTime) {
-            Long ttl = entryTtlNanos.get(key);
-            if (ttl == null) {
-              throw new IllegalStateException("No TTL set for entry: " + key);
-            }
-            return ttl;
-          }
-
-          @Override
-          public long expireAfterUpdate(String key, UserDetails value,
-              long currentTime, long currentDuration) {
-            return currentDuration;
-          }
-
-          @Override
-          public long expireAfterRead(String key, UserDetails value,
-              long currentTime, long currentDuration) {
-            return currentDuration;
-          }
-        })
-        .removalListener((key, value, cause) -> {
-          if (key != null) {
-            entryTtlNanos.remove(key);
-          }
-          tokenToUserId.entrySet().removeIf(entry -> entry.getValue().equals(key));
-        })
+        .expireAfter(Expiry.<String, UserDetails>creating((k, v) -> Duration.ofNanos(Long.MAX_VALUE)))
+        .removalListener((key, value, cause) ->
+            tokenToUserId.entrySet().removeIf(entry -> entry.getValue().equals(key)))
         .build();
   }
 
   public Optional<UserDetails> getByUserId(String userId) {
-    return Optional.ofNullable(primaryCache.getIfPresent(userId));
+    return Optional.ofNullable(cache.getIfPresent(userId));
   }
 
   public Optional<UserDetails> getByToken(String token) {
@@ -81,7 +50,7 @@ public class UserDetailsCache {
     if (userId == null) {
       return Optional.empty();
     }
-    return Optional.ofNullable(primaryCache.getIfPresent(userId));
+    return Optional.ofNullable(cache.getIfPresent(userId));
   }
 
   public Optional<String> resolveUserId(String token) {
@@ -89,26 +58,26 @@ public class UserDetailsCache {
   }
 
   public void put(String userId, String token, UserDetails details, long remainingMs) {
-    long ttlNanos = computeTtlNanos(remainingMs);
-    entryTtlNanos.put(userId, ttlNanos);
-    primaryCache.put(userId, details);
+    Duration ttl = computeTtl(remainingMs);
+    cache.policy().expireVariably().orElseThrow().put(userId, details, ttl);
     if (token != null) {
       tokenToUserId.put(token, userId);
     }
   }
 
   public void invalidate(String userId) {
-    primaryCache.invalidate(userId);
+    cache.invalidate(userId);
   }
 
-  private long computeTtlNanos(long remainingMs) {
-    long remainingNanos = Duration.ofMillis(remainingMs).toNanos();
+  private Duration computeTtl(long remainingMs) {
+    Duration remaining = Duration.ofMillis(remainingMs);
+    return configService.get(ApplicationConfig.CACHE_DETAILS_TTL)
+        .map(Long::parseLong)
+        .map(seconds -> min(Duration.ofSeconds(seconds), remaining))
+        .orElse(remaining);
+  }
 
-    if (configTtlSeconds.isPresent()) {
-      long configNanos = Duration.ofSeconds(configTtlSeconds.getAsLong()).toNanos();
-      return Math.min(configNanos, remainingNanos);
-    }
-
-    return remainingNanos;
+  private static Duration min(Duration a, Duration b) {
+    return a.compareTo(b) < 0 ? a : b;
   }
 }

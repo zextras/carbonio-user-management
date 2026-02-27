@@ -6,7 +6,6 @@ package com.zextras.carbonio.user_management.rest;
 
 import static com.zextras.carbonio.user_management.UserManagementServiceConfig.AUTH_TOKEN_KEY;
 
-import com.zextras.carbonio.user_management.cache.UserDetailsCache;
 import com.zextras.carbonio.user_management.service.UserService;
 import jakarta.annotation.Priority;
 import jakarta.inject.Inject;
@@ -21,12 +20,10 @@ import jakarta.ws.rs.ext.Provider;
 @Priority(Priorities.AUTHENTICATION)
 public class TokenAuthFilter implements ContainerRequestFilter {
 
-  private final UserDetailsCache userDetailsCache;
   private final UserService userService;
 
   @Inject
-  public TokenAuthFilter(UserDetailsCache userDetailsCache, UserService userService) {
-    this.userDetailsCache = userDetailsCache;
+  public TokenAuthFilter(UserService userService) {
     this.userService = userService;
   }
 
@@ -44,11 +41,8 @@ public class TokenAuthFilter implements ContainerRequestFilter {
       return;
     }
 
-    // For other endpoints: verify token via cache or mailbox
-    boolean authenticated = userDetailsCache.resolveUserId(token).isPresent()
-        || userService.getUserMyself(token).isPresent();
-
-    if (!authenticated) {
+    // For other endpoints: validate token via service (cache-first internally)
+    if (userService.getUserMyself(token).isEmpty()) {
       ctx.abortWith(Response.status(Response.Status.UNAUTHORIZED).build());
       return;
     }

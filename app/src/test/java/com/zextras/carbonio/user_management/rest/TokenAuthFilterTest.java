@@ -11,7 +11,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.zextras.carbonio.user_management.cache.UserDetailsCache;
 import com.zextras.carbonio.user_management.cache.record.UserDetails;
 import com.zextras.carbonio.user_management.cache.record.UserInfo;
 import com.zextras.carbonio.user_management.service.UserService;
@@ -29,7 +28,6 @@ import org.mockito.ArgumentCaptor;
 
 class TokenAuthFilterTest {
 
-  private UserDetailsCache userDetailsCache;
   private UserService userService;
   private TokenAuthFilter filter;
   private ContainerRequestContext ctx;
@@ -37,9 +35,8 @@ class TokenAuthFilterTest {
 
   @BeforeEach
   void setUp() {
-    userDetailsCache = mock(UserDetailsCache.class);
     userService = mock(UserService.class);
-    filter = new TokenAuthFilter(userDetailsCache, userService);
+    filter = new TokenAuthFilter(userService);
     ctx = mock(ContainerRequestContext.class);
     uriInfo = mock(UriInfo.class);
     when(ctx.getUriInfo()).thenReturn(uriInfo);
@@ -93,7 +90,7 @@ class TokenAuthFilterTest {
 
       verify(ctx).setProperty(AUTH_TOKEN_KEY, "valid-token");
       verify(ctx, never()).abortWith(org.mockito.ArgumentMatchers.any());
-      verify(userDetailsCache, never()).resolveUserId(org.mockito.ArgumentMatchers.any());
+      verify(userService, never()).getUserMyself(org.mockito.ArgumentMatchers.any());
     }
   }
 
@@ -101,39 +98,24 @@ class TokenAuthFilterTest {
   class OtherEndpointTests {
 
     @Test
-    void passesWhenTokenFoundInCache() {
-      setCookie("cached-token");
+    void passesWhenTokenIsValid() {
+      setCookie("valid-token");
       setPath("/users/id/user-1");
-      when(userDetailsCache.resolveUserId("cached-token")).thenReturn(Optional.of("user-1"));
-
-      filter.filter(ctx);
-
-      verify(ctx).setProperty(AUTH_TOKEN_KEY, "cached-token");
-      verify(ctx, never()).abortWith(org.mockito.ArgumentMatchers.any());
-      verify(userService, never()).getUserMyself(org.mockito.ArgumentMatchers.any());
-    }
-
-    @Test
-    void passesWhenTokenNotInCacheButMailboxValidates() {
-      setCookie("new-token");
-      setPath("/users/id/user-1");
-      when(userDetailsCache.resolveUserId("new-token")).thenReturn(Optional.empty());
-      when(userService.getUserMyself("new-token")).thenReturn(Optional.of(
+      when(userService.getUserMyself("valid-token")).thenReturn(Optional.of(
           new MyselfResult(
               new UserInfo("user-1", "u@x.com", "U", "x.com", "ACTIVE", "INTERNAL"),
               new UserDetails("en", Map.of()))));
 
       filter.filter(ctx);
 
-      verify(ctx).setProperty(AUTH_TOKEN_KEY, "new-token");
+      verify(ctx).setProperty(AUTH_TOKEN_KEY, "valid-token");
       verify(ctx, never()).abortWith(org.mockito.ArgumentMatchers.any());
     }
 
     @Test
-    void aborts401WhenTokenNotInCacheAndMailboxRejects() {
+    void aborts401WhenTokenIsInvalid() {
       setCookie("bad-token");
       setPath("/users/id/user-1");
-      when(userDetailsCache.resolveUserId("bad-token")).thenReturn(Optional.empty());
       when(userService.getUserMyself("bad-token")).thenReturn(Optional.empty());
 
       filter.filter(ctx);

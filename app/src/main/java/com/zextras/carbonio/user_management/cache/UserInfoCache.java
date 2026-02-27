@@ -20,9 +20,9 @@ import java.util.concurrent.ConcurrentHashMap;
 @Singleton
 public class UserInfoCache {
 
-  private final Cache<String, UserInfo> primaryCache;
+  private final Cache<String, UserInfo> cache;
   private final ConcurrentHashMap<String, String> emailToUserId;
-  private final long ttlSeconds;
+  private final ApplicationConfigService configService;
 
   @Inject
   public UserInfoCache(ApplicationConfigService configService) {
@@ -30,32 +30,12 @@ public class UserInfoCache {
   }
 
   UserInfoCache(ApplicationConfigService configService, Ticker ticker) {
+    this.configService = configService;
     this.emailToUserId = new ConcurrentHashMap<>();
-    this.ttlSeconds = Long.parseLong(
-        configService.get(ApplicationConfig.CACHE_USERINFO_TTL)
-            .orElseThrow(() -> new IllegalStateException(
-                "Missing required config: " + ApplicationConfig.CACHE_USERINFO_TTL)));
 
-    this.primaryCache = Caffeine.newBuilder()
+    this.cache = Caffeine.newBuilder()
         .ticker(ticker)
-        .expireAfter(new Expiry<String, UserInfo>() {
-          @Override
-          public long expireAfterCreate(String key, UserInfo value, long currentTime) {
-            return Duration.ofSeconds(ttlSeconds).toNanos();
-          }
-
-          @Override
-          public long expireAfterUpdate(String key, UserInfo value,
-              long currentTime, long currentDuration) {
-            return currentDuration;
-          }
-
-          @Override
-          public long expireAfterRead(String key, UserInfo value,
-              long currentTime, long currentDuration) {
-            return currentDuration;
-          }
-        })
+        .expireAfter(Expiry.<String, UserInfo>creating((k, v) -> Duration.ofNanos(Long.MAX_VALUE)))
         .removalListener((key, value, cause) -> {
           if (value != null && value.email() != null) {
             emailToUserId.remove(value.email());
@@ -65,7 +45,7 @@ public class UserInfoCache {
   }
 
   public Optional<UserInfo> getByUserId(String userId) {
-    return Optional.ofNullable(primaryCache.getIfPresent(userId));
+    return Optional.ofNullable(cache.getIfPresent(userId));
   }
 
   public Optional<UserInfo> getByEmail(String email) {
@@ -73,17 +53,22 @@ public class UserInfoCache {
     if (userId == null) {
       return Optional.empty();
     }
-    return Optional.ofNullable(primaryCache.getIfPresent(userId));
+    return Optional.ofNullable(cache.getIfPresent(userId));
   }
 
   public void put(UserInfo userInfo) {
-    primaryCache.put(userInfo.userId(), userInfo);
+    long ttlSeconds = Long.parseLong(
+        configService.get(ApplicationConfig.CACHE_USERINFO_TTL)
+            .orElseThrow(() -> new IllegalStateException(
+                "Missing required config: " + ApplicationConfig.CACHE_USERINFO_TTL)));
+    cache.policy().expireVariably().orElseThrow()
+        .put(userInfo.userId(), userInfo, Duration.ofSeconds(ttlSeconds));
     if (userInfo.email() != null) {
       emailToUserId.put(userInfo.email(), userInfo.userId());
     }
   }
 
   public void invalidate(String userId) {
-    primaryCache.invalidate(userId);
+    cache.invalidate(userId);
   }
 }
