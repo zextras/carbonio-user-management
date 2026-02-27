@@ -27,7 +27,7 @@ class UserInfoCacheTest {
   @BeforeEach
   void setUp() {
     configService = mock(ApplicationConfigService.class);
-    when(configService.get("cache.userinfo.ttl")).thenReturn(Optional.of("60"));
+    when(configService.get("cache.userinfo-ttl")).thenReturn(Optional.of("60"));
     currentTime = new AtomicLong(0);
     Ticker ticker = currentTime::get;
     cache = new UserInfoCache(configService, ticker);
@@ -102,10 +102,10 @@ class UserInfoCacheTest {
 
   @Test
   void throwsWhenConfigMissing() {
-    when(configService.get("cache.userinfo.ttl")).thenReturn(Optional.empty());
+    when(configService.get("cache.userinfo-ttl")).thenReturn(Optional.empty());
 
     assertThatThrownBy(() -> new UserInfoCache(configService, currentTime::get))
         .isInstanceOf(IllegalStateException.class)
-        .hasMessageContaining("cache.userinfo.ttl");
+        .hasMessageContaining("cache.userinfo-ttl");
   }
 }

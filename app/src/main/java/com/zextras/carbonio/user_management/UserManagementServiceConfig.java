@@ -19,7 +19,9 @@ public final class UserManagementServiceConfig implements CarbonioServiceConfig 
   }
 
   public interface ApplicationConfig {
-    String CACHE_DETAILS_TTL = "cache.details.ttl";
-    String CACHE_USERINFO_TTL = "cache.userinfo.ttl";
+    String CACHE_DETAILS_TTL = "cache.userdetails-ttl";
+    String CACHE_USERINFO_TTL = "cache.userinfo-ttl";
   }
+
+  public static final String AUTH_TOKEN_KEY = "ZM_AUTH_TOKEN";
 }

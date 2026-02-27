@@ -28,7 +28,7 @@ class UserDetailsCacheTest {
   void setUp() {
     configService = mock(ApplicationConfigService.class);
     // No config → uses remaining token lifetime only
-    when(configService.get("cache.details.ttl")).thenReturn(Optional.empty());
+    when(configService.get("cache.userdetails-ttl")).thenReturn(Optional.empty());
     currentTime = new AtomicLong(0);
     Ticker ticker = currentTime::get;
     cache = new UserDetailsCache(configService, ticker);
@@ -76,7 +76,7 @@ class UserDetailsCacheTest {
   @Test
   void ttlUsesMinOfConfigAndRemaining() {
     // Config = 5 seconds, remaining = 30 seconds → should use 5s
-    when(configService.get("cache.details.ttl")).thenReturn(Optional.of("5"));
+    when(configService.get("cache.userdetails-ttl")).thenReturn(Optional.of("5"));
     UserDetailsCache configCache = new UserDetailsCache(configService, currentTime::get);
 
     configCache.put("user-1", "token-abc", sampleDetails(), 30000);
@@ -88,7 +88,7 @@ class UserDetailsCacheTest {
   @Test
   void ttlUsesRemainingWhenSmallerThanConfig() {
     // Config = 60 seconds, remaining = 5 seconds → should use 5s
-    when(configService.get("cache.details.ttl")).thenReturn(Optional.of("60"));
+    when(configService.get("cache.userdetails-ttl")).thenReturn(Optional.of("60"));
     UserDetailsCache configCache = new UserDetailsCache(configService, currentTime::get);
 
     configCache.put("user-1", "token-abc", sampleDetails(), 5000);
