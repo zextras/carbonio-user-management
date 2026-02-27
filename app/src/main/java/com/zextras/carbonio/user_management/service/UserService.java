@@ -23,7 +23,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import org.apache.commons.lang3.LocaleUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import zimbra.NamedValue;
@@ -200,7 +199,7 @@ public class UserService {
       for (Pref pref : response.getPrefs().getPref()) {
         if ("zimbraPrefLocale".equals(pref.getName())) {
           try {
-            locale = LocaleUtils.toLocale(pref.getValue()).toString();
+            locale = Locale.forLanguageTag(pref.getValue().replace('_', '-')).toString();
           } catch (IllegalArgumentException e) {
             logger.error("Invalid locale format '{}', falling back to '{}'",
                 pref.getValue(), Locale.ENGLISH);
