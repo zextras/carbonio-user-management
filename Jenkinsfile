@@ -72,17 +72,34 @@ pipeline {
         stage('Build jar') {
             steps {
                 script {
-                    def profile = '-P dev'
+                    def changelist = '-SNAPSHOT'
                     if (env.TAG_NAME) {
-                        profile = '-P prod'
+                        changelist = ''
                     }
 
                     container('jdk-21') {
                         sh """
-                            mvn -B package ${profile}
-                            cp boot/target/carbonio-user-management-*-jar-with-dependencies.jar \
+                            mvn -B package -Dchangelist=${changelist}
+                            cp app/target/*-runner.jar \
                                 package/carbonio-user-management.jar
                         """
+                    }
+                }
+            }
+        }
+
+        stage('Publish SDK') {
+            steps {
+                script {
+                    def changelist = '-SNAPSHOT'
+                    if (env.TAG_NAME) {
+                        changelist = ''
+                    }
+
+                    container('jdk-21') {
+                        withCredentials([file(credentialsId: 'jenkins-maven-settings.xml', variable: 'SETTINGS_PATH')]) {
+                            sh "mvn -B -s \$SETTINGS_PATH deploy -pl sdk -Dchangelist=${changelist}"
+                        }
                     }
                 }
             }
@@ -223,7 +240,7 @@ pipeline {
         stage('Publish docker images') {
             steps {
                 dockerStage([
-                    dockerfile: 'docker/minimal/carbonio-user-management/Dockerfile',
+                    dockerfile: 'docker/Dockerfile',
                     imageName: 'carbonio-user-management',
                     ocLabels: [
                         title: 'Carbonio User Management',

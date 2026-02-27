@@ -8,6 +8,5 @@ JAVA_HOME="/usr/share/carbonio/user-management:/opt/zextras/common/lib/jvm/java"
 export JAVA_HOME
 /opt/zextras/common/bin/java \
   -Djava.net.preferIPv4Stack=true \
-  -Xmx1024m \
   -Xmx2048m \
   -jar /usr/share/carbonio/carbonio-user-management.jar
