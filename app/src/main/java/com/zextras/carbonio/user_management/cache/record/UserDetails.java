@@ -9,4 +9,10 @@ import java.util.Map;
 public record UserDetails(
     String locale,
     Map<String, Boolean> featureList
-) {}
+) {
+
+  public UserDetails(String locale, Map<String, Boolean> featureList) {
+    this.locale = locale;
+    this.featureList = featureList != null ? Map.copyOf(featureList) : Map.of();
+  }
+}

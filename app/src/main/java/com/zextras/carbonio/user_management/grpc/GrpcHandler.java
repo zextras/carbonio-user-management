@@ -72,7 +72,7 @@ public class GrpcHandler extends UserManagementServiceGrpc.UserManagementService
             },
             () -> responseObserver.onError(
                 Status.NOT_FOUND
-                    .withDescription("User not found: " + request.getUserId())
+                    .withDescription("User not found")
                     .asRuntimeException()));
   }
 
@@ -89,7 +89,7 @@ public class GrpcHandler extends UserManagementServiceGrpc.UserManagementService
             },
             () -> responseObserver.onError(
                 Status.NOT_FOUND
-                    .withDescription("User not found: " + request.getUserEmail())
+                    .withDescription("User not found")
                     .asRuntimeException()));
   }
 

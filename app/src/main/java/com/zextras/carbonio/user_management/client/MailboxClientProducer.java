@@ -5,6 +5,7 @@
 package com.zextras.carbonio.user_management.client;
 
 import com.zextras.carbonio.quarkus.extensions.bootstrap.NetworkingConfigService;
+import com.zextras.carbonio.user_management.UserManagementServiceConfig;
 import com.zextras.carbonio.user_management.UserManagementServiceConfig.NetworkingConfig;
 import com.zextras.mailbox.client.MailboxClient;
 import com.zextras.mailbox.client.service.ServiceClient;
@@ -44,7 +45,7 @@ public class MailboxClientProducer {
         .withServer(mailboxUrl)
         .build()
         .newServiceClientBuilder()
-        .withPool(5)
+        .withPool(UserManagementServiceConfig.MAILBOX_CONNECTION_POOL_SIZE)
         .build();
   }
 }

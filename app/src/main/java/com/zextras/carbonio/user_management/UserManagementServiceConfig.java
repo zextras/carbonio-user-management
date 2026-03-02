@@ -36,6 +36,8 @@ public final class UserManagementServiceConfig implements CarbonioDatabaseServic
     String LOCALE = "zimbraPrefLocale";
   }
 
+  public static final int MAILBOX_CONNECTION_POOL_SIZE = 5;
+
   public interface FeatureFlags {
     String FILES_ENABLED = "carbonioFeatureFilesEnabled";
     String WSC_ENABLED = "carbonioFeatureWscEnabled";

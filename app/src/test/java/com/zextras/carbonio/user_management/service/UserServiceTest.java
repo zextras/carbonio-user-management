@@ -6,6 +6,7 @@ package com.zextras.carbonio.user_management.service;
 
 import static com.zextras.carbonio.user_management.UserManagementServiceConfig.FeatureFlags;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
@@ -73,9 +74,9 @@ class UserServiceTest {
       UserInfo info = sampleUserInfo();
       UserDetails details = sampleDetails();
 
+      when(userDetailsCache.getByToken("token-1")).thenReturn(Optional.of(details));
       when(userDetailsCache.resolveUserId("token-1")).thenReturn(Optional.of("user-1"));
       when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.of(info));
-      when(userDetailsCache.getByUserId("user-1")).thenReturn(Optional.of(details));
 
       Optional<MyselfResult> result = userService.getUserMyself("token-1");
 
@@ -87,6 +88,7 @@ class UserServiceTest {
 
     @Test
     void callsMailboxWhenTokenNotInCache() throws Exception {
+      when(userDetailsCache.getByToken("token-1")).thenReturn(Optional.empty());
       when(userDetailsCache.resolveUserId("token-1")).thenReturn(Optional.empty());
       when(userDetailsCacheRepo.findByToken("token-1")).thenReturn(Optional.empty());
       when(mailboxClient.send(any())).thenThrow(new MailboxClientException("test"));
@@ -97,13 +99,16 @@ class UserServiceTest {
     }
 
     @Test
-    void callsMailboxWhenPartialCacheMiss() throws Exception {
+    void callsMailboxWhenDetailsMissButUserIdResolved() throws Exception {
       UserInfo info = sampleUserInfo();
 
+      // L2: details miss, userId resolved (stale tokenToUserId entry)
+      when(userDetailsCache.getByToken("token-1")).thenReturn(Optional.empty());
       when(userDetailsCache.resolveUserId("token-1")).thenReturn(Optional.of("user-1"));
+      // In loadUserMyself: userId known, L2 info hit, L1 details miss
       when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.of(info));
-      when(userDetailsCache.getByUserId("user-1")).thenReturn(Optional.empty());
       when(userDetailsCacheRepo.findByUserId("user-1")).thenReturn(Optional.empty());
+      // SOAP fails
       when(mailboxClient.send(any())).thenThrow(new MailboxClientException("test"));
 
       Optional<MyselfResult> result = userService.getUserMyself("token-1");
@@ -118,6 +123,7 @@ class UserServiceTest {
       long expiresAt = futureExpiresAt();
 
       // L2 miss
+      when(userDetailsCache.getByToken("token-1")).thenReturn(Optional.empty());
       when(userDetailsCache.resolveUserId("token-1")).thenReturn(Optional.empty());
       // L1 resolves token -> userId + details
       when(userDetailsCacheRepo.findByToken("token-1")).thenReturn(
@@ -133,7 +139,7 @@ class UserServiceTest {
       assertThat(result.get().info()).isEqualTo(info);
       assertThat(result.get().details()).isEqualTo(details);
       verify(userInfoCache).put(info);
-      verify(userDetailsCache).put(eq("user-1"), eq("token-1"), eq(details), anyLong());
+      verify(userDetailsCache).put(eq("token-1"), eq("user-1"), eq(details), anyLong());
       verify(mailboxClient, never()).send(any());
     }
 
@@ -143,10 +149,11 @@ class UserServiceTest {
       UserDetails details = sampleDetails();
       long expiresAt = futureExpiresAt();
 
-      // L2 resolves userId but misses details
+      // L2: details miss, userId resolved
+      when(userDetailsCache.getByToken("token-1")).thenReturn(Optional.empty());
       when(userDetailsCache.resolveUserId("token-1")).thenReturn(Optional.of("user-1"));
+      // In loadUserMyself: info from L2
       when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.of(info));
-      when(userDetailsCache.getByUserId("user-1")).thenReturn(Optional.empty());
       // L1 has details
       when(userDetailsCacheRepo.findByUserId("user-1")).thenReturn(
           Optional.of(new CachedUserDetails(details, expiresAt)));
@@ -160,6 +167,7 @@ class UserServiceTest {
 
     @Test
     void L2Miss_L1Miss_callsSoap() throws Exception {
+      when(userDetailsCache.getByToken("token-1")).thenReturn(Optional.empty());
       when(userDetailsCache.resolveUserId("token-1")).thenReturn(Optional.empty());
       when(userDetailsCacheRepo.findByToken("token-1")).thenReturn(Optional.empty());
       when(mailboxClient.send(any())).thenThrow(new MailboxClientException("test"));
@@ -168,6 +176,20 @@ class UserServiceTest {
 
       assertThat(result).isEmpty();
       verify(mailboxClient).send(any());
+    }
+
+    @Test
+    void failsFastWhenConfigMissing_noSoapCall() {
+      when(userDetailsCache.getByToken("token-1")).thenReturn(Optional.empty());
+      when(userDetailsCache.resolveUserId("token-1")).thenReturn(Optional.empty());
+      when(userDetailsCacheRepo.findByToken("token-1")).thenReturn(Optional.empty());
+      when(userInfoCache.readTtlSeconds()).thenThrow(
+          new IllegalStateException("Missing required config: cache.userinfo-ttl"));
+
+      assertThatThrownBy(() -> userService.getUserMyself("token-1"))
+          .isInstanceOf(IllegalStateException.class)
+          .hasMessageContaining("cache.userinfo-ttl");
+      verify(mailboxClient, never()).send(any());
     }
   }
 
@@ -219,6 +241,19 @@ class UserServiceTest {
       Optional<UserInfo> result = userService.getUserById("user-1", "fake-or-empty-token");
 
       assertThat(result).contains(info);
+      verify(mailboxClient, never()).send(any());
+    }
+
+    @Test
+    void failsFastWhenConfigMissing_noSoapCall() {
+      when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.empty());
+      when(userInfoCacheRepo.findByUserId("user-1")).thenReturn(Optional.empty());
+      when(userInfoCache.readTtlSeconds()).thenThrow(
+          new IllegalStateException("Missing required config: cache.userinfo-ttl"));
+
+      assertThatThrownBy(() -> userService.getUserById("user-1", "token-1"))
+          .isInstanceOf(IllegalStateException.class)
+          .hasMessageContaining("cache.userinfo-ttl");
       verify(mailboxClient, never()).send(any());
     }
   }
@@ -278,13 +313,18 @@ class UserServiceTest {
   class GetUsersTests {
 
     @Test
-    void returnsCachedUsersAndFiltersNulls() {
+    void returnsCachedUsersAndSkipsNotFound() {
       UserInfo user1 = new UserInfo("id-1", "a@x.com", "A", "x.com", "ACTIVE", "INTERNAL");
       UserInfo user2 = new UserInfo("id-2", "b@x.com", "B", "x.com", "ACTIVE", "INTERNAL");
 
+      // L2 hits for id-1 and id-2
       when(userInfoCache.getByUserId("id-1")).thenReturn(Optional.of(user1));
       when(userInfoCache.getByUserId("id-2")).thenReturn(Optional.of(user2));
+      // L2 miss for id-3
       when(userInfoCache.getByUserId("id-3")).thenReturn(Optional.empty());
+      // L1 batch miss for id-3
+      when(userInfoCacheRepo.findByUserIds(List.of("id-3"))).thenReturn(List.of());
+      // SOAP fallback (getUserById → L2 miss → L1 miss → SOAP fails)
       when(userInfoCacheRepo.findByUserId("id-3")).thenReturn(Optional.empty());
       when(mailboxClient.send(any())).thenThrow(new MailboxClientException("test"));
 
@@ -303,6 +343,72 @@ class UserServiceTest {
           List.of("id-1", "id-1", "id-1"), "token-1");
 
       assertThat(result).hasSize(1);
+    }
+
+    @Test
+    void batchesL1QueryForL2Misses() {
+      UserInfo user1 = new UserInfo("id-1", "a@x.com", "A", "x.com", "ACTIVE", "INTERNAL");
+      UserInfo user2 = new UserInfo("id-2", "b@x.com", "B", "x.com", "ACTIVE", "INTERNAL");
+      UserInfo user3 = new UserInfo("id-3", "c@x.com", "C", "x.com", "ACTIVE", "INTERNAL");
+
+      // L2 hit for id-1 only
+      when(userInfoCache.getByUserId("id-1")).thenReturn(Optional.of(user1));
+      when(userInfoCache.getByUserId("id-2")).thenReturn(Optional.empty());
+      when(userInfoCache.getByUserId("id-3")).thenReturn(Optional.empty());
+      // L1 batch returns id-2 and id-3
+      when(userInfoCacheRepo.findByUserIds(List.of("id-2", "id-3")))
+          .thenReturn(List.of(user2, user3));
+
+      List<UserInfo> result = userService.getUsers(
+          List.of("id-1", "id-2", "id-3"), "token-1");
+
+      assertThat(result).containsExactly(user1, user2, user3);
+      // L1 batch query was used (single query, not individual queries)
+      verify(userInfoCacheRepo).findByUserIds(List.of("id-2", "id-3"));
+      // L2 was populated from L1 hits
+      verify(userInfoCache).put(user2);
+      verify(userInfoCache).put(user3);
+      // No SOAP calls needed
+      verify(mailboxClient, never()).send(any());
+    }
+
+    @Test
+    void partialL1HitCallsSoapOnlyForRemainingMisses() {
+      UserInfo user1 = new UserInfo("id-1", "a@x.com", "A", "x.com", "ACTIVE", "INTERNAL");
+      UserInfo user2 = new UserInfo("id-2", "b@x.com", "B", "x.com", "ACTIVE", "INTERNAL");
+
+      // All L2 misses
+      when(userInfoCache.getByUserId("id-1")).thenReturn(Optional.empty());
+      when(userInfoCache.getByUserId("id-2")).thenReturn(Optional.empty());
+      // L1 batch returns only id-1
+      when(userInfoCacheRepo.findByUserIds(List.of("id-1", "id-2")))
+          .thenReturn(List.of(user1));
+      // SOAP fallback for id-2 (getUserById re-checks L2 & L1 individually, then SOAP)
+      when(userInfoCacheRepo.findByUserId("id-2")).thenReturn(Optional.empty());
+      when(mailboxClient.send(any())).thenThrow(new MailboxClientException("test"));
+
+      List<UserInfo> result = userService.getUsers(
+          List.of("id-1", "id-2"), "token-1");
+
+      assertThat(result).containsExactly(user1);
+      verify(userInfoCache).put(user1);
+      verify(mailboxClient).send(any());
+    }
+
+    @Test
+    void allL2HitsSkipsL1AndSoap() {
+      UserInfo user1 = new UserInfo("id-1", "a@x.com", "A", "x.com", "ACTIVE", "INTERNAL");
+      UserInfo user2 = new UserInfo("id-2", "b@x.com", "B", "x.com", "ACTIVE", "INTERNAL");
+
+      when(userInfoCache.getByUserId("id-1")).thenReturn(Optional.of(user1));
+      when(userInfoCache.getByUserId("id-2")).thenReturn(Optional.of(user2));
+
+      List<UserInfo> result = userService.getUsers(
+          List.of("id-1", "id-2"), "token-1");
+
+      assertThat(result).containsExactly(user1, user2);
+      verifyNoInteractions(userInfoCacheRepo);
+      verify(mailboxClient, never()).send(any());
     }
   }
 }

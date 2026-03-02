@@ -66,12 +66,19 @@ public class UserResource {
         .orElse(Response.status(Response.Status.NOT_FOUND).build());
   }
 
+  private static final int MAX_USER_IDS = 100;
+
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
   public Response getUsers(
       List<String> userIds,
       @Context ContainerRequestContext ctx
   ) {
+    if (userIds == null || userIds.size() > MAX_USER_IDS) {
+      return Response.status(Response.Status.BAD_REQUEST)
+          .entity("User IDs list must contain at most " + MAX_USER_IDS + " entries")
+          .build();
+    }
     String token = (String) ctx.getProperty(AUTH_TOKEN_KEY);
     List<UserInfoDto> users = userService.getUsers(userIds, token).stream()
         .map(UserInfoDto::from)

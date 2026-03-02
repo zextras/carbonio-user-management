@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 import com.github.benmanes.caffeine.cache.Ticker;
 import com.zextras.carbonio.quarkus.extensions.bootstrap.ApplicationConfigService;
 import com.zextras.carbonio.user_management.cache.record.UserInfo;
+import java.time.Clock;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -30,7 +31,7 @@ class UserInfoCacheTest {
     when(configService.get("cache.userinfo-ttl")).thenReturn(Optional.of("60"));
     currentTime = new AtomicLong(0);
     Ticker ticker = currentTime::get;
-    cache = new UserInfoCache(configService, ticker);
+    cache = new UserInfoCache(configService, ticker, Clock.systemUTC());
   }
 
   private UserInfo sampleUser(String id, String email) {
@@ -113,7 +114,7 @@ class UserInfoCacheTest {
   @Test
   void throwsWhenConfigMissingOnPut() {
     when(configService.get("cache.userinfo-ttl")).thenReturn(Optional.empty());
-    UserInfoCache cacheNoConfig = new UserInfoCache(configService, currentTime::get);
+    UserInfoCache cacheNoConfig = new UserInfoCache(configService, currentTime::get, Clock.systemUTC());
 
     assertThatThrownBy(() -> cacheNoConfig.put(sampleUser("user-1", "u@x.com")))
         .isInstanceOf(IllegalStateException.class)

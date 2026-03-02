@@ -6,22 +6,19 @@ package com.zextras.carbonio.user_management.cache;
 
 import com.zextras.carbonio.user_management.cache.repository.UserDetailsCacheRepository;
 import com.zextras.carbonio.user_management.cache.repository.UserInfoCacheRepository;
-import io.quarkus.runtime.ShutdownEvent;
-import io.quarkus.runtime.StartupEvent;
+import io.quarkus.scheduler.Scheduled;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import org.jboss.logging.Logger;
 
 /**
  * Periodically removes expired rows from the shared PostgreSQL cache tables.
  *
- * <p>Runs every hour via a daemon {@link ScheduledExecutorService} (no dependency on
- * {@code quarkus-scheduler}). The cleanup is not critical for correctness — both tables are
- * bounded (max 1 row per user) — it's purely hygienic.
+ * <p>Runs every hour (first run after 5 minutes) via Quarkus {@code @Scheduled}, which ensures
+ * proper CDI context and transaction management on the scheduler thread.
+ *
+ * <p>The cleanup is not critical for correctness — both tables are bounded (max 1 row per user)
+ * — it's purely hygienic.
  *
  * <p><b>Concurrency across instances:</b> Multiple instances may trigger cleanup simultaneously.
  * This is safe because {@code DELETE WHERE expires_at <= :now} is idempotent and PostgreSQL
@@ -39,7 +36,6 @@ public class ExpiredCacheCleanup {
 
   private final UserInfoCacheRepository userInfoRepository;
   private final UserDetailsCacheRepository userDetailsRepository;
-  private final ScheduledExecutorService scheduler;
 
   @Inject
   ExpiredCacheCleanup(
@@ -47,22 +43,10 @@ public class ExpiredCacheCleanup {
       UserDetailsCacheRepository userDetailsRepository) {
     this.userInfoRepository = userInfoRepository;
     this.userDetailsRepository = userDetailsRepository;
-    this.scheduler = Executors.newSingleThreadScheduledExecutor(r -> {
-      Thread t = new Thread(r, "cache-cleanup");
-      t.setDaemon(true);
-      return t;
-    });
   }
 
-  void onStart(@Observes StartupEvent event) {
-    scheduler.scheduleAtFixedRate(this::cleanup, 1, 1, TimeUnit.HOURS);
-  }
-
-  void onStop(@Observes ShutdownEvent event) {
-    scheduler.shutdown();
-  }
-
-  private void cleanup() {
+  @Scheduled(every = "1h", delayed = "5m")
+  void cleanup() {
     try {
       int infoDeleted = userInfoRepository.deleteExpired();
       int detailsDeleted = userDetailsRepository.deleteExpired();

@@ -20,10 +20,10 @@ import org.hibernate.type.SqlTypes;
 @NamedNativeQuery(
     name = UserDetailsCacheEntity.UPSERT_IF_NEWER,
     query = """
-        INSERT INTO user_details_cache (user_id, token, locale, feature_list, expires_at)
-        VALUES (:userId, :token, :locale, CAST(:features AS JSONB), :expiresAt)
+        INSERT INTO user_details_cache (user_id, token_hash, locale, feature_list, expires_at)
+        VALUES (:userId, :tokenHash, :locale, CAST(:features AS JSONB), :expiresAt)
         ON CONFLICT (user_id) DO UPDATE SET
-          token = EXCLUDED.token,
+          token_hash = EXCLUDED.token_hash,
           locale = EXCLUDED.locale,
           feature_list = EXCLUDED.feature_list,
           expires_at = EXCLUDED.expires_at
@@ -38,8 +38,8 @@ public class UserDetailsCacheEntity extends PanacheEntityBase {
   @Column(name = "user_id", length = 64)
   public String userId;
 
-  @Column(columnDefinition = "text")
-  public String token;
+  @Column(name = "token_hash", length = 64)
+  public String tokenHash;
 
   @Column(nullable = false, length = 32)
   public String locale;

@@ -13,22 +13,22 @@ import com.zextras.carbonio.user_management.UserManagementServiceConfig.Applicat
 import com.zextras.carbonio.user_management.cache.record.UserDetails;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import java.time.Clock;
 import java.time.Duration;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Cache for {@link UserDetails}, keyed by userId with a secondary index by auth token.
+ * Cache for {@link UserDetails}, keyed by auth token.
  *
  * <p>Each entry's TTL is computed at insertion time as the minimum of the config value
  * ({@code cache.userdetails-ttl}) and the remaining session lifetime from mailbox. If config
  * is absent, the session remaining time is used directly. Config is read at every insertion via
  * Caffeine's {@code VarExpiration} API, so changes on Consul take effect immediately.
  *
- * <p>Caffeine doesn't support multi-key lookup natively. The secondary index
- * ({@code tokenToUserId}) is a ConcurrentHashMap kept in sync via Caffeine's
- * {@code removalListener}: when an entry expires or is invalidated, the listener automatically
- * removes the corresponding token mappings.
+ * <p>A lightweight {@code tokenToUserId} map provides token-to-userId resolution, kept in sync
+ * via Caffeine's {@code removalListener}: when an entry expires, the listener removes the
+ * corresponding mapping in O(1).
  */
 @Singleton
 public class UserDetailsCache {
@@ -36,51 +36,43 @@ public class UserDetailsCache {
   private final Cache<String, UserDetails> cache;
   private final ConcurrentHashMap<String, String> tokenToUserId;
   private final ApplicationConfigService configService;
+  private final Clock clock;
 
   @Inject
   public UserDetailsCache(ApplicationConfigService configService) {
-    this(configService, Ticker.systemTicker());
+    this(configService, Ticker.systemTicker(), Clock.systemUTC());
   }
 
-  UserDetailsCache(ApplicationConfigService configService, Ticker ticker) {
+  UserDetailsCache(ApplicationConfigService configService, Ticker ticker, Clock clock) {
     this.configService = configService;
+    this.clock = clock;
     this.tokenToUserId = new ConcurrentHashMap<>();
 
     this.cache = Caffeine.newBuilder()
         .ticker(ticker)
-        .expireAfter(Expiry.<String, UserDetails>creating((k, v) -> Duration.ofNanos(Long.MAX_VALUE)))
-        .removalListener((key, value, cause) ->
-            tokenToUserId.entrySet().removeIf(entry -> entry.getValue().equals(key)))
+        .expireAfter(
+            Expiry.<String, UserDetails>creating((k, v) -> Duration.ofNanos(Long.MAX_VALUE)))
+        .removalListener((key, value, cause) -> tokenToUserId.remove(key))
         .build();
   }
 
-  public Optional<UserDetails> getByUserId(String userId) {
-    return Optional.ofNullable(cache.getIfPresent(userId));
-  }
-
   public Optional<UserDetails> getByToken(String token) {
-    String userId = tokenToUserId.get(token);
-    if (userId == null) {
-      return Optional.empty();
-    }
-    return Optional.ofNullable(cache.getIfPresent(userId));
+    return Optional.ofNullable(cache.getIfPresent(token));
   }
 
   public Optional<String> resolveUserId(String token) {
     return Optional.ofNullable(tokenToUserId.get(token));
   }
 
-  public void put(String userId, String token, UserDetails details, long expiresAt) {
-    long remainingMs = Math.max(0, expiresAt - System.currentTimeMillis());
+  public void put(String token, String userId, UserDetails details, long expiresAt) {
+    long remainingMs = Math.max(0, expiresAt - clock.millis());
     Duration ttl = capTtl(remainingMs);
-    cache.policy().expireVariably().orElseThrow().put(userId, details, ttl);
-    if (token != null) {
-      tokenToUserId.put(token, userId);
-    }
+    cache.policy().expireVariably().orElseThrow().put(token, details, ttl);
+    tokenToUserId.put(token, userId);
   }
 
-  public void invalidate(String userId) {
-    cache.invalidate(userId);
+  public void invalidateByToken(String token) {
+    cache.invalidate(token);
   }
 
   void clearAll() {
@@ -94,7 +86,7 @@ public class UserDetailsCache {
    * entries in the shared DB and pass as {@code expiresAt} to {@link #put}.
    */
   public long computeExpiresAt(long sessionRemainingMs) {
-    return System.currentTimeMillis() + capTtl(sessionRemainingMs).toMillis();
+    return clock.millis() + capTtl(sessionRemainingMs).toMillis();
   }
 
   private Duration capTtl(long remainingMs) {

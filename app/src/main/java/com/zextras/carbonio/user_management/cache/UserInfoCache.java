@@ -13,6 +13,7 @@ import com.zextras.carbonio.user_management.UserManagementServiceConfig.Applicat
 import com.zextras.carbonio.user_management.cache.record.UserInfo;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import java.time.Clock;
 import java.time.Duration;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -35,14 +36,16 @@ public class UserInfoCache {
   private final Cache<String, UserInfo> cache;
   private final ConcurrentHashMap<String, String> emailToUserId;
   private final ApplicationConfigService configService;
+  private final Clock clock;
 
   @Inject
   public UserInfoCache(ApplicationConfigService configService) {
-    this(configService, Ticker.systemTicker());
+    this(configService, Ticker.systemTicker(), Clock.systemUTC());
   }
 
-  UserInfoCache(ApplicationConfigService configService, Ticker ticker) {
+  UserInfoCache(ApplicationConfigService configService, Ticker ticker, Clock clock) {
     this.configService = configService;
+    this.clock = clock;
     this.emailToUserId = new ConcurrentHashMap<>();
 
     this.cache = Caffeine.newBuilder()
@@ -91,10 +94,10 @@ public class UserInfoCache {
    * {@code now + configuredTtl}. Used by the service layer to persist entries in the shared DB.
    */
   public long computeExpiresAt() {
-    return System.currentTimeMillis() + readTtlSeconds() * 1000;
+    return clock.millis() + readTtlSeconds() * 1000;
   }
 
-  private long readTtlSeconds() {
+  public long readTtlSeconds() {
     return Long.parseLong(
         configService.get(ApplicationConfig.CACHE_USERINFO_TTL)
             .orElseThrow(() -> new IllegalStateException(

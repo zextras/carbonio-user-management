@@ -11,6 +11,10 @@ import com.zextras.carbonio.user_management.cache.record.UserDetails;
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.HexFormat;
 import java.util.Map;
 import java.util.Optional;
 
@@ -31,22 +35,25 @@ public class UserDetailsCacheRepository
   }
 
   public Optional<TokenLookupResult> findByToken(String token) {
-    return find("token = ?1 and expiresAt > ?2", token, System.currentTimeMillis())
+    String hash = hashToken(token);
+    return find("tokenHash = ?1 and expiresAt > ?2", hash, System.currentTimeMillis())
         .firstResultOptional()
         .map(e -> new TokenLookupResult(e.userId, toRecord(e), e.expiresAt));
   }
 
   public Optional<String> resolveUserId(String token) {
-    return find("token = ?1 and expiresAt > ?2", token, System.currentTimeMillis())
+    String hash = hashToken(token);
+    return find("tokenHash = ?1 and expiresAt > ?2", hash, System.currentTimeMillis())
         .firstResultOptional()
         .map(e -> e.userId);
   }
 
   @Transactional
   public UserDetails upsert(String userId, String token, UserDetails details, long expiresAt) {
+    String hash = hashToken(token);
     int rows = getEntityManager().createNamedQuery(UserDetailsCacheEntity.UPSERT_IF_NEWER)
         .setParameter("userId", userId)
-        .setParameter("token", token)
+        .setParameter("tokenHash", hash)
         .setParameter("locale", details.locale())
         .setParameter("features", serializeFeatureList(details.featureList()))
         .setParameter("expiresAt", expiresAt)
@@ -55,9 +62,10 @@ public class UserDetailsCacheRepository
     if (rows > 0) {
       return details;
     }
-    // DB has a newer value — read it back (no expiry filter needed)
-    UserDetailsCacheEntity entity = findById(userId);
-    return entity != null ? toRecord(entity) : details;
+    // DB has a newer expiresAt — read back its data. If the row was concurrently deleted
+    // (e.g. by cleanup), fall back to the fresh data we already have from SOAP.
+    UserDetailsCacheEntity existing = findById(userId);
+    return existing != null ? toRecord(existing) : details;
   }
 
   @Transactional
@@ -74,6 +82,16 @@ public class UserDetailsCacheRepository
       return OBJECT_MAPPER.writeValueAsString(featureList);
     } catch (JsonProcessingException e) {
       throw new IllegalStateException("Failed to serialize feature list", e);
+    }
+  }
+
+  static String hashToken(String token) {
+    try {
+      MessageDigest digest = MessageDigest.getInstance("SHA-256");
+      byte[] hash = digest.digest(token.getBytes(StandardCharsets.UTF_8));
+      return HexFormat.of().formatHex(hash);
+    } catch (NoSuchAlgorithmException e) {
+      throw new IllegalStateException("SHA-256 not available", e);
     }
   }
 }

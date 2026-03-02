@@ -9,6 +9,7 @@ import com.zextras.carbonio.user_management.cache.record.UserInfo;
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 
 @ApplicationScoped
@@ -18,6 +19,17 @@ public class UserInfoCacheRepository implements PanacheRepositoryBase<UserInfoCa
     return find("userId = ?1 and expiresAt > ?2", userId, System.currentTimeMillis())
         .firstResultOptional()
         .map(UserInfoCacheRepository::toRecord);
+  }
+
+  public List<UserInfo> findByUserIds(List<String> userIds) {
+    if (userIds.isEmpty()) {
+      return List.of();
+    }
+    return find("userId IN ?1 AND expiresAt > ?2", userIds, System.currentTimeMillis())
+        .list()
+        .stream()
+        .map(UserInfoCacheRepository::toRecord)
+        .toList();
   }
 
   public Optional<UserInfo> findByEmail(String email) {
@@ -41,9 +53,10 @@ public class UserInfoCacheRepository implements PanacheRepositoryBase<UserInfoCa
     if (rows > 0) {
       return userInfo;
     }
-    // DB has a newer value — read it back (no expiry filter needed)
-    UserInfoCacheEntity entity = findById(userInfo.userId());
-    return entity != null ? toRecord(entity) : userInfo;
+    // DB has a newer expiresAt — read back its data. If the row was concurrently deleted
+    // (e.g. by cleanup), fall back to the fresh data we already have from SOAP.
+    UserInfoCacheEntity existing = findById(userInfo.userId());
+    return existing != null ? toRecord(existing) : userInfo;
   }
 
   @Transactional

@@ -11,9 +11,9 @@ CREATE INDEX idx_user_info_email ON user_info_cache (email);
 
 CREATE TABLE user_details_cache (
     user_id              VARCHAR(64)  PRIMARY KEY,
-    token                TEXT,
+    token_hash           VARCHAR(64),
     locale               VARCHAR(32)  NOT NULL DEFAULT 'en',
     feature_list         JSONB        NOT NULL DEFAULT '{}'::JSONB,
     expires_at           BIGINT       NOT NULL
 );
-CREATE INDEX idx_user_details_token ON user_details_cache (token);
+CREATE INDEX idx_user_details_token_hash ON user_details_cache (token_hash);
