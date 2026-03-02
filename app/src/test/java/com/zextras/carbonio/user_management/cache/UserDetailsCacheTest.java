@@ -41,21 +41,21 @@ class UserDetailsCacheTest {
 
   @Test
   void putAndGetByUserId() {
-    cache.put("user-1", "token-abc", sampleDetails(), 30000);
+    cache.put("user-1", "token-abc", sampleDetails(), System.currentTimeMillis() + 30000);
 
     assertThat(cache.getByUserId("user-1")).contains(sampleDetails());
   }
 
   @Test
   void putAndGetByToken() {
-    cache.put("user-1", "token-abc", sampleDetails(), 30000);
+    cache.put("user-1", "token-abc", sampleDetails(), System.currentTimeMillis() + 30000);
 
     assertThat(cache.getByToken("token-abc")).contains(sampleDetails());
   }
 
   @Test
   void resolveUserId() {
-    cache.put("user-1", "token-abc", sampleDetails(), 30000);
+    cache.put("user-1", "token-abc", sampleDetails(), System.currentTimeMillis() + 30000);
 
     assertThat(cache.resolveUserId("token-abc")).contains("user-1");
   }
@@ -71,7 +71,7 @@ class UserDetailsCacheTest {
     when(configService.get("cache.userdetails-ttl")).thenReturn(Optional.of("5"));
     UserDetailsCache configCache = new UserDetailsCache(configService, currentTime::get);
 
-    configCache.put("user-1", "token-abc", sampleDetails(), 30000);
+    configCache.put("user-1", "token-abc", sampleDetails(), System.currentTimeMillis() + 30000);
 
     currentTime.set(TimeUnit.SECONDS.toNanos(6));
     assertThat(configCache.getByUserId("user-1")).isEmpty();
@@ -83,7 +83,7 @@ class UserDetailsCacheTest {
     when(configService.get("cache.userdetails-ttl")).thenReturn(Optional.of("60"));
     UserDetailsCache configCache = new UserDetailsCache(configService, currentTime::get);
 
-    configCache.put("user-1", "token-abc", sampleDetails(), 5000);
+    configCache.put("user-1", "token-abc", sampleDetails(), System.currentTimeMillis() + 5000);
 
     currentTime.set(TimeUnit.SECONDS.toNanos(6));
     assertThat(configCache.getByUserId("user-1")).isEmpty();
@@ -92,7 +92,7 @@ class UserDetailsCacheTest {
   @Test
   void entryAvailableBeforeExpiryAndGoneAfter() {
     // No config → uses remaining only (500ms)
-    cache.put("user-1", "token-abc", sampleDetails(), 500);
+    cache.put("user-1", "token-abc", sampleDetails(), System.currentTimeMillis() + 500);
 
     // 400ms → still in cache (both access paths)
     currentTime.set(TimeUnit.MILLISECONDS.toNanos(400));
@@ -107,7 +107,7 @@ class UserDetailsCacheTest {
 
   @Test
   void removalListenerCleansTokenIndex() {
-    cache.put("user-1", "token-abc", sampleDetails(), 30000);
+    cache.put("user-1", "token-abc", sampleDetails(), System.currentTimeMillis() + 30000);
 
     cache.invalidate("user-1");
     cache.getByUserId("user-1");

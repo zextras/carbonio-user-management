@@ -28,18 +28,7 @@ public class UserInfoCacheRepository implements PanacheRepositoryBase<UserInfoCa
 
   @Transactional
   public UserInfo upsert(UserInfo userInfo, long expiresAt) {
-    int rows = getEntityManager().createNativeQuery("""
-            INSERT INTO user_info_cache (user_id, email, full_name, domain, status, type, expires_at)
-            VALUES (:userId, :email, :fullName, :domain, :status, :type, :expiresAt)
-            ON CONFLICT (user_id) DO UPDATE SET
-              email = EXCLUDED.email,
-              full_name = EXCLUDED.full_name,
-              domain = EXCLUDED.domain,
-              status = EXCLUDED.status,
-              type = EXCLUDED.type,
-              expires_at = EXCLUDED.expires_at
-            WHERE user_info_cache.expires_at < EXCLUDED.expires_at
-            """)
+    int rows = getEntityManager().createNamedQuery(UserInfoCacheEntity.UPSERT_IF_NEWER)
         .setParameter("userId", userInfo.userId())
         .setParameter("email", userInfo.email())
         .setParameter("fullName", userInfo.fullName())

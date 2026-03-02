@@ -67,11 +67,11 @@ public class ExpiredCacheCleanup {
       int infoDeleted = userInfoRepository.deleteExpired();
       int detailsDeleted = userDetailsRepository.deleteExpired();
       if (infoDeleted > 0 || detailsDeleted > 0) {
-        LOG.infof("Cache cleanup: removed %d user_info and %d user_details expired entries",
+        LOG.infof("Persistent cache cleanup: removed %d user_info and %d user_details expired entries",
             infoDeleted, detailsDeleted);
       }
     } catch (Exception e) {
-      LOG.warn("Cache cleanup failed", e);
+      LOG.warn("Persistent cache cleanup failed", e);
     }
   }
 }

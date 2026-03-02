@@ -94,8 +94,7 @@ public class UserService {
           var result = tokenResult.get();
           userId = result.userId();
           dbDetails = Optional.of(result.details());
-          long remainingMs = result.expiresAt() - System.currentTimeMillis();
-          userDetailsCache.put(userId, token, result.details(), remainingMs);
+          userDetailsCache.put(userId, token, result.details(), result.expiresAt());
         }
       }
 
@@ -115,8 +114,7 @@ public class UserService {
         }
         if (dbDetails.isEmpty()) {
           dbDetails = userDetailsCacheRepo.findByUserId(resolvedId).map(cached -> {
-            long remainingMs = cached.expiresAt() - System.currentTimeMillis();
-            userDetailsCache.put(resolvedId, token, cached.details(), remainingMs);
+            userDetailsCache.put(resolvedId, token, cached.details(), cached.expiresAt());
             return cached.details();
           });
         }
@@ -138,10 +136,10 @@ public class UserService {
 
       UserInfo userInfo = mapGetInfoToUserInfo(response);
       UserDetails details = mapGetInfoToUserDetails(response);
-      long remainingMs = response.getLifetime();
+      long expiresAt = userDetailsCache.computeExpiresAt(response.getLifetime());
 
       userInfo = persistAndCacheInfo(userInfo);
-      details = persistAndCacheDetails(userInfo.userId(), token, details, remainingMs);
+      details = persistAndCacheDetails(userInfo.userId(), token, details, expiresAt);
 
       logger.debug("GetUserMyself fetched from mailbox for userId {}", userInfo.userId());
       return Optional.of(new MyselfResult(userInfo, details));
@@ -258,14 +256,13 @@ public class UserService {
   }
 
   private UserDetails persistAndCacheDetails(
-      String userId, String token, UserDetails details, long remainingMs) {
+      String userId, String token, UserDetails details, long expiresAt) {
     try {
-      long expiresAt = userDetailsCache.computeExpiresAt(remainingMs);
       details = userDetailsCacheRepo.upsert(userId, token, details, expiresAt);
     } catch (Exception e) {
       logger.warn("Failed to persist user details to L1 cache for userId {}", userId, e);
     }
-    userDetailsCache.put(userId, token, details, remainingMs);
+    userDetailsCache.put(userId, token, details, expiresAt);
     return details;
   }
 

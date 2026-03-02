@@ -70,8 +70,9 @@ public class UserDetailsCache {
     return Optional.ofNullable(tokenToUserId.get(token));
   }
 
-  public void put(String userId, String token, UserDetails details, long remainingMs) {
-    Duration ttl = computeTtl(remainingMs);
+  public void put(String userId, String token, UserDetails details, long expiresAt) {
+    long remainingMs = Math.max(0, expiresAt - System.currentTimeMillis());
+    Duration ttl = capTtl(remainingMs);
     cache.policy().expireVariably().orElseThrow().put(userId, details, ttl);
     if (token != null) {
       tokenToUserId.put(token, userId);
@@ -89,14 +90,14 @@ public class UserDetailsCache {
 
   /**
    * Returns an epoch-millis expiration timestamp for a new entry, computed as
-   * {@code now + min(configTtl, remainingMs)}. Used by the service layer to persist entries in
-   * the shared DB.
+   * {@code now + min(configTtl, sessionRemainingMs)}. Used by the service layer to persist
+   * entries in the shared DB and pass as {@code expiresAt} to {@link #put}.
    */
-  public long computeExpiresAt(long remainingMs) {
-    return System.currentTimeMillis() + computeTtl(remainingMs).toMillis();
+  public long computeExpiresAt(long sessionRemainingMs) {
+    return System.currentTimeMillis() + capTtl(sessionRemainingMs).toMillis();
   }
 
-  private Duration computeTtl(long remainingMs) {
+  private Duration capTtl(long remainingMs) {
     Duration remaining = Duration.ofMillis(remainingMs);
     return configService.get(ApplicationConfig.CACHE_DETAILS_TTL)
         .map(Long::parseLong)

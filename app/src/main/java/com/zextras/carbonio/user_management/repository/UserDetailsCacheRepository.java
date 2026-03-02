@@ -44,16 +44,7 @@ public class UserDetailsCacheRepository
 
   @Transactional
   public UserDetails upsert(String userId, String token, UserDetails details, long expiresAt) {
-    int rows = getEntityManager().createNativeQuery("""
-            INSERT INTO user_details_cache (user_id, token, locale, feature_list, expires_at)
-            VALUES (:userId, :token, :locale, CAST(:features AS JSONB), :expiresAt)
-            ON CONFLICT (user_id) DO UPDATE SET
-              token = EXCLUDED.token,
-              locale = EXCLUDED.locale,
-              feature_list = EXCLUDED.feature_list,
-              expires_at = EXCLUDED.expires_at
-            WHERE user_details_cache.expires_at < EXCLUDED.expires_at
-            """)
+    int rows = getEntityManager().createNamedQuery(UserDetailsCacheEntity.UPSERT_IF_NEWER)
         .setParameter("userId", userId)
         .setParameter("token", token)
         .setParameter("locale", details.locale())
