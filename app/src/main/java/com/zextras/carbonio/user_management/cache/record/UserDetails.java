@@ -8,5 +8,5 @@ import java.util.Map;
 
 public record UserDetails(
     String locale,
-    Map<String, String> carbonioAttributes
+    Map<String, Boolean> featureList
 ) {}

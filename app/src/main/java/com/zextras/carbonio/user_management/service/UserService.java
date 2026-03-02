@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import zimbra.NamedValue;
@@ -34,6 +35,9 @@ import zimbraaccount.GetAccountInfoResponse;
 import zimbraaccount.GetInfoResponse;
 import zimbraaccount.Pref;
 
+import static com.zextras.carbonio.user_management.UserManagementServiceConfig.FeatureFlags;
+import static com.zextras.carbonio.user_management.UserManagementServiceConfig.ZimbraAttributes;
+import static com.zextras.carbonio.user_management.UserManagementServiceConfig.ZimbraPreferences;
 import static com.zextras.mailbox.client.service.ServiceRequests.AccountInfo;
 import static com.zextras.mailbox.client.service.ServiceRequests.Info;
 
@@ -278,10 +282,10 @@ public class UserService {
     if (response.getAttrs() != null) {
       for (Attr attr : response.getAttrs().getAttr()) {
         switch (attr.getName()) {
-          case "displayName" -> fullName = attr.getValue();
-          case "zimbraId" -> userId = attr.getValue();
-          case "zimbraAccountStatus" -> status = attr.getValue().toUpperCase();
-          case "zimbraIsExternalVirtualAccount" ->
+          case ZimbraAttributes.DISPLAY_NAME -> fullName = attr.getValue();
+          case ZimbraAttributes.ID -> userId = attr.getValue();
+          case ZimbraAttributes.ACCOUNT_STATUS -> status = attr.getValue().toUpperCase();
+          case ZimbraAttributes.IS_EXTERNAL_VIRTUAL_ACCOUNT ->
               type = Boolean.parseBoolean(attr.getValue().toLowerCase()) ? "GUEST" : "INTERNAL";
         }
       }
@@ -290,21 +294,27 @@ public class UserService {
     return new UserInfo(userId, email, fullName, domain, status, type);
   }
 
+  private static final Set<String> FEATURE_FLAGS = Set.of(
+      FeatureFlags.FILES_ENABLED,
+      FeatureFlags.WSC_ENABLED,
+      FeatureFlags.TASKS_ENABLED
+  );
+
   UserDetails mapGetInfoToUserDetails(GetInfoResponse response) {
     String locale = Locale.ENGLISH.toString();
-    Map<String, String> carbonioAttributes = new HashMap<>();
+    Map<String, Boolean> featureList = new HashMap<>();
 
     if (response.getAttrs() != null) {
       for (Attr attr : response.getAttrs().getAttr()) {
-        if (attr.getName().startsWith("carbonio")) {
-          carbonioAttributes.put(attr.getName(), attr.getValue());
+        if (FEATURE_FLAGS.contains(attr.getName())) {
+          featureList.put(attr.getName(), "TRUE".equalsIgnoreCase(attr.getValue()));
         }
       }
     }
 
     if (response.getPrefs() != null) {
       for (Pref pref : response.getPrefs().getPref()) {
-        if ("zimbraPrefLocale".equals(pref.getName())) {
+        if (ZimbraPreferences.LOCALE.equals(pref.getName())) {
           try {
             locale = Locale.forLanguageTag(pref.getValue().replace('_', '-')).toString();
           } catch (IllegalArgumentException e) {
@@ -317,7 +327,7 @@ public class UserService {
       }
     }
 
-    return new UserDetails(locale, carbonioAttributes);
+    return new UserDetails(locale, featureList);
   }
 
   UserInfo mapGetAccountInfoToUserInfo(GetAccountInfoResponse response) {
@@ -330,10 +340,10 @@ public class UserService {
 
     for (NamedValue attr : response.getAttr()) {
       switch (attr.getName()) {
-        case "displayName" -> fullName = attr.getValue();
-        case "zimbraId" -> userId = attr.getValue();
-        case "zimbraAccountStatus" -> status = attr.getValue().toUpperCase();
-        case "zimbraIsExternalVirtualAccount" ->
+        case ZimbraAttributes.DISPLAY_NAME -> fullName = attr.getValue();
+        case ZimbraAttributes.ID -> userId = attr.getValue();
+        case ZimbraAttributes.ACCOUNT_STATUS -> status = attr.getValue().toUpperCase();
+        case ZimbraAttributes.IS_EXTERNAL_VIRTUAL_ACCOUNT ->
             type = Boolean.parseBoolean(attr.getValue().toLowerCase()) ? "GUEST" : "INTERNAL";
       }
     }

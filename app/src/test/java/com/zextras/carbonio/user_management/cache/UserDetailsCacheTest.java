@@ -4,6 +4,7 @@
 
 package com.zextras.carbonio.user_management.cache;
 
+import static com.zextras.carbonio.user_management.UserManagementServiceConfig.FeatureFlags;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -35,7 +36,7 @@ class UserDetailsCacheTest {
   }
 
   private UserDetails sampleDetails() {
-    return new UserDetails("en", Map.of("carbonioFeatureX", "true"));
+    return new UserDetails("en", Map.of(FeatureFlags.FILES_ENABLED, true));
   }
 
   @Test

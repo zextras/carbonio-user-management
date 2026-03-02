@@ -24,4 +24,21 @@ public final class UserManagementServiceConfig implements CarbonioDatabaseServic
   }
 
   public static final String AUTH_TOKEN_KEY = "ZM_AUTH_TOKEN";
+
+  public interface ZimbraAttributes {
+    String DISPLAY_NAME = "displayName";
+    String ID = "zimbraId";
+    String ACCOUNT_STATUS = "zimbraAccountStatus";
+    String IS_EXTERNAL_VIRTUAL_ACCOUNT = "zimbraIsExternalVirtualAccount";
+  }
+
+  public interface ZimbraPreferences {
+    String LOCALE = "zimbraPrefLocale";
+  }
+
+  public interface FeatureFlags {
+    String FILES_ENABLED = "carbonioFeatureFilesEnabled";
+    String WSC_ENABLED = "carbonioFeatureWscEnabled";
+    String TASKS_ENABLED = "carbonioFeatureTasksEnabled";
+  }
 }

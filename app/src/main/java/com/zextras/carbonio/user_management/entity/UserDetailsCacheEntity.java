@@ -28,9 +28,9 @@ public class UserDetailsCacheEntity extends PanacheEntityBase {
   @Column(nullable = false, length = 32)
   public String locale;
 
-  @Column(name = "carbonio_attributes", nullable = false, columnDefinition = "jsonb")
+  @Column(name = "feature_list", nullable = false, columnDefinition = "jsonb")
   @JdbcTypeCode(SqlTypes.JSON)
-  public Map<String, String> carbonioAttributes = new HashMap<>();
+  public Map<String, Boolean> featureList = new HashMap<>();
 
   @Column(name = "expires_at", nullable = false)
   public long expiresAt;

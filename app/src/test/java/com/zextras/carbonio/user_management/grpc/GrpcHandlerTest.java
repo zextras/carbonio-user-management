@@ -4,6 +4,7 @@
 
 package com.zextras.carbonio.user_management.grpc;
 
+import static com.zextras.carbonio.user_management.UserManagementServiceConfig.FeatureFlags;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -19,7 +20,6 @@ import com.zextras.carbonio.user_management.sdk.grpc.GetUsersRequest;
 import com.zextras.carbonio.user_management.sdk.grpc.GetUsersResponse;
 import com.zextras.carbonio.user_management.sdk.grpc.UserInfoResponse;
 import com.zextras.carbonio.user_management.sdk.grpc.UserMyselfResponse;
-import com.zextras.carbonio.user_management.sdk.grpc.UserStatusProto;
 import com.zextras.carbonio.user_management.sdk.grpc.UserTypeProto;
 import com.zextras.carbonio.user_management.service.UserService;
 import com.zextras.carbonio.user_management.service.UserService.MyselfResult;
@@ -69,7 +69,7 @@ class GrpcHandlerTest {
     void happyPath() {
       MyselfResult result = new MyselfResult(
           sampleUserInfo(),
-          new UserDetails("it", Map.of("carbonioFeature", "enabled")));
+          new UserDetails("it", Map.of(FeatureFlags.FILES_ENABLED, true)));
       when(userService.getUserMyself("token-1")).thenReturn(Optional.of(result));
 
       TestStreamObserver<UserMyselfResponse> observer = new TestStreamObserver<>();
@@ -79,8 +79,8 @@ class GrpcHandlerTest {
       assertThat(observer.completed).isTrue();
       assertThat(observer.response.get().getUser().getInfo().getUserId()).isEqualTo("user-1");
       assertThat(observer.response.get().getUser().getLocale()).isEqualTo("it");
-      assertThat(observer.response.get().getUser().getCarbonioAttributesMap())
-          .containsEntry("carbonioFeature", "enabled");
+      assertThat(observer.response.get().getUser().getFeatureListMap())
+          .containsEntry(FeatureFlags.FILES_ENABLED, true);
     }
 
     @Test
@@ -123,7 +123,7 @@ class GrpcHandlerTest {
       assertThat(observer.completed).isTrue();
       assertThat(observer.response.get().getUser().getUserId()).isEqualTo("user-1");
       assertThat(observer.response.get().getUser().getEmail()).isEqualTo("user@example.com");
-      assertThat(observer.response.get().getUser().getStatus()).isEqualTo(UserStatusProto.ACTIVE);
+      assertThat(observer.response.get().getUser().getStatus()).isEqualTo("ACTIVE");
       assertThat(observer.response.get().getUser().getType()).isEqualTo(UserTypeProto.INTERNAL);
     }
 
@@ -188,7 +188,7 @@ class GrpcHandlerTest {
       assertThat(observer.completed).isTrue();
       assertThat(observer.response.get().getUsersList()).hasSize(2);
       assertThat(observer.response.get().getUsers(0).getUserId()).isEqualTo("id-1");
-      assertThat(observer.response.get().getUsers(1).getStatus()).isEqualTo(UserStatusProto.CLOSED);
+      assertThat(observer.response.get().getUsers(1).getStatus()).isEqualTo("CLOSED");
       assertThat(observer.response.get().getUsers(1).getType()).isEqualTo(UserTypeProto.GUEST);
     }
 

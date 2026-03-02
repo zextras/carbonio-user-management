@@ -45,19 +45,19 @@ public class UserDetailsCacheRepository
   @Transactional
   public UserDetails upsert(String userId, String token, UserDetails details, long expiresAt) {
     int rows = getEntityManager().createNativeQuery("""
-            INSERT INTO user_details_cache (user_id, token, locale, carbonio_attributes, expires_at)
-            VALUES (:userId, :token, :locale, CAST(:attrs AS JSONB), :expiresAt)
+            INSERT INTO user_details_cache (user_id, token, locale, feature_list, expires_at)
+            VALUES (:userId, :token, :locale, CAST(:features AS JSONB), :expiresAt)
             ON CONFLICT (user_id) DO UPDATE SET
               token = EXCLUDED.token,
               locale = EXCLUDED.locale,
-              carbonio_attributes = EXCLUDED.carbonio_attributes,
+              feature_list = EXCLUDED.feature_list,
               expires_at = EXCLUDED.expires_at
             WHERE user_details_cache.expires_at < EXCLUDED.expires_at
             """)
         .setParameter("userId", userId)
         .setParameter("token", token)
         .setParameter("locale", details.locale())
-        .setParameter("attrs", serializeAttributes(details.carbonioAttributes()))
+        .setParameter("features", serializeFeatureList(details.featureList()))
         .setParameter("expiresAt", expiresAt)
         .executeUpdate();
 
@@ -75,14 +75,14 @@ public class UserDetailsCacheRepository
   }
 
   private static UserDetails toRecord(UserDetailsCacheEntity e) {
-    return new UserDetails(e.locale, e.carbonioAttributes);
+    return new UserDetails(e.locale, e.featureList);
   }
 
-  private static String serializeAttributes(Map<String, String> attributes) {
+  private static String serializeFeatureList(Map<String, Boolean> featureList) {
     try {
-      return OBJECT_MAPPER.writeValueAsString(attributes);
+      return OBJECT_MAPPER.writeValueAsString(featureList);
     } catch (JsonProcessingException e) {
-      throw new IllegalStateException("Failed to serialize carbonio attributes", e);
+      throw new IllegalStateException("Failed to serialize feature list", e);
     }
   }
 }

@@ -5,6 +5,7 @@
 package com.zextras.carbonio.user_management.rest;
 
 import static com.zextras.carbonio.user_management.UserManagementServiceConfig.AUTH_TOKEN_KEY;
+import static com.zextras.carbonio.user_management.UserManagementServiceConfig.FeatureFlags;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -52,7 +53,7 @@ class UserResourceTest {
     void returnsOkWithMyselfDto() {
       MyselfResult result = new MyselfResult(
           sampleUserInfo(),
-          new UserDetails("it", Map.of("carbonioFeature", "enabled")));
+          new UserDetails("it", Map.of(FeatureFlags.FILES_ENABLED, true)));
       when(userService.getUserMyself("token-1")).thenReturn(Optional.of(result));
 
       Response response = resource.getMyself(ctx);
@@ -61,7 +62,7 @@ class UserResourceTest {
       MyselfDto dto = (MyselfDto) response.getEntity();
       assertThat(dto.info().userId()).isEqualTo("user-1");
       assertThat(dto.locale()).isEqualTo("it");
-      assertThat(dto.carbonioAttributes()).containsEntry("carbonioFeature", "enabled");
+      assertThat(dto.featureList()).containsEntry(FeatureFlags.FILES_ENABLED, true);
     }
 
     @Test

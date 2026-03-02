@@ -16,7 +16,6 @@ import com.zextras.carbonio.user_management.sdk.grpc.UserInfoResponse;
 import com.zextras.carbonio.user_management.sdk.grpc.UserManagementServiceGrpc;
 import com.zextras.carbonio.user_management.sdk.grpc.UserMyselfProto;
 import com.zextras.carbonio.user_management.sdk.grpc.UserMyselfResponse;
-import com.zextras.carbonio.user_management.sdk.grpc.UserStatusProto;
 import com.zextras.carbonio.user_management.sdk.grpc.UserTypeProto;
 import com.zextras.carbonio.user_management.service.UserService;
 import com.zextras.carbonio.user_management.service.UserService.MyselfResult;
@@ -117,8 +116,8 @@ public class GrpcHandler extends UserManagementServiceGrpc.UserManagementService
         .setInfo(toUserInfoProto(result.info()))
         .setLocale(result.details().locale());
 
-    if (result.details().carbonioAttributes() != null) {
-      myselfBuilder.putAllCarbonioAttributes(result.details().carbonioAttributes());
+    if (result.details().featureList() != null) {
+      myselfBuilder.putAllFeatureList(result.details().featureList());
     }
 
     return UserMyselfResponse.newBuilder()
@@ -148,24 +147,10 @@ public class GrpcHandler extends UserManagementServiceGrpc.UserManagementService
       builder.setDomain(userInfo.domain());
     }
 
-    builder.setStatus(toStatusProto(userInfo.status()));
+    builder.setStatus(userInfo.status() != null ? userInfo.status() : "ACTIVE");
     builder.setType(toTypeProto(userInfo.type()));
 
     return builder.build();
-  }
-
-  private UserStatusProto toStatusProto(String status) {
-    if (status == null) {
-      return UserStatusProto.ACTIVE;
-    }
-    return switch (status.toUpperCase()) {
-      case "CLOSED" -> UserStatusProto.CLOSED;
-      case "LOCKED" -> UserStatusProto.LOCKED;
-      case "LOCKOUT" -> UserStatusProto.LOCKOUT;
-      case "MAINTENANCE" -> UserStatusProto.MAINTENANCE;
-      case "PENDING" -> UserStatusProto.PENDING;
-      default -> UserStatusProto.ACTIVE;
-    };
   }
 
   private UserTypeProto toTypeProto(String type) {

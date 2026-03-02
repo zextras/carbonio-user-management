@@ -4,6 +4,7 @@
 
 package com.zextras.carbonio.user_management.service;
 
+import static com.zextras.carbonio.user_management.UserManagementServiceConfig.FeatureFlags;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -57,7 +58,7 @@ class UserServiceTest {
   }
 
   private UserDetails sampleDetails() {
-    return new UserDetails("en", Map.of("carbonioFeatureX", "true"));
+    return new UserDetails("en", Map.of(FeatureFlags.FILES_ENABLED, true));
   }
 
   private long futureExpiresAt() {

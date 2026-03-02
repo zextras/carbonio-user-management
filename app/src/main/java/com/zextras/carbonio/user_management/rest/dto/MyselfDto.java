@@ -10,13 +10,13 @@ import java.util.Map;
 public record MyselfDto(
     UserInfoDto info,
     String locale,
-    Map<String, String> carbonioAttributes
+    Map<String, Boolean> featureList
 ) {
 
   public static MyselfDto from(MyselfResult result) {
     return new MyselfDto(
         UserInfoDto.from(result.info()),
         result.details().locale(),
-        result.details().carbonioAttributes());
+        result.details().featureList());
   }
 }

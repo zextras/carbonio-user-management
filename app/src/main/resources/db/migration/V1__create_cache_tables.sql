@@ -13,7 +13,7 @@ CREATE TABLE user_details_cache (
     user_id              VARCHAR(64)  PRIMARY KEY,
     token                TEXT,
     locale               VARCHAR(32)  NOT NULL DEFAULT 'en',
-    carbonio_attributes  JSONB        NOT NULL DEFAULT '{}'::JSONB,
+    feature_list         JSONB        NOT NULL DEFAULT '{}'::JSONB,
     expires_at           BIGINT       NOT NULL
 );
 CREATE INDEX idx_user_details_token ON user_details_cache (token);

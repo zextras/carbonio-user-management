@@ -4,6 +4,7 @@
 
 package com.zextras.carbonio.user_management.cache;
 
+import static com.zextras.carbonio.user_management.UserManagementServiceConfig.FeatureFlags;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
@@ -76,7 +77,7 @@ class CacheIntegrationTest {
   }
 
   private UserDetails sampleDetails() {
-    return new UserDetails("en", Map.of("carbonioFeatureX", "true"));
+    return new UserDetails("en", Map.of(FeatureFlags.FILES_ENABLED, true));
   }
 
   private long futureExpiresAt() {
@@ -220,19 +221,19 @@ class CacheIntegrationTest {
     }
 
     @Test
-    void jsonbAttributesSerialization() {
-      Map<String, String> attrs = Map.of(
-          "carbonioFeatureA", "enabled",
-          "carbonioFeatureB", "disabled",
-          "carbonioQuota", "1024");
-      UserDetails details = new UserDetails("it", attrs);
+    void jsonbFeatureListSerialization() {
+      Map<String, Boolean> features = Map.of(
+          FeatureFlags.FILES_ENABLED, true,
+          FeatureFlags.WSC_ENABLED, false,
+          FeatureFlags.TASKS_ENABLED, true);
+      UserDetails details = new UserDetails("it", features);
       userDetailsRepo.upsert("user-1", "token-abc", details, futureExpiresAt());
 
       Optional<CachedUserDetails> result = userDetailsRepo.findByUserId("user-1");
 
       assertThat(result).isPresent();
       assertThat(result.get().details().locale()).isEqualTo("it");
-      assertThat(result.get().details().carbonioAttributes()).isEqualTo(attrs);
+      assertThat(result.get().details().featureList()).isEqualTo(features);
     }
 
     @Test
