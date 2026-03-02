@@ -1,0 +1,38 @@
+// SPDX-FileCopyrightText: 2022 Zextras <https://www.zextras.com>
+//
+// SPDX-License-Identifier: AGPL-3.0-only
+
+package com.zextras.carbonio.user_management.cache.entity;
+
+import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "user_info_cache")
+public class UserInfoCacheEntity extends PanacheEntityBase {
+
+  @Id
+  @Column(name = "user_id", length = 64)
+  public String userId;
+
+  @Column(length = 320)
+  public String email;
+
+  @Column(name = "full_name", nullable = false, length = 512)
+  public String fullName;
+
+  @Column(length = 255)
+  public String domain;
+
+  @Column(nullable = false, length = 32)
+  public String status;
+
+  @Column(nullable = false, length = 32)
+  public String type;
+
+  @Column(name = "expires_at", nullable = false)
+  public long expiresAt;
+}

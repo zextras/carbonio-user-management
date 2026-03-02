@@ -69,10 +69,7 @@ public class UserInfoCache {
   }
 
   public void put(UserInfo userInfo) {
-    long ttlSeconds = Long.parseLong(
-        configService.get(ApplicationConfig.CACHE_USERINFO_TTL)
-            .orElseThrow(() -> new IllegalStateException(
-                "Missing required config: " + ApplicationConfig.CACHE_USERINFO_TTL)));
+    long ttlSeconds = readTtlSeconds();
     cache.policy().expireVariably().orElseThrow()
         .put(userInfo.userId(), userInfo, Duration.ofSeconds(ttlSeconds));
     if (userInfo.email() != null) {
@@ -82,5 +79,25 @@ public class UserInfoCache {
 
   public void invalidate(String userId) {
     cache.invalidate(userId);
+  }
+
+  void clearAll() {
+    cache.invalidateAll();
+    emailToUserId.clear();
+  }
+
+  /**
+   * Returns an epoch-millis expiration timestamp for a new entry, computed as
+   * {@code now + configuredTtl}. Used by the service layer to persist entries in the shared DB.
+   */
+  public long computeExpiresAt() {
+    return System.currentTimeMillis() + readTtlSeconds() * 1000;
+  }
+
+  private long readTtlSeconds() {
+    return Long.parseLong(
+        configService.get(ApplicationConfig.CACHE_USERINFO_TTL)
+            .orElseThrow(() -> new IllegalStateException(
+                "Missing required config: " + ApplicationConfig.CACHE_USERINFO_TTL)));
   }
 }

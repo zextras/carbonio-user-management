@@ -4,9 +4,9 @@
 
 package com.zextras.carbonio.user_management;
 
-import com.zextras.carbonio.quarkus.extensions.bootstrap.CarbonioServiceConfig;
+import com.zextras.carbonio.quarkus.extensions.bootstrap.db.CarbonioDatabaseServiceConfig;
 
-public final class UserManagementServiceConfig implements CarbonioServiceConfig {
+public final class UserManagementServiceConfig implements CarbonioDatabaseServiceConfig {
 
   @Override
   public String getServiceName() {

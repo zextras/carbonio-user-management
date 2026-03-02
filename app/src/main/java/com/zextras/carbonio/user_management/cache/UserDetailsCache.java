@@ -82,6 +82,20 @@ public class UserDetailsCache {
     cache.invalidate(userId);
   }
 
+  void clearAll() {
+    cache.invalidateAll();
+    tokenToUserId.clear();
+  }
+
+  /**
+   * Returns an epoch-millis expiration timestamp for a new entry, computed as
+   * {@code now + min(configTtl, remainingMs)}. Used by the service layer to persist entries in
+   * the shared DB.
+   */
+  public long computeExpiresAt(long remainingMs) {
+    return System.currentTimeMillis() + computeTtl(remainingMs).toMillis();
+  }
+
   private Duration computeTtl(long remainingMs) {
     Duration remaining = Duration.ofMillis(remainingMs);
     return configService.get(ApplicationConfig.CACHE_DETAILS_TTL)
