@@ -45,7 +45,7 @@ public class UserMyselfCacheEntity extends PanacheEntityBase {
   @Column(name = "user_id", length = 64)
   public String userId;
 
-  @Column(name = "token_hash", length = 64)
+  @Column(name = "token_hash", length = 64, unique = true)
   public String tokenHash;
 
   @Column(length = 320)

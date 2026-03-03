@@ -7,6 +7,7 @@ package com.zextras.carbonio.user_management.cache;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.Expiry;
+import com.github.benmanes.caffeine.cache.RemovalCause;
 import com.github.benmanes.caffeine.cache.Ticker;
 import com.zextras.carbonio.quarkus.extensions.bootstrap.ApplicationConfigService;
 import com.zextras.carbonio.user_management.UserManagementServiceConfig.ApplicationConfig;
@@ -17,6 +18,7 @@ import java.time.Clock;
 import java.time.Duration;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Cache for {@link UserMyself}, keyed by auth token (one entry per user).
@@ -34,11 +36,14 @@ import java.util.concurrent.ConcurrentHashMap;
 @Singleton
 public class UserMyselfCache {
 
+  private static final long CONFIG_CACHE_SECONDS = 60;
+
   private final Cache<String, UserMyself> cache;
   private final ConcurrentHashMap<String, String> tokenToUserId;
   private final ConcurrentHashMap<String, String> userIdToToken;
   private final ApplicationConfigService configService;
   private final Clock clock;
+  private final Cache<String, Long> ttlCache;
 
   @Inject
   public UserMyselfCache(ApplicationConfigService configService) {
@@ -50,13 +55,16 @@ public class UserMyselfCache {
     this.clock = clock;
     this.tokenToUserId = new ConcurrentHashMap<>();
     this.userIdToToken = new ConcurrentHashMap<>();
+    this.ttlCache = Caffeine.newBuilder()
+        .expireAfterWrite(CONFIG_CACHE_SECONDS, TimeUnit.SECONDS)
+        .build();
 
     this.cache = Caffeine.newBuilder()
         .ticker(ticker)
         .expireAfter(
             Expiry.<String, UserMyself>creating((k, v) -> Duration.ofNanos(Long.MAX_VALUE)))
-        .removalListener((String key, UserMyself value, com.github.benmanes.caffeine.cache.RemovalCause cause) -> {
-          if (key != null) {
+        .removalListener((String key, UserMyself value, RemovalCause cause) -> {
+          if (key != null && cause != RemovalCause.REPLACED) {
             String userId = tokenToUserId.remove(key);
             if (userId != null) {
               userIdToToken.remove(userId, key);
@@ -75,17 +83,26 @@ public class UserMyselfCache {
   }
 
   public void put(String token, String userId, UserMyself myself, long expiresAt) {
-    // One-token-per-user: invalidate old token for this user if different
-    String oldToken = userIdToToken.get(userId);
-    if (oldToken != null && !oldToken.equals(token)) {
-      cache.invalidate(oldToken);
-    }
-
     long remainingMs = Math.max(0, expiresAt - clock.millis());
     Duration ttl = capTtl(remainingMs);
+
+    // Atomically update userId→token index; capture displaced token (if different)
+    String[] displaced = {null};
+    userIdToToken.compute(userId, (uid, oldToken) -> {
+      if (oldToken != null && !oldToken.equals(token)) {
+        displaced[0] = oldToken;
+      }
+      return token;
+    });
+
+    // Invalidate displaced token outside compute() to avoid reentrant lock from removal listener
+    if (displaced[0] != null) {
+      cache.invalidate(displaced[0]);
+    }
+
+    // Insert/replace in Caffeine; for REPLACED entries the removal listener is a no-op
     cache.policy().expireVariably().orElseThrow().put(token, myself, ttl);
     tokenToUserId.put(token, userId);
-    userIdToToken.put(userId, token);
   }
 
   public void invalidateByToken(String token) {
@@ -99,10 +116,11 @@ public class UserMyselfCache {
   }
 
   public boolean isCacheEnabled() {
-    return configService.get(ApplicationConfig.CACHE_USERMYSELF_TTL)
-        .map(Long::parseLong)
-        .map(ttl -> ttl > 0)
-        .orElse(true);  // absent = enabled (uses session remaining)
+    long configSeconds = ttlCache.get("usermyself-ttl", k ->
+        configService.get(ApplicationConfig.CACHE_USERMYSELF_TTL)
+            .map(Long::parseLong)
+            .orElse(TTL_ABSENT_SENTINEL));
+    return configSeconds == TTL_ABSENT_SENTINEL || configSeconds > 0;
   }
 
   /**
@@ -114,12 +132,18 @@ public class UserMyselfCache {
     return clock.millis() + capTtl(sessionRemainingMs).toMillis();
   }
 
+  private static final long TTL_ABSENT_SENTINEL = -1;
+
   private Duration capTtl(long remainingMs) {
     Duration remaining = Duration.ofMillis(remainingMs);
-    return configService.get(ApplicationConfig.CACHE_USERMYSELF_TTL)
-        .map(Long::parseLong)
-        .map(seconds -> min(Duration.ofSeconds(seconds), remaining))
-        .orElse(remaining);
+    long configSeconds = ttlCache.get("usermyself-ttl", k ->
+        configService.get(ApplicationConfig.CACHE_USERMYSELF_TTL)
+            .map(Long::parseLong)
+            .orElse(TTL_ABSENT_SENTINEL));
+    if (configSeconds != TTL_ABSENT_SENTINEL) {
+      return min(Duration.ofSeconds(configSeconds), remaining);
+    }
+    return remaining;
   }
 
   private static Duration min(Duration a, Duration b) {

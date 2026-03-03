@@ -36,7 +36,7 @@ public class UserInfoCacheEntity extends PanacheEntityBase {
   @Column(name = "user_id", length = 64)
   public String userId;
 
-  @Column(length = 320)
+  @Column(length = 320, unique = true)
   public String email;
 
   @Column(name = "full_name", nullable = false, length = 512)

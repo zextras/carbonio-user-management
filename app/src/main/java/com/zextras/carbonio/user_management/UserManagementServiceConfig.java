@@ -13,34 +13,40 @@ public final class UserManagementServiceConfig implements CarbonioDatabaseServic
     return "carbonio-user-management";
   }
 
-  public interface NetworkingConfig {
-    String MAILBOX_HOST = "carbonio.mailbox.host";
-    String MAILBOX_PORT = "carbonio.mailbox.port";
+  public static final class NetworkingConfig {
+    private NetworkingConfig() {}
+    public static final String MAILBOX_HOST = "carbonio.mailbox.host";
+    public static final String MAILBOX_PORT = "carbonio.mailbox.port";
   }
 
-  public interface ApplicationConfig {
-    String CACHE_USERMYSELF_TTL = "cache.usermyself-ttl";
-    String CACHE_USERINFO_TTL = "cache.userinfo-ttl";
+  public static final class ApplicationConfig {
+    private ApplicationConfig() {}
+    public static final String CACHE_USERMYSELF_TTL = "cache.usermyself-ttl";
+    public static final String CACHE_USERINFO_TTL = "cache.userinfo-ttl";
   }
 
   public static final String AUTH_TOKEN_KEY = "ZM_AUTH_TOKEN";
 
-  public interface ZimbraAttributes {
-    String DISPLAY_NAME = "displayName";
-    String ID = "zimbraId";
-    String ACCOUNT_STATUS = "zimbraAccountStatus";
-    String IS_EXTERNAL_VIRTUAL_ACCOUNT = "zimbraIsExternalVirtualAccount";
+  public static final class ZimbraAttributes {
+    private ZimbraAttributes() {}
+    public static final String DISPLAY_NAME = "displayName";
+    public static final String ID = "zimbraId";
+    public static final String ACCOUNT_STATUS = "zimbraAccountStatus";
+    public static final String IS_EXTERNAL_VIRTUAL_ACCOUNT = "zimbraIsExternalVirtualAccount";
   }
 
-  public interface ZimbraPreferences {
-    String LOCALE = "zimbraPrefLocale";
+  public static final class ZimbraPreferences {
+    private ZimbraPreferences() {}
+    public static final String LOCALE = "zimbraPrefLocale";
   }
 
   public static final int MAILBOX_CONNECTION_POOL_SIZE = 5;
+  public static final int MAX_BATCH_USER_IDS = 100;
 
-  public interface FeatureFlags {
-    String FILES_ENABLED = "carbonioFeatureFilesEnabled";
-    String WSC_ENABLED = "carbonioFeatureWscEnabled";
-    String TASKS_ENABLED = "carbonioFeatureTasksEnabled";
+  public static final class FeatureFlags {
+    private FeatureFlags() {}
+    public static final String FILES_ENABLED = "carbonioFeatureFilesEnabled";
+    public static final String WSC_ENABLED = "carbonioFeatureWscEnabled";
+    public static final String TASKS_ENABLED = "carbonioFeatureTasksEnabled";
   }
 }

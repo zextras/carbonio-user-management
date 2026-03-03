@@ -17,6 +17,8 @@ import com.zextras.carbonio.user_management.sdk.grpc.UserManagementServiceGrpc;
 import com.zextras.carbonio.user_management.sdk.grpc.UserMyselfProto;
 import com.zextras.carbonio.user_management.sdk.grpc.UserMyselfResponse;
 import com.zextras.carbonio.user_management.sdk.grpc.UserTypeProto;
+import static com.zextras.carbonio.user_management.UserManagementServiceConfig.MAX_BATCH_USER_IDS;
+
 import com.zextras.carbonio.user_management.service.UserService;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
@@ -97,6 +99,14 @@ public class GrpcHandler extends UserManagementServiceGrpc.UserManagementService
       GetUsersRequest request,
       StreamObserver<GetUsersResponse> responseObserver
   ) {
+    if (request.getUserIdsCount() > MAX_BATCH_USER_IDS) {
+      responseObserver.onError(
+          Status.INVALID_ARGUMENT
+              .withDescription("User IDs list must contain at most " + MAX_BATCH_USER_IDS + " entries")
+              .asRuntimeException());
+      return;
+    }
+
     List<UserInfo> users = userService.getUsers(
         request.getUserIdsList(), request.getToken());
 

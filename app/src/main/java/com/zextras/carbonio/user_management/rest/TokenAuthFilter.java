@@ -16,16 +16,13 @@ import jakarta.ws.rs.core.Cookie;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.Provider;
 
+/**
+ * Global filter: extracts the auth token from the cookie and stores it in the request context.
+ * Aborts with 401 if no token is present.
+ */
 @Provider
 @Priority(Priorities.AUTHENTICATION)
 public class TokenAuthFilter implements ContainerRequestFilter {
-
-  private final UserService userService;
-
-  @Inject
-  public TokenAuthFilter(UserService userService) {
-    this.userService = userService;
-  }
 
   @Override
   public void filter(ContainerRequestContext ctx) {
@@ -34,19 +31,6 @@ public class TokenAuthFilter implements ContainerRequestFilter {
       ctx.abortWith(Response.status(Response.Status.UNAUTHORIZED).build());
       return;
     }
-
-    // /users/myself doesn't need pre-auth: the service validates the token itself
-    if (isMyselfPath(ctx)) {
-      ctx.setProperty(AUTH_TOKEN_KEY, token);
-      return;
-    }
-
-    // For other endpoints: validate token via service (cache-first internally)
-    if (userService.getUserMyself(token).isEmpty()) {
-      ctx.abortWith(Response.status(Response.Status.UNAUTHORIZED).build());
-      return;
-    }
-
     ctx.setProperty(AUTH_TOKEN_KEY, token);
   }
 
@@ -55,7 +39,28 @@ public class TokenAuthFilter implements ContainerRequestFilter {
     return cookie != null ? cookie.getValue() : null;
   }
 
-  private boolean isMyselfPath(ContainerRequestContext ctx) {
-    return ctx.getUriInfo().getPath().endsWith("/myself");
+  /**
+   * Secondary filter bound to {@link RequiresTokenValidation}: pre-validates the token via
+   * the service layer. Endpoints without this annotation (e.g. /myself) skip pre-validation.
+   */
+  @Provider
+  @RequiresTokenValidation
+  @Priority(Priorities.AUTHENTICATION + 1)
+  public static class TokenValidationFilter implements ContainerRequestFilter {
+
+    private final UserService userService;
+
+    @Inject
+    public TokenValidationFilter(UserService userService) {
+      this.userService = userService;
+    }
+
+    @Override
+    public void filter(ContainerRequestContext ctx) {
+      String token = (String) ctx.getProperty(AUTH_TOKEN_KEY);
+      if (token == null || userService.getUserMyself(token).isEmpty()) {
+        ctx.abortWith(Response.status(Response.Status.UNAUTHORIZED).build());
+      }
+    }
   }
 }

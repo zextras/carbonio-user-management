@@ -5,6 +5,7 @@
 package com.zextras.carbonio.user_management.rest;
 
 import static com.zextras.carbonio.user_management.UserManagementServiceConfig.AUTH_TOKEN_KEY;
+import static com.zextras.carbonio.user_management.UserManagementServiceConfig.MAX_BATCH_USER_IDS;
 
 import com.zextras.carbonio.user_management.rest.dto.MyselfDto;
 import com.zextras.carbonio.user_management.rest.dto.UserInfoDto;
@@ -44,6 +45,7 @@ public class UserResource {
 
   @GET
   @Path("/id/{userId}")
+  @RequiresTokenValidation
   public Response getById(
       @PathParam("userId") String userId,
       @Context ContainerRequestContext ctx
@@ -56,6 +58,7 @@ public class UserResource {
 
   @GET
   @Path("/email/{email}")
+  @RequiresTokenValidation
   public Response getByEmail(
       @PathParam("email") String email,
       @Context ContainerRequestContext ctx
@@ -66,17 +69,16 @@ public class UserResource {
         .orElse(Response.status(Response.Status.NOT_FOUND).build());
   }
 
-  private static final int MAX_USER_IDS = 100;
-
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
+  @RequiresTokenValidation
   public Response getUsers(
       List<String> userIds,
       @Context ContainerRequestContext ctx
   ) {
-    if (userIds == null || userIds.size() > MAX_USER_IDS) {
+    if (userIds == null || userIds.size() > MAX_BATCH_USER_IDS) {
       return Response.status(Response.Status.BAD_REQUEST)
-          .entity("User IDs list must contain at most " + MAX_USER_IDS + " entries")
+          .entity("User IDs list must contain at most " + MAX_BATCH_USER_IDS + " entries")
           .build();
     }
     String token = (String) ctx.getProperty(AUTH_TOKEN_KEY);

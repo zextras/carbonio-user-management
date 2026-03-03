@@ -29,7 +29,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import org.slf4j.Logger;
@@ -142,7 +145,7 @@ public class UserService {
     try {
       Request<ZcsPortType, GetInfoResponse> request =
           Info.sections(Sections.children, Sections.attrs, Sections.prefs).withAuthToken(token);
-      GetInfoResponse response = mailboxClient.send(request);
+      GetInfoResponse response = sendWithTimeout(request);
 
       UserMyself myself = mapGetInfoToUserMyself(response);
       if (myself.userId() == null || myself.email() == null) {
@@ -156,6 +159,9 @@ public class UserService {
       logger.debug("GetUserMyself fetched from mailbox for userId {}", myself.userId());
       return Optional.of(myself);
 
+    } catch (TimeoutException e) {
+      logger.error("GetUserMyself timed out after {}s", MAILBOX_TIMEOUT_SECONDS);
+      return Optional.empty();
     } catch (WebServiceException | MailboxServerException e) {
       logger.error("GetUserMyself server error", e);
       return Optional.empty();
@@ -194,7 +200,7 @@ public class UserService {
     try {
       Request<ZcsPortType, GetAccountInfoResponse> request =
           AccountInfo.byId(userId).withAuthToken(callerToken);
-      GetAccountInfoResponse response = mailboxClient.send(request);
+      GetAccountInfoResponse response = sendWithTimeout(request);
 
       UserInfo userInfo = mapGetAccountInfoToUserInfo(response);
       if (userInfo.userId() == null || userInfo.email() == null) {
@@ -206,6 +212,9 @@ public class UserService {
       logger.debug("GetUserById fetched from mailbox: {}", userId);
       return Optional.of(userInfo);
 
+    } catch (TimeoutException e) {
+      logger.error("GetUserById timed out after {}s for userId {}", MAILBOX_TIMEOUT_SECONDS, userId);
+      return Optional.empty();
     } catch (WebServiceException | MailboxServerException e) {
       logger.error("GetUserById server error for userId {}", userId, e);
       return Optional.empty();
@@ -244,7 +253,7 @@ public class UserService {
     try {
       Request<ZcsPortType, GetAccountInfoResponse> request =
           AccountInfo.byEmail(email).withAuthToken(callerToken);
-      GetAccountInfoResponse response = mailboxClient.send(request);
+      GetAccountInfoResponse response = sendWithTimeout(request);
 
       UserInfo userInfo = mapGetAccountInfoToUserInfo(response);
       if (userInfo.userId() == null || userInfo.email() == null) {
@@ -256,6 +265,9 @@ public class UserService {
       logger.debug("GetUserByEmail fetched from mailbox: {}", email);
       return Optional.of(userInfo);
 
+    } catch (TimeoutException e) {
+      logger.error("GetUserByEmail timed out after {}s for email {}", MAILBOX_TIMEOUT_SECONDS, email);
+      return Optional.empty();
     } catch (WebServiceException | MailboxServerException e) {
       logger.error("GetUserByEmail server error for email {}", email, e);
       return Optional.empty();
@@ -292,9 +304,18 @@ public class UserService {
         logger.warn("L1 batch read failed for getUsers, all misses will go to SOAP", e);
       }
 
-      // SOAP: sequential for remaining misses (can't batch SOAP calls)
-      for (String userId : soapNeeded) {
-        getUserById(userId, callerToken).ifPresent(info -> results.put(userId, info));
+      // SOAP: parallel for remaining misses (can't batch SOAP calls)
+      if (!soapNeeded.isEmpty()) {
+        List<CompletableFuture<Void>> futures = soapNeeded.stream()
+            .map(userId -> CompletableFuture.supplyAsync(
+                    () -> getUserById(userId, callerToken))
+                .thenAccept(opt -> opt.ifPresent(info -> {
+                  synchronized (results) {
+                    results.put(info.userId(), info);
+                  }
+                })))
+            .toList();
+        CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).join();
       }
     }
 
@@ -359,9 +380,16 @@ public class UserService {
       switch (attr.getName()) {
         case ZimbraAttributes.DISPLAY_NAME -> fullName = attr.getValue();
         case ZimbraAttributes.ID -> userId = attr.getValue();
-        case ZimbraAttributes.ACCOUNT_STATUS -> status = attr.getValue().toUpperCase();
-        case ZimbraAttributes.IS_EXTERNAL_VIRTUAL_ACCOUNT ->
+        case ZimbraAttributes.ACCOUNT_STATUS -> {
+          if (attr.getValue() != null) {
+            status = attr.getValue().toUpperCase();
+          }
+        }
+        case ZimbraAttributes.IS_EXTERNAL_VIRTUAL_ACCOUNT -> {
+          if (attr.getValue() != null) {
             type = Boolean.parseBoolean(attr.getValue().toLowerCase()) ? "GUEST" : "INTERNAL";
+          }
+        }
         default -> {
           if (FEATURE_FLAGS.contains(attr.getName())) {
             featureList.put(attr.getName(), "TRUE".equalsIgnoreCase(attr.getValue()));
@@ -391,9 +419,10 @@ public class UserService {
   }
 
   UserInfo mapGetAccountInfoToUserInfo(GetAccountInfoResponse response) {
+    List<NamedValue> attrs = response.getAttr() != null ? response.getAttr() : List.of();
     return mapAttributesToUserInfo(
         response.getName(), response.getPublicURL(),
-        response.getAttr(), NamedValue::getName, NamedValue::getValue);
+        attrs, NamedValue::getName, NamedValue::getValue);
   }
 
   private <T> UserInfo mapAttributesToUserInfo(
@@ -408,17 +437,30 @@ public class UserService {
       switch (getName.apply(attr)) {
         case ZimbraAttributes.DISPLAY_NAME -> fullName = getValue.apply(attr);
         case ZimbraAttributes.ID -> userId = getValue.apply(attr);
-        case ZimbraAttributes.ACCOUNT_STATUS -> status = getValue.apply(attr).toUpperCase();
-        case ZimbraAttributes.IS_EXTERNAL_VIRTUAL_ACCOUNT ->
-            type = Boolean.parseBoolean(getValue.apply(attr).toLowerCase()) ? "GUEST" : "INTERNAL";
+        case ZimbraAttributes.ACCOUNT_STATUS -> {
+          String val = getValue.apply(attr);
+          if (val != null) {
+            status = val.toUpperCase();
+          }
+        }
+        case ZimbraAttributes.IS_EXTERNAL_VIRTUAL_ACCOUNT -> {
+          String val = getValue.apply(attr);
+          if (val != null) {
+            type = Boolean.parseBoolean(val.toLowerCase()) ? "GUEST" : "INTERNAL";
+          }
+        }
       }
     }
 
     return new UserInfo(userId, email, fullName, domain, status, type);
   }
 
+  private static final long COALESCE_TIMEOUT_SECONDS = 5;
+  private static final long MAILBOX_TIMEOUT_SECONDS = 60;
+
   /**
-   * Deduplicates concurrent lookups for the same key.
+   * Deduplicates concurrent lookups for the same key. Secondary threads wait up to
+   * {@link #COALESCE_TIMEOUT_SECONDS} seconds before giving up.
    */
   private <T> T coalesce(
       ConcurrentHashMap<String, CompletableFuture<T>> inflight,
@@ -427,7 +469,19 @@ public class UserService {
     CompletableFuture<T> future = new CompletableFuture<>();
     CompletableFuture<T> existing = inflight.putIfAbsent(key, future);
     if (existing != null) {
-      return existing.join();
+      try {
+        return existing.get(COALESCE_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+      } catch (TimeoutException e) {
+        logger.warn("Coalesce timeout waiting for key={}, proceeding independently", key);
+        return loader.get();
+      } catch (java.util.concurrent.ExecutionException e) {
+        Throwable cause = e.getCause();
+        if (cause instanceof RuntimeException re) throw re;
+        throw new RuntimeException(cause);
+      } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+        throw new RuntimeException(e);
+      }
     }
     try {
       T result = loader.get();
@@ -438,6 +492,32 @@ public class UserService {
       throw e;
     } finally {
       inflight.remove(key);
+    }
+  }
+
+  /**
+   * Sends a SOAP request to mailbox with a timeout of {@link #MAILBOX_TIMEOUT_SECONDS} seconds.
+   */
+  private <R> R sendWithTimeout(Request<ZcsPortType, R> request)
+      throws MailboxClientException, MailboxServerException, TimeoutException {
+    try {
+      return CompletableFuture.supplyAsync(() -> {
+        try {
+          return mailboxClient.send(request);
+        } catch (MailboxClientException | MailboxServerException e) {
+          throw new CompletionException(e);
+        }
+      }).get(MAILBOX_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+    } catch (java.util.concurrent.ExecutionException e) {
+      Throwable cause = e.getCause();
+      if (cause instanceof CompletionException ce) cause = ce.getCause();
+      if (cause instanceof MailboxClientException mce) throw mce;
+      if (cause instanceof MailboxServerException mse) throw mse;
+      if (cause instanceof WebServiceException wse) throw wse;
+      throw new RuntimeException(cause);
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new RuntimeException(e);
     }
   }
 }

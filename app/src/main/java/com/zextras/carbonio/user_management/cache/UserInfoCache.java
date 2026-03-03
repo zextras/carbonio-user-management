@@ -17,6 +17,7 @@ import java.time.Clock;
 import java.time.Duration;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Cache for {@link UserInfo}, keyed by userId with a secondary index by email.
@@ -33,10 +34,13 @@ import java.util.concurrent.ConcurrentHashMap;
 @Singleton
 public class UserInfoCache {
 
+  private static final long CONFIG_CACHE_SECONDS = 60;
+
   private final Cache<String, UserInfo> cache;
   private final ConcurrentHashMap<String, String> emailToUserId;
   private final ApplicationConfigService configService;
   private final Clock clock;
+  private final Cache<String, Long> ttlCache;
 
   @Inject
   public UserInfoCache(ApplicationConfigService configService) {
@@ -47,6 +51,9 @@ public class UserInfoCache {
     this.configService = configService;
     this.clock = clock;
     this.emailToUserId = new ConcurrentHashMap<>();
+    this.ttlCache = Caffeine.newBuilder()
+        .expireAfterWrite(CONFIG_CACHE_SECONDS, TimeUnit.SECONDS)
+        .build();
 
     this.cache = Caffeine.newBuilder()
         .ticker(ticker)
@@ -102,9 +109,10 @@ public class UserInfoCache {
   }
 
   public long readTtlSeconds() {
-    return Long.parseLong(
-        configService.get(ApplicationConfig.CACHE_USERINFO_TTL)
-            .orElseThrow(() -> new IllegalStateException(
-                "Missing required config: " + ApplicationConfig.CACHE_USERINFO_TTL)));
+    return ttlCache.get("userinfo-ttl", k ->
+        Long.parseLong(
+            configService.get(ApplicationConfig.CACHE_USERINFO_TTL)
+                .orElseThrow(() -> new IllegalStateException(
+                    "Missing required config: " + ApplicationConfig.CACHE_USERINFO_TTL))));
   }
 }

@@ -16,7 +16,6 @@ import com.zextras.carbonio.user_management.service.UserService;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.Cookie;
 import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.UriInfo;
 import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,18 +25,13 @@ import org.mockito.ArgumentCaptor;
 
 class TokenAuthFilterTest {
 
-  private UserService userService;
   private TokenAuthFilter filter;
   private ContainerRequestContext ctx;
-  private UriInfo uriInfo;
 
   @BeforeEach
   void setUp() {
-    userService = mock(UserService.class);
-    filter = new TokenAuthFilter(userService);
+    filter = new TokenAuthFilter();
     ctx = mock(ContainerRequestContext.class);
-    uriInfo = mock(UriInfo.class);
-    when(ctx.getUriInfo()).thenReturn(uriInfo);
   }
 
   private void setCookie(String token) {
@@ -45,12 +39,8 @@ class TokenAuthFilterTest {
         token == null ? Map.of() : Map.of(AUTH_TOKEN_KEY, new Cookie(AUTH_TOKEN_KEY, token)));
   }
 
-  private void setPath(String path) {
-    when(uriInfo.getPath()).thenReturn(path);
-  }
-
   @Nested
-  class NoCookieTests {
+  class TokenExtractionTests {
 
     @Test
     void aborts401WhenNoCookie() {
@@ -66,7 +56,6 @@ class TokenAuthFilterTest {
     @Test
     void aborts401WhenBlankCookie() {
       setCookie("   ");
-      setPath("/users");
 
       filter.filter(ctx);
 
@@ -74,47 +63,58 @@ class TokenAuthFilterTest {
       verify(ctx).abortWith(captor.capture());
       assertThat(captor.getValue().getStatus()).isEqualTo(401);
     }
-  }
-
-  @Nested
-  class MyselfPathTests {
 
     @Test
-    void passesWithoutPreAuthForMyselfPath() {
+    void setsTokenPropertyWhenCookiePresent() {
       setCookie("valid-token");
-      setPath("/users/myself");
 
       filter.filter(ctx);
 
       verify(ctx).setProperty(AUTH_TOKEN_KEY, "valid-token");
       verify(ctx, never()).abortWith(org.mockito.ArgumentMatchers.any());
-      verify(userService, never()).getUserMyself(org.mockito.ArgumentMatchers.any());
     }
   }
 
   @Nested
-  class OtherEndpointTests {
+  class TokenValidationFilterTests {
+
+    private UserService userService;
+    private TokenAuthFilter.TokenValidationFilter validationFilter;
+
+    @BeforeEach
+    void setUp() {
+      userService = mock(UserService.class);
+      validationFilter = new TokenAuthFilter.TokenValidationFilter(userService);
+    }
 
     @Test
     void passesWhenTokenIsValid() {
-      setCookie("valid-token");
-      setPath("/users/id/user-1");
+      when(ctx.getProperty(AUTH_TOKEN_KEY)).thenReturn("valid-token");
       when(userService.getUserMyself("valid-token")).thenReturn(Optional.of(
           new UserMyself("user-1", "u@x.com", "U", "x.com", "ACTIVE", "INTERNAL", "en", Map.of())));
 
-      filter.filter(ctx);
+      validationFilter.filter(ctx);
 
-      verify(ctx).setProperty(AUTH_TOKEN_KEY, "valid-token");
       verify(ctx, never()).abortWith(org.mockito.ArgumentMatchers.any());
     }
 
     @Test
     void aborts401WhenTokenIsInvalid() {
-      setCookie("bad-token");
-      setPath("/users/id/user-1");
+      when(ctx.getProperty(AUTH_TOKEN_KEY)).thenReturn("bad-token");
       when(userService.getUserMyself("bad-token")).thenReturn(Optional.empty());
 
-      filter.filter(ctx);
+      validationFilter.filter(ctx);
+
+      ArgumentCaptor<Response> captor = ArgumentCaptor.forClass(Response.class);
+      verify(ctx).abortWith(captor.capture());
+      assertThat(captor.getValue().getStatus()).isEqualTo(401);
+    }
+
+    @Test
+    void aborts401WhenTokenPropertyMissing() {
+      when(ctx.getProperty(AUTH_TOKEN_KEY)).thenReturn(null);
+
+      validationFilter.filter(ctx);
 
       ArgumentCaptor<Response> captor = ArgumentCaptor.forClass(Response.class);
       verify(ctx).abortWith(captor.capture());

@@ -2,14 +2,15 @@
 //
 // SPDX-License-Identifier: AGPL-3.0-only
 
-package com.zextras.carbonio.user_management.cache;
+package com.zextras.carbonio.user_management.job;
 
 import com.zextras.carbonio.user_management.repository.UserInfoCacheRepository;
 import com.zextras.carbonio.user_management.repository.UserMyselfCacheRepository;
 import io.quarkus.scheduler.Scheduled;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import org.jboss.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Periodically removes expired rows from the shared PostgreSQL cache tables.
@@ -32,7 +33,7 @@ import org.jboss.logging.Logger;
 @ApplicationScoped
 public class ExpiredCacheCleanup {
 
-  private static final Logger LOG = Logger.getLogger(ExpiredCacheCleanup.class);
+  private static final Logger LOG = LoggerFactory.getLogger(ExpiredCacheCleanup.class);
 
   private final UserInfoCacheRepository userInfoRepository;
   private final UserMyselfCacheRepository userMyselfRepository;
@@ -51,7 +52,7 @@ public class ExpiredCacheCleanup {
       int infoDeleted = userInfoRepository.deleteExpired();
       int myselfDeleted = userMyselfRepository.deleteExpired();
       if (infoDeleted > 0 || myselfDeleted > 0) {
-        LOG.infof("Persistent cache cleanup: removed %d user_info and %d user_myself expired entries",
+        LOG.info("Persistent cache cleanup: removed {} user_info and {} user_myself expired entries",
             infoDeleted, myselfDeleted);
       }
     } catch (Exception e) {
