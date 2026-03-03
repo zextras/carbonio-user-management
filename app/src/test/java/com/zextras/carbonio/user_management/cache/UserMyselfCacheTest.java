@@ -42,6 +42,26 @@ class UserMyselfCacheTest {
   }
 
   @Test
+  void isCacheEnabled_returnsTrueWhenTtlPositive() {
+    when(configService.get("cache.usermyself-ttl")).thenReturn(Optional.of("60"));
+
+    assertThat(cache.isCacheEnabled()).isTrue();
+  }
+
+  @Test
+  void isCacheEnabled_returnsFalseWhenTtlZero() {
+    when(configService.get("cache.usermyself-ttl")).thenReturn(Optional.of("0"));
+
+    assertThat(cache.isCacheEnabled()).isFalse();
+  }
+
+  @Test
+  void isCacheEnabled_returnsTrueWhenConfigAbsent() {
+    // setUp already sets config to Optional.empty()
+    assertThat(cache.isCacheEnabled()).isTrue();
+  }
+
+  @Test
   void putAndGetByToken() {
     cache.put("token-abc", "user-1", sampleMyself(), System.currentTimeMillis() + 30000);
 

@@ -339,14 +339,14 @@ class CacheIntegrationTest {
     }
 
     @Test
-    void getUserMyself_doesNotWriteToUserInfoCache() {
-      // Pre-populate user_myself_cache
+    void getUserMyself_warmsUserInfoCache() {
+      // Pre-populate user_myself_cache only
       userMyselfRepo.upsert("user-1", "token-1", sampleMyself(), futureExpiresAt());
 
       userService.getUserMyself("token-1");
 
-      // user_info_cache should NOT be populated by getUserMyself
-      assertThat(userInfoCache.getByUserId("user-1")).isEmpty();
+      // warming should populate user_info_cache from myself data
+      assertThat(userInfoCache.getByUserId("user-1")).contains(sampleUserInfo());
     }
   }
 }

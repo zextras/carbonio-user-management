@@ -97,6 +97,10 @@ public class UserInfoCache {
     return clock.millis() + readTtlSeconds() * 1000;
   }
 
+  public boolean isCacheEnabled() {
+    return readTtlSeconds() > 0;
+  }
+
   public long readTtlSeconds() {
     return Long.parseLong(
         configService.get(ApplicationConfig.CACHE_USERINFO_TTL)

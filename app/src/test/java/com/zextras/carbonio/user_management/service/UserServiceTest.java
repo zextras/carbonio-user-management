@@ -48,6 +48,8 @@ class UserServiceTest {
     userMyselfCache = mock(UserMyselfCache.class);
     userInfoCacheRepo = mock(UserInfoCacheRepository.class);
     userMyselfCacheRepo = mock(UserMyselfCacheRepository.class);
+    when(userInfoCache.isCacheEnabled()).thenReturn(true);
+    when(userMyselfCache.isCacheEnabled()).thenReturn(true);
     userService = new UserService(
         mailboxClient, userInfoCache, userMyselfCache, userInfoCacheRepo, userMyselfCacheRepo);
   }
@@ -73,14 +75,12 @@ class UserServiceTest {
     void returnsCachedResultWhenL2Hit() {
       UserMyself myself = sampleMyself();
       when(userMyselfCache.getByToken("token-1")).thenReturn(Optional.of(myself));
+      when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.of(sampleUserInfo()));
 
       Optional<UserMyself> result = userService.getUserMyself("token-1");
 
       assertThat(result).contains(myself);
       verify(mailboxClient, never()).send(any());
-      // No interaction with UserInfoCache
-      verifyNoInteractions(userInfoCache);
-      verifyNoInteractions(userInfoCacheRepo);
     }
 
     @Test
@@ -92,9 +92,8 @@ class UserServiceTest {
       Optional<UserMyself> result = userService.getUserMyself("token-1");
 
       assertThat(result).isEmpty();
-      // No interaction with UserInfoCache
-      verifyNoInteractions(userInfoCache);
-      verifyNoInteractions(userInfoCacheRepo);
+      // SOAP failed → Optional.empty() → ifPresent does not execute warming
+      verify(userInfoCache, never()).getByUserId(any());
     }
 
     @Test
@@ -105,15 +104,16 @@ class UserServiceTest {
       when(userMyselfCache.getByToken("token-1")).thenReturn(Optional.empty());
       when(userMyselfCacheRepo.findByToken("token-1")).thenReturn(
           Optional.of(new TokenLookupResult("user-1", myself, expiresAt)));
+      // Warming: L2 userinfo miss → L1 userinfo miss → writes both
+      when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.empty());
+      when(userInfoCacheRepo.findByUserId("user-1")).thenReturn(Optional.empty());
+      when(userInfoCache.computeExpiresAt()).thenReturn(futureExpiresAt());
 
       Optional<UserMyself> result = userService.getUserMyself("token-1");
 
       assertThat(result).contains(myself);
       verify(userMyselfCache).put(eq("token-1"), eq("user-1"), eq(myself), anyLong());
       verify(mailboxClient, never()).send(any());
-      // No interaction with UserInfoCache
-      verifyNoInteractions(userInfoCache);
-      verifyNoInteractions(userInfoCacheRepo);
     }
 
     @Test
@@ -126,22 +126,96 @@ class UserServiceTest {
 
       assertThat(result).isEmpty();
       verify(mailboxClient).send(any());
+      // SOAP failed → Optional.empty() → no warming
+      verify(userInfoCache, never()).getByUserId(any());
     }
 
     @Test
-    void myselfDoesNotWriteToUserInfoCache() {
+    void L2Hit_warmsOnlyIfAbsent_skipsWhenUserInfoExists() {
+      UserMyself myself = sampleMyself();
+      when(userMyselfCache.getByToken("token-1")).thenReturn(Optional.of(myself));
+      // Warming: L2 userinfo hit → skip
+      when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.of(sampleUserInfo()));
+
+      userService.getUserMyself("token-1");
+
+      // Should not check L1 or write anything
+      verify(userInfoCacheRepo, never()).findByUserId(any());
+      verify(userInfoCacheRepo, never()).upsert(any(), anyLong());
+      verify(userInfoCache, never()).put(any(UserInfo.class));
+    }
+
+    @Test
+    void warmingWritesToBothLayersWhenUserInfoAbsent() {
+      UserMyself myself = sampleMyself();
+      long expiresAt = futureExpiresAt();
+      UserInfo expectedUserInfo = new UserInfo(
+          "user-1", "user@example.com", "John Doe", "example.com", "ACTIVE", "INTERNAL");
+
+      // L1 hit myself
+      when(userMyselfCache.getByToken("token-1")).thenReturn(Optional.empty());
+      when(userMyselfCacheRepo.findByToken("token-1")).thenReturn(
+          Optional.of(new TokenLookupResult("user-1", myself, expiresAt)));
+      // Warming: L2 miss → L1 miss → write both
+      when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.empty());
+      when(userInfoCacheRepo.findByUserId("user-1")).thenReturn(Optional.empty());
+      when(userInfoCache.computeExpiresAt()).thenReturn(futureExpiresAt());
+      when(userInfoCacheRepo.upsert(eq(expectedUserInfo), anyLong())).thenReturn(expectedUserInfo);
+
+      Optional<UserMyself> result = userService.getUserMyself("token-1");
+
+      assertThat(result).contains(myself);
+      verify(userInfoCacheRepo).upsert(eq(expectedUserInfo), anyLong());
+      verify(userInfoCache).put(expectedUserInfo);
+    }
+
+    @Test
+    void warmingSkipsWhenUserInfoInL1Only() {
+      UserMyself myself = sampleMyself();
+      when(userMyselfCache.getByToken("token-1")).thenReturn(Optional.of(myself));
+      // Warming: L2 miss → L1 hit → skip
+      when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.empty());
+      when(userInfoCacheRepo.findByUserId("user-1")).thenReturn(Optional.of(sampleUserInfo()));
+
+      Optional<UserMyself> result = userService.getUserMyself("token-1");
+
+      assertThat(result).contains(myself);
+      verify(userInfoCacheRepo, never()).upsert(any(), anyLong());
+      verify(userInfoCache, never()).put(any(UserInfo.class));
+    }
+
+    @Test
+    void cacheDisabled_warmingSkipsPersist() {
       UserMyself myself = sampleMyself();
       long expiresAt = futureExpiresAt();
 
       when(userMyselfCache.getByToken("token-1")).thenReturn(Optional.empty());
       when(userMyselfCacheRepo.findByToken("token-1")).thenReturn(
           Optional.of(new TokenLookupResult("user-1", myself, expiresAt)));
+      // Warming: L2 miss → L1 miss → persistAndCacheInfo skipped (cache disabled)
+      when(userInfoCache.isCacheEnabled()).thenReturn(false);
+      when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.empty());
+      when(userInfoCacheRepo.findByUserId("user-1")).thenReturn(Optional.empty());
 
-      userService.getUserMyself("token-1");
+      Optional<UserMyself> result = userService.getUserMyself("token-1");
 
-      // Verify zero interaction with UserInfoCache and its repository
-      verifyNoInteractions(userInfoCache);
-      verifyNoInteractions(userInfoCacheRepo);
+      assertThat(result).contains(myself);
+      // Warming ran (read path always active) but persist was skipped
+      verify(userInfoCache).getByUserId("user-1");
+      verify(userInfoCacheRepo).findByUserId("user-1");
+      verify(userInfoCacheRepo, never()).upsert(any(), anyLong());
+      verify(userInfoCache, never()).put(any(UserInfo.class));
+    }
+
+    @Test
+    void warmingPropagatesDbFailure() {
+      UserMyself myself = sampleMyself();
+      when(userMyselfCache.getByToken("token-1")).thenReturn(Optional.of(myself));
+      when(userInfoCache.getByUserId("user-1")).thenThrow(new RuntimeException("db error"));
+
+      assertThatThrownBy(() -> userService.getUserMyself("token-1"))
+          .isInstanceOf(RuntimeException.class)
+          .hasMessage("db error");
     }
   }
 
@@ -196,18 +270,6 @@ class UserServiceTest {
       verify(mailboxClient, never()).send(any());
     }
 
-    @Test
-    void failsFastWhenConfigMissing_noSoapCall() {
-      when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.empty());
-      when(userInfoCacheRepo.findByUserId("user-1")).thenReturn(Optional.empty());
-      when(userInfoCache.readTtlSeconds()).thenThrow(
-          new IllegalStateException("Missing required config: cache.userinfo-ttl"));
-
-      assertThatThrownBy(() -> userService.getUserById("user-1", "token-1"))
-          .isInstanceOf(IllegalStateException.class)
-          .hasMessageContaining("cache.userinfo-ttl");
-      verify(mailboxClient, never()).send(any());
-    }
   }
 
   @Nested
@@ -260,18 +322,6 @@ class UserServiceTest {
       verify(mailboxClient, never()).send(any());
     }
 
-    @Test
-    void failsFastWhenConfigMissing_noSoapCall() {
-      when(userInfoCache.getByEmail("user@example.com")).thenReturn(Optional.empty());
-      when(userInfoCacheRepo.findByEmail("user@example.com")).thenReturn(Optional.empty());
-      when(userInfoCache.readTtlSeconds()).thenThrow(
-          new IllegalStateException("Missing required config: cache.userinfo-ttl"));
-
-      assertThatThrownBy(() -> userService.getUserByEmail("user@example.com", "token-1"))
-          .isInstanceOf(IllegalStateException.class)
-          .hasMessageContaining("cache.userinfo-ttl");
-      verify(mailboxClient, never()).send(any());
-    }
   }
 
   @Nested

@@ -98,6 +98,13 @@ public class UserMyselfCache {
     userIdToToken.clear();
   }
 
+  public boolean isCacheEnabled() {
+    return configService.get(ApplicationConfig.CACHE_USERMYSELF_TTL)
+        .map(Long::parseLong)
+        .map(ttl -> ttl > 0)
+        .orElse(true);  // absent = enabled (uses session remaining)
+  }
+
   /**
    * Returns an epoch-millis expiration timestamp for a new entry, computed as
    * {@code now + min(configTtl, sessionRemainingMs)}. Used by the service layer to persist

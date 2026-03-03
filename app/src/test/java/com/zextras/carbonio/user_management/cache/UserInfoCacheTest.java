@@ -112,6 +112,19 @@ class UserInfoCacheTest {
   }
 
   @Test
+  void isCacheEnabled_returnsTrueWhenTtlPositive() {
+    assertThat(cache.isCacheEnabled()).isTrue();
+  }
+
+  @Test
+  void isCacheEnabled_returnsFalseWhenTtlZero() {
+    when(configService.get("cache.userinfo-ttl")).thenReturn(Optional.of("0"));
+    UserInfoCache zeroCache = new UserInfoCache(configService, currentTime::get, Clock.systemUTC());
+
+    assertThat(zeroCache.isCacheEnabled()).isFalse();
+  }
+
+  @Test
   void throwsWhenConfigMissingOnPut() {
     when(configService.get("cache.userinfo-ttl")).thenReturn(Optional.empty());
     UserInfoCache cacheNoConfig = new UserInfoCache(configService, currentTime::get, Clock.systemUTC());

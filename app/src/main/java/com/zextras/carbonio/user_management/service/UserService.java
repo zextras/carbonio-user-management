@@ -87,25 +87,38 @@ public class UserService {
     Optional<UserMyself> cached = userMyselfCache.getByToken(token);
     if (cached.isPresent()) {
       logger.debug("GetUserMyself L2 cache hit");
+      warmUserInfoCacheIfAbsent(cached.get());
       return cached;
     }
 
     // Coalesce concurrent L1+SOAP lookups for the same token
-    return coalesce(inflightMyself, token, () -> loadUserMyself(token));
+    Optional<UserMyself> result = coalesce(inflightMyself, token, () -> loadUserMyself(token));
+    result.ifPresent(this::warmUserInfoCacheIfAbsent);
+    return result;
+  }
+
+  private void warmUserInfoCacheIfAbsent(UserMyself myself) {
+    String userId = myself.userId();
+    if (userInfoCache.getByUserId(userId).isPresent()) {
+      return;  // L2 hit
+    }
+    if (userInfoCacheRepo.findByUserId(userId).isPresent()) {
+      return;  // L1 hit
+    }
+    UserInfo userInfo = new UserInfo(
+        myself.userId(), myself.email(), myself.fullName(),
+        myself.domain(), myself.status(), myself.type());
+    persistAndCacheInfo(userInfo);
   }
 
   private Optional<UserMyself> loadUserMyself(String token) {
     // -- L1: PostgreSQL --
-    try {
-      Optional<TokenLookupResult> tokenResult = userMyselfCacheRepo.findByToken(token);
-      if (tokenResult.isPresent()) {
-        var result = tokenResult.get();
-        userMyselfCache.put(token, result.userId(), result.myself(), result.expiresAt());
-        logger.debug("GetUserMyself L1 cache hit for userId {}", result.userId());
-        return Optional.of(result.myself());
-      }
-    } catch (Exception e) {
-      logger.warn("GetUserMyself L1 cache lookup failed", e);
+    Optional<TokenLookupResult> tokenResult = userMyselfCacheRepo.findByToken(token);
+    if (tokenResult.isPresent()) {
+      var result = tokenResult.get();
+      userMyselfCache.put(token, result.userId(), result.myself(), result.expiresAt());
+      logger.debug("GetUserMyself L1 cache hit for userId {}", result.userId());
+      return Optional.of(result.myself());
     }
 
     // -- SOAP fallback --
@@ -150,19 +163,13 @@ public class UserService {
 
   private Optional<UserInfo> loadUserById(String userId, String callerToken) {
     // L1: PostgreSQL
-    try {
-      Optional<UserInfo> cached = userInfoCacheRepo.findByUserId(userId);
-      if (cached.isPresent()) {
-        logger.debug("GetUserById L1 cache hit: {}", userId);
-        userInfoCache.put(cached.get());
-        return cached;
-      }
-    } catch (Exception e) {
-      logger.warn("GetUserById L1 cache lookup failed for userId {}", userId, e);
+    Optional<UserInfo> cached = userInfoCacheRepo.findByUserId(userId);
+    if (cached.isPresent()) {
+      logger.debug("GetUserById L1 cache hit: {}", userId);
+      userInfoCache.put(cached.get());
+      return cached;
     }
 
-    // Read config before SOAP: fail fast if cache.userinfo-ttl is missing
-    userInfoCache.readTtlSeconds();
     try {
       Request<ZcsPortType, GetAccountInfoResponse> request =
           AccountInfo.byId(userId).withAuthToken(callerToken);
@@ -202,19 +209,13 @@ public class UserService {
 
   private Optional<UserInfo> loadUserByEmail(String email, String callerToken) {
     // L1: PostgreSQL
-    try {
-      Optional<UserInfo> cached = userInfoCacheRepo.findByEmail(email);
-      if (cached.isPresent()) {
-        logger.debug("GetUserByEmail L1 cache hit: {}", email);
-        userInfoCache.put(cached.get());
-        return cached;
-      }
-    } catch (Exception e) {
-      logger.warn("GetUserByEmail L1 cache lookup failed for email {}", email, e);
+    Optional<UserInfo> cached = userInfoCacheRepo.findByEmail(email);
+    if (cached.isPresent()) {
+      logger.debug("GetUserByEmail L1 cache hit: {}", email);
+      userInfoCache.put(cached.get());
+      return cached;
     }
 
-    // Read config before SOAP: fail fast if cache.userinfo-ttl is missing
-    userInfoCache.readTtlSeconds();
     try {
       Request<ZcsPortType, GetAccountInfoResponse> request =
           AccountInfo.byEmail(email).withAuthToken(callerToken);
@@ -255,15 +256,11 @@ public class UserService {
     if (!l2Misses.isEmpty()) {
       // L1: PostgreSQL single batch query for all L2 misses
       Set<String> soapNeeded = new LinkedHashSet<>(l2Misses);
-      try {
-        List<UserInfo> l1Results = userInfoCacheRepo.findByUserIds(l2Misses);
-        for (UserInfo info : l1Results) {
-          results.put(info.userId(), info);
-          userInfoCache.put(info);
-          soapNeeded.remove(info.userId());
-        }
-      } catch (Exception e) {
-        logger.warn("getUsers L1 batch lookup failed, falling back to SOAP for all misses", e);
+      List<UserInfo> l1Results = userInfoCacheRepo.findByUserIds(l2Misses);
+      for (UserInfo info : l1Results) {
+        results.put(info.userId(), info);
+        userInfoCache.put(info);
+        soapNeeded.remove(info.userId());
       }
 
       // SOAP: sequential for remaining misses (can't batch SOAP calls)
@@ -282,23 +279,21 @@ public class UserService {
   // -- Persist & cache helpers --
 
   private UserInfo persistAndCacheInfo(UserInfo userInfo) {
-    try {
-      long expiresAt = userInfoCache.computeExpiresAt();
-      userInfo = userInfoCacheRepo.upsert(userInfo, expiresAt);
-    } catch (Exception e) {
-      logger.warn("Failed to persist user info to L1 cache for userId {}", userInfo.userId(), e);
+    if (!userInfoCache.isCacheEnabled()) {
+      return userInfo;
     }
+    long expiresAt = userInfoCache.computeExpiresAt();
+    userInfo = userInfoCacheRepo.upsert(userInfo, expiresAt);
     userInfoCache.put(userInfo);
     return userInfo;
   }
 
   private UserMyself persistAndCacheMyself(
       String userId, String token, UserMyself myself, long expiresAt) {
-    try {
-      myself = userMyselfCacheRepo.upsert(userId, token, myself, expiresAt);
-    } catch (Exception e) {
-      logger.warn("Failed to persist user myself to L1 cache for userId {}", userId, e);
+    if (!userMyselfCache.isCacheEnabled()) {
+      return myself;
     }
+    myself = userMyselfCacheRepo.upsert(userId, token, myself, expiresAt);
     userMyselfCache.put(token, userId, myself, expiresAt);
     return myself;
   }
