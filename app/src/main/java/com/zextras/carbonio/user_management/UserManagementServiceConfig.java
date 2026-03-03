@@ -19,7 +19,7 @@ public final class UserManagementServiceConfig implements CarbonioDatabaseServic
   }
 
   public interface ApplicationConfig {
-    String CACHE_DETAILS_TTL = "cache.userdetails-ttl";
+    String CACHE_USERMYSELF_TTL = "cache.usermyself-ttl";
     String CACHE_USERINFO_TTL = "cache.userinfo-ttl";
   }
 

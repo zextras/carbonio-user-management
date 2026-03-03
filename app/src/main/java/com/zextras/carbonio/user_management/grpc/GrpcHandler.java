@@ -4,8 +4,8 @@
 
 package com.zextras.carbonio.user_management.grpc;
 
-import com.zextras.carbonio.user_management.cache.record.UserDetails;
-import com.zextras.carbonio.user_management.cache.record.UserInfo;
+import com.zextras.carbonio.user_management.record.UserInfo;
+import com.zextras.carbonio.user_management.record.UserMyself;
 import com.zextras.carbonio.user_management.sdk.grpc.GetUserByEmailRequest;
 import com.zextras.carbonio.user_management.sdk.grpc.GetUserByIdRequest;
 import com.zextras.carbonio.user_management.sdk.grpc.GetUserMyselfRequest;
@@ -18,7 +18,6 @@ import com.zextras.carbonio.user_management.sdk.grpc.UserMyselfProto;
 import com.zextras.carbonio.user_management.sdk.grpc.UserMyselfResponse;
 import com.zextras.carbonio.user_management.sdk.grpc.UserTypeProto;
 import com.zextras.carbonio.user_management.service.UserService;
-import com.zextras.carbonio.user_management.service.UserService.MyselfResult;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import io.quarkus.grpc.GrpcService;
@@ -49,8 +48,8 @@ public class GrpcHandler extends UserManagementServiceGrpc.UserManagementService
 
     userService.getUserMyself(token)
         .ifPresentOrElse(
-            result -> {
-              responseObserver.onNext(toMyselfResponse(result));
+            myself -> {
+              responseObserver.onNext(toMyselfResponse(myself));
               responseObserver.onCompleted();
             },
             () -> responseObserver.onError(
@@ -111,13 +110,22 @@ public class GrpcHandler extends UserManagementServiceGrpc.UserManagementService
 
   // -- Proto conversion --
 
-  private UserMyselfResponse toMyselfResponse(MyselfResult result) {
-    UserMyselfProto.Builder myselfBuilder = UserMyselfProto.newBuilder()
-        .setInfo(toUserInfoProto(result.info()))
-        .setLocale(result.details().locale());
+  private UserMyselfResponse toMyselfResponse(UserMyself myself) {
+    UserInfoProto info = UserInfoProto.newBuilder()
+        .setUserId(myself.userId() != null ? myself.userId() : "")
+        .setEmail(myself.email() != null ? myself.email() : "")
+        .setFullName(myself.fullName() != null ? myself.fullName() : "")
+        .setDomain(myself.domain() != null ? myself.domain() : "")
+        .setStatus(myself.status() != null ? myself.status() : "ACTIVE")
+        .setType(toTypeProto(myself.type()))
+        .build();
 
-    if (result.details().featureList() != null) {
-      myselfBuilder.putAllFeatureList(result.details().featureList());
+    UserMyselfProto.Builder myselfBuilder = UserMyselfProto.newBuilder()
+        .setInfo(info)
+        .setLocale(myself.locale());
+
+    if (myself.featureList() != null) {
+      myselfBuilder.putAllFeatureList(myself.featureList());
     }
 
     return UserMyselfResponse.newBuilder()

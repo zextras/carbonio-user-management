@@ -4,8 +4,8 @@
 
 package com.zextras.carbonio.user_management.cache;
 
-import com.zextras.carbonio.user_management.cache.repository.UserDetailsCacheRepository;
-import com.zextras.carbonio.user_management.cache.repository.UserInfoCacheRepository;
+import com.zextras.carbonio.user_management.repository.UserInfoCacheRepository;
+import com.zextras.carbonio.user_management.repository.UserMyselfCacheRepository;
 import io.quarkus.scheduler.Scheduled;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -35,24 +35,24 @@ public class ExpiredCacheCleanup {
   private static final Logger LOG = Logger.getLogger(ExpiredCacheCleanup.class);
 
   private final UserInfoCacheRepository userInfoRepository;
-  private final UserDetailsCacheRepository userDetailsRepository;
+  private final UserMyselfCacheRepository userMyselfRepository;
 
   @Inject
   ExpiredCacheCleanup(
       UserInfoCacheRepository userInfoRepository,
-      UserDetailsCacheRepository userDetailsRepository) {
+      UserMyselfCacheRepository userMyselfRepository) {
     this.userInfoRepository = userInfoRepository;
-    this.userDetailsRepository = userDetailsRepository;
+    this.userMyselfRepository = userMyselfRepository;
   }
 
   @Scheduled(every = "1h", delayed = "5m")
   void cleanup() {
     try {
       int infoDeleted = userInfoRepository.deleteExpired();
-      int detailsDeleted = userDetailsRepository.deleteExpired();
-      if (infoDeleted > 0 || detailsDeleted > 0) {
-        LOG.infof("Persistent cache cleanup: removed %d user_info and %d user_details expired entries",
-            infoDeleted, detailsDeleted);
+      int myselfDeleted = userMyselfRepository.deleteExpired();
+      if (infoDeleted > 0 || myselfDeleted > 0) {
+        LOG.infof("Persistent cache cleanup: removed %d user_info and %d user_myself expired entries",
+            infoDeleted, myselfDeleted);
       }
     } catch (Exception e) {
       LOG.warn("Persistent cache cleanup failed", e);

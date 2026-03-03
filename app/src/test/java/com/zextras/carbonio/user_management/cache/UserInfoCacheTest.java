@@ -11,7 +11,7 @@ import static org.mockito.Mockito.when;
 
 import com.github.benmanes.caffeine.cache.Ticker;
 import com.zextras.carbonio.quarkus.extensions.bootstrap.ApplicationConfigService;
-import com.zextras.carbonio.user_management.cache.record.UserInfo;
+import com.zextras.carbonio.user_management.record.UserInfo;
 import java.time.Clock;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;

@@ -4,7 +4,7 @@
 
 package com.zextras.carbonio.user_management.rest.dto;
 
-import com.zextras.carbonio.user_management.cache.record.UserInfo;
+import com.zextras.carbonio.user_management.record.UserInfo;
 
 public record UserInfoDto(
     String userId,

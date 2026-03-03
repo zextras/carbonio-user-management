@@ -4,14 +4,13 @@
 
 package com.zextras.carbonio.user_management.service;
 
-import com.zextras.carbonio.user_management.cache.UserDetailsCache;
 import com.zextras.carbonio.user_management.cache.UserInfoCache;
-import com.zextras.carbonio.user_management.cache.record.UserDetails;
-import com.zextras.carbonio.user_management.cache.record.UserInfo;
-import com.zextras.carbonio.user_management.cache.repository.UserDetailsCacheRepository;
-import com.zextras.carbonio.user_management.cache.repository.UserDetailsCacheRepository.CachedUserDetails;
-import com.zextras.carbonio.user_management.cache.repository.UserDetailsCacheRepository.TokenLookupResult;
-import com.zextras.carbonio.user_management.cache.repository.UserInfoCacheRepository;
+import com.zextras.carbonio.user_management.cache.UserMyselfCache;
+import com.zextras.carbonio.user_management.record.UserInfo;
+import com.zextras.carbonio.user_management.record.UserMyself;
+import com.zextras.carbonio.user_management.repository.UserInfoCacheRepository;
+import com.zextras.carbonio.user_management.repository.UserMyselfCacheRepository;
+import com.zextras.carbonio.user_management.repository.UserMyselfCacheRepository.TokenLookupResult;
 import com.zextras.mailbox.client.MailboxClientException;
 import com.zextras.mailbox.client.MailboxServerException;
 import com.zextras.mailbox.client.requests.Request;
@@ -54,119 +53,78 @@ public class UserService {
 
   private final ServiceClient mailboxClient;
   private final UserInfoCache userInfoCache;
-  private final UserDetailsCache userDetailsCache;
+  private final UserMyselfCache userMyselfCache;
   private final UserInfoCacheRepository userInfoCacheRepo;
-  private final UserDetailsCacheRepository userDetailsCacheRepo;
+  private final UserMyselfCacheRepository userMyselfCacheRepo;
 
   // Coalescing maps: prevent concurrent L1+SOAP calls for the same key.
-  // First thread to miss L2 creates a future and starts loading; subsequent threads
-  // for the same key wait on the existing future instead of duplicating work.
   private final ConcurrentHashMap<String, CompletableFuture<Optional<UserInfo>>>
       inflightById = new ConcurrentHashMap<>();
   private final ConcurrentHashMap<String, CompletableFuture<Optional<UserInfo>>>
       inflightByEmail = new ConcurrentHashMap<>();
-  private final ConcurrentHashMap<String, CompletableFuture<Optional<MyselfResult>>>
+  private final ConcurrentHashMap<String, CompletableFuture<Optional<UserMyself>>>
       inflightMyself = new ConcurrentHashMap<>();
 
   @Inject
   public UserService(
       ServiceClient mailboxClient,
       UserInfoCache userInfoCache,
-      UserDetailsCache userDetailsCache,
+      UserMyselfCache userMyselfCache,
       UserInfoCacheRepository userInfoCacheRepo,
-      UserDetailsCacheRepository userDetailsCacheRepo
+      UserMyselfCacheRepository userMyselfCacheRepo
   ) {
     this.mailboxClient = mailboxClient;
     this.userInfoCache = userInfoCache;
-    this.userDetailsCache = userDetailsCache;
+    this.userMyselfCache = userMyselfCache;
     this.userInfoCacheRepo = userInfoCacheRepo;
-    this.userDetailsCacheRepo = userDetailsCacheRepo;
+    this.userMyselfCacheRepo = userMyselfCacheRepo;
   }
 
-  public Optional<MyselfResult> getUserMyself(String token) {
+  public Optional<UserMyself> getUserMyself(String token) {
     logger.debug("GetUserMyself requested");
 
     // -- L2: Caffeine (token is the primary key) --
-    Optional<UserDetails> details = userDetailsCache.getByToken(token);
-    Optional<String> resolvedUserId = userDetailsCache.resolveUserId(token);
-
-    if (details.isPresent() && resolvedUserId.isPresent()) {
-      Optional<UserInfo> info = userInfoCache.getByUserId(resolvedUserId.get());
-      if (info.isPresent()) {
-        logger.debug("GetUserMyself full L2 cache hit for userId {}", resolvedUserId.get());
-        return Optional.of(new MyselfResult(info.get(), details.get()));
-      }
+    Optional<UserMyself> cached = userMyselfCache.getByToken(token);
+    if (cached.isPresent()) {
+      logger.debug("GetUserMyself L2 cache hit");
+      return cached;
     }
 
     // Coalesce concurrent L1+SOAP lookups for the same token
-    return coalesce(inflightMyself, token, () -> loadUserMyself(token, resolvedUserId));
+    return coalesce(inflightMyself, token, () -> loadUserMyself(token));
   }
 
-  private Optional<MyselfResult> loadUserMyself(String token, Optional<String> resolvedUserId) {
+  private Optional<UserMyself> loadUserMyself(String token) {
     // -- L1: PostgreSQL --
     try {
-      String userId = resolvedUserId.orElse(null);
-      Optional<UserDetails> dbDetails = Optional.empty();
-
-      // Resolve userId + details from DB via token
-      if (userId == null) {
-        Optional<TokenLookupResult> tokenResult = userDetailsCacheRepo.findByToken(token);
-        if (tokenResult.isPresent()) {
-          var result = tokenResult.get();
-          userId = result.userId();
-          dbDetails = Optional.of(result.details());
-          userDetailsCache.put(token, userId, result.details(), result.expiresAt());
-        }
-      }
-
-      if (userId != null) {
-        String resolvedId = userId;
-
-        // Resolve info: L2 → L1
-        Optional<UserInfo> info = userInfoCache.getByUserId(resolvedId);
-        if (info.isEmpty()) {
-          info = userInfoCacheRepo.findByUserId(resolvedId);
-          info.ifPresent(userInfoCache::put);
-        }
-
-        // Resolve details: already from token lookup or L1
-        if (dbDetails.isEmpty()) {
-          dbDetails = userDetailsCacheRepo.findByUserId(resolvedId).map(cached -> {
-            userDetailsCache.put(token, resolvedId, cached.details(), cached.expiresAt());
-            return cached.details();
-          });
-        }
-
-        if (info.isPresent() && dbDetails.isPresent()) {
-          logger.debug("GetUserMyself L1 cache hit for userId {}", resolvedId);
-          return Optional.of(new MyselfResult(info.get(), dbDetails.get()));
-        }
+      Optional<TokenLookupResult> tokenResult = userMyselfCacheRepo.findByToken(token);
+      if (tokenResult.isPresent()) {
+        var result = tokenResult.get();
+        userMyselfCache.put(token, result.userId(), result.myself(), result.expiresAt());
+        logger.debug("GetUserMyself L1 cache hit for userId {}", result.userId());
+        return Optional.of(result.myself());
       }
     } catch (Exception e) {
       logger.warn("GetUserMyself L1 cache lookup failed", e);
     }
 
     // -- SOAP fallback --
-    // Read config before SOAP: fail fast if cache.userinfo-ttl is missing
-    userInfoCache.readTtlSeconds();
     try {
       Request<ZcsPortType, GetInfoResponse> request =
           Info.sections(Sections.children, Sections.attrs, Sections.prefs).withAuthToken(token);
       GetInfoResponse response = mailboxClient.send(request);
 
-      UserInfo userInfo = mapGetInfoToUserInfo(response);
-      if (userInfo.userId() == null || userInfo.email() == null) {
+      UserMyself myself = mapGetInfoToUserMyself(response);
+      if (myself.userId() == null || myself.email() == null) {
         logger.error("GetUserMyself: mailbox response missing userId or email");
         return Optional.empty();
       }
-      UserDetails details = mapGetInfoToUserDetails(response);
-      long expiresAt = userDetailsCache.computeExpiresAt(response.getLifetime());
+      long expiresAt = userMyselfCache.computeExpiresAt(response.getLifetime());
 
-      userInfo = persistAndCacheInfo(userInfo);
-      details = persistAndCacheDetails(userInfo.userId(), token, details, expiresAt);
+      myself = persistAndCacheMyself(myself.userId(), token, myself, expiresAt);
 
-      logger.debug("GetUserMyself fetched from mailbox for userId {}", userInfo.userId());
-      return Optional.of(new MyselfResult(userInfo, details));
+      logger.debug("GetUserMyself fetched from mailbox for userId {}", myself.userId());
+      return Optional.of(myself);
 
     } catch (WebServiceException | MailboxServerException e) {
       logger.error("GetUserMyself server error", e);
@@ -334,25 +292,18 @@ public class UserService {
     return userInfo;
   }
 
-  private UserDetails persistAndCacheDetails(
-      String userId, String token, UserDetails details, long expiresAt) {
+  private UserMyself persistAndCacheMyself(
+      String userId, String token, UserMyself myself, long expiresAt) {
     try {
-      details = userDetailsCacheRepo.upsert(userId, token, details, expiresAt);
+      myself = userMyselfCacheRepo.upsert(userId, token, myself, expiresAt);
     } catch (Exception e) {
-      logger.warn("Failed to persist user details to L1 cache for userId {}", userId, e);
+      logger.warn("Failed to persist user myself to L1 cache for userId {}", userId, e);
     }
-    userDetailsCache.put(token, userId, details, expiresAt);
-    return details;
+    userMyselfCache.put(token, userId, myself, expiresAt);
+    return myself;
   }
 
   // -- Mapping methods --
-
-  UserInfo mapGetInfoToUserInfo(GetInfoResponse response) {
-    List<Attr> attrs = response.getAttrs() != null ? response.getAttrs().getAttr() : List.of();
-    return mapAttributesToUserInfo(
-        response.getName(), response.getPublicURL(),
-        attrs, Attr::getName, Attr::getValue);
-  }
 
   private static final Set<String> FEATURE_FLAGS = Set.of(
       FeatureFlags.FILES_ENABLED,
@@ -360,14 +311,27 @@ public class UserService {
       FeatureFlags.TASKS_ENABLED
   );
 
-  UserDetails mapGetInfoToUserDetails(GetInfoResponse response) {
+  UserMyself mapGetInfoToUserMyself(GetInfoResponse response) {
+    List<Attr> attrs = response.getAttrs() != null ? response.getAttrs().getAttr() : List.of();
+
+    String userId = null;
+    String fullName = "";
+    String status = "ACTIVE";
+    String type = "INTERNAL";
     String locale = Locale.ENGLISH.toString();
     Map<String, Boolean> featureList = new HashMap<>();
 
-    if (response.getAttrs() != null) {
-      for (Attr attr : response.getAttrs().getAttr()) {
-        if (FEATURE_FLAGS.contains(attr.getName())) {
-          featureList.put(attr.getName(), "TRUE".equalsIgnoreCase(attr.getValue()));
+    for (Attr attr : attrs) {
+      switch (attr.getName()) {
+        case ZimbraAttributes.DISPLAY_NAME -> fullName = attr.getValue();
+        case ZimbraAttributes.ID -> userId = attr.getValue();
+        case ZimbraAttributes.ACCOUNT_STATUS -> status = attr.getValue().toUpperCase();
+        case ZimbraAttributes.IS_EXTERNAL_VIRTUAL_ACCOUNT ->
+            type = Boolean.parseBoolean(attr.getValue().toLowerCase()) ? "GUEST" : "INTERNAL";
+        default -> {
+          if (FEATURE_FLAGS.contains(attr.getName())) {
+            featureList.put(attr.getName(), "TRUE".equalsIgnoreCase(attr.getValue()));
+          }
         }
       }
     }
@@ -387,7 +351,9 @@ public class UserService {
       }
     }
 
-    return new UserDetails(locale, featureList);
+    return new UserMyself(
+        userId, response.getName(), fullName, response.getPublicURL(),
+        status, type, locale, featureList);
   }
 
   UserInfo mapGetAccountInfoToUserInfo(GetAccountInfoResponse response) {
@@ -418,9 +384,7 @@ public class UserService {
   }
 
   /**
-   * Deduplicates concurrent lookups for the same key. The first thread to call this for a given
-   * key executes the supplier; subsequent threads for the same key wait for the first thread's
-   * result instead of duplicating work (L1 queries, SOAP calls).
+   * Deduplicates concurrent lookups for the same key.
    */
   private <T> T coalesce(
       ConcurrentHashMap<String, CompletableFuture<T>> inflight,
@@ -442,6 +406,4 @@ public class UserService {
       inflight.remove(key);
     }
   }
-
-  public record MyselfResult(UserInfo info, UserDetails details) {}
 }

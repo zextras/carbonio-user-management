@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: AGPL-3.0-only
 
-package com.zextras.carbonio.user_management.cache.record;
+package com.zextras.carbonio.user_management.record;
 
 public record UserInfo(
     String userId,

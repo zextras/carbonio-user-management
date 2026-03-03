@@ -11,10 +11,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.zextras.carbonio.user_management.cache.record.UserDetails;
-import com.zextras.carbonio.user_management.cache.record.UserInfo;
+import com.zextras.carbonio.user_management.record.UserMyself;
 import com.zextras.carbonio.user_management.service.UserService;
-import com.zextras.carbonio.user_management.service.UserService.MyselfResult;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.Cookie;
 import jakarta.ws.rs.core.Response;
@@ -102,9 +100,7 @@ class TokenAuthFilterTest {
       setCookie("valid-token");
       setPath("/users/id/user-1");
       when(userService.getUserMyself("valid-token")).thenReturn(Optional.of(
-          new MyselfResult(
-              new UserInfo("user-1", "u@x.com", "U", "x.com", "ACTIVE", "INTERNAL"),
-              new UserDetails("en", Map.of()))));
+          new UserMyself("user-1", "u@x.com", "U", "x.com", "ACTIVE", "INTERNAL", "en", Map.of())));
 
       filter.filter(ctx);
 

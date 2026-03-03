@@ -12,12 +12,11 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.zextras.carbonio.user_management.cache.record.UserDetails;
-import com.zextras.carbonio.user_management.cache.record.UserInfo;
+import com.zextras.carbonio.user_management.record.UserInfo;
+import com.zextras.carbonio.user_management.record.UserMyself;
 import com.zextras.carbonio.user_management.rest.dto.MyselfDto;
 import com.zextras.carbonio.user_management.rest.dto.UserInfoDto;
 import com.zextras.carbonio.user_management.service.UserService;
-import com.zextras.carbonio.user_management.service.UserService.MyselfResult;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
@@ -51,10 +50,10 @@ class UserResourceTest {
 
     @Test
     void returnsOkWithMyselfDto() {
-      MyselfResult result = new MyselfResult(
-          sampleUserInfo(),
-          new UserDetails("it", Map.of(FeatureFlags.FILES_ENABLED, true)));
-      when(userService.getUserMyself("token-1")).thenReturn(Optional.of(result));
+      UserMyself myself = new UserMyself(
+          "user-1", "user@example.com", "John Doe", "example.com",
+          "ACTIVE", "INTERNAL", "it", Map.of(FeatureFlags.FILES_ENABLED, true));
+      when(userService.getUserMyself("token-1")).thenReturn(Optional.of(myself));
 
       Response response = resource.getMyself(ctx);
 

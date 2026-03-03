@@ -2,10 +2,10 @@
 //
 // SPDX-License-Identifier: AGPL-3.0-only
 
-package com.zextras.carbonio.user_management.cache.repository;
+package com.zextras.carbonio.user_management.repository;
 
-import com.zextras.carbonio.user_management.cache.entity.UserInfoCacheEntity;
-import com.zextras.carbonio.user_management.cache.record.UserInfo;
+import com.zextras.carbonio.user_management.entity.UserInfoCacheEntity;
+import com.zextras.carbonio.user_management.record.UserInfo;
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
@@ -53,8 +53,6 @@ public class UserInfoCacheRepository implements PanacheRepositoryBase<UserInfoCa
     if (rows > 0) {
       return userInfo;
     }
-    // DB has a newer expiresAt — read back its data. If the row was concurrently deleted
-    // (e.g. by cleanup), fall back to the fresh data we already have from SOAP.
     UserInfoCacheEntity existing = findById(userInfo.userId());
     return existing != null ? toRecord(existing) : userInfo;
   }

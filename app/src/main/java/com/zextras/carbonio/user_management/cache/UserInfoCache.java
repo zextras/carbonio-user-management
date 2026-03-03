@@ -10,7 +10,7 @@ import com.github.benmanes.caffeine.cache.Expiry;
 import com.github.benmanes.caffeine.cache.Ticker;
 import com.zextras.carbonio.quarkus.extensions.bootstrap.ApplicationConfigService;
 import com.zextras.carbonio.user_management.UserManagementServiceConfig.ApplicationConfig;
-import com.zextras.carbonio.user_management.cache.record.UserInfo;
+import com.zextras.carbonio.user_management.record.UserInfo;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import java.time.Clock;

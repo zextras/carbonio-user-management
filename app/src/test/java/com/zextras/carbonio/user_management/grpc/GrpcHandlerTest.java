@@ -11,8 +11,8 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.zextras.carbonio.user_management.cache.record.UserDetails;
-import com.zextras.carbonio.user_management.cache.record.UserInfo;
+import com.zextras.carbonio.user_management.record.UserInfo;
+import com.zextras.carbonio.user_management.record.UserMyself;
 import com.zextras.carbonio.user_management.sdk.grpc.GetUserByEmailRequest;
 import com.zextras.carbonio.user_management.sdk.grpc.GetUserByIdRequest;
 import com.zextras.carbonio.user_management.sdk.grpc.GetUserMyselfRequest;
@@ -22,7 +22,6 @@ import com.zextras.carbonio.user_management.sdk.grpc.UserInfoResponse;
 import com.zextras.carbonio.user_management.sdk.grpc.UserMyselfResponse;
 import com.zextras.carbonio.user_management.sdk.grpc.UserTypeProto;
 import com.zextras.carbonio.user_management.service.UserService;
-import com.zextras.carbonio.user_management.service.UserService.MyselfResult;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
@@ -67,10 +66,10 @@ class GrpcHandlerTest {
 
     @Test
     void happyPath() {
-      MyselfResult result = new MyselfResult(
-          sampleUserInfo(),
-          new UserDetails("it", Map.of(FeatureFlags.FILES_ENABLED, true)));
-      when(userService.getUserMyself("token-1")).thenReturn(Optional.of(result));
+      UserMyself myself = new UserMyself(
+          "user-1", "user@example.com", "John Doe", "example.com",
+          "ACTIVE", "INTERNAL", "it", Map.of(FeatureFlags.FILES_ENABLED, true));
+      when(userService.getUserMyself("token-1")).thenReturn(Optional.of(myself));
 
       TestStreamObserver<UserMyselfResponse> observer = new TestStreamObserver<>();
       handler.getUserMyself(

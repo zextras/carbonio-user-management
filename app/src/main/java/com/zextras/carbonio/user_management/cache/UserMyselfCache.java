@@ -10,7 +10,7 @@ import com.github.benmanes.caffeine.cache.Expiry;
 import com.github.benmanes.caffeine.cache.Ticker;
 import com.zextras.carbonio.quarkus.extensions.bootstrap.ApplicationConfigService;
 import com.zextras.carbonio.user_management.UserManagementServiceConfig.ApplicationConfig;
-import com.zextras.carbonio.user_management.cache.record.UserDetails;
+import com.zextras.carbonio.user_management.record.UserMyself;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import java.time.Clock;
@@ -19,44 +19,54 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Cache for {@link UserDetails}, keyed by auth token.
+ * Cache for {@link UserMyself}, keyed by auth token (one entry per user).
  *
  * <p>Each entry's TTL is computed at insertion time as the minimum of the config value
- * ({@code cache.userdetails-ttl}) and the remaining session lifetime from mailbox. If config
- * is absent, the session remaining time is used directly. Config is read at every insertion via
- * Caffeine's {@code VarExpiration} API, so changes on Consul take effect immediately.
+ * ({@code cache.usermyself-ttl}) and the remaining session lifetime from mailbox. If config
+ * is absent, the session remaining time is used directly.
  *
- * <p>A lightweight {@code tokenToUserId} map provides token-to-userId resolution, kept in sync
- * via Caffeine's {@code removalListener}: when an entry expires, the listener removes the
- * corresponding mapping in O(1).
+ * <p>A reverse index {@code userIdToToken} enforces one-token-per-user: when a new token is
+ * inserted for a userId that already has a cached token, the old entry is invalidated first.
+ * The forward index {@code tokenToUserId} provides token-to-userId resolution.
+ *
+ * <p>Both indexes are kept in sync via Caffeine's {@code removalListener}.
  */
 @Singleton
-public class UserDetailsCache {
+public class UserMyselfCache {
 
-  private final Cache<String, UserDetails> cache;
+  private final Cache<String, UserMyself> cache;
   private final ConcurrentHashMap<String, String> tokenToUserId;
+  private final ConcurrentHashMap<String, String> userIdToToken;
   private final ApplicationConfigService configService;
   private final Clock clock;
 
   @Inject
-  public UserDetailsCache(ApplicationConfigService configService) {
+  public UserMyselfCache(ApplicationConfigService configService) {
     this(configService, Ticker.systemTicker(), Clock.systemUTC());
   }
 
-  UserDetailsCache(ApplicationConfigService configService, Ticker ticker, Clock clock) {
+  UserMyselfCache(ApplicationConfigService configService, Ticker ticker, Clock clock) {
     this.configService = configService;
     this.clock = clock;
     this.tokenToUserId = new ConcurrentHashMap<>();
+    this.userIdToToken = new ConcurrentHashMap<>();
 
     this.cache = Caffeine.newBuilder()
         .ticker(ticker)
         .expireAfter(
-            Expiry.<String, UserDetails>creating((k, v) -> Duration.ofNanos(Long.MAX_VALUE)))
-        .removalListener((key, value, cause) -> tokenToUserId.remove(key))
+            Expiry.<String, UserMyself>creating((k, v) -> Duration.ofNanos(Long.MAX_VALUE)))
+        .removalListener((String key, UserMyself value, com.github.benmanes.caffeine.cache.RemovalCause cause) -> {
+          if (key != null) {
+            String userId = tokenToUserId.remove(key);
+            if (userId != null) {
+              userIdToToken.remove(userId, key);
+            }
+          }
+        })
         .build();
   }
 
-  public Optional<UserDetails> getByToken(String token) {
+  public Optional<UserMyself> getByToken(String token) {
     return Optional.ofNullable(cache.getIfPresent(token));
   }
 
@@ -64,11 +74,18 @@ public class UserDetailsCache {
     return Optional.ofNullable(tokenToUserId.get(token));
   }
 
-  public void put(String token, String userId, UserDetails details, long expiresAt) {
+  public void put(String token, String userId, UserMyself myself, long expiresAt) {
+    // One-token-per-user: invalidate old token for this user if different
+    String oldToken = userIdToToken.get(userId);
+    if (oldToken != null && !oldToken.equals(token)) {
+      cache.invalidate(oldToken);
+    }
+
     long remainingMs = Math.max(0, expiresAt - clock.millis());
     Duration ttl = capTtl(remainingMs);
-    cache.policy().expireVariably().orElseThrow().put(token, details, ttl);
+    cache.policy().expireVariably().orElseThrow().put(token, myself, ttl);
     tokenToUserId.put(token, userId);
+    userIdToToken.put(userId, token);
   }
 
   public void invalidateByToken(String token) {
@@ -78,6 +95,7 @@ public class UserDetailsCache {
   void clearAll() {
     cache.invalidateAll();
     tokenToUserId.clear();
+    userIdToToken.clear();
   }
 
   /**
@@ -91,7 +109,7 @@ public class UserDetailsCache {
 
   private Duration capTtl(long remainingMs) {
     Duration remaining = Duration.ofMillis(remainingMs);
-    return configService.get(ApplicationConfig.CACHE_DETAILS_TTL)
+    return configService.get(ApplicationConfig.CACHE_USERMYSELF_TTL)
         .map(Long::parseLong)
         .map(seconds -> min(Duration.ofSeconds(seconds), remaining))
         .orElse(remaining);

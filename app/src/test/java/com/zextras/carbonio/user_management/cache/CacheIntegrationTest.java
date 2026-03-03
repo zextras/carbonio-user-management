@@ -13,14 +13,13 @@ import static org.mockito.Mockito.when;
 
 import com.zextras.carbonio.user_management.ConsulTestResource;
 import com.zextras.carbonio.user_management.PostgresTestResource;
-import com.zextras.carbonio.user_management.cache.record.UserDetails;
-import com.zextras.carbonio.user_management.cache.record.UserInfo;
-import com.zextras.carbonio.user_management.cache.repository.UserDetailsCacheRepository;
-import com.zextras.carbonio.user_management.cache.repository.UserDetailsCacheRepository.CachedUserDetails;
-import com.zextras.carbonio.user_management.cache.repository.UserDetailsCacheRepository.TokenLookupResult;
-import com.zextras.carbonio.user_management.cache.repository.UserInfoCacheRepository;
+import com.zextras.carbonio.user_management.record.UserInfo;
+import com.zextras.carbonio.user_management.record.UserMyself;
+import com.zextras.carbonio.user_management.repository.UserInfoCacheRepository;
+import com.zextras.carbonio.user_management.repository.UserMyselfCacheRepository;
+import com.zextras.carbonio.user_management.repository.UserMyselfCacheRepository.CachedUserMyself;
+import com.zextras.carbonio.user_management.repository.UserMyselfCacheRepository.TokenLookupResult;
 import com.zextras.carbonio.user_management.service.UserService;
-import com.zextras.carbonio.user_management.service.UserService.MyselfResult;
 import com.zextras.mailbox.client.MailboxClientException;
 import com.zextras.mailbox.client.service.ServiceClient;
 import io.quarkus.narayana.jta.QuarkusTransaction;
@@ -43,13 +42,13 @@ class CacheIntegrationTest {
   UserInfoCacheRepository userInfoRepo;
 
   @Inject
-  UserDetailsCacheRepository userDetailsRepo;
+  UserMyselfCacheRepository userMyselfRepo;
 
   @Inject
   UserInfoCache userInfoCache;
 
   @Inject
-  UserDetailsCache userDetailsCache;
+  UserMyselfCache userMyselfCache;
 
   @Inject
   UserService userService;
@@ -65,10 +64,10 @@ class CacheIntegrationTest {
   @AfterEach
   void cleanup() {
     userInfoCache.clearAll();
-    userDetailsCache.clearAll();
+    userMyselfCache.clearAll();
     QuarkusTransaction.requiringNew().run(() -> {
       userInfoRepo.deleteAll();
-      userDetailsRepo.deleteAll();
+      userMyselfRepo.deleteAll();
     });
   }
 
@@ -76,8 +75,10 @@ class CacheIntegrationTest {
     return new UserInfo("user-1", "user@example.com", "John Doe", "example.com", "ACTIVE", "INTERNAL");
   }
 
-  private UserDetails sampleDetails() {
-    return new UserDetails("en", Map.of(FeatureFlags.FILES_ENABLED, true));
+  private UserMyself sampleMyself() {
+    return new UserMyself(
+        "user-1", "user@example.com", "John Doe", "example.com",
+        "ACTIVE", "INTERNAL", "en", Map.of(FeatureFlags.FILES_ENABLED, true));
   }
 
   private long futureExpiresAt() {
@@ -166,58 +167,41 @@ class CacheIntegrationTest {
     }
   }
 
-  // ---- UserDetailsCacheRepository ----
+  // ---- UserMyselfCacheRepository ----
 
   @Nested
-  class UserDetailsRepositoryTests {
+  class UserMyselfRepositoryTests {
 
     @Test
     void insertsNewEntry() {
-      UserDetails result = userDetailsRepo.upsert("user-1", "token-abc", sampleDetails(), futureExpiresAt());
+      UserMyself result = userMyselfRepo.upsert("user-1", "token-abc", sampleMyself(), futureExpiresAt());
 
-      assertThat(result).isEqualTo(sampleDetails());
+      assertThat(result).isEqualTo(sampleMyself());
     }
 
     @Test
     void findByUserIdReturnsDetailsWithExpiresAt() {
       long expiresAt = futureExpiresAt();
-      userDetailsRepo.upsert("user-1", "token-abc", sampleDetails(), expiresAt);
+      userMyselfRepo.upsert("user-1", "token-abc", sampleMyself(), expiresAt);
 
-      Optional<CachedUserDetails> result = userDetailsRepo.findByUserId("user-1");
+      Optional<CachedUserMyself> result = userMyselfRepo.findByUserId("user-1");
 
       assertThat(result).isPresent();
-      assertThat(result.get().details()).isEqualTo(sampleDetails());
+      assertThat(result.get().myself()).isEqualTo(sampleMyself());
       assertThat(result.get().expiresAt()).isEqualTo(expiresAt);
     }
 
     @Test
-    void findByTokenReturnsUserIdAndDetails() {
+    void findByTokenReturnsUserIdAndMyself() {
       long expiresAt = futureExpiresAt();
-      userDetailsRepo.upsert("user-1", "token-abc", sampleDetails(), expiresAt);
+      userMyselfRepo.upsert("user-1", "token-abc", sampleMyself(), expiresAt);
 
-      Optional<TokenLookupResult> result = userDetailsRepo.findByToken("token-abc");
+      Optional<TokenLookupResult> result = userMyselfRepo.findByToken("token-abc");
 
       assertThat(result).isPresent();
       assertThat(result.get().userId()).isEqualTo("user-1");
-      assertThat(result.get().details()).isEqualTo(sampleDetails());
+      assertThat(result.get().myself()).isEqualTo(sampleMyself());
       assertThat(result.get().expiresAt()).isEqualTo(expiresAt);
-    }
-
-    @Test
-    void resolveUserIdFromToken() {
-      userDetailsRepo.upsert("user-1", "token-abc", sampleDetails(), futureExpiresAt());
-
-      Optional<String> result = userDetailsRepo.resolveUserId("token-abc");
-      assertThat(result).contains("user-1");
-    }
-
-    @Test
-    void resolveUserIdReturnsEmptyForExpired() {
-      long past = System.currentTimeMillis() - 1000;
-      userDetailsRepo.upsert("user-1", "token-abc", sampleDetails(), past);
-
-      Optional<String> result = userDetailsRepo.resolveUserId("token-abc");
-      assertThat(result).isEmpty();
     }
 
     @Test
@@ -226,23 +210,27 @@ class CacheIntegrationTest {
           FeatureFlags.FILES_ENABLED, true,
           FeatureFlags.WSC_ENABLED, false,
           FeatureFlags.TASKS_ENABLED, true);
-      UserDetails details = new UserDetails("it", features);
-      userDetailsRepo.upsert("user-1", "token-abc", details, futureExpiresAt());
+      UserMyself myself = new UserMyself(
+          "user-1", "user@example.com", "John Doe", "example.com",
+          "ACTIVE", "INTERNAL", "it", features);
+      userMyselfRepo.upsert("user-1", "token-abc", myself, futureExpiresAt());
 
-      Optional<CachedUserDetails> result = userDetailsRepo.findByUserId("user-1");
+      Optional<CachedUserMyself> result = userMyselfRepo.findByUserId("user-1");
 
       assertThat(result).isPresent();
-      assertThat(result.get().details().locale()).isEqualTo("it");
-      assertThat(result.get().details().featureList()).isEqualTo(features);
+      assertThat(result.get().myself().locale()).isEqualTo("it");
+      assertThat(result.get().myself().featureList()).isEqualTo(features);
     }
 
     @Test
     void newerUpsertWins() {
       long now = System.currentTimeMillis();
-      userDetailsRepo.upsert("user-1", "token-1", sampleDetails(), now + 10_000);
+      userMyselfRepo.upsert("user-1", "token-1", sampleMyself(), now + 10_000);
 
-      UserDetails newer = new UserDetails("it", Map.of());
-      UserDetails result = userDetailsRepo.upsert("user-1", "token-2", newer, now + 20_000);
+      UserMyself newer = new UserMyself(
+          "user-1", "new@example.com", "New Name", "example.com",
+          "ACTIVE", "INTERNAL", "it", Map.of());
+      UserMyself result = userMyselfRepo.upsert("user-1", "token-2", newer, now + 20_000);
 
       assertThat(result).isEqualTo(newer);
     }
@@ -250,11 +238,13 @@ class CacheIntegrationTest {
     @Test
     void olderUpsertLosesAndReturnsDbValue() {
       long now = System.currentTimeMillis();
-      UserDetails first = sampleDetails();
-      userDetailsRepo.upsert("user-1", "token-1", first, now + 20_000);
+      UserMyself first = sampleMyself();
+      userMyselfRepo.upsert("user-1", "token-1", first, now + 20_000);
 
-      UserDetails older = new UserDetails("it", Map.of());
-      UserDetails result = userDetailsRepo.upsert("user-1", "token-2", older, now + 10_000);
+      UserMyself older = new UserMyself(
+          "user-1", "old@example.com", "Old Name", "example.com",
+          "ACTIVE", "INTERNAL", "it", Map.of());
+      UserMyself result = userMyselfRepo.upsert("user-1", "token-2", older, now + 10_000);
 
       assertThat(result).isEqualTo(first);
     }
@@ -262,18 +252,20 @@ class CacheIntegrationTest {
     @Test
     void deleteExpiredRemovesOnlyExpired() {
       long now = System.currentTimeMillis();
-      userDetailsRepo.upsert("user-1", "token-1", sampleDetails(), now - 1000);
-      userDetailsRepo.upsert("user-2", "token-2", sampleDetails(), now + 3_600_000);
+      userMyselfRepo.upsert("user-1", "token-1", sampleMyself(), now - 1000);
+      userMyselfRepo.upsert("user-2", "token-2", new UserMyself(
+          "user-2", "u2@x.com", "U2", "x.com", "ACTIVE", "INTERNAL", "en", Map.of()),
+          now + 3_600_000);
 
-      int deleted = userDetailsRepo.deleteExpired();
+      int deleted = userMyselfRepo.deleteExpired();
 
       assertThat(deleted).isEqualTo(1);
-      assertThat(userDetailsRepo.findByUserId("user-1")).isEmpty();
-      assertThat(userDetailsRepo.findByUserId("user-2")).isPresent();
+      assertThat(userMyselfRepo.findByUserId("user-1")).isEmpty();
+      assertThat(userMyselfRepo.findByUserId("user-2")).isPresent();
     }
   }
 
-  // ---- Full flow: L2 → L1 → SOAP ----
+  // ---- Full flow: L2 -> L1 -> SOAP ----
 
   @Nested
   class FullFlowTests {
@@ -291,13 +283,11 @@ class CacheIntegrationTest {
 
     @Test
     void getUserById_L2Miss_L1Hit_populatesCaffeine() {
-      // Pre-populate DB only
       userInfoRepo.upsert(sampleUserInfo(), futureExpiresAt());
 
       Optional<UserInfo> result = userService.getUserById("user-1", "token-1");
 
       assertThat(result).contains(sampleUserInfo());
-      // Now Caffeine should be populated
       assertThat(userInfoCache.getByUserId("user-1")).contains(sampleUserInfo());
       verify(mailboxClient, never()).send(any());
     }
@@ -314,7 +304,6 @@ class CacheIntegrationTest {
 
     @Test
     void getUserByEmail_L2Miss_L1Hit_populatesCaffeine() {
-      // Pre-populate DB only
       userInfoRepo.upsert(sampleUserInfo(), futureExpiresAt());
 
       Optional<UserInfo> result = userService.getUserByEmail("user@example.com", "token-1");
@@ -326,18 +315,16 @@ class CacheIntegrationTest {
 
     @Test
     void getUserMyself_L2Miss_L1Hit_resolvesFromDb() {
-      // Pre-populate both DB tables
-      userInfoRepo.upsert(sampleUserInfo(), futureExpiresAt());
-      userDetailsRepo.upsert("user-1", "token-1", sampleDetails(), futureExpiresAt());
+      // Pre-populate only user_myself_cache (no user_info_cache)
+      userMyselfRepo.upsert("user-1", "token-1", sampleMyself(), futureExpiresAt());
 
-      Optional<MyselfResult> result = userService.getUserMyself("token-1");
+      Optional<UserMyself> result = userService.getUserMyself("token-1");
 
       assertThat(result).isPresent();
-      assertThat(result.get().info()).isEqualTo(sampleUserInfo());
-      assertThat(result.get().details()).isEqualTo(sampleDetails());
+      assertThat(result.get()).isEqualTo(sampleMyself());
       // Caffeine should now be populated
-      assertThat(userInfoCache.getByUserId("user-1")).contains(sampleUserInfo());
-      assertThat(userDetailsCache.resolveUserId("token-1")).contains("user-1");
+      assertThat(userMyselfCache.getByToken("token-1")).contains(sampleMyself());
+      assertThat(userMyselfCache.resolveUserId("token-1")).contains("user-1");
       verify(mailboxClient, never()).send(any());
     }
 
@@ -345,10 +332,21 @@ class CacheIntegrationTest {
     void getUserMyself_L2Miss_L1Miss_callsSoap() throws Exception {
       when(mailboxClient.send(any())).thenThrow(new MailboxClientException("test"));
 
-      Optional<MyselfResult> result = userService.getUserMyself("token-1");
+      Optional<UserMyself> result = userService.getUserMyself("token-1");
 
       assertThat(result).isEmpty();
       verify(mailboxClient).send(any());
+    }
+
+    @Test
+    void getUserMyself_doesNotWriteToUserInfoCache() {
+      // Pre-populate user_myself_cache
+      userMyselfRepo.upsert("user-1", "token-1", sampleMyself(), futureExpiresAt());
+
+      userService.getUserMyself("token-1");
+
+      // user_info_cache should NOT be populated by getUserMyself
+      assertThat(userInfoCache.getByUserId("user-1")).isEmpty();
     }
   }
 }

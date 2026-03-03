@@ -4,7 +4,7 @@
 
 package com.zextras.carbonio.user_management.rest.dto;
 
-import com.zextras.carbonio.user_management.service.UserService.MyselfResult;
+import com.zextras.carbonio.user_management.record.UserMyself;
 import java.util.Map;
 
 public record MyselfDto(
@@ -13,10 +13,10 @@ public record MyselfDto(
     Map<String, Boolean> featureList
 ) {
 
-  public static MyselfDto from(MyselfResult result) {
-    return new MyselfDto(
-        UserInfoDto.from(result.info()),
-        result.details().locale(),
-        result.details().featureList());
+  public static MyselfDto from(UserMyself myself) {
+    UserInfoDto info = new UserInfoDto(
+        myself.userId(), myself.email(), myself.fullName(),
+        myself.domain(), myself.status(), myself.type());
+    return new MyselfDto(info, myself.locale(), myself.featureList());
   }
 }
