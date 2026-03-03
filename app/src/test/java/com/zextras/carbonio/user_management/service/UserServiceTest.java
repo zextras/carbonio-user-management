@@ -6,12 +6,12 @@ package com.zextras.carbonio.user_management.service;
 
 import static com.zextras.carbonio.user_management.UserManagementServiceConfig.FeatureFlags;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -31,6 +31,10 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import zimbra.NamedValue;
+import zimbraaccount.Attr;
+import zimbraaccount.GetAccountInfoResponse;
+import zimbraaccount.GetInfoResponse;
 
 class UserServiceTest {
 
@@ -208,14 +212,61 @@ class UserServiceTest {
     }
 
     @Test
-    void warmingPropagatesDbFailure() {
+    void warmingFailureDoesNotPropagateAndReturnsResult() {
       UserMyself myself = sampleMyself();
       when(userMyselfCache.getByToken("token-1")).thenReturn(Optional.of(myself));
       when(userInfoCache.getByUserId("user-1")).thenThrow(new RuntimeException("db error"));
 
-      assertThatThrownBy(() -> userService.getUserMyself("token-1"))
-          .isInstanceOf(RuntimeException.class)
-          .hasMessage("db error");
+      Optional<UserMyself> result = userService.getUserMyself("token-1");
+
+      assertThat(result).contains(myself);
+    }
+
+    @Test
+    void L1ReadFailure_fallsToSoap() throws Exception {
+      when(userMyselfCache.getByToken("token-1")).thenReturn(Optional.empty());
+      when(userMyselfCacheRepo.findByToken("token-1")).thenThrow(new RuntimeException("db error"));
+      when(mailboxClient.send(any())).thenThrow(new MailboxClientException("test"));
+
+      Optional<UserMyself> result = userService.getUserMyself("token-1");
+
+      assertThat(result).isEmpty();
+      verify(mailboxClient).send(any());
+    }
+
+    @Test
+    void L1WriteFailure_stillReturnsDataAndCachesL2() throws Exception {
+      UserMyself myself = sampleMyself();
+      when(userMyselfCache.getByToken("token-1")).thenReturn(Optional.empty());
+      when(userMyselfCacheRepo.findByToken("token-1")).thenReturn(Optional.empty());
+
+      GetInfoResponse response = mock(GetInfoResponse.class);
+      GetInfoResponse.Attrs attrs = mock(GetInfoResponse.Attrs.class);
+      when(response.getAttrs()).thenReturn(attrs);
+      Attr idAttr = mock(Attr.class);
+      when(idAttr.getName()).thenReturn("zimbraId");
+      when(idAttr.getValue()).thenReturn("user-1");
+      Attr nameAttr = mock(Attr.class);
+      when(nameAttr.getName()).thenReturn("displayName");
+      when(nameAttr.getValue()).thenReturn("John Doe");
+      when(attrs.getAttr()).thenReturn(List.of(idAttr, nameAttr));
+      when(response.getName()).thenReturn("user@example.com");
+      when(response.getPublicURL()).thenReturn("example.com");
+      when(response.getLifetime()).thenReturn(3600000L);
+      when(mailboxClient.send(any())).thenReturn(response);
+      when(userMyselfCache.computeExpiresAt(3600000L)).thenReturn(futureExpiresAt());
+      when(userMyselfCacheRepo.upsert(any(), any(), any(), anyLong()))
+          .thenThrow(new RuntimeException("db write error"));
+      // Warming setup
+      when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.empty());
+      when(userInfoCacheRepo.findByUserId("user-1")).thenReturn(Optional.empty());
+      when(userInfoCache.computeExpiresAt()).thenReturn(futureExpiresAt());
+
+      Optional<UserMyself> result = userService.getUserMyself("token-1");
+
+      assertThat(result).isPresent();
+      assertThat(result.get().userId()).isEqualTo("user-1");
+      verify(userMyselfCache).put(eq("token-1"), eq("user-1"), any(), anyLong());
     }
   }
 
@@ -270,6 +321,45 @@ class UserServiceTest {
       verify(mailboxClient, never()).send(any());
     }
 
+    @Test
+    void L1ReadFailure_fallsToSoap() throws Exception {
+      when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.empty());
+      when(userInfoCacheRepo.findByUserId("user-1")).thenThrow(new RuntimeException("db error"));
+      when(mailboxClient.send(any())).thenThrow(new MailboxClientException("test"));
+
+      Optional<UserInfo> result = userService.getUserById("user-1", "token-1");
+
+      assertThat(result).isEmpty();
+      verify(mailboxClient).send(any());
+    }
+
+    @Test
+    void L1WriteFailure_stillReturnsDataAndCachesL2() throws Exception {
+      when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.empty());
+      when(userInfoCacheRepo.findByUserId("user-1")).thenReturn(Optional.empty());
+
+      GetAccountInfoResponse response = mock(GetAccountInfoResponse.class);
+      NamedValue idAttr = mock(NamedValue.class);
+      when(idAttr.getName()).thenReturn("zimbraId");
+      when(idAttr.getValue()).thenReturn("user-1");
+      NamedValue nameAttr = mock(NamedValue.class);
+      when(nameAttr.getName()).thenReturn("displayName");
+      when(nameAttr.getValue()).thenReturn("John Doe");
+      when(response.getAttr()).thenReturn(List.of(idAttr, nameAttr));
+      when(response.getName()).thenReturn("user@example.com");
+      when(response.getPublicURL()).thenReturn("example.com");
+      when(mailboxClient.send(any())).thenReturn(response);
+      when(userInfoCache.computeExpiresAt()).thenReturn(futureExpiresAt());
+      when(userInfoCacheRepo.upsert(any(), anyLong()))
+          .thenThrow(new RuntimeException("db write error"));
+
+      Optional<UserInfo> result = userService.getUserById("user-1", "token-1");
+
+      assertThat(result).isPresent();
+      assertThat(result.get().userId()).isEqualTo("user-1");
+      verify(userInfoCache).put(any(UserInfo.class));
+    }
+
   }
 
   @Nested
@@ -320,6 +410,46 @@ class UserServiceTest {
 
       assertThat(result).contains(info);
       verify(mailboxClient, never()).send(any());
+    }
+
+    @Test
+    void L1ReadFailure_fallsToSoap() throws Exception {
+      when(userInfoCache.getByEmail("user@example.com")).thenReturn(Optional.empty());
+      when(userInfoCacheRepo.findByEmail("user@example.com"))
+          .thenThrow(new RuntimeException("db error"));
+      when(mailboxClient.send(any())).thenThrow(new MailboxClientException("test"));
+
+      Optional<UserInfo> result = userService.getUserByEmail("user@example.com", "token-1");
+
+      assertThat(result).isEmpty();
+      verify(mailboxClient).send(any());
+    }
+
+    @Test
+    void L1WriteFailure_stillReturnsDataAndCachesL2() throws Exception {
+      when(userInfoCache.getByEmail("user@example.com")).thenReturn(Optional.empty());
+      when(userInfoCacheRepo.findByEmail("user@example.com")).thenReturn(Optional.empty());
+
+      GetAccountInfoResponse response = mock(GetAccountInfoResponse.class);
+      NamedValue idAttr = mock(NamedValue.class);
+      when(idAttr.getName()).thenReturn("zimbraId");
+      when(idAttr.getValue()).thenReturn("user-1");
+      NamedValue nameAttr = mock(NamedValue.class);
+      when(nameAttr.getName()).thenReturn("displayName");
+      when(nameAttr.getValue()).thenReturn("John Doe");
+      when(response.getAttr()).thenReturn(List.of(idAttr, nameAttr));
+      when(response.getName()).thenReturn("user@example.com");
+      when(response.getPublicURL()).thenReturn("example.com");
+      when(mailboxClient.send(any())).thenReturn(response);
+      when(userInfoCache.computeExpiresAt()).thenReturn(futureExpiresAt());
+      when(userInfoCacheRepo.upsert(any(), anyLong()))
+          .thenThrow(new RuntimeException("db write error"));
+
+      Optional<UserInfo> result = userService.getUserByEmail("user@example.com", "token-1");
+
+      assertThat(result).isPresent();
+      assertThat(result.get().userId()).isEqualTo("user-1");
+      verify(userInfoCache).put(any(UserInfo.class));
     }
 
   }
@@ -411,6 +541,74 @@ class UserServiceTest {
       assertThat(result).containsExactly(user1, user2);
       verifyNoInteractions(userInfoCacheRepo);
       verify(mailboxClient, never()).send(any());
+    }
+
+    @Test
+    void L1BatchReadFailure_allMissesGoToSoap() {
+      when(userInfoCache.getByUserId("id-1")).thenReturn(Optional.empty());
+      when(userInfoCache.getByUserId("id-2")).thenReturn(Optional.empty());
+      when(userInfoCacheRepo.findByUserIds(List.of("id-1", "id-2")))
+          .thenThrow(new RuntimeException("db error"));
+      // L1 read in getUserById also fails
+      when(userInfoCacheRepo.findByUserId(any())).thenThrow(new RuntimeException("db error"));
+      when(mailboxClient.send(any())).thenThrow(new MailboxClientException("test"));
+
+      List<UserInfo> result = userService.getUsers(
+          List.of("id-1", "id-2"), "token-1");
+
+      assertThat(result).isEmpty();
+      // SOAP called for each miss
+      verify(mailboxClient, times(2)).send(any());
+    }
+  }
+
+  @Nested
+  class WarmingL1FailureTests {
+
+    @Test
+    void warmingL1ReadFailure_stillWritesL2() {
+      UserMyself myself = sampleMyself();
+      UserInfo expectedUserInfo = new UserInfo(
+          "user-1", "user@example.com", "John Doe", "example.com", "ACTIVE", "INTERNAL");
+
+      when(userMyselfCache.getByToken("token-1")).thenReturn(Optional.of(myself));
+      // L2 userinfo miss
+      when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.empty());
+      // L1 read fails
+      when(userInfoCacheRepo.findByUserId("user-1")).thenThrow(new RuntimeException("db error"));
+      when(userInfoCache.computeExpiresAt()).thenReturn(futureExpiresAt());
+      // L1 write also fails (both try-catches exercised)
+      when(userInfoCacheRepo.upsert(eq(expectedUserInfo), anyLong()))
+          .thenThrow(new RuntimeException("db write error"));
+
+      Optional<UserMyself> result = userService.getUserMyself("token-1");
+
+      assertThat(result).contains(myself);
+      // L2 write still happened
+      verify(userInfoCache).put(expectedUserInfo);
+    }
+
+    @Test
+    void warmingL1WriteFailure_stillWritesL2() {
+      UserMyself myself = sampleMyself();
+      UserInfo expectedUserInfo = new UserInfo(
+          "user-1", "user@example.com", "John Doe", "example.com", "ACTIVE", "INTERNAL");
+
+      when(userMyselfCache.getByToken("token-1")).thenReturn(Optional.of(myself));
+      // L2 userinfo miss
+      when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.empty());
+      // L1 read ok → miss
+      when(userInfoCacheRepo.findByUserId("user-1")).thenReturn(Optional.empty());
+      when(userInfoCache.computeExpiresAt()).thenReturn(futureExpiresAt());
+      // L1 write fails
+      when(userInfoCacheRepo.upsert(eq(expectedUserInfo), anyLong()))
+          .thenThrow(new RuntimeException("db write error"));
+
+      Optional<UserMyself> result = userService.getUserMyself("token-1");
+
+      assertThat(result).contains(myself);
+      // L2 write still happened
+      verify(userInfoCache).put(expectedUserInfo);
     }
   }
 }
