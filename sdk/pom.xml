@@ -12,8 +12,8 @@ SPDX-License-Identifier: AGPL-3.0-only
   <parent>
     <groupId>com.zextras.carbonio.quarkus</groupId>
     <artifactId>carbonio-quarkus-extensions-sdk-parent</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
-    <relativePath>../../carbonio-quarkus-extensions/grpc-sdk/sdk-parent/pom.xml</relativePath>
+    <version>1.0.0</version>
+    <relativePath/>
   </parent>
 
   <groupId>com.zextras.carbonio.user-management</groupId>
@@ -25,4 +25,12 @@ SPDX-License-Identifier: AGPL-3.0-only
     <revision>1.0.2</revision>
     <changelist>-SNAPSHOT</changelist>
   </properties>
+
+  <repositories>
+    <repository>
+      <id>zextras-java-sdk</id>
+      <name>Zextras public maven repo</name>
+      <url>https://zextras.jfrog.io/artifactory/java-sdk</url>
+    </repository>
+  </repositories>
 </project>

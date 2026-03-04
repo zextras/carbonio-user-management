@@ -27,7 +27,7 @@ SPDX-License-Identifier: AGPL-3.0-only
   </parent>
 
   <properties>
-    <quarkus.version>3.23.0</quarkus.version>
+    <quarkus.version>3.27.2</quarkus.version>
   </properties>
 
   <dependencyManagement>
@@ -43,12 +43,12 @@ SPDX-License-Identifier: AGPL-3.0-only
       <dependency>
         <groupId>org.junit.jupiter</groupId>
         <artifactId>junit-jupiter-api</artifactId>
-        <version>5.12.2</version>
+        <version>5.13.4</version>
       </dependency>
       <dependency>
         <groupId>org.junit.jupiter</groupId>
         <artifactId>junit-jupiter-params</artifactId>
-        <version>5.12.2</version>
+        <version>5.13.4</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -153,6 +153,13 @@ SPDX-License-Identifier: AGPL-3.0-only
       <version>1.21.3</version>
       <scope>test</scope>
     </dependency>
+
+    <!-- REST-assured for @QuarkusIntegrationTest HTTP calls -->
+    <dependency>
+      <groupId>io.rest-assured</groupId>
+      <artifactId>rest-assured</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
@@ -177,10 +184,30 @@ SPDX-License-Identifier: AGPL-3.0-only
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${maven-surefire.version}</version>
         <configuration>
+          <skipTests>${skip.unit.tests}</skipTests>
           <systemPropertyVariables>
             <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
           </systemPropertyVariables>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <version>${maven-failsafe.version}</version>
+        <configuration>
+          <skipITs>${skip.integration.tests}</skipITs>
+          <systemPropertyVariables>
+            <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+          </systemPropertyVariables>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
