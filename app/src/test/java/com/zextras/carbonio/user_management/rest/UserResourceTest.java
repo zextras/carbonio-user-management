@@ -6,6 +6,7 @@ package com.zextras.carbonio.user_management.rest;
 
 import static com.zextras.carbonio.user_management.UserManagementServiceConfig.AUTH_TOKEN_KEY;
 import static com.zextras.carbonio.user_management.UserManagementServiceConfig.FeatureFlags;
+import static com.zextras.carbonio.user_management.UserManagementServiceConfig.MAX_BATCH_USER_IDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -14,6 +15,7 @@ import static org.mockito.Mockito.when;
 
 import com.zextras.carbonio.user_management.record.UserInfo;
 import com.zextras.carbonio.user_management.record.UserMyself;
+import com.zextras.carbonio.user_management.rest.UserResource;
 import com.zextras.carbonio.user_management.rest.dto.MyselfDto;
 import com.zextras.carbonio.user_management.rest.dto.UserInfoDto;
 import com.zextras.carbonio.user_management.service.UserService;
@@ -22,6 +24,7 @@ import jakarta.ws.rs.core.Response;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -154,6 +157,34 @@ class UserResourceTest {
       @SuppressWarnings("unchecked")
       List<UserInfoDto> dtos = (List<UserInfoDto>) response.getEntity();
       assertThat(dtos).isEmpty();
+    }
+
+    @Test
+    void returns400WhenUserIdsNull() {
+      Response response = resource.getUsers(null, ctx);
+
+      assertThat(response.getStatus()).isEqualTo(400);
+    }
+
+    @Test
+    void returns400WhenExceedingMaxBatch() {
+      List<String> ids = IntStream.rangeClosed(1, MAX_BATCH_USER_IDS + 1)
+          .mapToObj(i -> "id-" + i).toList();
+
+      Response response = resource.getUsers(ids, ctx);
+
+      assertThat(response.getStatus()).isEqualTo(400);
+    }
+
+    @Test
+    void accepts200WhenExactlyAtMaxBatch() {
+      List<String> ids = IntStream.rangeClosed(1, MAX_BATCH_USER_IDS)
+          .mapToObj(i -> "id-" + i).toList();
+      when(userService.getUsers(anyList(), anyString())).thenReturn(List.of());
+
+      Response response = resource.getUsers(ids, ctx);
+
+      assertThat(response.getStatus()).isEqualTo(200);
     }
   }
 }

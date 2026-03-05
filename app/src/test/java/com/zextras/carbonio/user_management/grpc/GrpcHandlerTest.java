@@ -5,12 +5,14 @@
 package com.zextras.carbonio.user_management.grpc;
 
 import static com.zextras.carbonio.user_management.UserManagementServiceConfig.FeatureFlags;
+import static com.zextras.carbonio.user_management.UserManagementServiceConfig.MAX_BATCH_USER_IDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.zextras.carbonio.user_management.grpc.GrpcHandler;
 import com.zextras.carbonio.user_management.record.UserInfo;
 import com.zextras.carbonio.user_management.record.UserMyself;
 import com.zextras.carbonio.user_management.sdk.grpc.GetUserByEmailRequest;
@@ -201,6 +203,49 @@ class GrpcHandlerTest {
 
       assertThat(observer.completed).isTrue();
       assertThat(observer.response.get().getUsersList()).isEmpty();
+    }
+
+    @Test
+    void returnsInvalidArgumentWhenExceedingMaxBatch() {
+      var builder = GetUsersRequest.newBuilder().setToken("token-1");
+      for (int i = 0; i < MAX_BATCH_USER_IDS + 1; i++) {
+        builder.addUserIds("id-" + i);
+      }
+
+      TestStreamObserver<GetUsersResponse> observer = new TestStreamObserver<>();
+      handler.getUsers(builder.build(), observer);
+
+      assertThat(observer.error.get()).isInstanceOf(StatusRuntimeException.class);
+      assertThat(((StatusRuntimeException) observer.error.get()).getStatus().getCode())
+          .isEqualTo(Status.Code.INVALID_ARGUMENT);
+    }
+
+    @Test
+    void returnsInvalidArgumentWhenExactlyAtMaxPlusOne() {
+      var builder = GetUsersRequest.newBuilder().setToken("token-1");
+      for (int i = 0; i < MAX_BATCH_USER_IDS + 1; i++) {
+        builder.addUserIds("id-" + i);
+      }
+
+      TestStreamObserver<GetUsersResponse> observer = new TestStreamObserver<>();
+      handler.getUsers(builder.build(), observer);
+
+      assertThat(observer.error.get()).isNotNull();
+    }
+
+    @Test
+    void acceptsExactlyMaxBatchIds() {
+      var builder = GetUsersRequest.newBuilder().setToken("token-1");
+      for (int i = 0; i < MAX_BATCH_USER_IDS; i++) {
+        builder.addUserIds("id-" + i);
+      }
+      when(userService.getUsers(anyList(), anyString())).thenReturn(List.of());
+
+      TestStreamObserver<GetUsersResponse> observer = new TestStreamObserver<>();
+      handler.getUsers(builder.build(), observer);
+
+      assertThat(observer.completed).isTrue();
+      assertThat(observer.error.get()).isNull();
     }
   }
 }

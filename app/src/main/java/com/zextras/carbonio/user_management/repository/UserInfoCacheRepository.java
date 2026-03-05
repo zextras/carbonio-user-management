@@ -8,15 +8,20 @@ import com.zextras.carbonio.user_management.entity.UserInfoCacheEntity;
 import com.zextras.carbonio.user_management.record.UserInfo;
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import java.time.Clock;
 import java.util.List;
 import java.util.Optional;
 
 @ApplicationScoped
 public class UserInfoCacheRepository implements PanacheRepositoryBase<UserInfoCacheEntity, String> {
 
+  @Inject
+  Clock clock;
+
   public Optional<UserInfo> findByUserId(String userId) {
-    return find("userId = ?1 and expiresAt > ?2", userId, System.currentTimeMillis())
+    return find("userId = ?1 and expiresAt > ?2", userId, clock.millis())
         .firstResultOptional()
         .map(UserInfoCacheRepository::toRecord);
   }
@@ -25,7 +30,7 @@ public class UserInfoCacheRepository implements PanacheRepositoryBase<UserInfoCa
     if (userIds.isEmpty()) {
       return List.of();
     }
-    return find("userId IN ?1 AND expiresAt > ?2", userIds, System.currentTimeMillis())
+    return find("userId IN ?1 AND expiresAt > ?2", userIds, clock.millis())
         .list()
         .stream()
         .map(UserInfoCacheRepository::toRecord)
@@ -33,7 +38,7 @@ public class UserInfoCacheRepository implements PanacheRepositoryBase<UserInfoCa
   }
 
   public Optional<UserInfo> findByEmail(String email) {
-    return find("email = ?1 and expiresAt > ?2", email, System.currentTimeMillis())
+    return find("email = ?1 and expiresAt > ?2", email, clock.millis())
         .firstResultOptional()
         .map(UserInfoCacheRepository::toRecord);
   }
@@ -59,7 +64,7 @@ public class UserInfoCacheRepository implements PanacheRepositoryBase<UserInfoCa
 
   @Transactional
   public int deleteExpired() {
-    return (int) delete("expiresAt <= ?1", System.currentTimeMillis());
+    return (int) delete("expiresAt <= ?1", clock.millis());
   }
 
   private static UserInfo toRecord(UserInfoCacheEntity e) {

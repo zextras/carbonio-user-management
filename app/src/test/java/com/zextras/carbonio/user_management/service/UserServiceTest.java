@@ -23,6 +23,7 @@ import com.zextras.carbonio.user_management.record.UserMyself;
 import com.zextras.carbonio.user_management.repository.UserInfoCacheRepository;
 import com.zextras.carbonio.user_management.repository.UserMyselfCacheRepository;
 import com.zextras.carbonio.user_management.repository.UserMyselfCacheRepository.TokenLookupResult;
+import com.zextras.carbonio.user_management.service.UserService;
 import com.zextras.mailbox.client.MailboxClientException;
 import com.zextras.mailbox.client.service.ServiceClient;
 import java.util.List;
@@ -69,7 +70,7 @@ class UserServiceTest {
   }
 
   private long futureExpiresAt() {
-    return System.currentTimeMillis() + 3_600_000;
+    return 3_600_000L;
   }
 
   @Nested
@@ -184,29 +185,6 @@ class UserServiceTest {
       Optional<UserMyself> result = userService.getUserMyself("token-1");
 
       assertThat(result).contains(myself);
-      verify(userInfoCacheRepo, never()).upsert(any(), anyLong());
-      verify(userInfoCache, never()).put(any(UserInfo.class));
-    }
-
-    @Test
-    void cacheDisabled_warmingSkipsPersist() {
-      UserMyself myself = sampleMyself();
-      long expiresAt = futureExpiresAt();
-
-      when(userMyselfCache.getByToken("token-1")).thenReturn(Optional.empty());
-      when(userMyselfCacheRepo.findByToken("token-1")).thenReturn(
-          Optional.of(new TokenLookupResult("user-1", myself, expiresAt)));
-      // Warming: L2 miss → L1 miss → persistAndCacheInfo skipped (cache disabled)
-      when(userInfoCache.isCacheEnabled()).thenReturn(false);
-      when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.empty());
-      when(userInfoCacheRepo.findByUserId("user-1")).thenReturn(Optional.empty());
-
-      Optional<UserMyself> result = userService.getUserMyself("token-1");
-
-      assertThat(result).contains(myself);
-      // Warming ran (read path always active) but persist was skipped
-      verify(userInfoCache).getByUserId("user-1");
-      verify(userInfoCacheRepo).findByUserId("user-1");
       verify(userInfoCacheRepo, never()).upsert(any(), anyLong());
       verify(userInfoCache, never()).put(any(UserInfo.class));
     }
@@ -559,6 +537,134 @@ class UserServiceTest {
       assertThat(result).isEmpty();
       // SOAP called for each miss
       verify(mailboxClient, times(2)).send(any());
+    }
+  }
+
+  @Nested
+  class CacheDisabledTests {
+
+    @Test
+    void userInfoTtlZero_getByIdCallsSoapAndNeverPersists() throws Exception {
+      when(userInfoCache.isCacheEnabled()).thenReturn(false);
+      when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.empty());
+      when(userInfoCacheRepo.findByUserId("user-1")).thenReturn(Optional.empty());
+
+      GetAccountInfoResponse response = mock(GetAccountInfoResponse.class);
+      NamedValue idAttr = mock(NamedValue.class);
+      when(idAttr.getName()).thenReturn("zimbraId");
+      when(idAttr.getValue()).thenReturn("user-1");
+      NamedValue nameAttr = mock(NamedValue.class);
+      when(nameAttr.getName()).thenReturn("displayName");
+      when(nameAttr.getValue()).thenReturn("John Doe");
+      when(response.getAttr()).thenReturn(List.of(idAttr, nameAttr));
+      when(response.getName()).thenReturn("user@example.com");
+      when(response.getPublicURL()).thenReturn("example.com");
+      when(mailboxClient.send(any())).thenReturn(response);
+
+      Optional<UserInfo> result = userService.getUserById("user-1", "token-1");
+
+      assertThat(result).isPresent();
+      verify(mailboxClient).send(any());
+      verify(userInfoCacheRepo, never()).upsert(any(), anyLong());
+      verify(userInfoCache, never()).put(any(UserInfo.class));
+    }
+
+    @Test
+    void userInfoTtlZero_getByEmailCallsSoapAndNeverPersists() throws Exception {
+      when(userInfoCache.isCacheEnabled()).thenReturn(false);
+      when(userInfoCache.getByEmail("user@example.com")).thenReturn(Optional.empty());
+      when(userInfoCacheRepo.findByEmail("user@example.com")).thenReturn(Optional.empty());
+
+      GetAccountInfoResponse response = mock(GetAccountInfoResponse.class);
+      NamedValue idAttr = mock(NamedValue.class);
+      when(idAttr.getName()).thenReturn("zimbraId");
+      when(idAttr.getValue()).thenReturn("user-1");
+      NamedValue nameAttr = mock(NamedValue.class);
+      when(nameAttr.getName()).thenReturn("displayName");
+      when(nameAttr.getValue()).thenReturn("John Doe");
+      when(response.getAttr()).thenReturn(List.of(idAttr, nameAttr));
+      when(response.getName()).thenReturn("user@example.com");
+      when(response.getPublicURL()).thenReturn("example.com");
+      when(mailboxClient.send(any())).thenReturn(response);
+
+      Optional<UserInfo> result = userService.getUserByEmail("user@example.com", "token-1");
+
+      assertThat(result).isPresent();
+      verify(mailboxClient).send(any());
+      verify(userInfoCacheRepo, never()).upsert(any(), anyLong());
+      verify(userInfoCache, never()).put(any(UserInfo.class));
+    }
+
+    @Test
+    void userMyselfTtlZero_callsSoapAndNeverPersistsMyself() throws Exception {
+      when(userMyselfCache.isCacheEnabled()).thenReturn(false);
+      when(userMyselfCache.getByToken("token-1")).thenReturn(Optional.empty());
+      when(userMyselfCacheRepo.findByToken("token-1")).thenReturn(Optional.empty());
+
+      GetInfoResponse response = mock(GetInfoResponse.class);
+      GetInfoResponse.Attrs attrs = mock(GetInfoResponse.Attrs.class);
+      when(response.getAttrs()).thenReturn(attrs);
+      Attr idAttr = mock(Attr.class);
+      when(idAttr.getName()).thenReturn("zimbraId");
+      when(idAttr.getValue()).thenReturn("user-1");
+      Attr nameAttr = mock(Attr.class);
+      when(nameAttr.getName()).thenReturn("displayName");
+      when(nameAttr.getValue()).thenReturn("John Doe");
+      when(attrs.getAttr()).thenReturn(List.of(idAttr, nameAttr));
+      when(response.getName()).thenReturn("user@example.com");
+      when(response.getPublicURL()).thenReturn("example.com");
+      when(response.getLifetime()).thenReturn(3600000L);
+      when(mailboxClient.send(any())).thenReturn(response);
+      when(userMyselfCache.computeExpiresAt(3600000L)).thenReturn(3_600_000L);
+      // Warming: L2 userinfo hit → no persist needed
+      when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.of(sampleUserInfo()));
+
+      Optional<UserMyself> result = userService.getUserMyself("token-1");
+
+      assertThat(result).isPresent();
+      verify(mailboxClient).send(any());
+      verify(userMyselfCacheRepo, never()).upsert(any(), any(), any(), anyLong());
+      verify(userMyselfCache, never()).put(any(), any(), any(), anyLong());
+    }
+
+    @Test
+    void bothTtlZero_getMyselfNeverPersistsAnything() throws Exception {
+      when(userInfoCache.isCacheEnabled()).thenReturn(false);
+      when(userMyselfCache.isCacheEnabled()).thenReturn(false);
+      when(userMyselfCache.getByToken("token-1")).thenReturn(Optional.empty());
+      when(userMyselfCacheRepo.findByToken("token-1")).thenReturn(Optional.empty());
+
+      GetInfoResponse response = mock(GetInfoResponse.class);
+      GetInfoResponse.Attrs attrs = mock(GetInfoResponse.Attrs.class);
+      when(response.getAttrs()).thenReturn(attrs);
+      Attr idAttr = mock(Attr.class);
+      when(idAttr.getName()).thenReturn("zimbraId");
+      when(idAttr.getValue()).thenReturn("user-1");
+      Attr nameAttr = mock(Attr.class);
+      when(nameAttr.getName()).thenReturn("displayName");
+      when(nameAttr.getValue()).thenReturn("John Doe");
+      when(attrs.getAttr()).thenReturn(List.of(idAttr, nameAttr));
+      when(response.getName()).thenReturn("user@example.com");
+      when(response.getPublicURL()).thenReturn("example.com");
+      when(response.getLifetime()).thenReturn(3600000L);
+      when(mailboxClient.send(any())).thenReturn(response);
+      when(userMyselfCache.computeExpiresAt(3600000L)).thenReturn(3_600_000L);
+      // Warming: L2 miss → L1 miss → persistAndCacheInfo skipped (disabled)
+      when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.empty());
+      when(userInfoCacheRepo.findByUserId("user-1")).thenReturn(Optional.empty());
+
+      Optional<UserMyself> result = userService.getUserMyself("token-1");
+
+      assertThat(result).isPresent();
+      verify(mailboxClient).send(any());
+      // Myself: no persist
+      verify(userMyselfCacheRepo, never()).upsert(any(), any(), any(), anyLong());
+      verify(userMyselfCache, never()).put(any(), any(), any(), anyLong());
+      // UserInfo: warming ran but persist skipped
+      verify(userInfoCache).getByUserId("user-1");
+      verify(userInfoCacheRepo).findByUserId("user-1");
+      verify(userInfoCacheRepo, never()).upsert(any(), anyLong());
+      verify(userInfoCache, never()).put(any(UserInfo.class));
     }
   }
 

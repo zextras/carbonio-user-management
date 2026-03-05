@@ -12,6 +12,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.zextras.carbonio.user_management.record.UserMyself;
+import com.zextras.carbonio.user_management.rest.TokenAuthFilter;
 import com.zextras.carbonio.user_management.service.UserService;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.Cookie;
@@ -36,7 +37,8 @@ class TokenAuthFilterTest {
 
   private void setCookie(String token) {
     when(ctx.getCookies()).thenReturn(
-        token == null ? Map.of() : Map.of(AUTH_TOKEN_KEY, new Cookie(AUTH_TOKEN_KEY, token)));
+        token == null ? Map.of() : Map.of(AUTH_TOKEN_KEY,
+            new Cookie.Builder(AUTH_TOKEN_KEY).value(token).build()));
   }
 
   @Nested

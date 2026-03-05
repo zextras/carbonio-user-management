@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: AGPL-3.0-only
 
-package com.zextras.carbonio.user_management;
+package com.zextras.carbonio.user_management.client;
 
 import com.zextras.mailbox.client.service.ServiceClient;
 import jakarta.annotation.Priority;

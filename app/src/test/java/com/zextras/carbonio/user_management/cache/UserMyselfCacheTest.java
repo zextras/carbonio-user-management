@@ -7,12 +7,17 @@ package com.zextras.carbonio.user_management.cache;
 import static com.zextras.carbonio.user_management.UserManagementServiceConfig.FeatureFlags;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.github.benmanes.caffeine.cache.Ticker;
 import com.zextras.carbonio.quarkus.extensions.bootstrap.ApplicationConfigService;
+import com.zextras.carbonio.user_management.cache.UserMyselfCache;
 import com.zextras.carbonio.user_management.record.UserMyself;
 import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -32,7 +37,7 @@ class UserMyselfCacheTest {
     when(configService.get("cache.usermyself-ttl")).thenReturn(Optional.empty());
     currentTime = new AtomicLong(0);
     Ticker ticker = currentTime::get;
-    cache = new UserMyselfCache(configService, ticker, Clock.systemUTC());
+    cache = new UserMyselfCache(configService, ticker, Clock.fixed(Instant.EPOCH, ZoneOffset.UTC));
   }
 
   private UserMyself sampleMyself() {
@@ -63,14 +68,14 @@ class UserMyselfCacheTest {
 
   @Test
   void putAndGetByToken() {
-    cache.put("token-abc", "user-1", sampleMyself(), System.currentTimeMillis() + 30000);
+    cache.put("token-abc", "user-1", sampleMyself(), 30_000L);
 
     assertThat(cache.getByToken("token-abc")).contains(sampleMyself());
   }
 
   @Test
   void resolveUserId() {
-    cache.put("token-abc", "user-1", sampleMyself(), System.currentTimeMillis() + 30000);
+    cache.put("token-abc", "user-1", sampleMyself(), 30_000L);
 
     assertThat(cache.resolveUserId("token-abc")).contains("user-1");
   }
@@ -89,9 +94,9 @@ class UserMyselfCacheTest {
   void ttlUsesMinOfConfigAndRemaining() {
     // Config = 5 seconds, remaining = 30 seconds -> should use 5s
     when(configService.get("cache.usermyself-ttl")).thenReturn(Optional.of("5"));
-    UserMyselfCache configCache = new UserMyselfCache(configService, currentTime::get, Clock.systemUTC());
+    UserMyselfCache configCache = new UserMyselfCache(configService, currentTime::get, Clock.fixed(Instant.EPOCH, ZoneOffset.UTC));
 
-    configCache.put("token-abc", "user-1", sampleMyself(), System.currentTimeMillis() + 30000);
+    configCache.put("token-abc", "user-1", sampleMyself(), 30_000L);
 
     currentTime.set(TimeUnit.SECONDS.toNanos(6));
     assertThat(configCache.getByToken("token-abc")).isEmpty();
@@ -101,9 +106,9 @@ class UserMyselfCacheTest {
   void ttlUsesRemainingWhenSmallerThanConfig() {
     // Config = 60 seconds, remaining = 5 seconds -> should use 5s
     when(configService.get("cache.usermyself-ttl")).thenReturn(Optional.of("60"));
-    UserMyselfCache configCache = new UserMyselfCache(configService, currentTime::get, Clock.systemUTC());
+    UserMyselfCache configCache = new UserMyselfCache(configService, currentTime::get, Clock.fixed(Instant.EPOCH, ZoneOffset.UTC));
 
-    configCache.put("token-abc", "user-1", sampleMyself(), System.currentTimeMillis() + 5000);
+    configCache.put("token-abc", "user-1", sampleMyself(), 5_000L);
 
     currentTime.set(TimeUnit.SECONDS.toNanos(6));
     assertThat(configCache.getByToken("token-abc")).isEmpty();
@@ -111,7 +116,7 @@ class UserMyselfCacheTest {
 
   @Test
   void entryAvailableBeforeExpiryAndGoneAfter() {
-    cache.put("token-abc", "user-1", sampleMyself(), System.currentTimeMillis() + 500);
+    cache.put("token-abc", "user-1", sampleMyself(), 500L);
 
     // 400ms -> still in cache
     currentTime.set(TimeUnit.MILLISECONDS.toNanos(400));
@@ -124,7 +129,7 @@ class UserMyselfCacheTest {
 
   @Test
   void invalidateByTokenRemovesEntry() {
-    cache.put("token-abc", "user-1", sampleMyself(), System.currentTimeMillis() + 30000);
+    cache.put("token-abc", "user-1", sampleMyself(), 30_000L);
 
     cache.invalidateByToken("token-abc");
 
@@ -133,7 +138,7 @@ class UserMyselfCacheTest {
 
   @Test
   void oneTokenPerUser_newTokenInvalidatesOldToken() {
-    long expiresAt = System.currentTimeMillis() + 30000;
+    long expiresAt = 30_000L;
     cache.put("token-A", "user-1", sampleMyself(), expiresAt);
     cache.put("token-B", "user-1", sampleMyself(), expiresAt);
 
@@ -146,7 +151,7 @@ class UserMyselfCacheTest {
 
   @Test
   void oneTokenPerUser_sameTokenReplaceIsSafe() {
-    long expiresAt = System.currentTimeMillis() + 30000;
+    long expiresAt = 30_000L;
     cache.put("token-A", "user-1", sampleMyself(), expiresAt);
     // Re-put the same token (e.g., refresh from L1)
     cache.put("token-A", "user-1", sampleMyself(), expiresAt);
@@ -157,7 +162,7 @@ class UserMyselfCacheTest {
 
   @Test
   void differentUsersHaveIndependentTokens() {
-    long expiresAt = System.currentTimeMillis() + 30000;
+    long expiresAt = 30_000L;
     UserMyself myself1 = sampleMyself();
     UserMyself myself2 = new UserMyself(
         "user-2", "other@example.com", "Jane Doe", "example.com",
@@ -168,5 +173,26 @@ class UserMyselfCacheTest {
 
     assertThat(cache.getByToken("token-A")).contains(myself1);
     assertThat(cache.getByToken("token-B")).contains(myself2);
+  }
+
+  @Test
+  void ttlConfigIsCachedFor60sAndRefreshedAfter() {
+    when(configService.get("cache.usermyself-ttl")).thenReturn(Optional.of("60"));
+
+    // First read → fetches from consul
+    cache.isCacheEnabled();
+    verify(configService, times(1)).get("cache.usermyself-ttl");
+
+    // Second read within 60s → served from local cache, no consul call
+    currentTime.set(TimeUnit.SECONDS.toNanos(30));
+    cache.isCacheEnabled();
+    verify(configService, times(1)).get("cache.usermyself-ttl");
+
+    // After 61s → config cache expired, re-fetches from consul
+    currentTime.set(TimeUnit.SECONDS.toNanos(61));
+    when(configService.get("cache.usermyself-ttl")).thenReturn(Optional.of("0"));
+    boolean enabled = cache.isCacheEnabled();
+    verify(configService, times(2)).get("cache.usermyself-ttl");
+    assertThat(enabled).isFalse();
   }
 }

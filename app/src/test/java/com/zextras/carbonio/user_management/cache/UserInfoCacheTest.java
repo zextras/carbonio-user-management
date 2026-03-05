@@ -5,14 +5,18 @@
 package com.zextras.carbonio.user_management.cache;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.github.benmanes.caffeine.cache.Ticker;
 import com.zextras.carbonio.quarkus.extensions.bootstrap.ApplicationConfigService;
+import com.zextras.carbonio.user_management.cache.UserInfoCache;
 import com.zextras.carbonio.user_management.record.UserInfo;
 import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -21,6 +25,9 @@ import org.junit.jupiter.api.Test;
 
 class UserInfoCacheTest {
 
+  private static final Clock FIXED_CLOCK = Clock.fixed(Instant.EPOCH, ZoneOffset.UTC);
+  private static final long DEFAULT_TTL_SECONDS = 43200; // 12 hours
+
   private ApplicationConfigService configService;
   private AtomicLong currentTime;
   private UserInfoCache cache;
@@ -28,10 +35,10 @@ class UserInfoCacheTest {
   @BeforeEach
   void setUp() {
     configService = mock(ApplicationConfigService.class);
-    when(configService.get("cache.userinfo-ttl")).thenReturn(Optional.of("60"));
+    when(configService.get("cache.userinfo-ttl")).thenReturn(Optional.empty());
     currentTime = new AtomicLong(0);
     Ticker ticker = currentTime::get;
-    cache = new UserInfoCache(configService, ticker, Clock.systemUTC());
+    cache = new UserInfoCache(configService, ticker, FIXED_CLOCK);
   }
 
   private UserInfo sampleUser(String id, String email) {
@@ -69,13 +76,13 @@ class UserInfoCacheTest {
     UserInfo user = sampleUser("user-1", "user@example.com");
     cache.put(user);
 
-    // 50s → still in cache (both access paths)
-    currentTime.set(TimeUnit.SECONDS.toNanos(50));
+    // 12h - 100s → still in cache (both access paths)
+    currentTime.set(TimeUnit.SECONDS.toNanos(DEFAULT_TTL_SECONDS - 100));
     assertThat(cache.getByUserId("user-1")).contains(user);
     assertThat(cache.getByEmail("user@example.com")).contains(user);
 
-    // 61s → expired (both access paths)
-    currentTime.set(TimeUnit.SECONDS.toNanos(61));
+    // 12h + 1s → expired (both access paths)
+    currentTime.set(TimeUnit.SECONDS.toNanos(DEFAULT_TTL_SECONDS + 1));
     assertThat(cache.getByUserId("user-1")).isEmpty();
     assertThat(cache.getByEmail("user@example.com")).isEmpty();
   }
@@ -96,41 +103,69 @@ class UserInfoCacheTest {
     UserInfo user1 = sampleUser("user-1", "user@example.com");
     cache.put(user1);
 
-    currentTime.set(TimeUnit.SECONDS.toNanos(50));
+    currentTime.set(TimeUnit.SECONDS.toNanos(DEFAULT_TTL_SECONDS - 100));
 
     UserInfo user1Updated = new UserInfo(
         "user-1", "user@example.com", "Updated Name", "example.com", "ACTIVE", "INTERNAL");
     cache.put(user1Updated);
 
-    // 61s from original put, but only 11s from re-put → still alive (TTL reset to 60s)
-    currentTime.set(TimeUnit.SECONDS.toNanos(61));
+    // 12h + 1s from original put, but only 101s from re-put → still alive
+    currentTime.set(TimeUnit.SECONDS.toNanos(DEFAULT_TTL_SECONDS + 1));
     assertThat(cache.getByUserId("user-1")).contains(user1Updated);
 
-    // 111s from original put, 61s from re-put → expired
-    currentTime.set(TimeUnit.SECONDS.toNanos(111));
+    // 24h + 1s from original put, 12h + 101s from re-put → expired
+    currentTime.set(TimeUnit.SECONDS.toNanos(2 * DEFAULT_TTL_SECONDS + 1));
     assertThat(cache.getByUserId("user-1")).isEmpty();
   }
 
   @Test
-  void isCacheEnabled_returnsTrueWhenTtlPositive() {
+  void isCacheEnabled_returnsTrueWhenConfigAbsent() {
     assertThat(cache.isCacheEnabled()).isTrue();
   }
 
   @Test
   void isCacheEnabled_returnsFalseWhenTtlZero() {
     when(configService.get("cache.userinfo-ttl")).thenReturn(Optional.of("0"));
-    UserInfoCache zeroCache = new UserInfoCache(configService, currentTime::get, Clock.systemUTC());
+    UserInfoCache zeroCache = new UserInfoCache(configService, currentTime::get, FIXED_CLOCK);
 
     assertThat(zeroCache.isCacheEnabled()).isFalse();
   }
 
   @Test
-  void throwsWhenConfigMissingOnPut() {
-    when(configService.get("cache.userinfo-ttl")).thenReturn(Optional.empty());
-    UserInfoCache cacheNoConfig = new UserInfoCache(configService, currentTime::get, Clock.systemUTC());
+  void customTtlOverridesDefault() {
+    long customTtlSeconds = 21600; // 6 hours
+    when(configService.get("cache.userinfo-ttl")).thenReturn(Optional.of("21600"));
+    UserInfoCache customCache = new UserInfoCache(configService, currentTime::get, FIXED_CLOCK);
 
-    assertThatThrownBy(() -> cacheNoConfig.put(sampleUser("user-1", "u@x.com")))
-        .isInstanceOf(IllegalStateException.class)
-        .hasMessageContaining("cache.userinfo-ttl");
+    customCache.put(sampleUser("user-1", "u@x.com"));
+
+    // Just before 6h → still in cache
+    currentTime.set(TimeUnit.SECONDS.toNanos(customTtlSeconds - 1));
+    assertThat(customCache.getByUserId("user-1")).isPresent();
+
+    // Just after 6h → expired
+    currentTime.set(TimeUnit.SECONDS.toNanos(customTtlSeconds + 1));
+    assertThat(customCache.getByUserId("user-1")).isEmpty();
+  }
+
+  @Test
+  void ttlConfigIsCachedFor60sAndRefreshedAfter() {
+    when(configService.get("cache.userinfo-ttl")).thenReturn(Optional.of("3600"));
+
+    // First read → fetches from consul
+    cache.readTtlSeconds();
+    verify(configService, times(1)).get("cache.userinfo-ttl");
+
+    // Second read within 60s → served from local cache, no consul call
+    currentTime.set(TimeUnit.SECONDS.toNanos(30));
+    cache.readTtlSeconds();
+    verify(configService, times(1)).get("cache.userinfo-ttl");
+
+    // After 61s → config cache expired, re-fetches from consul
+    currentTime.set(TimeUnit.SECONDS.toNanos(61));
+    when(configService.get("cache.userinfo-ttl")).thenReturn(Optional.of("7200"));
+    long newTtl = cache.readTtlSeconds();
+    verify(configService, times(2)).get("cache.userinfo-ttl");
+    assertThat(newTtl).isEqualTo(7200);
   }
 }

@@ -46,16 +46,13 @@ public class UserMyselfCache {
   private final Cache<String, Long> ttlCache;
 
   @Inject
-  public UserMyselfCache(ApplicationConfigService configService) {
-    this(configService, Ticker.systemTicker(), Clock.systemUTC());
-  }
-
-  UserMyselfCache(ApplicationConfigService configService, Ticker ticker, Clock clock) {
+  public UserMyselfCache(ApplicationConfigService configService, Ticker ticker, Clock clock) {
     this.configService = configService;
     this.clock = clock;
     this.tokenToUserId = new ConcurrentHashMap<>();
     this.userIdToToken = new ConcurrentHashMap<>();
     this.ttlCache = Caffeine.newBuilder()
+        .ticker(ticker)
         .expireAfterWrite(CONFIG_CACHE_SECONDS, TimeUnit.SECONDS)
         .build();
 

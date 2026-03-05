@@ -10,10 +10,12 @@ import com.zextras.carbonio.user_management.entity.UserMyselfCacheEntity;
 import com.zextras.carbonio.user_management.record.UserMyself;
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.Clock;
 import java.util.HexFormat;
 import java.util.Map;
 import java.util.Optional;
@@ -24,19 +26,22 @@ public class UserMyselfCacheRepository
 
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
+  @Inject
+  Clock clock;
+
   public record CachedUserMyself(UserMyself myself, long expiresAt) {}
 
   public record TokenLookupResult(String userId, UserMyself myself, long expiresAt) {}
 
   public Optional<CachedUserMyself> findByUserId(String userId) {
-    return find("userId = ?1 and expiresAt > ?2", userId, System.currentTimeMillis())
+    return find("userId = ?1 and expiresAt > ?2", userId, clock.millis())
         .firstResultOptional()
         .map(e -> new CachedUserMyself(toRecord(e), e.expiresAt));
   }
 
   public Optional<TokenLookupResult> findByToken(String token) {
     String hash = hashToken(token);
-    return find("tokenHash = ?1 and expiresAt > ?2", hash, System.currentTimeMillis())
+    return find("tokenHash = ?1 and expiresAt > ?2", hash, clock.millis())
         .firstResultOptional()
         .map(e -> new TokenLookupResult(e.userId, toRecord(e), e.expiresAt));
   }
@@ -66,7 +71,7 @@ public class UserMyselfCacheRepository
 
   @Transactional
   public int deleteExpired() {
-    return (int) delete("expiresAt <= ?1", System.currentTimeMillis());
+    return (int) delete("expiresAt <= ?1", clock.millis());
   }
 
   private static UserMyself toRecord(UserMyselfCacheEntity e) {

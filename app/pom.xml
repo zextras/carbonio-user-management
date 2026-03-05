@@ -160,6 +160,13 @@ SPDX-License-Identifier: AGPL-3.0-only
       <artifactId>rest-assured</artifactId>
       <scope>test</scope>
     </dependency>
+
+    <!-- gRPC client for @QuarkusIntegrationTest gRPC calls -->
+    <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-netty-shaded</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>

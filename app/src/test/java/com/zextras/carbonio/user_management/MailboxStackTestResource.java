@@ -7,6 +7,7 @@ package com.zextras.carbonio.user_management;
 import com.zextras.carbonio.quarkus.extensions.bootstrap.CarbonioServiceConfig;
 import com.zextras.carbonio.quarkus.extensions.bootstrap.ConsulTestHelper;
 import com.zextras.carbonio.quarkus.extensions.bootstrap.db.CarbonioDatabaseServiceConfig;
+import com.zextras.carbonio.user_management.UserManagementServiceConfig;
 import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
 import java.time.Duration;
 import java.util.Map;
@@ -33,7 +34,10 @@ public class MailboxStackTestResource implements QuarkusTestResourceLifecycleMan
   private static final Logger log = LoggerFactory.getLogger(MailboxStackTestResource.class);
 
   /** Accessible from test classes to build SOAP auth requests directly against mailbox. */
-  static volatile String mailboxBaseUrl;
+  public static volatile String mailboxBaseUrl;
+
+  /** zimbraId of the test user, resolved via zmprov to avoid warming the application cache. */
+  public static volatile String testUserId;
 
   private Network network;
   private GenericContainer<?> openldap;
@@ -117,8 +121,6 @@ public class MailboxStackTestResource implements QuarkusTestResourceLifecycleMan
     int consulPort = consul.getFirstMappedPort();
     String postgresHost = postgres.getHost();
     int postgresPort = postgres.getFirstMappedPort();
-    String jdbcUrl = "jdbc:postgresql://" + postgresHost + ":" + postgresPort
-        + "/carbonio_user_management";
 
     return Map.ofEntries(
         Map.entry(CarbonioServiceConfig.NETWORKING_CONFIG_PREFIX
@@ -137,10 +139,7 @@ public class MailboxStackTestResource implements QuarkusTestResourceLifecycleMan
             + UserManagementServiceConfig.NetworkingConfig.MAILBOX_HOST, "localhost"),
         Map.entry(CarbonioServiceConfig.NETWORKING_CONFIG_PREFIX
             + UserManagementServiceConfig.NetworkingConfig.MAILBOX_PORT,
-            String.valueOf(mailboxPort)),
-        Map.entry("quarkus.datasource.jdbc.url", jdbcUrl),
-        Map.entry("quarkus.datasource.username", "carbonio"),
-        Map.entry("quarkus.datasource.password", "carbonio")
+            String.valueOf(mailboxPort))
     );
   }
 
@@ -182,17 +181,13 @@ public class MailboxStackTestResource implements QuarkusTestResourceLifecycleMan
         "carbonio");
     helper.putValue(svc + "/" + CarbonioDatabaseServiceConfig.ApplicationConfig.DB_PASSWORD,
         "carbonio");
-    helper.putValue(svc + "/" + UserManagementServiceConfig.ApplicationConfig.CACHE_USERINFO_TTL,
-        "3600");
-    helper.putValue(svc + "/" + UserManagementServiceConfig.ApplicationConfig.CACHE_USERMYSELF_TTL,
-        "3600");
-
     log.info("Consul KV initialization complete");
   }
 
   /**
-   * Creates test accounts in mailbox via zmprov (execInContainer).
-   * The mailbox container is already healthy at this point.
+   * Creates test accounts in mailbox via zmprov (execInContainer) and resolves the zimbraId
+   * directly from LDAP — without ever calling the application — so that integration tests
+   * start with a cold cache.
    */
   private void provisionTestAccounts() {
     log.info("Provisioning test accounts in mailbox...");
@@ -208,7 +203,6 @@ public class MailboxStackTestResource implements QuarkusTestResourceLifecycleMan
           + "mcf zimbraSmtpHostname carbonio-postfix\n"
           + "mcf zimbraDefaultDomainName carbonio.localhost\n"
           + "ca test-user@carbonio.localhost test-password\n"
-          + "ca test-admin@carbonio.localhost test-password zimbraIsAdminAccount TRUE\n"
           + "EOF");
 
       if (result.getExitCode() == 0) {
@@ -217,6 +211,21 @@ public class MailboxStackTestResource implements QuarkusTestResourceLifecycleMan
         log.warn("Provisioning exited with code {} (accounts may already exist): {}",
             result.getExitCode(), result.getStderr());
       }
+
+      // Resolve zimbraId via zmprov ga (reads from LDAP, never touches the application cache)
+      var gaResult = mailbox.execInContainer("sh", "-c",
+          "zmprov ga test-user@carbonio.localhost zimbraId | grep zimbraId: | awk '{print $2}'");
+      if (gaResult.getExitCode() == 0 && !gaResult.getStdout().isBlank()) {
+        testUserId = gaResult.getStdout().trim();
+        log.info("Resolved test user zimbraId: {}", testUserId);
+      } else {
+        throw new IllegalStateException(
+            "Failed to resolve zimbraId: exit=" + gaResult.getExitCode()
+                + " stdout=" + gaResult.getStdout()
+                + " stderr=" + gaResult.getStderr());
+      }
+    } catch (RuntimeException e) {
+      throw e;
     } catch (Exception e) {
       throw new RuntimeException("Test account provisioning failed", e);
     }

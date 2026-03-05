@@ -48,15 +48,21 @@ public class ExpiredCacheCleanup {
 
   @Scheduled(every = "1h", delayed = "5m")
   void cleanup() {
+    int infoDeleted = 0;
+    int myselfDeleted = 0;
     try {
-      int infoDeleted = userInfoRepository.deleteExpired();
-      int myselfDeleted = userMyselfRepository.deleteExpired();
-      if (infoDeleted > 0 || myselfDeleted > 0) {
-        LOG.info("Persistent cache cleanup: removed {} user_info and {} user_myself expired entries",
-            infoDeleted, myselfDeleted);
-      }
+      infoDeleted = userInfoRepository.deleteExpired();
     } catch (Exception e) {
-      LOG.warn("Persistent cache cleanup failed", e);
+      LOG.warn("user_info_cache cleanup failed", e);
+    }
+    try {
+      myselfDeleted = userMyselfRepository.deleteExpired();
+    } catch (Exception e) {
+      LOG.warn("user_myself_cache cleanup failed", e);
+    }
+    if (infoDeleted > 0 || myselfDeleted > 0) {
+      LOG.info("Persistent cache cleanup: removed {} user_info and {} user_myself expired entries",
+          infoDeleted, myselfDeleted);
     }
   }
 }

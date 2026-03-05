@@ -35,6 +35,7 @@ import java.util.concurrent.TimeUnit;
 public class UserInfoCache {
 
   private static final long CONFIG_CACHE_SECONDS = 60;
+  private static final long DEFAULT_TTL_SECONDS = 43200; // 12 hours
 
   private final Cache<String, UserInfo> cache;
   private final ConcurrentHashMap<String, String> emailToUserId;
@@ -43,15 +44,12 @@ public class UserInfoCache {
   private final Cache<String, Long> ttlCache;
 
   @Inject
-  public UserInfoCache(ApplicationConfigService configService) {
-    this(configService, Ticker.systemTicker(), Clock.systemUTC());
-  }
-
-  UserInfoCache(ApplicationConfigService configService, Ticker ticker, Clock clock) {
+  public UserInfoCache(ApplicationConfigService configService, Ticker ticker, Clock clock) {
     this.configService = configService;
     this.clock = clock;
     this.emailToUserId = new ConcurrentHashMap<>();
     this.ttlCache = Caffeine.newBuilder()
+        .ticker(ticker)
         .expireAfterWrite(CONFIG_CACHE_SECONDS, TimeUnit.SECONDS)
         .build();
 
@@ -110,9 +108,8 @@ public class UserInfoCache {
 
   public long readTtlSeconds() {
     return ttlCache.get("userinfo-ttl", k ->
-        Long.parseLong(
-            configService.get(ApplicationConfig.CACHE_USERINFO_TTL)
-                .orElseThrow(() -> new IllegalStateException(
-                    "Missing required config: " + ApplicationConfig.CACHE_USERINFO_TTL))));
+        configService.get(ApplicationConfig.CACHE_USERINFO_TTL)
+            .map(Long::parseLong)
+            .orElse(DEFAULT_TTL_SECONDS));
   }
 }
