@@ -5,7 +5,7 @@
 # Maven
 target/
 dist/
-flattened-pom.xml
+.flattened-pom.xml
 .classpath
 .project
 .settings/
