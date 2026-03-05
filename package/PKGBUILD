@@ -132,13 +132,30 @@ postinst() {
 
 prerm() {
   if [ -d /run/systemd/system ]; then
+    # Deregister service from Consul before stopping (service token has service:write)
+    TOKEN_FILE="/etc/carbonio/user-management/service-discover/token"
+    if [ -f "$TOKEN_FILE" ]; then
+      CONSUL_HTTP_TOKEN=$(cat "$TOKEN_FILE") \
+        consul services deregister /etc/zextras/service-discover/carbonio-user-management.hcl \
+        2>/dev/null || true
+    fi
+
     systemctl --no-reload disable --now carbonio-user-management.service &>/dev/null || :
     systemctl --no-reload disable --now carbonio-user-management-sidecar.service &>/dev/null || :
   fi
 }
 
 postrm() {
-  rm -Rf /etc/carbonio/user-management/
+  # Remove config and service-discover files, but KEEP the token file.
+  # The token file is the reference to the Consul ACL token we created.
+  # It will be validated and reused or cleaned up at the next setup.
+  rm -f /etc/carbonio/user-management/service-discover/intentions.json
+  rm -f /etc/carbonio/user-management/service-discover/policies.json
+  rm -f /etc/carbonio/user-management/service-discover/service-protocol.json
+  rm -f /etc/carbonio/user-management/config.properties
+
+  rm -f /etc/systemd/system/carbonio-user-management.service.d/override.conf
+  rmdir /etc/systemd/system/carbonio-user-management.service.d/ 2>/dev/null || :
   rm -f /etc/zextras/pending-setups.d/121-carbonio-user-management.sh
   rm -f /etc/zextras/pending-setups.d/done/121-carbonio-user-management.sh
 

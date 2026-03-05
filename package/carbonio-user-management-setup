@@ -42,24 +42,41 @@ consul config write /etc/carbonio/user-management/service-discover/service-proto
 # Allow other services to contact this service
 consul config write /etc/carbonio/user-management/service-discover/intentions.json
 
-if [[ ! -f "/etc/carbonio/user-management/service-discover/token" ]]; then
-    # Create the token
-    consul acl token create -format json -policy-name "${POLICY_NAME}" -description "Token for
-    carobonio-user-management/$(hostname -A)" |
-      jq -r '.SecretID' > /etc/carbonio/user-management/service-discover/token;
-    chown carbonio-user-management:carbonio-user-management /etc/carbonio/user-management/service-discover/token
-    chmod 0600 /etc/carbonio/user-management/service-discover/token
+TOKEN_FILE="/etc/carbonio/user-management/service-discover/token"
 
-    # To pass the token to consul-template we need to inject it to a env. variable
-    # since it doesn't accept a file as an argument
-    mkdir -p /etc/systemd/system/carbonio-user-management.service.d/
-    cat >/etc/systemd/system/carbonio-user-management.service.d/override.conf <<EOF
-[Service]
-Environment="CONSUL_HTTP_TOKEN=$(cat /etc/carbonio/user-management/service-discover/token)"
-EOF
-    chmod 0600 /etc/systemd/system/carbonio-user-management.service.d/override.conf
-    systemctl daemon-reload
+# If a token file exists from a previous install, validate it against Consul.
+# The token file is intentionally NOT deleted at uninstall so we always have
+# a reference to the token we created.
+# This avoids orphan tokens in Consul since we can't remove them on uninstall (need bootstrap token).
+if [[ -f "$TOKEN_FILE" ]]; then
+    LOCAL_TOKEN=$(cat "$TOKEN_FILE")
+    if CONSUL_HTTP_TOKEN="$LOCAL_TOKEN" consul acl token read -self >/dev/null 2>&1; then
+        echo "Existing Consul token is valid, reusing."
+    else
+        # Token is invalid/revoked, whoever revoked it already removed it from Consul.
+        # We just need to remove the stale file so a new token gets created below.
+        echo "Existing Consul token is invalid or revoked, recreating..."
+        rm -f "$TOKEN_FILE"
+    fi
 fi
+
+if [[ ! -f "$TOKEN_FILE" ]]; then
+    # Create the token
+    consul acl token create -format json -policy-name "${POLICY_NAME}" \
+      -description "carbonio-user-management/$(hostname -A | tr -d ' ')" |
+      jq -r '.SecretID' > "$TOKEN_FILE";
+    chown carbonio-user-management:carbonio-user-management "$TOKEN_FILE"
+    chmod 0600 "$TOKEN_FILE"
+fi
+
+# Always regenerate the systemd override to ensure it matches the current token
+mkdir -p /etc/systemd/system/carbonio-user-management.service.d/
+cat >/etc/systemd/system/carbonio-user-management.service.d/override.conf <<EOF
+[Service]
+Environment="CONSUL_HTTP_TOKEN=$(cat "$TOKEN_FILE")"
+EOF
+chmod 0600 /etc/systemd/system/carbonio-user-management.service.d/override.conf
+systemctl daemon-reload
 
 consul reload
 
