@@ -4,84 +4,29 @@
 #
 # SPDX-License-Identifier: AGPL-3.0-only
 
+# Thin launcher: obtains the bootstrap token and delegates to the Java setup.
+
 if [[ $(id -u) -ne 0 ]]; then
   echo "Please run as root"
   exit 1
 fi
 
 # Decrypt the bootstrap token, asking the password to the sys admin
-# --setup check for SETUP_CONSUL_TOKEN env. variable and uses it
+# --setup checks for SETUP_CONSUL_TOKEN env variable and uses it
 # to avoid re-asking for the password
 echo -n "Insert the cluster credential password: "
-export CONSUL_HTTP_TOKEN=$(service-discover bootstrap-token --setup)
+export SETUP_CONSUL_TOKEN=$(service-discover bootstrap-token --setup)
 EXIT_CODE="$?"
 echo ""
 if [[ "${EXIT_CODE}" != "0" ]]; then
   echo "Cannot access to bootstrap token"
   exit 1;
 fi
+
+# Delegate all Consul setup logic to Java
+java -cp /usr/share/carbonio/carbonio-user-management.jar \
+  com.zextras.carbonio.quarkus.extensions.setup.ConsulSetupMain \
+  http://127.0.0.1:8500 carbonio-user-management
+
 # Limit secret visibility as much as possible
 export -n SETUP_CONSUL_TOKEN
-
-POLICY_NAME='carbonio-user-management-policy'
-POLICY_DESCRIPTION='User Management service policy for service and sidecar proxy'
-
-# create or update policy for the specific service (this will be shared across cluster)
-consul acl policy create -name "${POLICY_NAME}" -description "${POLICY_DESCRIPTION}" -rules @/etc/carbonio/user-management/service-discover/policies.json >/dev/null 2>&1
-if [[ "$?" != "0" ]]; then
-    consul acl policy update -no-merge -name "${POLICY_NAME}" -description "${POLICY_DESCRIPTION}" -rules @/etc/carbonio/user-management/service-discover/policies.json
-    if [[ "$?" != "0" ]]; then
-      echo "Setup failed: Cannot update policy for ${POLICY_NAME}"
-      exit 1
-    fi
-fi
-
-# Declare the service as http
-consul config write /etc/carbonio/user-management/service-discover/service-protocol.json
-
-# Allow other services to contact this service
-consul config write /etc/carbonio/user-management/service-discover/intentions.json
-
-TOKEN_FILE="/etc/carbonio/user-management/service-discover/token"
-
-# If a token file exists from a previous install, validate it against Consul.
-# The token file is intentionally NOT deleted at uninstall so we always have
-# a reference to the token we created.
-# This avoids orphan tokens in Consul since we can't remove them on uninstall (need bootstrap token).
-if [[ -f "$TOKEN_FILE" ]]; then
-    LOCAL_TOKEN=$(cat "$TOKEN_FILE")
-    if CONSUL_HTTP_TOKEN="$LOCAL_TOKEN" consul acl token read -self >/dev/null 2>&1; then
-        echo "Existing Consul token is valid, reusing."
-    else
-        # Token is invalid/revoked, whoever revoked it already removed it from Consul.
-        # We just need to remove the stale file so a new token gets created below.
-        echo "Existing Consul token is invalid or revoked, recreating..."
-        rm -f "$TOKEN_FILE"
-    fi
-fi
-
-if [[ ! -f "$TOKEN_FILE" ]]; then
-    # Create the token
-    consul acl token create -format json -policy-name "${POLICY_NAME}" \
-      -description "carbonio-user-management/$(hostname -A | tr -d ' ')" |
-      jq -r '.SecretID' > "$TOKEN_FILE";
-    chown carbonio-user-management:carbonio-user-management "$TOKEN_FILE"
-    chmod 0600 "$TOKEN_FILE"
-fi
-
-# Always regenerate the systemd override to ensure it matches the current token
-mkdir -p /etc/systemd/system/carbonio-user-management.service.d/
-cat >/etc/systemd/system/carbonio-user-management.service.d/override.conf <<EOF
-[Service]
-Environment="CONSUL_HTTP_TOKEN=$(cat "$TOKEN_FILE")"
-EOF
-chmod 0600 /etc/systemd/system/carbonio-user-management.service.d/override.conf
-systemctl daemon-reload
-
-consul reload
-
-# Limit token visibility as much as possible
-export -n CONSUL_HTTP_TOKEN
-
-systemctl restart carbonio-user-management.service
-systemctl restart carbonio-user-management-sidecar.service
