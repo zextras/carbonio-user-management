@@ -23,10 +23,12 @@ import com.zextras.carbonio.user_management.service.UserService;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import io.quarkus.grpc.GrpcService;
+import io.smallrye.common.annotation.Blocking;
 import jakarta.inject.Inject;
 import java.util.List;
 
 @GrpcService
+@Blocking
 public class GrpcHandler extends UserManagementServiceGrpc.UserManagementServiceImplBase {
 
   private final UserService userService;
