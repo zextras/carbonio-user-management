@@ -111,16 +111,16 @@ pipeline {
 
         stage('Coverage') {
             when {
-                expression { params.SKIP_CHECKS == false }
+                allOf {
+                    expression { params.SKIP_CHECKS == false }
+                    expression { params.SKIP_TESTS == false }
+                }
             }
             steps {
-                container('jdk-21') {
-                    sh 'mvn -B verify -pl app -Dskip.unit.tests=false -Dskip.integration.tests=false'
-                    recordCoverage(
-                        tools: [[parser: 'JACOCO']],
-                        sourceCodeRetention: 'MODIFIED'
-                    )
-                }
+                recordCoverage(
+                    tools: [[parser: 'JACOCO']],
+                    sourceCodeRetention: 'MODIFIED'
+                )
             }
         }
 

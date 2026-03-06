@@ -154,6 +154,13 @@ SPDX-License-Identifier: AGPL-3.0-only
       <scope>test</scope>
     </dependency>
 
+    <!-- JaCoCo coverage -->
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-jacoco</artifactId>
+      <scope>test</scope>
+    </dependency>
+
     <!-- REST-assured for @QuarkusIntegrationTest HTTP calls -->
     <dependency>
       <groupId>io.rest-assured</groupId>
