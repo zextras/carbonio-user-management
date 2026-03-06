@@ -4,7 +4,7 @@
 #
 # SPDX-License-Identifier: AGPL-3.0-only
 
-# Thin launcher: obtains the bootstrap token and delegates to the Java setup.
+# Thin launcher: obtains the bootstrap token and delegates to the native setup.
 
 if [[ $(id -u) -ne 0 ]]; then
   echo "Please run as root"
@@ -23,10 +23,9 @@ if [[ "${EXIT_CODE}" != "0" ]]; then
   exit 1;
 fi
 
-# Delegate all Consul setup logic to Java
-java -cp /usr/share/carbonio/carbonio-user-management.jar \
-  com.zextras.carbonio.quarkus.extensions.setup.ConsulSetupMain \
-  http://127.0.0.1:8500 carbonio-user-management
+# Delegate all Consul setup logic to the native binary
+/usr/share/carbonio/carbonio-user-management-runner \
+  --setup http://127.0.0.1:8500
 
 # Limit secret visibility as much as possible
 export -n SETUP_CONSUL_TOKEN

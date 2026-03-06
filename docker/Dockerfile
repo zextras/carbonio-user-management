@@ -1,11 +1,9 @@
-FROM eclipse-temurin:21-jdk-alpine
+FROM registry.access.redhat.com/ubi9/ubi-minimal:9.5
 
 WORKDIR /app
 
 RUN mkdir -p /etc/carbonio/user-management
 
-COPY app/target/*-runner.jar carbonio-user-management.jar
+COPY app/target/*-runner carbonio-user-management
 
-COPY docker/entrypoint.sh entrypoint.sh
-
-ENTRYPOINT ["/app/entrypoint.sh"]
+ENTRYPOINT ["/app/carbonio-user-management", "-Djava.net.preferIPv4Stack=true"]

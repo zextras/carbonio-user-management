@@ -13,7 +13,6 @@ priority="optional"
 url="https://www.zextras.com/"
 license=("AGPL-3.0-only")
 depends=(
-  "carbonio-openjdk"
   "pending-setups"
   "service-discover"
 )
@@ -21,7 +20,7 @@ source=(
   "121-${pkgname}.sh"
   "${pkgname}"
   "${pkgname}.hcl"
-  "${pkgname}.jar"
+  "${pkgname}-runner"
   "${pkgname}.service"
   "${pkgname}-legacy.service"
   "${pkgname}-setup"
@@ -32,18 +31,18 @@ source=(
   "service-protocol.json"
 )
 sha256sums=(
-  '41e10587c1f04ef0a1d53608bc2ca94bb520177b0f39f42433cfae3e279c96a8'
-  '720396405b45c13b823042495ec54b46004c3c6c0b9d956783737bef4dc21792'
-  'a031d2a771f307b86a4e61ad2fef5fa7953ca692612f7da83969c55609f7383e'
   'SKIP'
-  'd218e23ad8c03aa5f7aee5ecf5f660f2448c0c63bbaeae39db02366f6cc79f8d'
-  '5dd9d9ea12bb06c035fa73d4e70982caad4a22409d05b4574b544882d400f215'
-  '786c6ea505fa5bffc23a5189a3035b19c392d3224901a079f710363efb6de7e8'
-  '3c390f40e893b6a8eed434791c5fa3007bc29b149bc9fe8ee7842e6acb0d89b4'
-  'd4b7975cbbce6d671de010627c6eb06b931e30bb146b0efa964a15cb53d99b5c'
-  'b7e65591d3e266336f63c5efc71e3e57c4a07dfd4a02a8f05bafd658c014d466'
-  'd4413a87bd9d2ec97799b31639d7ff539f9b91d0162468db09017b92b322dfc8'
-  'beae6d6f2e9d1ef926039319e5d9d2fb06ee07ac41bc445414be93443570c809'
+  'SKIP'
+  'SKIP'
+  'SKIP'
+  'SKIP'
+  'SKIP'
+  'SKIP'
+  'SKIP'
+  'SKIP'
+  'SKIP'
+  'SKIP'
+  'SKIP'
 )
 backup=(
   "etc/zextras/service-discover/${pkgname}.hcl"
@@ -57,8 +56,8 @@ _package() {
     "${pkgdir}/usr/bin/${pkgname}"
   install -Dm755 "${srcdir}/${pkgname}-setup" \
     "${pkgdir}/usr/bin/${pkgname}-setup"
-  install -Dm755 "${srcdir}/${pkgname}.jar" \
-    "${pkgdir}/usr/share/carbonio/${pkgname}.jar"
+  install -Dm755 "${srcdir}/${pkgname}-runner" \
+    "${pkgdir}/usr/share/carbonio/${pkgname}-runner"
 
   install -Dm644 "${srcdir}/${pkgname}.hcl" \
     "${pkgdir}/etc/zextras/service-discover/${pkgname}.hcl"
