@@ -148,11 +148,7 @@ pipeline {
             steps {
                 script {
                     buildPackages([
-                        pkgbuildPath: 'package/PKGBUILD',
-                        buildStageConfig: [
-                            rockySinglePkg: true,
-                            ubuntuSinglePkg: true
-                        ]
+                        pkgbuildPath: 'package/PKGBUILD'
                     ])
                 }
             }
@@ -167,9 +163,7 @@ pipeline {
             }
             steps {
                 uploadStage(
-                    packages: yapHelper.resolvePackageNames(),
-                    rockySinglePkg: true,
-                    ubuntuSinglePkg: true
+                    packages: yapHelper.resolvePackageNames()
                 )
             }
         }
