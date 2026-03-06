@@ -69,7 +69,7 @@ pipeline {
             }
         }
 
-        stage('Build jar') {
+        stage('Build native') {
             steps {
                 script {
                     def changelist = '-SNAPSHOT'
@@ -79,9 +79,10 @@ pipeline {
 
                     container('jdk-21') {
                         sh """
-                            mvn -B package -Dchangelist=${changelist}
-                            cp app/target/*-runner.jar \
-                                package/carbonio-user-management.jar
+                            mvn -B package -Dnative -Dquarkus.native.container-build=true \
+                                -DskipTests -Dchangelist=${changelist}
+                            cp app/target/*-runner \
+                                package/carbonio-user-management-runner
                         """
                     }
                 }
