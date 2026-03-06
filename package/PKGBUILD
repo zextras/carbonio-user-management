@@ -18,25 +18,29 @@ depends=(
   "service-discover"
 )
 source=(
-  "121-${pkgname}.sh"
   "${pkgname}"
+  "${pkgname}-legacy.service"
+  "${pkgname}-setup"
+  "${pkgname}-sidecar-legacy.service"
+  "${pkgname}-sidecar.service"
   "${pkgname}.hcl"
   "${pkgname}.jar"
   "${pkgname}.service"
-  "${pkgname}-setup"
-  "${pkgname}-sidecar.service"
+  "121-${pkgname}.sh"
   "intentions.json"
   "policies.json"
   "service-protocol.json"
 )
 sha256sums=(
-  '41e10587c1f04ef0a1d53608bc2ca94bb520177b0f39f42433cfae3e279c96a8'
   'ac85003d32f0be73f6b2efb9f4098f92f039b5e398c223ad7fca81077ec13abf'
+  '5dd9d9ea12bb06c035fa73d4e70982caad4a22409d05b4574b544882d400f215'
+  '786c6ea505fa5bffc23a5189a3035b19c392d3224901a079f710363efb6de7e8'
+  'd4b7975cbbce6d671de010627c6eb06b931e30bb146b0efa964a15cb53d99b5c'
+  '3c390f40e893b6a8eed434791c5fa3007bc29b149bc9fe8ee7842e6acb0d89b4'
   'a031d2a771f307b86a4e61ad2fef5fa7953ca692612f7da83969c55609f7383e'
   'SKIP'
   'd218e23ad8c03aa5f7aee5ecf5f660f2448c0c63bbaeae39db02366f6cc79f8d'
-  '786c6ea505fa5bffc23a5189a3035b19c392d3224901a079f710363efb6de7e8'
-  '3c390f40e893b6a8eed434791c5fa3007bc29b149bc9fe8ee7842e6acb0d89b4'
+  '41e10587c1f04ef0a1d53608bc2ca94bb520177b0f39f42433cfae3e279c96a8'
   '0c2c59ac90a0a8ada34a674433355bc6c4e02d73cbf47e53287b03a2ca78a682'
   'd4413a87bd9d2ec97799b31639d7ff539f9b91d0162468db09017b92b322dfc8'
   'beae6d6f2e9d1ef926039319e5d9d2fb06ee07ac41bc445414be93443570c809'
@@ -68,16 +72,16 @@ _package() {
 
 _package_legacy() {
   install -Dm644 "${srcdir}/${pkgname}-legacy.service" \
-    "${pkgdir}/lib/systemd/system/${pkgname}.service"
+    "${pkgdir}/usr/lib/systemd/system/${pkgname}.service"
   install -Dm644 "${srcdir}/${pkgname}-sidecar-legacy.service" \
-    "${pkgdir}/lib/systemd/system/${pkgname}-sidecar.service"
+    "${pkgdir}/usr/lib/systemd/system/${pkgname}-sidecar.service"
 }
 
 _package_systemd() {
   install -Dm644 "${srcdir}/${pkgname}.service" \
-    "${pkgdir}/lib/systemd/system/${pkgname}.service"
+    "${pkgdir}/usr/lib/systemd/system/${pkgname}.service"
   install -Dm644 "${srcdir}/${pkgname}-sidecar.service" \
-    "${pkgdir}/lib/systemd/system/${pkgname}-sidecar.service"
+    "${pkgdir}/usr/lib/systemd/system/${pkgname}-sidecar.service"
 }
 
 package() {
