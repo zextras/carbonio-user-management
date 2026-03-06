@@ -69,21 +69,12 @@ pipeline {
             }
         }
 
-        stage('Build native') {
+        stage('Compile') {
             steps {
                 script {
-                    def changelist = '-SNAPSHOT'
-                    if (env.TAG_NAME) {
-                        changelist = ''
-                    }
-
+                    def changelist = env.TAG_NAME ? '' : '-SNAPSHOT'
                     container('jdk-21') {
-                        sh """
-                            mvn -B package -Dnative -Dquarkus.native.container-build=true \
-                                -DskipTests -Dchangelist=${changelist}
-                            cp app/target/*-runner \
-                                package/carbonio-user-management-runner
-                        """
+                        sh "mvn -B package -DskipTests -Dchangelist=${changelist}"
                     }
                 }
             }
@@ -92,11 +83,7 @@ pipeline {
         stage('Publish SDK') {
             steps {
                 script {
-                    def changelist = '-SNAPSHOT'
-                    if (env.TAG_NAME) {
-                        changelist = ''
-                    }
-
+                    def changelist = env.TAG_NAME ? '' : '-SNAPSHOT'
                     container('jdk-21') {
                         withCredentials([file(credentialsId: 'jenkins-maven-settings.xml', variable: 'SETTINGS_PATH')]) {
                             sh "mvn -B -s \$SETTINGS_PATH deploy -pl sdk -Dchangelist=${changelist}"
@@ -112,7 +99,7 @@ pipeline {
             }
             steps {
                 container('jdk-21') {
-                    sh 'mvn -B verify -P run-unit-tests'
+                    sh 'mvn -B verify -pl app -Dskip.unit.tests=false'
                 }
             }
         }
@@ -123,7 +110,7 @@ pipeline {
             }
             steps {
                 container('jdk-21') {
-                    sh 'mvn -B verify -P run-integration-tests'
+                    sh 'mvn -B verify -pl app -Dskip.integration.tests=false'
                 }
             }
         }
@@ -134,7 +121,7 @@ pipeline {
             }
             steps {
                 container('jdk-21') {
-                    sh 'mvn -B verify -P generate-jacoco-full-report'
+                    sh 'mvn -B verify -pl app -Dskip.unit.tests=false -Dskip.integration.tests=false'
                     recordCoverage(
                         tools: [[parser: 'JACOCO']],
                         sourceCodeRetention: 'MODIFIED'
@@ -157,6 +144,24 @@ pipeline {
                 container('jdk-21') {
                     withSonarQubeEnv(credentialsId: 'sonarqube-user-token', installationName: 'SonarQube instance') {
                         sh 'mvn -B sonar:sonar'
+                    }
+                }
+            }
+        }
+
+        stage('Build native') {
+            steps {
+                script {
+                    def changelist = env.TAG_NAME ? '' : '-SNAPSHOT'
+                    container('dind') {
+                        sh """
+                            apk add --no-cache openjdk21 maven
+                            mvn -B package -pl app -am -Dnative \
+                                -Dquarkus.native.container-build=true \
+                                -DskipTests -Dchangelist=${changelist}
+                            cp app/target/*-runner \
+                                package/carbonio-user-management-runner
+                        """
                     }
                 }
             }
