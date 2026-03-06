@@ -53,7 +53,8 @@ class UserServiceCoalesceTest {
     when(userInfoCache.isCacheEnabled()).thenReturn(true);
     when(userMyselfCache.isCacheEnabled()).thenReturn(true);
     userService = new UserService(
-        mailboxClient, userInfoCache, userMyselfCache, userInfoCacheRepo, userMyselfCacheRepo);
+        mailboxClient, userInfoCache, userMyselfCache, userInfoCacheRepo, userMyselfCacheRepo,
+        org.eclipse.microprofile.context.ManagedExecutor.builder().build());
   }
 
   private GetAccountInfoResponse mockAccountInfoResponse(String userId, String email) {

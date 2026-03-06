@@ -31,10 +31,12 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import org.eclipse.microprofile.context.ManagedExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import zimbra.NamedValue;
@@ -59,6 +61,7 @@ public class UserService {
   private final UserMyselfCache userMyselfCache;
   private final UserInfoCacheRepository userInfoCacheRepo;
   private final UserMyselfCacheRepository userMyselfCacheRepo;
+  private final ExecutorService executor;
 
   // Coalescing maps: prevent concurrent L1+SOAP calls for the same key.
   private final ConcurrentHashMap<String, CompletableFuture<Optional<UserInfo>>>
@@ -74,13 +77,15 @@ public class UserService {
       UserInfoCache userInfoCache,
       UserMyselfCache userMyselfCache,
       UserInfoCacheRepository userInfoCacheRepo,
-      UserMyselfCacheRepository userMyselfCacheRepo
+      UserMyselfCacheRepository userMyselfCacheRepo,
+      ManagedExecutor executor
   ) {
     this.mailboxClient = mailboxClient;
     this.userInfoCache = userInfoCache;
     this.userMyselfCache = userMyselfCache;
     this.userInfoCacheRepo = userInfoCacheRepo;
     this.userMyselfCacheRepo = userMyselfCacheRepo;
+    this.executor = executor;
   }
 
   public Optional<UserMyself> getUserMyself(String token) {
@@ -308,7 +313,7 @@ public class UserService {
       if (!soapNeeded.isEmpty()) {
         List<CompletableFuture<Void>> futures = soapNeeded.stream()
             .map(userId -> CompletableFuture.supplyAsync(
-                    () -> getUserById(userId, callerToken))
+                    () -> getUserById(userId, callerToken), executor)
                 .thenAccept(opt -> opt.ifPresent(info -> {
                   synchronized (results) {
                     results.put(info.userId(), info);
@@ -507,7 +512,7 @@ public class UserService {
         } catch (MailboxClientException | MailboxServerException e) {
           throw new CompletionException(e);
         }
-      }).get(MAILBOX_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+      }, executor).get(MAILBOX_TIMEOUT_SECONDS, TimeUnit.SECONDS);
     } catch (java.util.concurrent.ExecutionException e) {
       Throwable cause = e.getCause();
       if (cause instanceof CompletionException ce) cause = ce.getCause();

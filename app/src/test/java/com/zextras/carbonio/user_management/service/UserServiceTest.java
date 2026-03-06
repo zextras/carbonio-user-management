@@ -56,7 +56,8 @@ class UserServiceTest {
     when(userInfoCache.isCacheEnabled()).thenReturn(true);
     when(userMyselfCache.isCacheEnabled()).thenReturn(true);
     userService = new UserService(
-        mailboxClient, userInfoCache, userMyselfCache, userInfoCacheRepo, userMyselfCacheRepo);
+        mailboxClient, userInfoCache, userMyselfCache, userInfoCacheRepo, userMyselfCacheRepo,
+        org.eclipse.microprofile.context.ManagedExecutor.builder().build());
   }
 
   private UserInfo sampleUserInfo() {

@@ -41,7 +41,8 @@ class UserServiceMappingTest {
         mock(UserInfoCache.class),
         mock(UserMyselfCache.class),
         mock(UserInfoCacheRepository.class),
-        mock(UserMyselfCacheRepository.class));
+        mock(UserMyselfCacheRepository.class),
+        org.eclipse.microprofile.context.ManagedExecutor.builder().build());
   }
 
   // Helpers must be called OUTSIDE of when().thenReturn() chains to avoid Mockito
