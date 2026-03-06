@@ -109,8 +109,12 @@ pipeline {
                 expression { params.SKIP_TESTS == false }
             }
             steps {
-                container('jdk-21') {
-                    sh 'mvn -B verify -pl app -Dskip.integration.tests=false'
+                container('dind') {
+                    withDockerRegistry(credentialsId: 'private-registry', url: 'https://registry.dev.zextras.com') {
+                        container('jdk-21') {
+                            sh 'mvn -B verify -pl app -Dskip.integration.tests=false'
+                        }
+                    }
                 }
             }
         }
@@ -154,14 +158,15 @@ pipeline {
                 script {
                     def changelist = env.TAG_NAME ? '' : '-SNAPSHOT'
                     container('dind') {
-                        sh """
-                            apk add --no-cache openjdk21 maven
-                            mvn -B package -pl app -am -Dnative \
-                                -Dquarkus.native.container-build=true \
-                                -DskipTests -Dchangelist=${changelist}
-                            cp app/target/*-runner \
-                                package/carbonio-user-management-runner
-                        """
+                        container('jdk-21') {
+                            sh """\
+                                mvn -B package -pl app -am -Dnative \
+                                    -Dquarkus.native.container-build=true \
+                                    -DskipTests -Dchangelist=${changelist}
+                                cp app/target/*-runner \
+                                    package/carbonio-user-management-runner
+                            """
+                        }
                     }
                 }
             }
