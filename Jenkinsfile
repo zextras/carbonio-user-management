@@ -69,22 +69,12 @@ pipeline {
             }
         }
 
-        stage('Compile') {
+        stage('Compile and Publish SDK') {
             steps {
                 script {
                     def changelist = env.TAG_NAME ? '' : '-SNAPSHOT'
                     container('jdk-21') {
-                        sh "mvn -B package -DskipTests -Dchangelist=${changelist}"
-                    }
-                }
-            }
-        }
-
-        stage('Publish SDK') {
-            steps {
-                script {
-                    def changelist = env.TAG_NAME ? '' : '-SNAPSHOT'
-                    container('jdk-21') {
+                        sh "mvn -B package -pl sdk -DskipTests -Dchangelist=${changelist}"
                         withCredentials([file(credentialsId: 'jenkins-maven-settings.xml', variable: 'SETTINGS_PATH')]) {
                             sh "mvn -B -s \$SETTINGS_PATH deploy -pl sdk -Dchangelist=${changelist}"
                         }
@@ -158,15 +148,14 @@ pipeline {
                 script {
                     def changelist = env.TAG_NAME ? '' : '-SNAPSHOT'
                     container('dind') {
-                        container('jdk-21') {
-                            sh """\
-                                mvn -B package -pl app -am -Dnative \
-                                    -Dquarkus.native.container-build=true \
-                                    -DskipTests -Dchangelist=${changelist}
-                                cp app/target/*-runner \
-                                    package/carbonio-user-management-runner
-                            """
-                        }
+                        sh """
+                            apk add --no-cache openjdk21 maven
+                            mvn -B package -pl app -am -Dnative \
+                                -Dquarkus.native.container-build=true \
+                                -DskipTests -Dchangelist=${changelist}
+                            cp app/target/*-runner \
+                                package/carbonio-user-management-runner
+                        """
                     }
                 }
             }
