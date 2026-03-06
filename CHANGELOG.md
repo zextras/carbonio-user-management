@@ -1,3 +1,9 @@
+## [1.0.3](https://github.com/zextras/carbonio-user-management/compare/v1.0.2...v1.0.3) (2026-03-06)
+
+### Bug Fixes
+
+* **ci:** create different packages for different distros ([#117](https://github.com/zextras/carbonio-user-management/issues/117)) ([ce4f857](https://github.com/zextras/carbonio-user-management/commit/ce4f857c270dcec97d78d673c1c7168a173edfc2))
+
 ## [1.0.2](https://github.com/zextras/carbonio-user-management/compare/v1.0.1...v1.0.2) (2026-02-24)
 
 ### Bug Fixes
