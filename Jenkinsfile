@@ -3,16 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 
 library(
-    identifier: 'jenkins-dt3-lib@test-jenkins-new',
-    retriever: modernSCM([
-        $class: 'GitSCMSource',
-        remote: 'git@github.com:zextras/jenkins-dt3-lib.git',
-        credentialsId: 'jenkins-integration-with-github-account'
-    ])
-)
-
-library(
-    identifier: 'jenkins-lib-common@1.3.3',
+    identifier: 'jenkins-lib-common@dt3-migration',
     retriever: modernSCM([
         $class: 'GitSCMSource',
         credentialsId: 'jenkins-integration-with-github-account',
@@ -20,7 +11,7 @@ library(
     ])
 )
 
-quarkusPipeline(
+dt3_quarkusPipeline(
     repoName: 'carbonio-user-management',
     sdk: [module: 'sdk', submoduleChangelogPaths: ['sdk']],
     nativeBuild: [runnerName: 'carbonio-user-management-runner'],

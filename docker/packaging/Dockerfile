@@ -7,7 +7,8 @@ WORKDIR /staging
 COPY ../../. .
 
 RUN mkdir -p package && \
-    cp ./app/target/*-runner.jar package/carbonio-user-management.jar 2>/dev/null
+    cp ./app/target/*-runner.jar package/carbonio-user-management.jar && \
+    cp ./app/target/*-runner.jar package/carbonio-user-management-runner
 
 # Stage Ubuntu 20.04 (Focal)
 FROM docker.io/m0rf30/yap-ubuntu-focal:1.49 AS ubuntu-focal-builder

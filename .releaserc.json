@@ -39,13 +39,13 @@
     [
       "@semantic-release/exec",
       {
-        "prepareCmd": "sed -i 's|<revision>.*</revision>|<revision>${nextRelease.version}</revision>|' pom.xml sdk/pom.xml && sed -i 's/^pkgver=.*/pkgver=\"${nextRelease.version}\"/' package/PKGBUILD"
+        "prepareCmd": "cp CHANGELOG.md sdk/CHANGELOG.md"
       }
     ],
     [
       "@semantic-release/git",
       {
-        "assets": ["pom.xml", "sdk/pom.xml", "CHANGELOG.md", "package/PKGBUILD"],
+        "assets": ["CHANGELOG.md", "sdk/CHANGELOG.md"],
         "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
       }
     ]
