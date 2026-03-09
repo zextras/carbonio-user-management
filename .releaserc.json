@@ -1,5 +1,5 @@
 {
-  "branches": ["pre-release"],
+  "branches": ["devel"],
   "repositoryUrl": "https://github.com/zextras/carbonio-user-management",
   "tagFormat": "v${version}",
   "plugins": [
@@ -39,7 +39,7 @@
     [
       "@semantic-release/git",
       {
-        "assets": ["CHANGELOG.md"],
+        "assets": ["CHANGELOG.md", "sdk/CHANGELOG.md"],
         "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
       }
     ]
