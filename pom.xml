@@ -43,7 +43,7 @@ SPDX-License-Identifier: AGPL-3.0-only
     <carbonio-mailbox-sdk.version>1.14.0</carbonio-mailbox-sdk.version>
     <commons-io.version>2.16.1</commons-io.version>
     <guice.version>6.0.0</guice.version>
-    <jackson.version>2.17.2</jackson.version>
+    <jackson.version>2.18.6</jackson.version>
     <javaee-api.version>8.0.1</javaee-api.version>
     <jetty-version>10.0.24</jetty-version>
     <jsonassert.version>1.5.3</jsonassert.version>
