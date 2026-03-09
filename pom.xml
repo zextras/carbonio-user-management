@@ -48,7 +48,7 @@ SPDX-License-Identifier: AGPL-3.0-only
     <jetty-version>10.0.24</jetty-version>
     <jsonassert.version>1.5.3</jsonassert.version>
     <junit5.version>5.11.0</junit5.version>
-    <logback-classic.version>1.5.7</logback-classic.version>
+    <logback-classic.version>1.5.32</logback-classic.version>
     <mock-server.version>5.15.0</mock-server.version>
     <mockito.version>5.20.0</mockito.version>
     <resteasy.version>4.7.9.Final</resteasy.version>
