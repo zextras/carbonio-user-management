@@ -4,20 +4,22 @@
 
 package com.zextras.carbonio.user_management;
 
+import com.zextras.carbonio.quarkus.extensions.bootstrap.ConfigKey;
+
 public final class UserManagementServiceConfig {
 
   private UserManagementServiceConfig() {}
 
   public static final class NetworkingConfig {
     private NetworkingConfig() {}
-    public static final String MAILBOX_HOST = "carbonio.mailbox.host";
-    public static final String MAILBOX_PORT = "carbonio.mailbox.port";
+    @ConfigKey public static final String MAILBOX_HOST = "carbonio.mailbox.host";
+    @ConfigKey public static final String MAILBOX_PORT = "carbonio.mailbox.port";
   }
 
   public static final class ApplicationConfig {
     private ApplicationConfig() {}
-    public static final String CACHE_USERMYSELF_TTL = "cache.usermyself-ttl";
-    public static final String CACHE_USERINFO_TTL = "cache.userinfo-ttl";
+    @ConfigKey public static final String CACHE_USERMYSELF_TTL = "cache.usermyself-ttl";
+    @ConfigKey public static final String CACHE_USERINFO_TTL = "cache.userinfo-ttl";
   }
 
   public static final String AUTH_TOKEN_KEY = "ZM_AUTH_TOKEN";

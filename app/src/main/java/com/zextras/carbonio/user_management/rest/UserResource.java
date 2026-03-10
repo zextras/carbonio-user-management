@@ -7,6 +7,7 @@ package com.zextras.carbonio.user_management.rest;
 import static com.zextras.carbonio.user_management.UserManagementServiceConfig.AUTH_TOKEN_KEY;
 import static com.zextras.carbonio.user_management.UserManagementServiceConfig.MAX_BATCH_USER_IDS;
 
+import com.zextras.carbonio.quarkus.extensions.ratelimit.RateLimit;
 import com.zextras.carbonio.user_management.rest.dto.MyselfDto;
 import com.zextras.carbonio.user_management.rest.dto.UserInfoDto;
 import com.zextras.carbonio.user_management.service.UserService;
@@ -25,6 +26,7 @@ import java.util.List;
 
 @Path("/users")
 @Produces(MediaType.APPLICATION_JSON)
+@RateLimit("rest")
 public class UserResource {
 
   private final UserService userService;
