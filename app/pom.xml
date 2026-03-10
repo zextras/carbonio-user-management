@@ -74,7 +74,7 @@ SPDX-License-Identifier: AGPL-3.0-only
     <!-- SDK gRPC stubs -->
     <dependency>
       <groupId>com.zextras.carbonio.user-management</groupId>
-      <artifactId>carbonio-user-management-sdk</artifactId>
+      <artifactId>carbonio-user-management-grpc-sdk</artifactId>
       <version>${project.version}</version>
     </dependency>
 
