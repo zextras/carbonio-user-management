@@ -26,16 +26,16 @@ Overridable by Consul KV
 | `carbonio-user-management/database/credentials/db-name` | *(not set)* |  |
 | `carbonio-user-management/database/credentials/db-password` | *(not set)* |  |
 | `carbonio-user-management/database/credentials/db-username` | *(not set)* |  |
-| `carbonio-user-management/database/db-pool-idle-timeout` | *(not set)* |  |
-| `carbonio-user-management/database/db-pool-leak-detection` | *(not set)* |  |
-| `carbonio-user-management/database/db-pool-max-lifetime` | *(not set)* |  |
-| `carbonio-user-management/database/db-pool-max-size` | *(not set)* |  |
-| `carbonio-user-management/database/db-pool-min-size` | *(not set)* |  |
+| `carbonio-user-management/database/db-pool-idle-timeout` | *(not set)* | Quarkus default: 5 minutes |
+| `carbonio-user-management/database/db-pool-leak-detection` | *(not set)* | Quarkus default: disabled |
+| `carbonio-user-management/database/db-pool-max-lifetime` | *(not set)* | Quarkus default: no limit |
+| `carbonio-user-management/database/db-pool-max-size` | *(not set)* | Quarkus default: 20 |
+| `carbonio-user-management/database/db-pool-min-size` | *(not set)* | Quarkus default: 0 |
 | `carbonio-user-management/rate-limit/rest/capacity` | *(not set)* | rate limiting disabled |
 | `carbonio-user-management/rate-limit/rest/refill-period-seconds` | *(not set)* | rate limiting disabled |
 | `carbonio-user-management/rate-limit/rest/refill-tokens` | *(not set)* | rate limiting disabled |
-| `carbonio-user-management/server/idle-timeout` | *(not set)* |  |
-| `carbonio-user-management/server/max-connections` | *(not set)* |  |
-| `carbonio-user-management/server/max-threads` | *(not set)* |  |
-| `carbonio-user-management/server/queue-size` | *(not set)* |  |
+| `carbonio-user-management/server/idle-timeout` | *(not set)* | Quarkus default: 30s |
+| `carbonio-user-management/server/max-connections` | *(not set)* | Quarkus default: no limit |
+| `carbonio-user-management/server/max-threads` | *(not set)* | Quarkus default: 200 |
+| `carbonio-user-management/server/queue-size` | *(not set)* | Quarkus default: unbounded |
 

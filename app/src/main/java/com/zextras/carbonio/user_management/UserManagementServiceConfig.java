@@ -18,7 +18,7 @@ public final class UserManagementServiceConfig {
 
   public static final class ApplicationConfig {
     private ApplicationConfig() {}
-    @ConfigKey public static final String CACHE_USERMYSELF_TTL = "cache.usermyself-ttl";
+    @ConfigKey(ifNotPresent = "Uses remaining token validity time") public static final String CACHE_USERMYSELF_TTL = "cache.usermyself-ttl";
     @ConfigKey public static final String CACHE_USERINFO_TTL = "cache.userinfo-ttl";
   }
 
