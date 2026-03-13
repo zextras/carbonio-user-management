@@ -23,8 +23,5 @@ dt3_quarkusPipeline(
         description: 'Carbonio User Management Service',
     ],
     sonarqube: true,
-    reuse: [
-        license: 'AGPL-3.0-only',
-        copyright: '2022 Zextras <packages@zextras.com>',
-    ],
+    reuse: [projectType: 'CE'],
 )
