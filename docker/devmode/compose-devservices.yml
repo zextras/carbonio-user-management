@@ -31,7 +31,6 @@ services:
     healthcheck:
       test: >-
         curl --fail --silent localhost:8500/v1/status/leader
-        && curl --fail --silent localhost:8500/v1/kv/carbonio-user-management/database.credentials.db-name
         || exit 1
       interval: 5s
       retries: 30
@@ -116,26 +115,6 @@ services:
         condition: service_healthy
       carbonio-mariadb:
         condition: service_started
-    labels:
-      io.quarkus.devservices.compose.ignore: "true"
-
-  # --- User-management dependencies ---------------------------------------
-
-  postgres:
-    image: postgres:16
-    restart: on-failure
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_DB: carbonio_user_management
-      POSTGRES_USER: carbonio
-      POSTGRES_PASSWORD: carbonio
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U carbonio -d carbonio_user_management"]
-      interval: 5s
-      retries: 10
-      start_period: 5s
-      timeout: 5s
     labels:
       io.quarkus.devservices.compose.ignore: "true"
 

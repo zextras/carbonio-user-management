@@ -14,9 +14,6 @@ import com.github.benmanes.caffeine.cache.Ticker;
 import com.zextras.carbonio.quarkus.extensions.bootstrap.ApplicationConfigService;
 import com.zextras.carbonio.user_management.cache.UserInfoCache;
 import com.zextras.carbonio.user_management.record.UserInfo;
-import java.time.Clock;
-import java.time.Instant;
-import java.time.ZoneOffset;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -25,7 +22,6 @@ import org.junit.jupiter.api.Test;
 
 class UserInfoCacheTest {
 
-  private static final Clock FIXED_CLOCK = Clock.fixed(Instant.EPOCH, ZoneOffset.UTC);
   private static final long DEFAULT_TTL_SECONDS = 43200; // 12 hours
 
   private ApplicationConfigService configService;
@@ -38,7 +34,7 @@ class UserInfoCacheTest {
     when(configService.get("cache.userinfo-ttl")).thenReturn(Optional.empty());
     currentTime = new AtomicLong(0);
     Ticker ticker = currentTime::get;
-    cache = new UserInfoCache(configService, ticker, FIXED_CLOCK);
+    cache = new UserInfoCache(configService, ticker);
   }
 
   private UserInfo sampleUser(String id, String email) {
@@ -126,7 +122,7 @@ class UserInfoCacheTest {
   @Test
   void isCacheEnabled_returnsFalseWhenTtlZero() {
     when(configService.get("cache.userinfo-ttl")).thenReturn(Optional.of("0"));
-    UserInfoCache zeroCache = new UserInfoCache(configService, currentTime::get, FIXED_CLOCK);
+    UserInfoCache zeroCache = new UserInfoCache(configService, currentTime::get);
 
     assertThat(zeroCache.isCacheEnabled()).isFalse();
   }
@@ -135,7 +131,7 @@ class UserInfoCacheTest {
   void customTtlOverridesDefault() {
     long customTtlSeconds = 21600; // 6 hours
     when(configService.get("cache.userinfo-ttl")).thenReturn(Optional.of("21600"));
-    UserInfoCache customCache = new UserInfoCache(configService, currentTime::get, FIXED_CLOCK);
+    UserInfoCache customCache = new UserInfoCache(configService, currentTime::get);
 
     customCache.put(sampleUser("user-1", "u@x.com"));
 

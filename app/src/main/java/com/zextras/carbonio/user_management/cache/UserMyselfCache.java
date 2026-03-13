@@ -122,8 +122,8 @@ public class UserMyselfCache {
 
   /**
    * Returns an epoch-millis expiration timestamp for a new entry, computed as
-   * {@code now + min(configTtl, sessionRemainingMs)}. Used by the service layer to persist
-   * entries in the shared DB and pass as {@code expiresAt} to {@link #put}.
+   * {@code now + min(configTtl, sessionRemainingMs)}. Used by the service layer to pass
+   * as {@code expiresAt} to {@link #put}.
    */
   public long computeExpiresAt(long sessionRemainingMs) {
     return clock.millis() + capTtl(sessionRemainingMs).toMillis();

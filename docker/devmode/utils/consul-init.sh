@@ -25,16 +25,4 @@ for i in $(seq 1 30); do
   sleep 1
 done
 
-echo "Initializing Consul KV for ${SERVICE}..."
-
-# Database credentials (read by carbonio-quarkus-extensions-database via ApplicationConfigService)
-curl -sf -X PUT --data "carbonio_user_management" \
-  "${CONSUL_HTTP_ADDR}/v1/kv/${SERVICE}/database.credentials.db-name"
-
-curl -sf -X PUT --data "carbonio" \
-  "${CONSUL_HTTP_ADDR}/v1/kv/${SERVICE}/database.credentials.db-username"
-
-curl -sf -X PUT --data "carbonio" \
-  "${CONSUL_HTTP_ADDR}/v1/kv/${SERVICE}/database.credentials.db-password"
-
-echo "Consul KV initialization complete."
+echo "Consul KV ready for ${SERVICE}."

@@ -13,7 +13,6 @@ import com.zextras.carbonio.user_management.UserManagementServiceConfig.Applicat
 import com.zextras.carbonio.user_management.record.UserInfo;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
-import java.time.Clock;
 import java.time.Duration;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -40,13 +39,11 @@ public class UserInfoCache {
   private final Cache<String, UserInfo> cache;
   private final ConcurrentHashMap<String, String> emailToUserId;
   private final ApplicationConfigService configService;
-  private final Clock clock;
   private final Cache<String, Long> ttlCache;
 
   @Inject
-  public UserInfoCache(ApplicationConfigService configService, Ticker ticker, Clock clock) {
+  public UserInfoCache(ApplicationConfigService configService, Ticker ticker) {
     this.configService = configService;
-    this.clock = clock;
     this.emailToUserId = new ConcurrentHashMap<>();
     this.ttlCache = Caffeine.newBuilder()
         .ticker(ticker)
@@ -92,14 +89,6 @@ public class UserInfoCache {
   void clearAll() {
     cache.invalidateAll();
     emailToUserId.clear();
-  }
-
-  /**
-   * Returns an epoch-millis expiration timestamp for a new entry, computed as
-   * {@code now + configuredTtl}. Used by the service layer to persist entries in the shared DB.
-   */
-  public long computeExpiresAt() {
-    return clock.millis() + readTtlSeconds() * 1000;
   }
 
   public boolean isCacheEnabled() {

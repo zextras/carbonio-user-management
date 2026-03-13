@@ -5,8 +5,6 @@
 package com.zextras.carbonio.user_management;
 
 import com.zextras.carbonio.quarkus.extensions.bootstrap.CarbonioServiceConfig;
-import com.zextras.carbonio.quarkus.extensions.bootstrap.ConsulTestHelper;
-import com.zextras.carbonio.quarkus.extensions.bootstrap.db.CarbonioDatabaseServiceConfig;
 import com.zextras.carbonio.user_management.UserManagementServiceConfig;
 import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
 import java.time.Duration;
@@ -17,16 +15,15 @@ import org.testcontainers.lifecycle.Startables;
 import org.testcontainers.consul.ConsulContainer;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
-import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 
 /**
- * Starts the full Carbonio stack (mailbox + dependencies, consul, postgres) using individual
+ * Starts the full Carbonio stack (mailbox + dependencies, consul) using individual
  * Testcontainers for integration tests that need a real mailbox instance.
  *
  * <p>Each service runs as an individual container with random host ports. Dependencies are modeled
  * via {@code dependsOn()} and started in parallel using {@link Startables#deepStart}.
- * Consul KV is initialized via {@link ConsulTestHelper}. Test account provisioning is done
+ * Test account provisioning is done
  * via {@code execInContainer} on the mailbox container.
  */
 public class MailboxStackTestResource implements QuarkusTestResourceLifecycleManager {
@@ -45,7 +42,6 @@ public class MailboxStackTestResource implements QuarkusTestResourceLifecycleMan
   private GenericContainer<?> postfix;
   private GenericContainer<?> mailbox;
   private ConsulContainer consul;
-  private PostgreSQLContainer<?> postgres;
 
   @Override
   public Map<String, String> start() {
@@ -97,18 +93,10 @@ public class MailboxStackTestResource implements QuarkusTestResourceLifecycleMan
 
     consul = new ConsulContainer("hashicorp/consul:1.22.3");
 
-    postgres = new PostgreSQLContainer<>("postgres:16")
-        .withDatabaseName("carbonio_user_management")
-        .withUsername("carbonio")
-        .withPassword("carbonio");
-
     // Start all containers in parallel, respecting dependsOn graph
     log.info("Starting all containers in parallel...");
-    Startables.deepStart(mailbox, consul, postgres).join();
+    Startables.deepStart(mailbox, consul).join();
     log.info("All containers started");
-
-    // Init Consul KV
-    initConsulKv();
 
     // Provision test accounts
     provisionTestAccounts();
@@ -119,8 +107,6 @@ public class MailboxStackTestResource implements QuarkusTestResourceLifecycleMan
 
     String consulHost = consul.getHost();
     int consulPort = consul.getFirstMappedPort();
-    String postgresHost = postgres.getHost();
-    int postgresPort = postgres.getFirstMappedPort();
 
     return Map.ofEntries(
         Map.entry(CarbonioServiceConfig.NETWORKING_CONFIG_PREFIX
@@ -130,11 +116,6 @@ public class MailboxStackTestResource implements QuarkusTestResourceLifecycleMan
         Map.entry(CarbonioServiceConfig.NETWORKING_CONFIG_PREFIX
             + CarbonioServiceConfig.NetworkingConfig.SERVICE_DISCOVER_PORT,
             String.valueOf(consulPort)),
-        Map.entry(CarbonioServiceConfig.NETWORKING_CONFIG_PREFIX
-            + CarbonioDatabaseServiceConfig.NetworkingConfig.POSTGRESQL_HOST, postgresHost),
-        Map.entry(CarbonioServiceConfig.NETWORKING_CONFIG_PREFIX
-            + CarbonioDatabaseServiceConfig.NetworkingConfig.POSTGRESQL_PORT,
-            String.valueOf(postgresPort)),
         Map.entry(CarbonioServiceConfig.NETWORKING_CONFIG_PREFIX
             + UserManagementServiceConfig.NetworkingConfig.MAILBOX_HOST, "localhost"),
         Map.entry(CarbonioServiceConfig.NETWORKING_CONFIG_PREFIX
@@ -152,7 +133,6 @@ public class MailboxStackTestResource implements QuarkusTestResourceLifecycleMan
     stopQuietly(mariadb);
     stopQuietly(openldap);
     stopQuietly(consul);
-    stopQuietly(postgres);
     if (network != null) {
       network.close();
     }
@@ -166,22 +146,6 @@ public class MailboxStackTestResource implements QuarkusTestResourceLifecycleMan
         log.warn("Error stopping container: {}", e.getMessage());
       }
     }
-  }
-
-  private void initConsulKv() {
-    String consulHost = consul.getHost();
-    int consulPort = consul.getFirstMappedPort();
-    log.info("Initializing Consul KV at {}:{}", consulHost, consulPort);
-
-    ConsulTestHelper helper = new ConsulTestHelper(consulHost, consulPort);
-    String svc = "carbonio-user-management";
-    helper.putValue(svc + "/" + CarbonioDatabaseServiceConfig.ApplicationConfig.DB_NAME,
-        "carbonio_user_management");
-    helper.putValue(svc + "/" + CarbonioDatabaseServiceConfig.ApplicationConfig.DB_USERNAME,
-        "carbonio");
-    helper.putValue(svc + "/" + CarbonioDatabaseServiceConfig.ApplicationConfig.DB_PASSWORD,
-        "carbonio");
-    log.info("Consul KV initialization complete");
   }
 
   /**

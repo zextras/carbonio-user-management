@@ -6,7 +6,6 @@ package com.zextras.carbonio.user_management.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -15,9 +14,6 @@ import static org.mockito.Mockito.when;
 import com.zextras.carbonio.user_management.cache.UserInfoCache;
 import com.zextras.carbonio.user_management.cache.UserMyselfCache;
 import com.zextras.carbonio.user_management.record.UserInfo;
-import com.zextras.carbonio.user_management.repository.UserInfoCacheRepository;
-import com.zextras.carbonio.user_management.repository.UserMyselfCacheRepository;
-import com.zextras.carbonio.user_management.service.UserService;
 import com.zextras.mailbox.client.service.ServiceClient;
 import java.util.List;
 import java.util.Optional;
@@ -39,8 +35,6 @@ class UserServiceCoalesceTest {
   private ServiceClient mailboxClient;
   private UserInfoCache userInfoCache;
   private UserMyselfCache userMyselfCache;
-  private UserInfoCacheRepository userInfoCacheRepo;
-  private UserMyselfCacheRepository userMyselfCacheRepo;
   private UserService userService;
 
   @BeforeEach
@@ -48,12 +42,10 @@ class UserServiceCoalesceTest {
     mailboxClient = mock(ServiceClient.class);
     userInfoCache = mock(UserInfoCache.class);
     userMyselfCache = mock(UserMyselfCache.class);
-    userInfoCacheRepo = mock(UserInfoCacheRepository.class);
-    userMyselfCacheRepo = mock(UserMyselfCacheRepository.class);
     when(userInfoCache.isCacheEnabled()).thenReturn(true);
     when(userMyselfCache.isCacheEnabled()).thenReturn(true);
     userService = new UserService(
-        mailboxClient, userInfoCache, userMyselfCache, userInfoCacheRepo, userMyselfCacheRepo,
+        mailboxClient, userInfoCache, userMyselfCache,
         org.eclipse.microprofile.context.ManagedExecutor.builder().build());
   }
 
@@ -73,13 +65,8 @@ class UserServiceCoalesceTest {
 
   @Test
   void concurrentGetUserByIdCallsCoalesceIntoSingleSoapCall() throws Exception {
-    // L2 miss
+    // Cache miss
     when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.empty());
-    // L1 miss
-    when(userInfoCacheRepo.findByUserId("user-1")).thenReturn(Optional.empty());
-    // Cache write setup
-    when(userInfoCache.computeExpiresAt()).thenReturn(System.currentTimeMillis() + 60_000);
-    when(userInfoCacheRepo.upsert(any(), anyLong())).thenAnswer(inv -> inv.getArgument(0));
 
     CountDownLatch soapStarted = new CountDownLatch(1);
     CountDownLatch soapProceed = new CountDownLatch(1);
@@ -125,15 +112,9 @@ class UserServiceCoalesceTest {
 
   @Test
   void differentUserIdsDontCoalesce() throws Exception {
-    // L2 miss for both
+    // Cache miss for both
     when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.empty());
     when(userInfoCache.getByUserId("user-2")).thenReturn(Optional.empty());
-    // L1 miss for both
-    when(userInfoCacheRepo.findByUserId("user-1")).thenReturn(Optional.empty());
-    when(userInfoCacheRepo.findByUserId("user-2")).thenReturn(Optional.empty());
-    // Cache setup
-    when(userInfoCache.computeExpiresAt()).thenReturn(System.currentTimeMillis() + 60_000);
-    when(userInfoCacheRepo.upsert(any(), anyLong())).thenAnswer(inv -> inv.getArgument(0));
 
     GetAccountInfoResponse response1 = mockAccountInfoResponse("user-1", "u1@x.com");
     GetAccountInfoResponse response2 = mockAccountInfoResponse("user-2", "u2@x.com");

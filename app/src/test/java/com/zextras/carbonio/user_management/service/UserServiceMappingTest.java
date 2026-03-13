@@ -13,8 +13,6 @@ import com.zextras.carbonio.user_management.cache.UserInfoCache;
 import com.zextras.carbonio.user_management.cache.UserMyselfCache;
 import com.zextras.carbonio.user_management.record.UserInfo;
 import com.zextras.carbonio.user_management.record.UserMyself;
-import com.zextras.carbonio.user_management.repository.UserInfoCacheRepository;
-import com.zextras.carbonio.user_management.repository.UserMyselfCacheRepository;
 import com.zextras.mailbox.client.service.ServiceClient;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,8 +38,6 @@ class UserServiceMappingTest {
         mock(ServiceClient.class),
         mock(UserInfoCache.class),
         mock(UserMyselfCache.class),
-        mock(UserInfoCacheRepository.class),
-        mock(UserMyselfCacheRepository.class),
         org.eclipse.microprofile.context.ManagedExecutor.builder().build());
   }
 

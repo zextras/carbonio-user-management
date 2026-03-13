@@ -8,9 +8,6 @@ import com.zextras.carbonio.user_management.cache.UserInfoCache;
 import com.zextras.carbonio.user_management.cache.UserMyselfCache;
 import com.zextras.carbonio.user_management.record.UserInfo;
 import com.zextras.carbonio.user_management.record.UserMyself;
-import com.zextras.carbonio.user_management.repository.UserInfoCacheRepository;
-import com.zextras.carbonio.user_management.repository.UserMyselfCacheRepository;
-import com.zextras.carbonio.user_management.repository.UserMyselfCacheRepository.TokenLookupResult;
 import com.zextras.mailbox.client.MailboxClientException;
 import com.zextras.mailbox.client.MailboxServerException;
 import com.zextras.mailbox.client.requests.Request;
@@ -22,7 +19,6 @@ import jakarta.inject.Inject;
 import jakarta.xml.ws.WebServiceException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -59,11 +55,9 @@ public class UserService {
   private final ServiceClient mailboxClient;
   private final UserInfoCache userInfoCache;
   private final UserMyselfCache userMyselfCache;
-  private final UserInfoCacheRepository userInfoCacheRepo;
-  private final UserMyselfCacheRepository userMyselfCacheRepo;
   private final ExecutorService executor;
 
-  // Coalescing maps: prevent concurrent L1+SOAP calls for the same key.
+  // Coalescing maps: prevent concurrent SOAP calls for the same key.
   private final ConcurrentHashMap<String, CompletableFuture<Optional<UserInfo>>>
       inflightById = new ConcurrentHashMap<>();
   private final ConcurrentHashMap<String, CompletableFuture<Optional<UserInfo>>>
@@ -76,30 +70,26 @@ public class UserService {
       ServiceClient mailboxClient,
       UserInfoCache userInfoCache,
       UserMyselfCache userMyselfCache,
-      UserInfoCacheRepository userInfoCacheRepo,
-      UserMyselfCacheRepository userMyselfCacheRepo,
       ManagedExecutor executor
   ) {
     this.mailboxClient = mailboxClient;
     this.userInfoCache = userInfoCache;
     this.userMyselfCache = userMyselfCache;
-    this.userInfoCacheRepo = userInfoCacheRepo;
-    this.userMyselfCacheRepo = userMyselfCacheRepo;
     this.executor = executor;
   }
 
   public Optional<UserMyself> getUserMyself(String token) {
     logger.debug("GetUserMyself requested");
 
-    // -- L2: Caffeine (token is the primary key) --
+    // Caffeine cache hit
     Optional<UserMyself> cached = userMyselfCache.getByToken(token);
     if (cached.isPresent()) {
-      logger.debug("GetUserMyself L2 cache hit");
+      logger.debug("GetUserMyself cache hit");
       safeWarmUserInfoCache(cached.get());
       return cached;
     }
 
-    // Coalesce concurrent L1+SOAP lookups for the same token
+    // Coalesce concurrent SOAP lookups for the same token
     Optional<UserMyself> result = coalesce(inflightMyself, token, () -> loadUserMyself(token));
     result.ifPresent(this::safeWarmUserInfoCache);
     return result;
@@ -117,36 +107,16 @@ public class UserService {
   private void warmUserInfoCacheIfAbsent(UserMyself myself) {
     String userId = myself.userId();
     if (userInfoCache.getByUserId(userId).isPresent()) {
-      return;  // L2 hit
-    }
-    try {
-      if (userInfoCacheRepo.findByUserId(userId).isPresent()) {
-        return;  // L1 hit
-      }
-    } catch (Exception e) {
-      logger.warn("L1 read failed during warming for userId={}, treating as miss", userId, e);
+      return;  // already cached
     }
     UserInfo userInfo = new UserInfo(
         myself.userId(), myself.email(), myself.fullName(),
         myself.domain(), myself.status(), myself.type());
-    persistAndCacheInfo(userInfo);
+    cacheInfo(userInfo);
   }
 
   private Optional<UserMyself> loadUserMyself(String token) {
-    // -- L1: PostgreSQL (best-effort) --
-    try {
-      Optional<TokenLookupResult> tokenResult = userMyselfCacheRepo.findByToken(token);
-      if (tokenResult.isPresent()) {
-        var result = tokenResult.get();
-        userMyselfCache.put(token, result.userId(), result.myself(), result.expiresAt());
-        logger.debug("GetUserMyself L1 cache hit for userId {}", result.userId());
-        return Optional.of(result.myself());
-      }
-    } catch (Exception e) {
-      logger.warn("L1 read failed for UserMyself token, falling back to SOAP", e);
-    }
-
-    // -- SOAP fallback --
+    // SOAP fallback
     try {
       Request<ZcsPortType, GetInfoResponse> request =
           Info.sections(Sections.children, Sections.attrs, Sections.prefs).withAuthToken(token);
@@ -159,7 +129,7 @@ public class UserService {
       }
       long expiresAt = userMyselfCache.computeExpiresAt(response.getLifetime());
 
-      myself = persistAndCacheMyself(myself.userId(), token, myself, expiresAt);
+      myself = cacheMyself(myself.userId(), token, myself, expiresAt);
 
       logger.debug("GetUserMyself fetched from mailbox for userId {}", myself.userId());
       return Optional.of(myself);
@@ -179,29 +149,17 @@ public class UserService {
   public Optional<UserInfo> getUserById(String userId, String callerToken) {
     logger.debug("GetUserById requested: {}", userId);
 
-    // L2: Caffeine
+    // Caffeine cache hit
     Optional<UserInfo> cached = userInfoCache.getByUserId(userId);
     if (cached.isPresent()) {
       return cached;
     }
 
-    // Coalesce concurrent L1+SOAP lookups for the same userId
+    // Coalesce concurrent SOAP lookups for the same userId
     return coalesce(inflightById, userId, () -> loadUserById(userId, callerToken));
   }
 
   private Optional<UserInfo> loadUserById(String userId, String callerToken) {
-    // L1: PostgreSQL (best-effort)
-    try {
-      Optional<UserInfo> cached = userInfoCacheRepo.findByUserId(userId);
-      if (cached.isPresent()) {
-        logger.debug("GetUserById L1 cache hit: {}", userId);
-        userInfoCache.put(cached.get());
-        return cached;
-      }
-    } catch (Exception e) {
-      logger.warn("L1 read failed for UserInfo userId={}, falling back to SOAP", userId, e);
-    }
-
     try {
       Request<ZcsPortType, GetAccountInfoResponse> request =
           AccountInfo.byId(userId).withAuthToken(callerToken);
@@ -212,7 +170,7 @@ public class UserService {
         logger.error("GetUserById: mailbox response missing userId or email for {}", userId);
         return Optional.empty();
       }
-      userInfo = persistAndCacheInfo(userInfo);
+      userInfo = cacheInfo(userInfo);
 
       logger.debug("GetUserById fetched from mailbox: {}", userId);
       return Optional.of(userInfo);
@@ -232,29 +190,17 @@ public class UserService {
   public Optional<UserInfo> getUserByEmail(String email, String callerToken) {
     logger.debug("GetUserByEmail requested: {}", email);
 
-    // L2: Caffeine
+    // Caffeine cache hit
     Optional<UserInfo> cached = userInfoCache.getByEmail(email);
     if (cached.isPresent()) {
       return cached;
     }
 
-    // Coalesce concurrent L1+SOAP lookups for the same email
+    // Coalesce concurrent SOAP lookups for the same email
     return coalesce(inflightByEmail, email, () -> loadUserByEmail(email, callerToken));
   }
 
   private Optional<UserInfo> loadUserByEmail(String email, String callerToken) {
-    // L1: PostgreSQL (best-effort)
-    try {
-      Optional<UserInfo> cached = userInfoCacheRepo.findByEmail(email);
-      if (cached.isPresent()) {
-        logger.debug("GetUserByEmail L1 cache hit: {}", email);
-        userInfoCache.put(cached.get());
-        return cached;
-      }
-    } catch (Exception e) {
-      logger.warn("L1 read failed for UserInfo email={}, falling back to SOAP", email, e);
-    }
-
     try {
       Request<ZcsPortType, GetAccountInfoResponse> request =
           AccountInfo.byEmail(email).withAuthToken(callerToken);
@@ -265,7 +211,7 @@ public class UserService {
         logger.error("GetUserByEmail: mailbox response missing userId or email for {}", email);
         return Optional.empty();
       }
-      userInfo = persistAndCacheInfo(userInfo);
+      userInfo = cacheInfo(userInfo);
 
       logger.debug("GetUserByEmail fetched from mailbox: {}", email);
       return Optional.of(userInfo);
@@ -286,42 +232,27 @@ public class UserService {
     List<String> uniqueIds = userIds.stream().distinct().toList();
     Map<String, UserInfo> results = new HashMap<>();
 
-    // L2: Caffeine bulk lookup
-    List<String> l2Misses = new ArrayList<>();
+    // Caffeine bulk lookup
+    List<String> misses = new ArrayList<>();
     for (String userId : uniqueIds) {
       userInfoCache.getByUserId(userId).ifPresentOrElse(
           info -> results.put(userId, info),
-          () -> l2Misses.add(userId)
+          () -> misses.add(userId)
       );
     }
 
-    if (!l2Misses.isEmpty()) {
-      // L1: PostgreSQL single batch query for all L2 misses (best-effort)
-      Set<String> soapNeeded = new LinkedHashSet<>(l2Misses);
-      try {
-        List<UserInfo> l1Results = userInfoCacheRepo.findByUserIds(l2Misses);
-        for (UserInfo info : l1Results) {
-          results.put(info.userId(), info);
-          userInfoCache.put(info);
-          soapNeeded.remove(info.userId());
-        }
-      } catch (Exception e) {
-        logger.warn("L1 batch read failed for getUsers, all misses will go to SOAP", e);
-      }
-
-      // SOAP: parallel for remaining misses (can't batch SOAP calls)
-      if (!soapNeeded.isEmpty()) {
-        List<CompletableFuture<Void>> futures = soapNeeded.stream()
-            .map(userId -> CompletableFuture.supplyAsync(
-                    () -> getUserById(userId, callerToken), executor)
-                .thenAccept(opt -> opt.ifPresent(info -> {
-                  synchronized (results) {
-                    results.put(info.userId(), info);
-                  }
-                })))
-            .toList();
-        CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).join();
-      }
+    if (!misses.isEmpty()) {
+      // SOAP: parallel for all misses
+      List<CompletableFuture<Void>> futures = misses.stream()
+          .map(userId -> CompletableFuture.supplyAsync(
+                  () -> getUserById(userId, callerToken), executor)
+              .thenAccept(opt -> opt.ifPresent(info -> {
+                synchronized (results) {
+                  results.put(info.userId(), info);
+                }
+              })))
+          .toList();
+      CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).join();
     }
 
     // Return in original order, skipping not-found
@@ -331,33 +262,20 @@ public class UserService {
         .toList();
   }
 
-  // -- Persist & cache helpers --
+  // -- Cache helpers --
 
-  private UserInfo persistAndCacheInfo(UserInfo userInfo) {
+  private UserInfo cacheInfo(UserInfo userInfo) {
     if (!userInfoCache.isCacheEnabled()) {
       return userInfo;
-    }
-    long expiresAt = userInfoCache.computeExpiresAt();
-    try {
-      userInfo = userInfoCacheRepo.upsert(userInfo, expiresAt);
-    } catch (Exception e) {
-      logger.warn("L1 write failed for UserInfo userId={}, continuing with L2 only",
-          userInfo.userId(), e);
     }
     userInfoCache.put(userInfo);
     return userInfo;
   }
 
-  private UserMyself persistAndCacheMyself(
+  private UserMyself cacheMyself(
       String userId, String token, UserMyself myself, long expiresAt) {
     if (!userMyselfCache.isCacheEnabled()) {
       return myself;
-    }
-    try {
-      myself = userMyselfCacheRepo.upsert(userId, token, myself, expiresAt);
-    } catch (Exception e) {
-      logger.warn("L1 write failed for UserMyself userId={}, continuing with L2 only",
-          userId, e);
     }
     userMyselfCache.put(token, userId, myself, expiresAt);
     return myself;
