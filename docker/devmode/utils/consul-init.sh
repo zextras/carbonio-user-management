@@ -1,4 +1,9 @@
 #!/bin/sh
+
+# SPDX-FileCopyrightText: 2026 2026 Zextras <https://www.zextras.com>
+#
+# SPDX-License-Identifier: AGPL-3.0-only
+
 #
 # Populates Consul KV with configuration needed by carbonio-user-management.
 # Runs inside the consul network namespace (network_mode: "service:consul").

@@ -1,4 +1,9 @@
 #!/bin/sh
+
+# SPDX-FileCopyrightText: 2026 2026 Zextras <https://www.zextras.com>
+#
+# SPDX-License-Identifier: AGPL-3.0-only
+
 #
 # Provisions test accounts in Carbonio mailbox.
 # Adapted from https://github.com/Zextras/carbonio-dockerization/blob/main/provisioning/provisioning.sh

@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2026 2026 Zextras <https://www.zextras.com>
+
+SPDX-License-Identifier: AGPL-3.0-only
+-->
+
 ## [1.0.2](https://github.com/zextras/carbonio-user-management/compare/v1.0.1...v1.0.2) (2026-02-24)
 
 ### Bug Fixes
