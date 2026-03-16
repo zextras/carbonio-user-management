@@ -162,7 +162,8 @@ public class UserService {
     userMyself.setEmail(response.name());
     userMyself.setFullName(response.displayName());
     userMyself.setDomain(response.domainId());
-    userMyself.setStatus(UserStatus.valueOf(response.status().name()));
+    // TODO: mapping fails
+    // userMyself.setStatus(UserStatus.valueOf(response.status().name()));
     userMyself.setLocale(response.locale());
     userMyself.setType(response.isExternal() ? UserType.GUEST : UserType.INTERNAL);
     // TODO: attributes, too lazy to map boolean to string
