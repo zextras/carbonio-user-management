@@ -154,31 +154,19 @@ public class UserService {
   }
 
   public Optional<UserMyself> getMyselfByToken(String token, Boolean ignoreCache) {
-    logger.debug("Requested: {}", token);
-
-    UserMyself userMyself = null;
-    if (ignoreCache == null || !ignoreCache) {
-      userMyself = cacheManager.getUserMyselfCache().getIfPresent(token);
-    }
-
-    if (userMyself == null) {
-      try {
-        final Request<ZcsPortType, GetInfoResponse> request =
-            Info.sections(Sections.children, Sections.attrs, Sections.prefs).withAuthToken(token);
-        final GetInfoResponse infoResponse = mailboxClient.send(request);
-
-        userMyself = createUserMyselfFromInfoResponse(infoResponse);
-        cacheManager.getUserMyselfCache().put(token, userMyself);
-
-      } catch (WebServiceException | MailboxServerException exception) {
-        logger.error("GetMyselfByToken with token {} server failed.", token, exception);
-        return Optional.empty();
-      } catch (MailboxClientException exception) {
-        logger.error("GetMyselfByToken with token {} client failed.", token, exception);
-        return Optional.empty();
-      }
-    }
-
+    var response = mailboxInternalApiClient.getMyAccountInfo(token);
+    var userMyself = new UserMyself();
+    final UserId userId = new UserId();
+    userId.setUserId(response.id());
+    userMyself.setId(userId);
+    userMyself.setEmail(response.name());
+    userMyself.setFullName(response.displayName());
+    userMyself.setDomain(response.domainId());
+    userMyself.setStatus(UserStatus.valueOf(response.status().name()));
+    userMyself.setLocale(response.locale());
+    userMyself.setType(response.isExternal() ? UserType.GUEST : UserType.INTERNAL);
+    // TODO: attributes, too lazy to map boolean to string
+    // TODO: handle failure, I'm just trying the APIs for now
     return Optional.of(userMyself);
   }
 
