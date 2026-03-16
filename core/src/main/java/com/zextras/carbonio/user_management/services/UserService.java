@@ -12,8 +12,10 @@ import com.zextras.carbonio.user_management.generated.model.UserInfo;
 import com.zextras.carbonio.user_management.generated.model.UserMyself;
 import com.zextras.carbonio.user_management.generated.model.UserStatus;
 import com.zextras.carbonio.user_management.generated.model.UserType;
+import com.zextras.mailbox.client.MailboxClient;
 import com.zextras.mailbox.client.MailboxClientException;
 import com.zextras.mailbox.client.MailboxServerException;
+import com.zextras.mailbox.client.internal.MailboxInternalApiClient;
 import com.zextras.mailbox.client.requests.Request;
 import com.zextras.mailbox.client.service.InfoRequests.Sections;
 import com.zextras.mailbox.client.service.ServiceClient;
@@ -43,11 +45,14 @@ public class UserService {
 
   private final CacheManager cacheManager;
   private final ServiceClient mailboxClient;
+  private final MailboxInternalApiClient mailboxInternalApiClient;
 
   @Inject
-  public UserService(CacheManager cacheManager, ServiceClient mailboxClient) {
+  public UserService(CacheManager cacheManager, ServiceClient mailboxClient,
+      MailboxInternalApiClient mailboxInternalApiClient) {
     this.cacheManager = cacheManager;
     this.mailboxClient = mailboxClient;
+    this.mailboxInternalApiClient = mailboxInternalApiClient;
   }
 
   public Response getUsers(List<String> userIds, String token, Boolean ignoreCache) {

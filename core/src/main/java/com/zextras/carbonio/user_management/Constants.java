@@ -28,5 +28,15 @@ public final class Constants {
 
       private Mailbox() {}
     }
+    public static final class MailboxInternal {
+      public static final String HOST_PROPERTY = "carbonio.mailbox.internal.host";
+      public static final String PORT_PROPERTY = "carbonio.mailbox.internal.port";
+
+      public static final String DEFAULT_PROTOCOL = "http";
+      public static final String DEFAULT_HOST = "127.78.0.5";
+      public static final int DEFAULT_PORT = 20000;
+
+      private MailboxInternal() {}
+    }
   }
 }

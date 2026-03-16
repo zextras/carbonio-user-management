@@ -40,7 +40,7 @@ SPDX-License-Identifier: AGPL-3.0-only
     <!-- Dependencies -->
     <assertj.version>3.26.3</assertj.version>
     <caffeine.version>3.2.0</caffeine.version>
-    <carbonio-mailbox-sdk.version>1.14.0</carbonio-mailbox-sdk.version>
+    <carbonio-mailbox-sdk.version>1.16.0-SNAPSHOT</carbonio-mailbox-sdk.version>
     <commons-io.version>2.16.1</commons-io.version>
     <guice.version>6.0.0</guice.version>
     <jackson.version>2.17.2</jackson.version>

@@ -19,6 +19,7 @@ import com.zextras.carbonio.user_management.generated.HealthApiService;
 import com.zextras.carbonio.user_management.generated.UsersApi;
 import com.zextras.carbonio.user_management.generated.UsersApiService;
 import com.zextras.mailbox.client.MailboxClient;
+import com.zextras.mailbox.client.internal.MailboxInternalApiClient;
 import com.zextras.mailbox.client.service.ServiceClient;
 import javax.inject.Singleton;
 import org.jboss.resteasy.plugins.guice.ext.RequestScopeModule;
@@ -61,7 +62,18 @@ public class UserManagementModule extends RequestScopeModule {
       .withServer(carbonioMailboxUrl)
       .build()
       .newServiceClientBuilder()
-      .withPool(Constants.Config.Mailbox.POOL_SIZE)
       .build();
+  }
+
+  @Provides
+  @Singleton
+  public MailboxInternalApiClient provideMailboxInternalClient(UserManagementConfig config) {
+    final String endpoint = String.format(
+        "%s://%s:%s",
+        Constants.Config.MailboxInternal.DEFAULT_PROTOCOL,
+        config.getMailboxInternalHost(),
+        config.getMailboxInternalPort());
+
+    return new MailboxInternalApiClient(endpoint);
   }
 }

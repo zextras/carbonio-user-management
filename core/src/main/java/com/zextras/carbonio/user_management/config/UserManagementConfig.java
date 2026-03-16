@@ -77,4 +77,16 @@ public class UserManagementConfig {
         Constants.Config.Mailbox.PORT_PROPERTY,
         String.valueOf(Constants.Config.Mailbox.DEFAULT_PORT));
   }
+
+  public String getMailboxInternalHost() {
+    return properties.getProperty(
+        Constants.Config.MailboxInternal.HOST_PROPERTY,
+        Constants.Config.MailboxInternal.DEFAULT_HOST);
+  }
+
+  public String getMailboxInternalPort() {
+    return properties.getProperty(
+        Constants.Config.MailboxInternal.PORT_PROPERTY,
+        String.valueOf(Constants.Config.MailboxInternal.DEFAULT_PORT));
+  }
 }
