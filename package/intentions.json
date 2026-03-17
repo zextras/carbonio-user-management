@@ -64,15 +64,6 @@
               "POST"
             ]
           }
-        },
-        {
-          "Action": "allow",
-          "HTTP": {
-            "PathPrefix": "/health/",
-            "Methods": [
-              "GET"
-            ]
-          }
         }
       ]
     },
@@ -85,15 +76,6 @@
             "PathPrefix": "/usermanagement.UserManagementService/",
             "Methods": [
               "POST"
-            ]
-          }
-        },
-        {
-          "Action": "allow",
-          "HTTP": {
-            "PathPrefix": "/health/",
-            "Methods": [
-              "GET"
             ]
           }
         }
