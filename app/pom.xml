@@ -67,7 +67,7 @@ SPDX-License-Identifier: AGPL-3.0-only
     </dependency>
     <dependency>
       <groupId>com.zextras.carbonio.quarkus</groupId>
-      <artifactId>carbonio-quarkus-extensions-rate-limit</artifactId>
+      <artifactId>carbonio-quarkus-extensions-bootstrap</artifactId>
       <version>1.5.0</version>
     </dependency>
 
