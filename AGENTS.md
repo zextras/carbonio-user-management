@@ -58,3 +58,4 @@ mvn -pl app quarkus:dev
 - `UserMyselfCache` enforces one-token-per-user via a reverse index
 - Integration tests need a real Carbonio mailbox stack (Docker images from internal registry)
 - Branch `quarkus-refactor-and-cache` is the active development branch
+- `carbonio-quarkus-extensions-bootstrap` is declared explicitly in `app/pom.xml` because removing `carbonio-quarkus-extensions-rate-limit` (which used to pull it in transitively) would otherwise lose `ConfigKey`/`ApplicationConfigService` from compile scope
