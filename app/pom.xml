@@ -58,17 +58,17 @@ SPDX-License-Identifier: AGPL-3.0-only
     <dependency>
       <groupId>com.zextras.carbonio.quarkus</groupId>
       <artifactId>carbonio-quarkus-extensions-grpc-sdk</artifactId>
-      <version>1.5.0</version>
+      <version>1.6.1</version>
     </dependency>
     <dependency>
       <groupId>com.zextras.carbonio.quarkus</groupId>
       <artifactId>carbonio-quarkus-extensions-rest</artifactId>
-      <version>1.5.0</version>
+      <version>1.6.1</version>
     </dependency>
     <dependency>
       <groupId>com.zextras.carbonio.quarkus</groupId>
       <artifactId>carbonio-quarkus-extensions-bootstrap</artifactId>
-      <version>1.5.0</version>
+      <version>1.6.1</version>
     </dependency>
 
     <!-- SDK gRPC stubs -->
@@ -109,7 +109,7 @@ SPDX-License-Identifier: AGPL-3.0-only
     <dependency>
       <groupId>com.zextras.carbonio.quarkus</groupId>
       <artifactId>carbonio-quarkus-extensions-bootstrap</artifactId>
-      <version>1.5.0</version>
+      <version>1.6.1</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
