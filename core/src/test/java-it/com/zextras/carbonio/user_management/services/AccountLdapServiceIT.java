@@ -6,7 +6,6 @@ import com.unboundid.ldap.sdk.LDAPConnection;
 import com.unboundid.ldap.sdk.LDAPConnectionPool;
 import com.unboundid.ldif.LDIFReader;
 import com.zextras.carbonio.user_management.generated.model.AccountInfo;
-import com.zextras.mailbox.util.InMemoryLdapServer;
 import java.io.InputStream;
 import java.util.Optional;
 import org.junit.jupiter.api.AfterAll;
