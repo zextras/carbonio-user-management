@@ -12,6 +12,7 @@ servers:
 tags:
   - name: User
   - name: Auth
+  - name: Account
   - name: Health
 paths:
   /users:
@@ -122,6 +123,26 @@ paths:
           $ref: '#/components/responses/200UsersMyself'
         '404':
           $ref: '#/components/responses/404NotFound'
+  /account/{accountId}:
+    get:
+      tags:
+        - Account
+      summary: Gets cosId and domainId for an account by querying LDAP
+      operationId: getAccountInfo
+      parameters:
+        - in: path
+          name: accountId
+          description: The zimbraId of the account
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/200AccountInfo'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '500':
+          $ref: '#/components/responses/500ServerError'
   /auth/token/{tokenId}:
     get:
       tags:
@@ -194,6 +215,12 @@ components:
         items:
           type: string
   responses:
+    200AccountInfo:
+      description: COS ID and Domain ID for the account
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AccountInfo'
     200UserInfo:
       description: Account info of the user
       content:
@@ -233,6 +260,13 @@ components:
     500ServerError:
       description: The service is not available
   schemas:
+    AccountInfo:
+      type: object
+      properties:
+        cosId:
+          type: string
+        domainId:
+          type: string
     UserType:
       type: string
       enum:
