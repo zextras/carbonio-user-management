@@ -148,6 +148,19 @@ pipeline {
             }
         }
 
+        stage('Publish docker images') {
+            steps {
+                dockerStage([
+                        dockerfile: 'docker/minimal/carbonio-user-management/Dockerfile',
+                        imageName: 'carbonio-user-management',
+                        ocLabels: [
+                                title: 'Carbonio User Management',
+                                description: 'Carbonio User Management Service',
+                        ]
+                ])
+            }
+        }
+
         stage('Build deb/rpm') {
             steps {
                 script {
@@ -218,17 +231,6 @@ pipeline {
             }
         }
 
-        stage('Publish docker images') {
-            steps {
-                dockerStage([
-                    dockerfile: 'docker/minimal/carbonio-user-management/Dockerfile',
-                    imageName: 'carbonio-user-management',
-                    ocLabels: [
-                        title: 'Carbonio User Management',
-                        description: 'Carbonio User Management Service',
-                    ]
-                ])
-            }
-        }
+
     }
 }
