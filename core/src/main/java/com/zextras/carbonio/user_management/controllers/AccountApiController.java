@@ -6,13 +6,11 @@ package com.zextras.carbonio.user_management.controllers;
 
 import com.google.inject.Inject;
 import com.zextras.carbonio.user_management.generated.AccountApiService;
-import com.zextras.carbonio.user_management.generated.NotFoundException;
 import com.zextras.carbonio.user_management.services.AccountLdapService;
-import javax.enterprise.context.RequestScoped;
+
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
-@RequestScoped
 public class AccountApiController implements AccountApiService {
 
   private final AccountLdapService accountLdapService;
@@ -23,8 +21,7 @@ public class AccountApiController implements AccountApiService {
   }
 
   @Override
-  public Response getAccountInfo(String accountId, SecurityContext securityContext)
-      throws NotFoundException {
+  public Response getAccountInfo(String accountId, SecurityContext securityContext) {
     try {
       return accountLdapService.getCosAndDomainByAccountId(accountId)
           .map(result -> Response.ok().entity(result).build())
