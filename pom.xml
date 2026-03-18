@@ -47,6 +47,7 @@ SPDX-License-Identifier: AGPL-3.0-only
     <logback-classic.version>1.5.7</logback-classic.version>
     <mock-server.version>5.15.0</mock-server.version>
     <mockito.version>5.13.0</mockito.version>
+    <testcontainers.version>2.0.3</testcontainers.version>
     <resteasy.version>4.7.9.Final</resteasy.version>
     <swagger-core-version>1.6.14</swagger-core-version>
 
@@ -74,6 +75,15 @@ SPDX-License-Identifier: AGPL-3.0-only
 
   <dependencyManagement>
     <dependencies>
+      <!-- Testcontainers BOM -->
+      <dependency>
+        <groupId>org.testcontainers</groupId>
+        <artifactId>testcontainers-bom</artifactId>
+        <version>${testcontainers.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
       <!-- Guice dependencies -->
       <dependency>
         <groupId>com.google.inject</groupId>
@@ -254,6 +264,7 @@ SPDX-License-Identifier: AGPL-3.0-only
         <version>${commons-io.version}</version>
         <scope>test</scope>
       </dependency>
+
     </dependencies>
   </dependencyManagement>
 

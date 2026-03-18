@@ -1,0 +1,59 @@
+dn: dc=com
+objectClass: dcObject
+objectClass: organization
+dc: com
+o: com domain
+
+dn: dc=test,dc=com
+objectClass: amavisAccount
+objectClass: dcObject
+objectClass: organization
+objectClass: zimbraDomain
+dc: test
+o: test.com domain
+zimbraDomainName: test.com
+zimbraDomainType: local
+zimbraId: 094660b7-b01c-4d75-892b-733d48da7c2c
+zimbraAggregateQuotaLastUsage: 0
+zimbraAuthMech: zimbra
+zimbraCreateTimestamp: 20240117143622.149Z
+zimbraDomainCOSMaxAccounts: e00428a1-0c00-11d9-836a-000d93afea2a:1000
+zimbraDomainDefaultCOSId: e00428a1-0c00-11d9-836a-000d93afea2a
+zimbraDomainMaxAccounts: 2000
+zimbraDomainStatus: active
+zimbraGalAccountId: 5db549ce-f200-44fd-83cb-419151dd169a
+zimbraGalDefinitionLastModifiedTime: 20240117143622.153Z
+zimbraGalMode: zimbra
+zimbraMailStatus: enabled
+zimbraPublicServiceProtocol: https
+
+dn: cn=groups,dc=test,dc=com
+objectClass: organizationalRole
+cn: groups
+description: dynamic groups base
+
+dn: ou=people,dc=test,dc=com
+objectClass: organizationalRole
+cn: people
+ou: people
+
+dn: uid=testuser,ou=people,dc=test,dc=com
+objectClass: inetOrgPerson
+objectClass: zimbraAccount
+uid: testuser
+cn: Test User
+sn: User
+mail: testuser@test.com
+zimbraId: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+zimbraAccountStatus: active
+zimbraCOSId: cos-1111-2222-3333-444444444444
+
+dn: uid=nocosuser,ou=people,dc=test,dc=com
+objectClass: inetOrgPerson
+objectClass: zimbraAccount
+uid: nocosuser
+cn: No COS User
+sn: NoCos
+mail: nocosuser@test.com
+zimbraId: b2c3d4e5-f6a7-8901-bcde-f12345678901
+zimbraAccountStatus: active
