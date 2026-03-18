@@ -78,4 +78,32 @@ public class UserManagementConfig {
         Constants.Config.Mailbox.PORT_PROPERTY,
         String.valueOf(Constants.Config.Mailbox.DEFAULT_PORT));
   }
+
+  public String getLdapHost() {
+    return properties.getProperty(
+        Constants.Config.Ldap.HOST_PROPERTY,
+        Constants.Config.Ldap.DEFAULT_HOST);
+  }
+
+  public int getLdapPort() {
+    return Integer.parseInt(properties.getProperty(
+        Constants.Config.Ldap.PORT_PROPERTY,
+        String.valueOf(Constants.Config.Ldap.DEFAULT_PORT)));
+  }
+
+  public String getLdapBindDn() {
+    return properties.getProperty(
+        Constants.Config.Ldap.BIND_DN_PROPERTY,
+        Constants.Config.Ldap.DEFAULT_BIND_DN);
+  }
+
+  public String getLdapBindPassword() {
+    return properties.getProperty(Constants.Config.Ldap.BIND_PASSWORD_PROPERTY);
+  }
+
+  public String getLdapBaseDn() {
+    return properties.getProperty(
+        Constants.Config.Ldap.BASE_DN_PROPERTY,
+        Constants.Config.Ldap.DEFAULT_BASE_DN);
+  }
 }
