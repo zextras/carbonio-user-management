@@ -68,3 +68,9 @@ export -n CONSUL_HTTP_TOKEN
 
 systemctl restart carbonio-user-management.service
 systemctl restart carbonio-user-management-sidecar.service
+
+
+# TODO: add ldap user, password, url to KV
+#  user: zmlocalconfig zimbra_ldap_userdn -m nokey
+#  password: zmlocalconfig zimbra_ldap_password -s -m nokey
+#  url: zmlocalconfig ldap_url -m nokey
