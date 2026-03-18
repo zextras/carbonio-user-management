@@ -37,7 +37,6 @@ public final class UserManagementServiceConfig {
     public static final String LOCALE = "zimbraPrefLocale";
   }
 
-  public static final int MAILBOX_CONNECTION_POOL_SIZE = 5;
   public static final int MAX_BATCH_USER_IDS = 100;
 
   public static final class FeatureFlags {
