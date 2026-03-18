@@ -81,8 +81,13 @@ pipeline {
         stage('Coverage') {
             steps {
                 container('jdk-17') {
-                    sh 'mvn -B verify -P generate-jacoco-full-report'
-                    recordCoverage(tools: [[parser: 'JACOCO']],sourceCodeRetention: 'MODIFIED')
+                    withDockerRegistry([
+                            credentialsId: 'private-registry',
+                            url: 'https://registry.dev.zextras.com'
+                    ]) {
+                        sh 'mvn -B verify -P generate-jacoco-full-report'
+                        recordCoverage(tools: [[parser: 'JACOCO']], sourceCodeRetention: 'MODIFIED')
+                    }
                 }
             }
         }
