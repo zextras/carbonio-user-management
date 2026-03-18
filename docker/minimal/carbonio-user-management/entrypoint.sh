@@ -15,6 +15,12 @@ addEnvToProperties "carbonio.user-management.port" "${CARBONIO_USER_MANAGEMENT_P
 addEnvToProperties "carbonio.mailbox.host" "${CARBONIO_MAILBOX_HOST}"
 addEnvToProperties "carbonio.mailbox.port" "${CARBONIO_MAILBOX_PORT}"
 
+addEnvToProperties "carbonio.ldap.host" "${CARBONIO_LDAP_HOST}"
+addEnvToProperties "carbonio.ldap.port" "${CARBONIO_LDAP_PORT}"
+addEnvToProperties "carbonio.ldap.bind-dn" "${CARBONIO_LDAP_BIND_DN}"
+addEnvToProperties "carbonio.ldap.base-dn" "${CARBONIO_LDAP_BASE_DN}"
+addEnvToProperties "carbonio.ldap.bind-password" "${CARBONIO_LDAP_BIND_PASSWORD}"
+
 JAR=$(ls carbonio-user-management-*-jar-with-dependencies.jar | head -n 1)
 
 exec java -Djava.net.preferIPv4Stack=true \
