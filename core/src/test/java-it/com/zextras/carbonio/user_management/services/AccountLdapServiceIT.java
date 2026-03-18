@@ -77,7 +77,7 @@ class AccountLdapServiceIT {
   }
 
   @Test
-  void getCosAndDomainByAccountId_existingAccount_returnsAccountInfo() {
+  void returnsAccountInfo() {
     Optional<AccountInfo> result = accountLdapService.getCosAndDomainByAccountId(TEST_ACCOUNT_ID);
 
     assertThat(result).isPresent();
@@ -86,7 +86,7 @@ class AccountLdapServiceIT {
   }
 
   @Test
-  void getCosAndDomainByAccountId_accountWithoutCos_fallsToDomainDefault() {
+  void accountWithDefaultDomainCos() {
     Optional<AccountInfo> result = accountLdapService.getCosAndDomainByAccountId(NO_COS_ACCOUNT_ID);
 
     assertThat(result).isPresent();
@@ -95,7 +95,7 @@ class AccountLdapServiceIT {
   }
 
   @Test
-  void getCosAndDomainByAccountId_accountWithoutCosAndDomainWithoutDefaultCos_fallsToDefaultCos() {
+  void accountWithDefaultCos() {
     Optional<AccountInfo> result = accountLdapService.getCosAndDomainByAccountId(NO_COS_DOMAIN_ACCOUNT_ID);
 
     assertThat(result).isPresent();
@@ -104,7 +104,7 @@ class AccountLdapServiceIT {
   }
 
   @Test
-  void getCosAndDomainByAccountId_nonExistentAccount_returnsEmpty() {
+  void nonExistentAccount() {
     Optional<AccountInfo> result = accountLdapService.getCosAndDomainByAccountId("non-existent-id");
 
     assertThat(result).isEmpty();
