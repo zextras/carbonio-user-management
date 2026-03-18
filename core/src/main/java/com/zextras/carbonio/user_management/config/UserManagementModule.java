@@ -7,11 +7,18 @@ package com.zextras.carbonio.user_management.config;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.google.inject.Provides;
+import com.google.inject.name.Named;
+import com.unboundid.ldap.sdk.LDAPConnection;
+import com.unboundid.ldap.sdk.LDAPConnectionPool;
+import com.unboundid.ldap.sdk.LDAPException;
 import com.zextras.carbonio.user_management.Constants;
+import com.zextras.carbonio.user_management.controllers.AccountApiController;
 import com.zextras.carbonio.user_management.controllers.AuthApiController;
 import com.zextras.carbonio.user_management.controllers.HealthApiController;
 import com.zextras.carbonio.user_management.controllers.UsersApiController;
 import com.zextras.carbonio.user_management.exceptions.ServiceExceptionMapper;
+import com.zextras.carbonio.user_management.generated.AccountApi;
+import com.zextras.carbonio.user_management.generated.AccountApiService;
 import com.zextras.carbonio.user_management.generated.AuthApi;
 import com.zextras.carbonio.user_management.generated.AuthApiService;
 import com.zextras.carbonio.user_management.generated.HealthApi;
@@ -38,6 +45,10 @@ public class UserManagementModule extends RequestScopeModule {
 
     bind(AuthApi.class);
     bind(AuthApiService.class).to(AuthApiController.class);
+
+    bind(AccountApi.class);
+    bind(AccountApiService.class).to(AccountApiController.class);
+
   }
 
   @Provides
@@ -46,6 +57,26 @@ public class UserManagementModule extends RequestScopeModule {
     final UserManagementConfig config = new UserManagementConfig();
     config.loadConfig();
     return config;
+  }
+
+  @Provides
+  @Singleton
+  public LDAPConnectionPool provideLdapConnectionPool(UserManagementConfig config)
+      throws LDAPException {
+    LDAPConnection connection = new LDAPConnection(
+        config.getLdapHost(),
+        config.getLdapPort(),
+        config.getLdapBindDn(),
+        config.getLdapBindPassword()
+    );
+    return new LDAPConnectionPool(connection, Constants.Config.Ldap.POOL_SIZE);
+  }
+
+  @Provides
+  @Singleton
+  @Named("ldapBaseDn")
+  public String provideLdapBaseDn(UserManagementConfig config) {
+    return config.getLdapBaseDn();
   }
 
   @Provides
