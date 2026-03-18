@@ -1,8 +1,16 @@
+# ===========================
+# Top-level domain component
+# ===========================
+
 dn: dc=com
 objectClass: dcObject
 objectClass: organization
 dc: com
 o: com domain
+
+# ===========================
+# Domain: test.com (has zimbraDomainDefaultCOSId set)
+# ===========================
 
 dn: dc=test,dc=com
 objectClass: amavisAccount
@@ -37,6 +45,7 @@ objectClass: organizationalRole
 cn: people
 ou: people
 
+# Account with an explicit zimbraCOSId -> COS resolved from account directly
 dn: uid=testuser,ou=people,dc=test,dc=com
 objectClass: inetOrgPerson
 objectClass: zimbraAccount
@@ -48,6 +57,7 @@ zimbraId: a1b2c3d4-e5f6-7890-abcd-ef1234567890
 zimbraAccountStatus: active
 zimbraCOSId: cos-1111-2222-3333-444444444444
 
+# Account without zimbraCOSId -> COS resolved from domain's zimbraDomainDefaultCOSId
 dn: uid=nocosuser,ou=people,dc=test,dc=com
 objectClass: inetOrgPerson
 objectClass: zimbraAccount
@@ -56,4 +66,36 @@ cn: No COS User
 sn: NoCos
 mail: nocosuser@test.com
 zimbraId: b2c3d4e5-f6a7-8901-bcde-f12345678901
+zimbraAccountStatus: active
+
+# ===========================
+# Domain: nocos.com (no zimbraDomainDefaultCOSId set)
+# ===========================
+
+dn: dc=nocos,dc=com
+objectClass: dcObject
+objectClass: organization
+objectClass: zimbraDomain
+dc: nocos
+o: nocos.com domain
+zimbraDomainName: nocos.com
+zimbraDomainType: local
+zimbraId: 11111111-2222-3333-4444-555555555555
+zimbraDomainStatus: active
+
+dn: ou=people,dc=nocos,dc=com
+objectClass: organizationalRole
+cn: people
+ou: people
+
+# Account without zimbraCOSId in a domain without zimbraDomainDefaultCOSId
+# -> COS resolved from the global "default" COS entry
+dn: uid=nocosdomain-user,ou=people,dc=nocos,dc=com
+objectClass: inetOrgPerson
+objectClass: zimbraAccount
+uid: nocosdomain-user
+cn: No Cos Domain User
+sn: NoCos
+mail: nocosdomain-user@nocos.com
+zimbraId: c3d4e5f6-a7b8-9012-cdef-123456789012
 zimbraAccountStatus: active

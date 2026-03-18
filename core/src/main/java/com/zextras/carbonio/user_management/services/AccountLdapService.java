@@ -87,6 +87,21 @@ public class AccountLdapService {
         cosId = domainEntry.getAttributeValue("zimbraDomainDefaultCOSId");
       }
 
+      // COS fallback: if still not set, lookup the "default" COS
+      if (cosId == null) {
+        Filter defaultCosFilter = Filter.createANDFilter(
+            Filter.createEqualityFilter("cn", "default"),
+            Filter.createEqualityFilter("objectClass", "zimbraCOS")
+        );
+        SearchRequest cosSearch = new SearchRequest(
+            baseDn, SearchScope.SUB, defaultCosFilter, "zimbraId"
+        );
+        SearchResult cosResult = connectionPool.search(cosSearch);
+        if (cosResult.getEntryCount() > 0) {
+          cosId = cosResult.getSearchEntries().get(0).getAttributeValue("zimbraId");
+        }
+      }
+
       AccountInfo accountInfo = new AccountInfo();
       accountInfo.setCosId(cosId);
       accountInfo.setDomainId(domainId);

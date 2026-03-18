@@ -2,8 +2,12 @@ package com.zextras.carbonio.user_management.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.unboundid.ldap.sdk.Filter;
 import com.unboundid.ldap.sdk.LDAPConnection;
 import com.unboundid.ldap.sdk.LDAPConnectionPool;
+import com.unboundid.ldap.sdk.SearchRequest;
+import com.unboundid.ldap.sdk.SearchResult;
+import com.unboundid.ldap.sdk.SearchScope;
 import com.unboundid.ldif.LDIFReader;
 import com.zextras.carbonio.user_management.generated.model.AccountInfo;
 import java.io.InputStream;
@@ -34,6 +38,11 @@ class AccountLdapServiceIT {
 
   private static final String NO_COS_ACCOUNT_ID = "b2c3d4e5-f6a7-8901-bcde-f12345678901";
 
+  private static final String NO_COS_DOMAIN_ID = "11111111-2222-3333-4444-555555555555";
+  private static final String NO_COS_DOMAIN_ACCOUNT_ID = "c3d4e5f6-a7b8-9012-cdef-123456789012";
+
+  private static String defaultCosId;
+
   private static LDAPConnectionPool connectionPool;
   private static AccountLdapService accountLdapService;
 
@@ -57,6 +66,7 @@ class AccountLdapServiceIT {
     accountLdapService = new AccountLdapService(connectionPool, BASE_DN);
 
     loadLdifData();
+    defaultCosId = lookupDefaultCosId();
   }
 
   @AfterAll
@@ -85,10 +95,30 @@ class AccountLdapServiceIT {
   }
 
   @Test
+  void getCosAndDomainByAccountId_accountWithoutCosAndDomainWithoutDefaultCos_fallsToDefaultCos() {
+    Optional<AccountInfo> result = accountLdapService.getCosAndDomainByAccountId(NO_COS_DOMAIN_ACCOUNT_ID);
+
+    assertThat(result).isPresent();
+    assertThat(result.get().getCosId()).isEqualTo(defaultCosId);
+    assertThat(result.get().getDomainId()).isEqualTo(NO_COS_DOMAIN_ID);
+  }
+
+  @Test
   void getCosAndDomainByAccountId_nonExistentAccount_returnsEmpty() {
     Optional<AccountInfo> result = accountLdapService.getCosAndDomainByAccountId("non-existent-id");
 
     assertThat(result).isEmpty();
+  }
+
+  private static String lookupDefaultCosId() throws Exception {
+    Filter filter = Filter.createANDFilter(
+        Filter.createEqualityFilter("cn", "default"),
+        Filter.createEqualityFilter("objectClass", "zimbraCOS")
+    );
+    SearchRequest search = new SearchRequest(BASE_DN, SearchScope.SUB, filter, "zimbraId");
+    SearchResult result = connectionPool.search(search);
+    assertThat(result.getEntryCount()).as("default COS must exist in the LDAP image").isGreaterThan(0);
+    return result.getSearchEntries().get(0).getAttributeValue("zimbraId");
   }
 
   private static void loadLdifData() throws Exception {
