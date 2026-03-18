@@ -103,6 +103,7 @@ public class AccountLdapService {
       }
 
       AccountInfo accountInfo = new AccountInfo();
+      accountInfo.setAccountId(accountId);
       accountInfo.setCosId(cosId);
       accountInfo.setDomainId(domainId);
       return Optional.of(accountInfo);

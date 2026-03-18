@@ -263,6 +263,8 @@ components:
     AccountInfo:
       type: object
       properties:
+        accountId:
+          type: string
         cosId:
           type: string
         domainId:
