@@ -104,13 +104,11 @@ pipeline {
                 expression { params.SKIP_TESTS == false }
             }
             steps {
-                container('jdk-21') {
-
-                    withDockerRegistry([
-                            credentialsId: 'private-registry',
-                            url: 'https://registry.dev.zextras.com'
-                    ]) {
-                        sh 'mvn -B verify -P run-integration-tests'
+                container('dind') {
+                    withDockerRegistry(credentialsId: 'private-registry', url: 'https://registry.dev.zextras.com') {
+                        container('jdk-21') {
+                            sh 'mvn -B verify -P run-integration-tests'
+                        }
                     }
                 }
             }
