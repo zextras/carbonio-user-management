@@ -21,7 +21,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
   <groupId>com.zextras.carbonio.user-management</groupId>
   <artifactId>carbonio-user-management</artifactId>
-  <version>0.8.3-1</version>
+  <version>${revision}${changelist}</version>
   <packaging>pom</packaging>
 
   <name>carbonio-user-management</name>
@@ -34,9 +34,13 @@ SPDX-License-Identifier: AGPL-3.0-only
   </modules>
 
   <properties>
+    <!-- Maven CI Friendly -->
+    <revision>1.0.3</revision>
+
+    <!-- Dependencies -->
     <assertj.version>3.26.3</assertj.version>
     <caffeine.version>3.2.0</caffeine.version>
-    <carbonio-mailbox-sdk.version>1.11.0</carbonio-mailbox-sdk.version>
+    <carbonio-mailbox-sdk.version>1.14.0</carbonio-mailbox-sdk.version>
     <commons-io.version>2.16.1</commons-io.version>
     <guice.version>6.0.0</guice.version>
     <jackson.version>2.17.2</jackson.version>
@@ -46,25 +50,26 @@ SPDX-License-Identifier: AGPL-3.0-only
     <junit5.version>5.11.0</junit5.version>
     <logback-classic.version>1.5.7</logback-classic.version>
     <mock-server.version>5.15.0</mock-server.version>
-    <mockito.version>5.13.0</mockito.version>
+    <mockito.version>5.20.0</mockito.version>
     <testcontainers.version>2.0.3</testcontainers.version>
     <resteasy.version>4.7.9.Final</resteasy.version>
     <swagger-core-version>1.6.14</swagger-core-version>
 
     <!-- Plugins -->
-    <build-helper-maven-plugin.version>3.6.0</build-helper-maven-plugin.version>
+    <build-helper-maven-plugin.version>3.6.1</build-helper-maven-plugin.version>
     <maven-assembly-plugin.version>3.7.1</maven-assembly-plugin.version>
     <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
-    <maven-failsafe.version>3.5.0</maven-failsafe.version>
+    <maven-failsafe.version>3.5.4</maven-failsafe.version>
     <maven-jacoco.version>0.8.12</maven-jacoco.version>
     <maven-jar-plugin.version>3.4.2</maven-jar-plugin.version>
-    <maven-surfire.version>3.3.1</maven-surfire.version>
+    <maven-surefire.version>3.5.4</maven-surefire.version>
     <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
     <openapi-generator-maven-plugin.version>7.8.0</openapi-generator-maven-plugin.version>
 
     <!-- Other properties -->
-    <maven.compiler.source>17</maven.compiler.source>
-    <maven.compiler.target>17</maven.compiler.target>
+    <maven.compiler.source>21</maven.compiler.source>
+    <maven.compiler.target>21</maven.compiler.target>
+    <maven.version.ignore>(?i).*-(alpha|beta|m|rc)([-.]?\d+)?</maven.version.ignore>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
     <!-- Flags to skip/run tests and the report generation -->
@@ -201,6 +206,7 @@ SPDX-License-Identifier: AGPL-3.0-only
         <artifactId>carbonio-mailbox-sdk</artifactId>
         <version>${carbonio-mailbox-sdk.version}</version>
       </dependency>
+
       <dependency>
         <groupId>jakarta.activation</groupId>
         <artifactId>jakarta.activation-api</artifactId>
@@ -286,7 +292,7 @@ SPDX-License-Identifier: AGPL-3.0-only
                 <modelPackage>com.zextras.carbonio.user_management.generated.model</modelPackage>
                 <configOptions>
                   <artifactDescription>User Management generated</artifactDescription>
-                  <librart>resteasy</librart>
+                  <library>resteasy</library>
                   <serializationLibrary>jackson</serializationLibrary>
                   <dateLibrary>java8</dateLibrary>
                 </configOptions>
@@ -339,6 +345,32 @@ SPDX-License-Identifier: AGPL-3.0-only
             </execution>
           </executions>
         </plugin>
+
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>flatten-maven-plugin</artifactId>
+          <version>1.1.0</version>
+          <configuration>
+              <updatePomFile>true</updatePomFile>
+              <flattenMode>resolveCiFriendliesOnly</flattenMode>
+          </configuration>
+          <executions>
+              <execution>
+                  <id>flatten</id>
+                  <phase>process-resources</phase>
+                  <goals>
+                      <goal>flatten</goal>
+                  </goals>
+              </execution>
+              <execution>
+                  <id>flatten.clean</id>
+                  <phase>clean</phase>
+                  <goals>
+                      <goal>clean</goal>
+                  </goals>
+              </execution>
+          </executions>
+        </plugin>
       </plugins>
     </pluginManagement>
   </build>
@@ -350,4 +382,22 @@ SPDX-License-Identifier: AGPL-3.0-only
       <url>https://zextras.jfrog.io/artifactory/java-sdk</url>
     </repository>
   </repositories>
+
+  <profiles>
+    <profile>
+      <id>dev</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <properties>
+        <changelist>-SNAPSHOT</changelist>
+      </properties>
+    </profile>
+    <profile>
+      <id>prod</id>
+      <properties>
+        <changelist></changelist>
+      </properties>
+    </profile>
+  </profiles>
 </project>

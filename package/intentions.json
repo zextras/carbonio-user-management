@@ -100,6 +100,21 @@
         {
           "Action": "allow",
           "HTTP": {
+            "PathPrefix": "/users/myself/",
+            "Header": [
+              {
+                "Name": "Cookie",
+                "Present": true
+              }
+            ],
+            "Methods": [
+              "GET"
+            ]
+          }
+        },
+        {
+          "Action": "allow",
+          "HTTP": {
             "PathPrefix": "/users",
             "Header": [
               {
@@ -153,6 +168,21 @@
         {
           "Action": "allow",
           "HTTP": {
+            "PathPrefix": "/users/myself/",
+            "Header": [
+              {
+                "Name": "Cookie",
+                "Present": true
+              }
+            ],
+            "Methods": [
+              "GET"
+            ]
+          }
+        },
+        {
+          "Action": "allow",
+          "HTTP": {
             "PathPrefix": "/health/",
             "Methods": [
               "GET"
@@ -168,6 +198,21 @@
           "Action": "allow",
           "HTTP": {
             "PathPrefix": "/auth/token/",
+            "Methods": [
+              "GET"
+            ]
+          }
+        },
+        {
+          "Action": "allow",
+          "HTTP": {
+            "PathPrefix": "/users/myself/",
+            "Header": [
+              {
+                "Name": "Cookie",
+                "Present": true
+              }
+            ],
             "Methods": [
               "GET"
             ]
@@ -244,6 +289,21 @@
           "Action": "allow",
           "HTTP": {
             "PathPrefix": "/auth/token/",
+            "Methods": [
+              "GET"
+            ]
+          }
+        },
+        {
+          "Action": "allow",
+          "HTTP": {
+            "PathPrefix": "/users/myself/",
+            "Header": [
+              {
+                "Name": "Cookie",
+                "Present": true
+              }
+            ],
             "Methods": [
               "GET"
             ]

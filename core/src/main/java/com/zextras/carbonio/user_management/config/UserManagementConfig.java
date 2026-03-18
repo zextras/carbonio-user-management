@@ -6,7 +6,6 @@ package com.zextras.carbonio.user_management.config;
 
 import com.google.inject.Singleton;
 import com.zextras.carbonio.user_management.Constants;
-import com.zextras.carbonio.user_management.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

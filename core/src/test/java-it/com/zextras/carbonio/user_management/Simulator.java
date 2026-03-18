@@ -84,8 +84,7 @@ public final class Simulator implements AutoCloseable {
     }
   }
 
-  private void startJettyServer() {
-    try {
+  private void startJettyServer() throws Exception {
       jettyServer = new Server();
       httpLocalConnector = new LocalConnector(jettyServer);
       jettyServer.addConnector(httpLocalConnector);
@@ -101,22 +100,15 @@ public final class Simulator implements AutoCloseable {
       jettyServer.setHandler(servletHandler);
 
       jettyServer.start();
-    } catch (Exception exception) {
-      throw new RuntimeException(exception);
-    }
   }
 
-  private void stopJettyServer() {
+  private void stopJettyServer() throws Exception {
     if (jettyServer != null) {
-      try {
         jettyServer.stop();
-      } catch (Exception exception) {
-        throw new RuntimeException(exception);
-      }
     }
   }
 
-  public Simulator start() {
+  public Simulator start() throws Exception {
     startJettyServer();
     return this;
   }
@@ -125,13 +117,13 @@ public final class Simulator implements AutoCloseable {
     mailboxServiceMock.reset();
   }
 
-  public void stopAll() {
+  public void stopAll() throws Exception {
     stopJettyServer();
     stopMailboxService();
   }
 
   @Override
-  public void close() {
+  public void close() throws Exception {
     stopAll();
   }
 

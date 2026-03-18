@@ -12,14 +12,17 @@ import javax.ws.rs.core.SecurityContext;
 @RequestScoped
 public class HealthApiController implements HealthApiService {
 
+  @Override
   public Response generalCheck(SecurityContext securityContext) {
     return Response.ok().build();
   }
 
+  @Override
   public Response liveCheck(SecurityContext securityContext) {
     return Response.ok().build();
   }
 
+  @Override
   public Response readyCheck(SecurityContext securityContext) {
     return Response.ok().build();
   }

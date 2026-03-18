@@ -26,6 +26,10 @@ public class Boot {
   private static final Logger logger = (Logger) LoggerFactory.getLogger("ROOT");
 
   public static void main(String[] args) throws Exception {
+    Thread.setDefaultUncaughtExceptionHandler((thread, throwable) ->
+      logger.error("Unhandled exception in thread {}", thread.getName(), throwable)
+    );
+
     logger.setLevel(Level.INFO);
     injector = Guice.createInjector(new UserManagementModule());
     // Force the initialization of the mailbox client pool (they require some seconds to start up)

@@ -32,7 +32,7 @@ class GetMyselfByCookieApiIT {
   static List<String> getInfoRequestSections;
 
   @BeforeAll
-  static void init() {
+  static void init() throws Exception {
     getInfoRequestSections = List.of("children","attrs","prefs");
     simulator = SimulatorBuilder
       .aSimulator()
@@ -48,7 +48,7 @@ class GetMyselfByCookieApiIT {
   }
 
   @AfterAll
-  static void cleanUpAll() {
+  static void cleanUpAll() throws Exception {
     simulator.close();
   }
 
@@ -173,10 +173,6 @@ class GetMyselfByCookieApiIT {
       .parseResponse(HttpTester.from(httpLocalConnector.getResponse(request.generate())));
 
     // Then
-    Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR_500);
-    Assertions
-      .assertThat(response.getContent())
-      .hasSize(64)
-      .isEqualTo("Unable to get account user info due to an internal service error");
+    Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND_404);
   }
 }

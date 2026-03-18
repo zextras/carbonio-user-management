@@ -4,35 +4,38 @@
 
 package com.zextras.carbonio.user_management.services;
 
-import static com.zextras.mailbox.client.service.ServiceRequests.AccountInfo;
-import static com.zextras.mailbox.client.service.ServiceRequests.Info;
-
 import com.google.inject.Inject;
 import com.zextras.carbonio.user_management.cache.CacheManager;
 import com.zextras.carbonio.user_management.entities.UserToken;
-import com.zextras.carbonio.user_management.exceptions.ServiceException;
 import com.zextras.carbonio.user_management.generated.model.UserId;
 import com.zextras.carbonio.user_management.generated.model.UserInfo;
 import com.zextras.carbonio.user_management.generated.model.UserMyself;
 import com.zextras.carbonio.user_management.generated.model.UserStatus;
 import com.zextras.carbonio.user_management.generated.model.UserType;
+import com.zextras.mailbox.client.MailboxClientException;
 import com.zextras.mailbox.client.MailboxServerException;
 import com.zextras.mailbox.client.requests.Request;
 import com.zextras.mailbox.client.service.InfoRequests.Sections;
 import com.zextras.mailbox.client.service.ServiceClient;
 import com.zextras.wsdl.zimbraservice.ZcsPortType;
+import jakarta.xml.ws.WebServiceException;
+import org.apache.commons.lang3.LocaleUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import zimbra.NamedValue;
+import zimbraaccount.Attr;
+import zimbraaccount.GetAccountInfoResponse;
+import zimbraaccount.GetInfoResponse;
+import zimbraaccount.Pref;
+
+import javax.ws.rs.core.Response;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import org.apache.commons.lang3.LocaleUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import zimbraaccount.Attr;
-import zimbraaccount.GetAccountInfoResponse;
-import zimbraaccount.GetInfoResponse;
+
+import static com.zextras.mailbox.client.service.ServiceRequests.AccountInfo;
+import static com.zextras.mailbox.client.service.ServiceRequests.Info;
 
 public class UserService {
 
@@ -47,46 +50,6 @@ public class UserService {
     this.mailboxClient = mailboxClient;
   }
 
-  private UserInfo createUserInfo(GetAccountInfoResponse accountInfo) {
-    UserInfo userInfo = new UserInfo();
-
-    // default value in case zimbraIsExternalVirtualAccount is not returned
-    userInfo.setType(UserType.INTERNAL);
-    // default value in case status is not returned
-    userInfo.setStatus(UserStatus.CLOSED);
-
-    accountInfo
-        .getAttr()
-        .forEach(
-            attribute -> {
-              if (attribute.getName().equals("displayName")) {
-                userInfo.setFullName(attribute.getValue());
-              }
-
-              if (attribute.getName().equals("zimbraId")) {
-                UserId userId = new UserId();
-                userId.setUserId(attribute.getValue());
-                userInfo.setId(userId);
-              }
-
-              if (attribute.getName().equals("zimbraAccountStatus")) {
-                userInfo.setStatus(UserStatus.valueOf(attribute.getValue().toUpperCase()));
-              }
-
-              if (attribute.getName().equals("zimbraIsExternalVirtualAccount")) {
-                userInfo.setType(
-                    Boolean.parseBoolean(attribute.getValue().toLowerCase())
-                        ? UserType.GUEST
-                        : UserType.INTERNAL);
-              }
-            });
-
-    userInfo.setEmail(accountInfo.getName());
-    userInfo.setDomain(accountInfo.getPublicURL());
-
-    return userInfo;
-  }
-
   public Response getUsers(List<String> userIds, String token, Boolean ignoreCache) {
     return Response.ok()
         .entity(
@@ -94,7 +57,7 @@ public class UserService {
                 .distinct()
                 .map(
                     userId -> {
-                      System.out.println("Requested: " + userId);
+                      logger.debug("Requested: {}", userId);
 
                       UserInfo userInfo = null;
                       if (ignoreCache == null || !ignoreCache) {
@@ -107,13 +70,14 @@ public class UserService {
                               AccountInfo.byId(userId).withAuthToken(token);
                           final GetAccountInfoResponse accountInfo = mailboxClient.send(request);
 
-                          userInfo = createUserInfo(accountInfo);
+                          userInfo = createUserInfoFromAccountInfoResponse(accountInfo);
                           cacheManager.getUserByIdCache().put(userId, userInfo);
                           cacheManager.getUserByEmailCache().put(userInfo.getEmail(), userInfo);
-                          System.out.println("Found: " + userId);
-                        } catch (Exception e) {
-                          logger.error(
-                              "GetUsers with userId {} and token {} falied: {}", userId, token, e);
+                          logger.debug("Found: {}", userId);
+                        } catch (WebServiceException | MailboxServerException e) {
+                          logger.error("GetUsers with userId {} and token {} server failed.", userId, token, e);
+                        } catch (MailboxClientException e) {
+                            logger.error("GetUsers with userId {} and token {} client failed.", userId, token, e);
                         }
                       }
 
@@ -124,8 +88,8 @@ public class UserService {
         .build();
   }
 
-  public Response getInfoById(String userId, String token, Boolean ignoreCache) {
-    System.out.println("Requested: " + userId);
+  public Optional<UserInfo> getInfoById(String userId, String token, Boolean ignoreCache) {
+    logger.debug("Requested: {}", userId);
 
     UserInfo userInfo = null;
     if (ignoreCache == null || !ignoreCache) {
@@ -138,24 +102,24 @@ public class UserService {
             AccountInfo.byId(userId).withAuthToken(token);
         final GetAccountInfoResponse accountInfo = mailboxClient.send(request);
 
-        userInfo = createUserInfo(accountInfo);
+        userInfo = createUserInfoFromAccountInfoResponse(accountInfo);
         cacheManager.getUserByIdCache().put(userId, userInfo);
         cacheManager.getUserByEmailCache().put(userInfo.getEmail(), userInfo);
 
-      } catch (MailboxServerException e) {
-        logger.error("GetInfoById with userId {} and token {} falied: {}", userId, token, e);
-        return Response.status(Status.NOT_FOUND).build();
-      } catch (Exception e) {
-        logger.error("GetInfoById with userId {} and token {} falied: {}", userId, token, e);
-        return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+      } catch (WebServiceException | MailboxServerException e) {
+        logger.error("GetInfoById with userId {} and token {} server failed.", userId, token, e);
+        return Optional.empty();
+      } catch (MailboxClientException e) {
+        logger.error("GetInfoById with userId {} and token {} client failed.", userId, token, e);
+        return Optional.empty();
       }
     }
-    System.out.println(userInfo.getId().getUserId());
-    return Response.ok().entity(userInfo).build();
+    logger.debug(userInfo.getId().getUserId());
+    return Optional.of(userInfo);
   }
 
-  public Response getInfoByEmail(String userEmail, String token, Boolean ignoreCache) {
-    System.out.println("Requested: " + userEmail);
+  public Optional<UserInfo> getInfoByEmail(String userEmail, String token, Boolean ignoreCache) {
+    logger.debug("Requested: {}", userEmail);
 
     UserInfo userInfo = null;
     if (ignoreCache == null || !ignoreCache) {
@@ -168,26 +132,24 @@ public class UserService {
             AccountInfo.byEmail(userEmail).withAuthToken(token);
         final GetAccountInfoResponse accountInfo = mailboxClient.send(request);
 
-        userInfo = createUserInfo(accountInfo);
+        userInfo = createUserInfoFromAccountInfoResponse(accountInfo);
         cacheManager.getUserByEmailCache().put(userEmail, userInfo);
         cacheManager.getUserByIdCache().put(userInfo.getId().getUserId(), userInfo);
 
-      } catch (MailboxServerException e) {
-        logger.error(
-            "GetInfoByEmail with user email {} and token {} failed: {}", userEmail, token, e);
-        return Response.status(Status.NOT_FOUND).build();
-      } catch (Exception e) {
-        logger.error(
-            "GetInfoByEmail with user email {} and token {} failed: {}", userEmail, token, e);
-        return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+      } catch (WebServiceException | MailboxServerException e) {
+        logger.error("GetInfoByEmail with user email {} and token {} server failed.", userEmail, token, e);
+        return Optional.empty();
+      } catch (MailboxClientException e) {
+        logger.error("GetInfoByEmail with user email {} and token {} client failed.", userEmail, token, e);
+        return Optional.empty();
       }
     }
-    System.out.println(userInfo.getId().getUserId());
-    return Response.ok().entity(userInfo).build();
+    logger.debug(userInfo.getId().getUserId());
+    return Optional.of(userInfo);
   }
 
   public Optional<UserMyself> getMyselfByToken(String token, Boolean ignoreCache) {
-    System.out.println("Requested: " + token);
+    logger.debug("Requested: {}", token);
 
     UserMyself userMyself = null;
     if (ignoreCache == null || !ignoreCache) {
@@ -200,81 +162,23 @@ public class UserService {
             Info.sections(Sections.children, Sections.attrs, Sections.prefs).withAuthToken(token);
         final GetInfoResponse infoResponse = mailboxClient.send(request);
 
-        UserId userId = new UserId();
-        userId.setUserId(infoResponse.getId());
-
-        // This old style try/catch is necessary because:
-        //  - the system cannot trust the user locale since it can be set manually by the sysadmin
-        //    and there is no check if the value is a valid one. So the LocaleUtils#toLocale method
-        //    can raise an exception if the Locale is malformed.
-        //  - the project doesn't have the Vavr dependency containing the Try construct to handle
-        // the
-        //    exception in a cleaner way and I don't want to add it now only for this.
-        Locale locale;
-        try {
-          locale =
-              infoResponse.getPrefs().getPref().stream()
-                  .filter(perf -> perf.getName().equals("zimbraPrefLocale"))
-                  .findFirst()
-                  .map(pref -> {
-                    System.out.println("User myself " + userId.getUserId() + " requested, has locale " + pref.getValue());
-                    return LocaleUtils.toLocale(pref.getValue());
-                  })
-                  .orElse(Locale.ENGLISH);
-        } catch (IllegalArgumentException exception) {
-          logger.error(
-              "The user id {} has a locale with an invalid format. The system falls back in '{}'",
-              userId.getUserId(),
-              Locale.ENGLISH);
-
-          locale = Locale.ENGLISH;
-        }
-
-        String fullName =
-            infoResponse.getAttrs().getAttr().stream()
-                .filter(attribute -> attribute.getName().equals("displayName"))
-                .findFirst()
-                .map(Attr::getValue)
-                .orElse("");
-
-        UserType userType =
-            Boolean.parseBoolean(
-                    infoResponse.getAttrs().getAttr().stream()
-                        .filter(
-                            attribute ->
-                                attribute.getName().equals("zimbraIsExternalVirtualAccount"))
-                        .findFirst()
-                        .map(Attr::getValue)
-                        .orElse("FALSE") // default value, will be translated to type internal
-                        .toLowerCase())
-                ? UserType.GUEST
-                : UserType.INTERNAL;
-
-        userMyself = new UserMyself();
-        userMyself.setId(userId);
-        userMyself.setEmail(infoResponse.getName());
-        userMyself.setDomain(infoResponse.getPublicURL());
-        userMyself.setFullName(fullName);
-        userMyself.setLocale(locale.toString());
-        userMyself.setType(userType);
-
+        userMyself = createUserMyselfFromInfoResponse(infoResponse);
         cacheManager.getUserMyselfCache().put(token, userMyself);
 
-      } catch (MailboxServerException exception) {
-        logger.error("GetMyselfByToken with token {} failed: {}", token, exception);
+      } catch (WebServiceException | MailboxServerException exception) {
+        logger.error("GetMyselfByToken with token {} server failed.", token, exception);
         return Optional.empty();
-      } catch (Exception exception) {
-        logger.error("GetMyselfByToken with token {} failed: {}", token, exception);
-        throw new ServiceException(
-            "Unable to get account user info due to an internal service error");
+      } catch (MailboxClientException exception) {
+        logger.error("GetMyselfByToken with token {} client failed.", token, exception);
+        return Optional.empty();
       }
     }
 
     return Optional.of(userMyself);
   }
 
-  public Response validateUserToken(String token) {
-    System.out.println("Validate: " + token);
+  public Optional<UserId> validateUserToken(String token) {
+    logger.debug("Validate: {}", token);
     // We can't use Optional.ofNullable because validateAuthToken throws exceptions and
     // we need to return different status codes based on different exceptions
     UserToken userToken = cacheManager.getUserTokenCache().getIfPresent(token);
@@ -289,18 +193,131 @@ public class UserService {
 
         cacheManager.getUserTokenCache().put(token, userToken);
 
-      } catch (MailboxServerException e) {
-        logger.error("ValidateUserToken with token {} failed: {}", token, e);
-        return Response.status(Status.UNAUTHORIZED).build();
-      } catch (Exception e) {
-        logger.error("ValidateUserToken with token {} failed: {}", token, e);
-        return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+      } catch (WebServiceException | MailboxServerException e) {
+        logger.error("ValidateUserToken with token {} server failed.", token, e);
+        return Optional.empty();
+      } catch (MailboxClientException e) {
+        logger.error("ValidateUserToken with token {} client failed.", token, e);
+        return Optional.empty();
       }
     }
 
     UserId userId = new UserId();
-    userId.setUserId(userToken.getUserId());
-    System.out.println(userId.getUserId());
-    return Response.ok().entity(userId).build();
+    userId.setUserId(userToken.userId());
+    logger.debug(userId.getUserId());
+    return Optional.of(userId);
+  }
+
+  private UserInfo createUserInfoFromAccountInfoResponse(GetAccountInfoResponse accountInfo) {
+    UserInfo userInfo = new UserInfo();
+    userInfo.setEmail(accountInfo.getName());
+    userInfo.setDomain(accountInfo.getPublicURL());
+    extractAttributesIntoUserInfo(userInfo, accountInfo.getAttr());
+    return userInfo;
+  }
+
+  private UserMyself createUserMyselfFromInfoResponse(GetInfoResponse infoResponse) {
+    UserMyself userMyself = new UserMyself();
+    userMyself.setEmail(infoResponse.getName());
+    userMyself.setDomain(infoResponse.getPublicURL());
+    extractAttributesIntoUserMyself(userMyself, infoResponse.getAttrs().getAttr());
+    extractPreferencesIntoUserMyself(userMyself, infoResponse.getPrefs().getPref());
+    return userMyself;
+  }
+
+  private void extractAttributesIntoUserInfo(UserInfo user, List<NamedValue> attrs) {
+    // The attribute zimbraIsExternalVirtualAccount is not returned if it doesn't have a value;
+    // in that case the user is internal, so we default to internal and eventually it will get overwritten.
+    user.setType(UserType.INTERNAL);
+    // Not every user has a name, set to empty as default for compatibility
+    user.setFullName("");
+
+    for (NamedValue attribute : attrs) {
+      String name = attribute.getName();
+      String value = attribute.getValue();
+
+      switch (name) {
+        case "displayName":
+          user.setFullName(value);
+          break;
+        case "zimbraId":
+          UserId userId = new UserId();
+          userId.setUserId(value);
+          user.setId(userId);
+          break;
+        case "zimbraAccountStatus":
+          user.setStatus(UserStatus.valueOf(value.toUpperCase()));
+          break;
+        case "zimbraIsExternalVirtualAccount":
+          user.setType(Boolean.parseBoolean(value.toLowerCase())
+            ? UserType.GUEST
+            : UserType.INTERNAL);
+          break;
+      }
+    }
+  }
+
+  private void extractAttributesIntoUserMyself(UserMyself user, List<Attr> attrs) {
+    // The attribute zimbraIsExternalVirtualAccount is not returned if it doesn't have a value;
+    // in that case the user is internal, so we default to internal and eventually it will get overwritten.
+    user.setType(UserType.INTERNAL);
+    // Not every user has a name, set to empty as default for compatibility
+    user.setFullName("");
+
+    for (Attr attribute : attrs) {
+      String name = attribute.getName();
+      String value = attribute.getValue();
+
+      switch (name) {
+        case "displayName":
+          user.setFullName(value);
+          break;
+        case "zimbraId":
+          UserId userId = new UserId();
+          userId.setUserId(value);
+          user.setId(userId);
+          break;
+        case "zimbraAccountStatus":
+          user.setStatus(UserStatus.valueOf(value.toUpperCase()));
+          break;
+        case "zimbraIsExternalVirtualAccount":
+          user.setType(Boolean.parseBoolean(value.toLowerCase())
+            ? UserType.GUEST
+            : UserType.INTERNAL);
+          break;
+        default:
+          if (name.startsWith("carbonio")) {
+            user.getCarbonioAttributes().put(name, value);
+          }
+          break;
+      }
+    }
+  }
+
+  private void extractPreferencesIntoUserMyself(UserMyself user, List<Pref> prefs) {
+    // Default value for user's locale is english
+    user.setLocale(Locale.ENGLISH.toString());
+
+    for (Pref preference : prefs) {
+      if (preference.getName().equals("zimbraPrefLocale")) {
+        // This old style try/catch is necessary because:
+        //  - the system cannot trust the user locale since it can be set manually by the sysadmin
+        //    and there is no check if the value is a valid one. So the LocaleUtils#toLocale method
+        //    can raise an exception if the Locale is malformed.
+        //  - the project doesn't have the Vavr dependency containing the Try construct to handle
+        //    the exception in a cleaner way and I don't want to add it now only for this.
+        try {
+          logger.debug("User myself {} requested, has locale {}", user.getId().getUserId(), preference.getValue());
+          user.setLocale(LocaleUtils.toLocale(preference.getValue()).toString());
+        } catch (IllegalArgumentException exception) {
+          logger.error(
+            "The user id {} has a locale with an invalid format. The system falls back in '{}'",
+            user.getId().getUserId(),
+            Locale.ENGLISH);
+          user.setLocale(Locale.ENGLISH.toString());
+        }
+        break;
+      }
+    }
   }
 }
