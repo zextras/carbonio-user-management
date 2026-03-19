@@ -4,6 +4,7 @@
 
 package com.zextras.carbonio.user_management.record;
 
+import java.util.List;
 import java.util.Map;
 
 public record UserMyself(
@@ -14,12 +15,14 @@ public record UserMyself(
     String status,
     String type,
     String locale,
-    Map<String, Boolean> featureList
+    List<String> features,
+    Map<String, String> capabilities
 ) {
 
   public UserMyself(
       String userId, String email, String fullName, String domain,
-      String status, String type, String locale, Map<String, Boolean> featureList) {
+      String status, String type, String locale,
+      List<String> features, Map<String, String> capabilities) {
     this.userId = userId;
     this.email = email;
     this.fullName = fullName;
@@ -27,6 +30,7 @@ public record UserMyself(
     this.status = status;
     this.type = type;
     this.locale = locale;
-    this.featureList = featureList != null ? Map.copyOf(featureList) : Map.of();
+    this.features = features != null ? List.copyOf(features) : List.of();
+    this.capabilities = capabilities != null ? Map.copyOf(capabilities) : Map.of();
   }
 }

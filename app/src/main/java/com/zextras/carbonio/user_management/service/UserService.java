@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ConcurrentHashMap;
@@ -41,7 +40,6 @@ import zimbraaccount.GetAccountInfoResponse;
 import zimbraaccount.GetInfoResponse;
 import zimbraaccount.Pref;
 
-import static com.zextras.carbonio.user_management.UserManagementServiceConfig.FeatureFlags;
 import static com.zextras.carbonio.user_management.UserManagementServiceConfig.ZimbraAttributes;
 import static com.zextras.carbonio.user_management.UserManagementServiceConfig.ZimbraPreferences;
 import static com.zextras.mailbox.client.service.ServiceRequests.AccountInfo;
@@ -283,11 +281,8 @@ public class UserService {
 
   // -- Mapping methods --
 
-  private static final Set<String> FEATURE_FLAGS = Set.of(
-      FeatureFlags.FILES_ENABLED,
-      FeatureFlags.WSC_ENABLED,
-      FeatureFlags.TASKS_ENABLED
-  );
+  private static final List<String> CAPABILITY_PREFIXES = List.of(
+      "carbonioWsc", "carbonioFiles", "carbonioTasks", "carbonioDocs", "carbonioPreview");
 
   UserMyself mapGetInfoToUserMyself(GetInfoResponse response) {
     List<Attr> attrs = response.getAttrs() != null ? response.getAttrs().getAttr() : List.of();
@@ -297,7 +292,8 @@ public class UserService {
     String status = "ACTIVE";
     String type = "INTERNAL";
     String locale = Locale.ENGLISH.toString();
-    Map<String, Boolean> featureList = new HashMap<>();
+    List<String> features = new ArrayList<>();
+    Map<String, String> capabilities = new HashMap<>();
 
     for (Attr attr : attrs) {
       switch (attr.getName()) {
@@ -314,8 +310,13 @@ public class UserService {
           }
         }
         default -> {
-          if (FEATURE_FLAGS.contains(attr.getName())) {
-            featureList.put(attr.getName(), "TRUE".equalsIgnoreCase(attr.getValue()));
+          String name = attr.getName();
+          if (name.startsWith("carbonioFeature")
+              && "TRUE".equalsIgnoreCase(attr.getValue())) {
+            features.add(name);
+          } else if (attr.getValue() != null
+              && CAPABILITY_PREFIXES.stream().anyMatch(name::startsWith)) {
+            capabilities.put(name, attr.getValue());
           }
         }
       }
@@ -338,7 +339,7 @@ public class UserService {
 
     return new UserMyself(
         userId, response.getName(), fullName, response.getPublicURL(),
-        status, type, locale, featureList);
+        status, type, locale, features, capabilities);
   }
 
   UserInfo mapGetAccountInfoToUserInfo(GetAccountInfoResponse response) {

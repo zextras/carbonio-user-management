@@ -134,11 +134,9 @@ public class GrpcHandler extends UserManagementServiceGrpc.UserManagementService
 
     UserMyselfProto.Builder myselfBuilder = UserMyselfProto.newBuilder()
         .setInfo(info)
-        .setLocale(myself.locale());
-
-    if (myself.featureList() != null) {
-      myselfBuilder.putAllFeatureList(myself.featureList());
-    }
+        .setLocale(myself.locale())
+        .addAllFeatures(myself.features())
+        .putAllCapabilities(myself.capabilities());
 
     return UserMyselfResponse.newBuilder()
         .setUser(myselfBuilder.build())

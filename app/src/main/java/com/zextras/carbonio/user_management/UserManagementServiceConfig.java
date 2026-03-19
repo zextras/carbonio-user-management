@@ -39,10 +39,4 @@ public final class UserManagementServiceConfig {
 
   public static final int MAX_BATCH_USER_IDS = 100;
 
-  public static final class FeatureFlags {
-    private FeatureFlags() {}
-    public static final String FILES_ENABLED = "carbonioFeatureFilesEnabled";
-    public static final String WSC_ENABLED = "carbonioFeatureWscEnabled";
-    public static final String TASKS_ENABLED = "carbonioFeatureTasksEnabled";
-  }
 }
