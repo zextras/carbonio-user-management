@@ -13,6 +13,7 @@ dist/
 # JetBrains IDE
 .idea/
 *.iml
+.run/
 
 LICENSES
 artifacts/

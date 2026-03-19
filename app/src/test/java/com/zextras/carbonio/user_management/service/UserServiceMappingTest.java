@@ -4,7 +4,6 @@
 
 package com.zextras.carbonio.user_management.service;
 
-import static com.zextras.carbonio.user_management.UserManagementServiceConfig.FeatureFlags;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -93,7 +92,8 @@ class UserServiceMappingTest {
       assertThat(result.status()).isEqualTo("ACTIVE");
       assertThat(result.type()).isEqualTo("INTERNAL");
       assertThat(result.locale()).isEqualTo("en");
-      assertThat(result.featureList()).isEmpty();
+      assertThat(result.features()).isEmpty();
+      assertThat(result.capabilities()).isEmpty();
     }
 
     @Test
@@ -183,20 +183,55 @@ class UserServiceMappingTest {
     }
 
     @Test
-    void mapsFeatureFlags() {
+    void mapsFeatures() {
       Attr idAttr = attr("zimbraId", "uid-1");
-      Attr filesAttr = attr(FeatureFlags.FILES_ENABLED, "TRUE");
-      Attr wscAttr = attr(FeatureFlags.WSC_ENABLED, "FALSE");
-      Attr tasksAttr = attr(FeatureFlags.TASKS_ENABLED, "true");
+      Attr filesAttr = attr("carbonioFeatureFilesEnabled", "TRUE");
+      Attr wscAttr = attr("carbonioFeatureWscEnabled", "FALSE");
+      Attr tasksAttr = attr("carbonioFeatureTasksEnabled", "TRUE");
       GetInfoResponse response = responseWithAttrs(
           List.of(idAttr, filesAttr, wscAttr, tasksAttr));
 
       UserMyself result = userService.mapGetInfoToUserMyself(response);
 
-      assertThat(result.featureList()).hasSize(3);
-      assertThat(result.featureList()).containsEntry(FeatureFlags.FILES_ENABLED, true);
-      assertThat(result.featureList()).containsEntry(FeatureFlags.WSC_ENABLED, false);
-      assertThat(result.featureList()).containsEntry(FeatureFlags.TASKS_ENABLED, true);
+      assertThat(result.features()).hasSize(2);
+      assertThat(result.features()).containsExactlyInAnyOrder(
+          "carbonioFeatureFilesEnabled", "carbonioFeatureTasksEnabled");
+      assertThat(result.capabilities()).isEmpty();
+    }
+
+    @Test
+    void mapsCapabilities() {
+      Attr idAttr = attr("zimbraId", "uid-1");
+      Attr wscAttr = attr("carbonioWscMaxGroupMembers", "50");
+      Attr filesAttr = attr("carbonioFilesMaxUploadSize", "1048576");
+      Attr tasksAttr = attr("carbonioTasksEnabled", "TRUE");
+      GetInfoResponse response = responseWithAttrs(
+          List.of(idAttr, wscAttr, filesAttr, tasksAttr));
+
+      UserMyself result = userService.mapGetInfoToUserMyself(response);
+
+      assertThat(result.capabilities()).hasSize(3);
+      assertThat(result.capabilities())
+          .containsEntry("carbonioWscMaxGroupMembers", "50")
+          .containsEntry("carbonioFilesMaxUploadSize", "1048576")
+          .containsEntry("carbonioTasksEnabled", "TRUE");
+      assertThat(result.features()).isEmpty();
+    }
+
+    @Test
+    void mapsFeatureAndCapabilitiesTogether() {
+      Attr idAttr = attr("zimbraId", "uid-1");
+      Attr featureAttr = attr("carbonioFeatureFilesEnabled", "TRUE");
+      Attr capAttr = attr("carbonioWscMaxGroupMembers", "50");
+      Attr unknownAttr = attr("carbonioXyzSomething", "value");
+      GetInfoResponse response = responseWithAttrs(
+          List.of(idAttr, featureAttr, capAttr, unknownAttr));
+
+      UserMyself result = userService.mapGetInfoToUserMyself(response);
+
+      assertThat(result.features()).containsExactly("carbonioFeatureFilesEnabled");
+      assertThat(result.capabilities()).containsEntry("carbonioWscMaxGroupMembers", "50");
+      assertThat(result.capabilities()).doesNotContainKey("carbonioXyzSomething");
     }
 
     @Test
@@ -211,6 +246,8 @@ class UserServiceMappingTest {
       assertThat(result.email()).isEqualTo("user@example.com");
       assertThat(result.status()).isEqualTo("ACTIVE");
       assertThat(result.type()).isEqualTo("INTERNAL");
+      assertThat(result.features()).isEmpty();
+      assertThat(result.capabilities()).isEmpty();
     }
 
     @Test
@@ -246,7 +283,8 @@ class UserServiceMappingTest {
       UserMyself result = userService.mapGetInfoToUserMyself(response);
 
       assertThat(result.userId()).isEqualTo("uid-1");
-      assertThat(result.featureList()).isEmpty();
+      assertThat(result.features()).isEmpty();
+      assertThat(result.capabilities()).isEmpty();
     }
   }
 

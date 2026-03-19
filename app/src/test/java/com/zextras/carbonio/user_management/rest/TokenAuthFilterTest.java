@@ -17,6 +17,7 @@ import com.zextras.carbonio.user_management.service.UserService;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.Cookie;
 import jakarta.ws.rs.core.Response;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -93,7 +94,7 @@ class TokenAuthFilterTest {
     void passesWhenTokenIsValid() {
       when(ctx.getProperty(AUTH_TOKEN_KEY)).thenReturn("valid-token");
       when(userService.getUserMyself("valid-token")).thenReturn(Optional.of(
-          new UserMyself("user-1", "u@x.com", "U", "x.com", "ACTIVE", "INTERNAL", "en", Map.of())));
+          new UserMyself("user-1", "u@x.com", "U", "x.com", "ACTIVE", "INTERNAL", "en", List.of(), Map.of())));
 
       validationFilter.filter(ctx);
 

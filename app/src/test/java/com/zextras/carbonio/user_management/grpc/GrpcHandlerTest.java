@@ -4,7 +4,6 @@
 
 package com.zextras.carbonio.user_management.grpc;
 
-import static com.zextras.carbonio.user_management.UserManagementServiceConfig.FeatureFlags;
 import static com.zextras.carbonio.user_management.UserManagementServiceConfig.MAX_BATCH_USER_IDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -70,7 +69,9 @@ class GrpcHandlerTest {
     void happyPath() {
       UserMyself myself = new UserMyself(
           "user-1", "user@example.com", "John Doe", "example.com",
-          "ACTIVE", "INTERNAL", "it", Map.of(FeatureFlags.FILES_ENABLED, true));
+          "ACTIVE", "INTERNAL", "it",
+          List.of("carbonioFeatureFilesEnabled"),
+          Map.of("carbonioWscMaxGroupMembers", "50"));
       when(userService.getUserMyself("token-1")).thenReturn(Optional.of(myself));
 
       TestStreamObserver<UserMyselfResponse> observer = new TestStreamObserver<>();
@@ -80,8 +81,10 @@ class GrpcHandlerTest {
       assertThat(observer.completed).isTrue();
       assertThat(observer.response.get().getUser().getInfo().getUserId()).isEqualTo("user-1");
       assertThat(observer.response.get().getUser().getLocale()).isEqualTo("it");
-      assertThat(observer.response.get().getUser().getFeatureListMap())
-          .containsEntry(FeatureFlags.FILES_ENABLED, true);
+      assertThat(observer.response.get().getUser().getFeaturesList())
+          .containsExactly("carbonioFeatureFilesEnabled");
+      assertThat(observer.response.get().getUser().getCapabilitiesMap())
+          .containsEntry("carbonioWscMaxGroupMembers", "50");
     }
 
     @Test

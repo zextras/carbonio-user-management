@@ -5,7 +5,6 @@
 package com.zextras.carbonio.user_management.rest;
 
 import static com.zextras.carbonio.user_management.UserManagementServiceConfig.AUTH_TOKEN_KEY;
-import static com.zextras.carbonio.user_management.UserManagementServiceConfig.FeatureFlags;
 import static com.zextras.carbonio.user_management.UserManagementServiceConfig.MAX_BATCH_USER_IDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -55,7 +54,9 @@ class UserResourceTest {
     void returnsOkWithMyselfDto() {
       UserMyself myself = new UserMyself(
           "user-1", "user@example.com", "John Doe", "example.com",
-          "ACTIVE", "INTERNAL", "it", Map.of(FeatureFlags.FILES_ENABLED, true));
+          "ACTIVE", "INTERNAL", "it",
+          List.of("carbonioFeatureFilesEnabled"),
+          Map.of("carbonioWscMaxGroupMembers", "50"));
       when(userService.getUserMyself("token-1")).thenReturn(Optional.of(myself));
 
       Response response = resource.getMyself(ctx);
@@ -64,7 +65,8 @@ class UserResourceTest {
       MyselfDto dto = (MyselfDto) response.getEntity();
       assertThat(dto.info().userId()).isEqualTo("user-1");
       assertThat(dto.locale()).isEqualTo("it");
-      assertThat(dto.featureList()).containsEntry(FeatureFlags.FILES_ENABLED, true);
+      assertThat(dto.features()).containsExactly("carbonioFeatureFilesEnabled");
+      assertThat(dto.capabilities()).containsEntry("carbonioWscMaxGroupMembers", "50");
     }
 
     @Test

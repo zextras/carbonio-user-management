@@ -4,7 +4,6 @@
 
 package com.zextras.carbonio.user_management.cache;
 
-import static com.zextras.carbonio.user_management.UserManagementServiceConfig.FeatureFlags;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -18,6 +17,7 @@ import com.zextras.carbonio.user_management.record.UserMyself;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -43,7 +43,7 @@ class UserMyselfCacheTest {
   private UserMyself sampleMyself() {
     return new UserMyself(
         "user-1", "user@example.com", "John Doe", "example.com",
-        "ACTIVE", "INTERNAL", "en", Map.of(FeatureFlags.FILES_ENABLED, true));
+        "ACTIVE", "INTERNAL", "en", List.of("carbonioFeatureFilesEnabled"), Map.of());
   }
 
   @Test
@@ -166,7 +166,7 @@ class UserMyselfCacheTest {
     UserMyself myself1 = sampleMyself();
     UserMyself myself2 = new UserMyself(
         "user-2", "other@example.com", "Jane Doe", "example.com",
-        "ACTIVE", "INTERNAL", "it", Map.of());
+        "ACTIVE", "INTERNAL", "it", List.of(), Map.of());
 
     cache.put("token-A", "user-1", myself1, expiresAt);
     cache.put("token-B", "user-2", myself2, expiresAt);

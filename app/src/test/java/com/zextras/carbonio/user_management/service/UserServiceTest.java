@@ -4,7 +4,6 @@
 
 package com.zextras.carbonio.user_management.service;
 
-import static com.zextras.carbonio.user_management.UserManagementServiceConfig.FeatureFlags;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -58,7 +57,7 @@ class UserServiceTest {
   private UserMyself sampleMyself() {
     return new UserMyself(
         "user-1", "user@example.com", "John Doe", "example.com",
-        "ACTIVE", "INTERNAL", "en", Map.of(FeatureFlags.FILES_ENABLED, true));
+        "ACTIVE", "INTERNAL", "en", List.of("carbonioFeatureFilesEnabled"), Map.of());
   }
 
   private long futureExpiresAt() {
