@@ -14,7 +14,7 @@ library(
 dt3_quarkusPipeline(
     repoName: 'carbonio-user-management',
     sdk: [module: 'sdk', submoduleChangelogPaths: ['sdk']],
-    nativeBuild: [runnerName: 'carbonio-user-management-runner'],
+    appModule: 'app',
     packaging: [pkgbuildPath: 'package/PKGBUILD'],
     docker: [
         dockerfile: 'docker/Dockerfile',

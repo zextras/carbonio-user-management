@@ -4,5 +4,6 @@
 #
 # SPDX-License-Identifier: AGPL-3.0-only
 
-exec /usr/share/carbonio/carbonio-user-management-runner \
-  -Djava.net.preferIPv4Stack=true
+exec /opt/zextras/common/bin/java \
+  -Djava.net.preferIPv4Stack=true \
+  -jar /usr/share/carbonio/carbonio-user-management.jar

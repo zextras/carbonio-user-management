@@ -15,12 +15,13 @@ license=("AGPL-3.0-only")
 depends=(
   "pending-setups"
   "service-discover"
+  "carbonio-openjdk"
 )
 source=(
   "121-${pkgname}.sh"
   "${pkgname}"
   "${pkgname}.hcl"
-  "${pkgname}-runner"
+  "${pkgname}.jar"
   "${pkgname}.service"
   "${pkgname}-legacy.service"
   "${pkgname}-setup"
@@ -32,12 +33,12 @@ source=(
 )
 sha256sums=(
   '41e10587c1f04ef0a1d53608bc2ca94bb520177b0f39f42433cfae3e279c96a8'
-  '8cfce7f62953ac2de4d666d03907edd5d583b67cc38225a7685a5a89a5abe384'
+  '222830f77f1d37331468370f6a4986d25741b05c94d6c733f2e1f339073f3e0a'
   'a031d2a771f307b86a4e61ad2fef5fa7953ca692612f7da83969c55609f7383e'
   'SKIP'
   'd218e23ad8c03aa5f7aee5ecf5f660f2448c0c63bbaeae39db02366f6cc79f8d'
   '5dd9d9ea12bb06c035fa73d4e70982caad4a22409d05b4574b544882d400f215'
-  '39949c4f4c9ff2d0297cefdfed452c79037730c8dcaf27c3fc1a2388b1ff9516'
+  '2323474eedf016b106cf7ddfab52477b1713466c66b01bec777b81662145e602'
   '3c390f40e893b6a8eed434791c5fa3007bc29b149bc9fe8ee7842e6acb0d89b4'
   'd4b7975cbbce6d671de010627c6eb06b931e30bb146b0efa964a15cb53d99b5c'
   '5672a515cd5d11cff3bfb910bc21f59811bfc4d496e789886a82ada93344687f'
@@ -56,8 +57,8 @@ _package() {
     "${pkgdir}/usr/bin/${pkgname}"
   install -Dm755 "${srcdir}/${pkgname}-setup" \
     "${pkgdir}/usr/bin/${pkgname}-setup"
-  install -Dm755 "${srcdir}/${pkgname}-runner" \
-    "${pkgdir}/usr/share/carbonio/${pkgname}-runner"
+  install -Dm755 "${srcdir}/${pkgname}.jar" \
+    "${pkgdir}/usr/share/carbonio/${pkgname}.jar"
 
   install -Dm644 "${srcdir}/${pkgname}.hcl" \
     "${pkgdir}/etc/zextras/service-discover/${pkgname}.hcl"
