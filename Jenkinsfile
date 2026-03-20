@@ -78,7 +78,7 @@ pipeline {
                             profile = '-P prod'
                         }
                         sh """
-                            mvn -B clean package ${profile} -DskipTests
+                            mvn -B clean install ${profile} -DskipTests
                             cp app/target/carbonio-user-management-app-*-runner.jar package/carbonio-user-management.jar
                         """
                     }
