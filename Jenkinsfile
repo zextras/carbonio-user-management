@@ -224,6 +224,13 @@ pipeline {
                         description: 'Carbonio User Management Service',
                     ]
                 ])
+                dockerStage([
+                    dockerfile: 'docker/carbonio-user-management-sidecar/Dockerfile',
+                    imageName: 'carbonio-user-management-sidecar',
+                    ocLabels: [
+                        title: 'Carbonio User Management Sidecar',
+                    ]
+                ])
             }
         }
     }
