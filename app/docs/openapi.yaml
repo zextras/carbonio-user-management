@@ -61,6 +61,6 @@ paths:
       - User Resource
 info:
   title: carbonio-user-management-app API
-  version: 1.0.3-wip.80.84bc3056
+  version: 1.0.3-wip.82.ec1edd27
 servers:
 - url: http://localhost:10000
