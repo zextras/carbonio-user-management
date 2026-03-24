@@ -80,7 +80,7 @@
   },
   "info" : {
     "title" : "carbonio-user-management-app API",
-    "version" : "1.0.3-wip.82.ec1edd27"
+    "version" : "unversioned"
   },
   "servers" : [ {
     "url" : "http://localhost:10000"
