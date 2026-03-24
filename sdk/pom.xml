@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+SPDX-FileCopyrightText: 2022 Zextras <https://www.zextras.com>
+
+SPDX-License-Identifier: AGPL-3.0-only
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.zextras.carbonio.quarkus</groupId>
+    <artifactId>carbonio-quarkus-extensions-sdk-parent</artifactId>
+    <version>1.6.5-1</version>
+    <relativePath/>
+  </parent>
+
+  <groupId>com.zextras.carbonio.user-management</groupId>
+  <artifactId>carbonio-user-management-grpc-sdk</artifactId>
+  <version>${revision}${changelist}</version>
+  <name>Carbonio User Management - gRPC SDK</name>
+
+  <properties>
+    <revision>0.0.0</revision>
+    <changelist>-SNAPSHOT</changelist>
+  </properties>
+
+  <repositories>
+    <repository>
+      <id>zextras-java-sdk</id>
+      <name>Zextras public maven repo</name>
+      <url>https://zextras.jfrog.io/artifactory/java-sdk</url>
+    </repository>
+  </repositories>
+</project>

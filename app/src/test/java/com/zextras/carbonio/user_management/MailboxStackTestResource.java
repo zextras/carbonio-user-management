@@ -1,0 +1,197 @@
+// SPDX-FileCopyrightText: 2022 Zextras <https://www.zextras.com>
+//
+// SPDX-License-Identifier: AGPL-3.0-only
+
+package com.zextras.carbonio.user_management;
+
+import com.zextras.carbonio.quarkus.extensions.bootstrap.CarbonioServiceConfig;
+import com.zextras.carbonio.user_management.UserManagementServiceConfig;
+import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
+import java.time.Duration;
+import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.testcontainers.lifecycle.Startables;
+import org.testcontainers.consul.ConsulContainer;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.Network;
+import org.testcontainers.containers.wait.strategy.Wait;
+
+/**
+ * Starts the full Carbonio stack (mailbox + dependencies, consul) using individual
+ * Testcontainers for integration tests that need a real mailbox instance.
+ *
+ * <p>Each service runs as an individual container with random host ports. Dependencies are modeled
+ * via {@code dependsOn()} and started in parallel using {@link Startables#deepStart}.
+ * Test account provisioning is done
+ * via {@code execInContainer} on the mailbox container.
+ */
+public class MailboxStackTestResource implements QuarkusTestResourceLifecycleManager {
+
+  private static final Logger log = LoggerFactory.getLogger(MailboxStackTestResource.class);
+
+  /** Accessible from test classes to build SOAP auth requests directly against mailbox. */
+  public static volatile String mailboxBaseUrl;
+
+  /** zimbraId of the test user, resolved via zmprov to avoid warming the application cache. */
+  public static volatile String testUserId;
+
+  private Network network;
+  private GenericContainer<?> openldap;
+  private GenericContainer<?> mariadb;
+  private GenericContainer<?> postfix;
+  private GenericContainer<?> mailbox;
+  private ConsulContainer consul;
+
+  @Override
+  public Map<String, String> start() {
+    log.info("Starting Carbonio stack with individual Testcontainers...");
+
+    network = Network.newNetwork();
+
+    // --- Mailbox stack (shared network) ---
+
+    openldap = new GenericContainer<>("registry.dev.zextras.com/dev/carbonio-openldap:latest")
+        .withNetwork(network)
+        .withNetworkAliases("carbonio-openldap")
+        .withExposedPorts(1389)
+        .waitingFor(Wait.forListeningPort().withStartupTimeout(Duration.ofMinutes(5)));
+
+    mariadb = new GenericContainer<>("registry.dev.zextras.com/dev/carbonio-mariadb:latest")
+        .withNetwork(network)
+        .withNetworkAliases("carbonio-mariadb")
+        .withEnv("MARIADB_ROOT_PASSWORD", "password")
+        .waitingFor(Wait.forListeningPort().withStartupTimeout(Duration.ofMinutes(2)));
+
+    postfix = new GenericContainer<>("registry.dev.zextras.com/dev/carbonio-mta:latest")
+        .withNetwork(network)
+        .withNetworkAliases("carbonio-postfix")
+        .withEnv("LDAP_HOST", "carbonio-openldap")
+        .withEnv("LDAP_PORT", "1389")
+        .withEnv("LDAP_ROOT_PASSWORD", "qh6hWZvc")
+        .withEnv("LDAP_ADMIN_PASSWORD", "password")
+        .withExposedPorts(25)
+        .dependsOn(openldap)
+        .waitingFor(Wait.forListeningPort().withStartupTimeout(Duration.ofMinutes(5)));
+
+    mailbox = new GenericContainer<>("registry.dev.zextras.com/dev/carbonio-mailbox:latest")
+        .withNetwork(network)
+        .withNetworkAliases("carbonio-mailbox")
+        .withCreateContainerCmdModifier(cmd -> cmd.withHostName("docker.carbonio.localhost"))
+        .withEnv("LDAP_URL", "ldap://carbonio-openldap:1389")
+        .withEnv("LDAP_ROOT_PASSWORD", "qh6hWZvc")
+        .withEnv("LDAP_ADMIN_PASSWORD", "password")
+        .withEnv("MARIADB_ROOT_PASSWORD", "password")
+        .withEnv("MARIADB_URL", "carbonio-mariadb")
+        .withEnv("MARIADB_PORT", "3306")
+        .withExposedPorts(8080)
+        .dependsOn(openldap, postfix, mariadb)
+        .waitingFor(Wait.forHttp("/service/health/ready").forPort(8080)
+            .withStartupTimeout(Duration.ofMinutes(10)));
+
+    // --- Independent services (no shared network needed) ---
+
+    consul = new ConsulContainer("hashicorp/consul:1.22.3");
+
+    // Start all containers in parallel, respecting dependsOn graph
+    log.info("Starting all containers in parallel...");
+    Startables.deepStart(mailbox, consul).join();
+    log.info("All containers started");
+
+    // Provision test accounts
+    provisionTestAccounts();
+
+    int mailboxPort = mailbox.getMappedPort(8080);
+    mailboxBaseUrl = "http://localhost:" + mailboxPort;
+    log.info("Mailbox available at {}", mailboxBaseUrl);
+
+    String consulHost = consul.getHost();
+    int consulPort = consul.getFirstMappedPort();
+
+    return Map.ofEntries(
+        Map.entry(CarbonioServiceConfig.NETWORKING_CONFIG_PREFIX
+            + CarbonioServiceConfig.NetworkingConfig.SERVICE_HOST, "localhost"),
+        Map.entry(CarbonioServiceConfig.NETWORKING_CONFIG_PREFIX
+            + CarbonioServiceConfig.NetworkingConfig.SERVICE_DISCOVER_HOST, consulHost),
+        Map.entry(CarbonioServiceConfig.NETWORKING_CONFIG_PREFIX
+            + CarbonioServiceConfig.NetworkingConfig.SERVICE_DISCOVER_PORT,
+            String.valueOf(consulPort)),
+        Map.entry(CarbonioServiceConfig.NETWORKING_CONFIG_PREFIX
+            + UserManagementServiceConfig.NetworkingConfig.MAILBOX_HOST, "localhost"),
+        Map.entry(CarbonioServiceConfig.NETWORKING_CONFIG_PREFIX
+            + UserManagementServiceConfig.NetworkingConfig.MAILBOX_PORT,
+            String.valueOf(mailboxPort))
+    );
+  }
+
+  @Override
+  public void stop() {
+    log.info("Stopping Carbonio stack...");
+    // Testcontainers stops containers in reverse order; explicit stop for clarity
+    stopQuietly(mailbox);
+    stopQuietly(postfix);
+    stopQuietly(mariadb);
+    stopQuietly(openldap);
+    stopQuietly(consul);
+    if (network != null) {
+      network.close();
+    }
+  }
+
+  private void stopQuietly(GenericContainer<?> container) {
+    if (container != null) {
+      try {
+        container.stop();
+      } catch (Exception e) {
+        log.warn("Error stopping container: {}", e.getMessage());
+      }
+    }
+  }
+
+  /**
+   * Creates test accounts in mailbox via zmprov (execInContainer) and resolves the zimbraId
+   * directly from LDAP — without ever calling the application — so that integration tests
+   * start with a cold cache.
+   */
+  private void provisionTestAccounts() {
+    log.info("Provisioning test accounts in mailbox...");
+    try {
+      // Single execInContainer: waits for zmprov readiness, then provisions in one shot
+      var result = mailbox.execInContainer("sh", "-c",
+          "for i in $(seq 1 30); do "
+          + "  echo 'gd carbonio.localhost' | zmprov 2>&1 | grep -qv ERROR && break; "
+          + "  sleep 2; "
+          + "done && "
+          + "zmprov <<'EOF'\n"
+          + "cd carbonio.localhost\n"
+          + "mcf zimbraSmtpHostname carbonio-postfix\n"
+          + "mcf zimbraDefaultDomainName carbonio.localhost\n"
+          + "ca test-user@carbonio.localhost test-password\n"
+          + "EOF");
+
+      if (result.getExitCode() == 0) {
+        log.info("Test account provisioning succeeded");
+      } else {
+        log.warn("Provisioning exited with code {} (accounts may already exist): {}",
+            result.getExitCode(), result.getStderr());
+      }
+
+      // Resolve zimbraId via zmprov ga (reads from LDAP, never touches the application cache)
+      var gaResult = mailbox.execInContainer("sh", "-c",
+          "zmprov ga test-user@carbonio.localhost zimbraId | grep zimbraId: | awk '{print $2}'");
+      if (gaResult.getExitCode() == 0 && !gaResult.getStdout().isBlank()) {
+        testUserId = gaResult.getStdout().trim();
+        log.info("Resolved test user zimbraId: {}", testUserId);
+      } else {
+        throw new IllegalStateException(
+            "Failed to resolve zimbraId: exit=" + gaResult.getExitCode()
+                + " stdout=" + gaResult.getStdout()
+                + " stderr=" + gaResult.getStderr());
+      }
+    } catch (RuntimeException e) {
+      throw e;
+    } catch (Exception e) {
+      throw new RuntimeException("Test account provisioning failed", e);
+    }
+  }
+}
