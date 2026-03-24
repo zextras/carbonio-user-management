@@ -72,16 +72,16 @@ _package() {
 
 _package_legacy() {
   install -Dm644 "${srcdir}/${pkgname}-legacy.service" \
-    "${pkgdir}/lib/systemd/system/${pkgname}.service"
+    "${pkgdir}/usr/lib/systemd/system/${pkgname}.service"
   install -Dm644 "${srcdir}/${pkgname}-sidecar-legacy.service" \
-    "${pkgdir}/lib/systemd/system/${pkgname}-sidecar.service"
+    "${pkgdir}/usr/lib/systemd/system/${pkgname}-sidecar.service"
 }
 
 _package_systemd() {
   install -Dm644 "${srcdir}/${pkgname}.service" \
-    "${pkgdir}/lib/systemd/system/${pkgname}.service"
+    "${pkgdir}/usr/lib/systemd/system/${pkgname}.service"
   install -Dm644 "${srcdir}/${pkgname}-sidecar.service" \
-    "${pkgdir}/lib/systemd/system/${pkgname}-sidecar.service"
+    "${pkgdir}/usr/lib/systemd/system/${pkgname}-sidecar.service"
 }
 
 package() {
