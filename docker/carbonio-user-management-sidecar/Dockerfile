@@ -1,4 +1,4 @@
-FROM localhost/carbonio-sidecar-base:latest
+FROM registry.dev.zextras.com/dev/carbonio-sidecar:latest
 
 # Service registration
 COPY package/carbonio-user-management.hcl /consul/config/
