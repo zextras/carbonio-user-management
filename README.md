@@ -45,17 +45,39 @@ in `service-discover`.
 Build using maven:
 
 ```bash
-mvn clean install
+mvn install
 ```
 
-The final fat-jar will be saved in inside the `boot/target` folder.
+The uber-jar will be saved inside the `app/target` folder.
+
+### Run tests
+
+Unit tests:
+
+```bash
+mvn verify -Dskip.unit.tests=false
+```
+
+Integration tests (requires Docker):
+
+```bash
+mvn verify -Dskip.integration.tests=false
+```
 
 ## How to run 🚀
 
-With the generated fat-jar:
+With the generated uber-jar:
 
 ```bash
-java -Djava.net.preferIPv4Stack=true -jar boot/target/carbonio-user-management-*-jar-with-dependencies.jar
+java -Djava.net.preferIPv4Stack=true -jar app/target/carbonio-user-management-app-*-runner.jar
+```
+
+### Dev mode
+
+Starts the full Docker stack (mailbox, consul, postgres) and the app with hot-reload:
+
+```bash
+mvn -pl app quarkus:dev
 ```
 
 ## License 📚

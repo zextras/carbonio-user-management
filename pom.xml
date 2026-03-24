@@ -28,42 +28,29 @@ SPDX-License-Identifier: AGPL-3.0-only
   <url>https://www.github.com/Zextras/carbonio-user-management</url>
 
   <modules>
-    <module>boot</module>
-    <module>core</module>
-    <module>generated</module>
+    <module>sdk</module>
+    <module>app</module>
   </modules>
 
   <properties>
     <!-- Maven CI Friendly -->
-    <revision>1.0.3</revision>
+    <revision>0.0.0</revision>
+    <changelist>-SNAPSHOT</changelist>
 
     <!-- Dependencies -->
     <assertj.version>3.26.3</assertj.version>
     <caffeine.version>3.2.0</caffeine.version>
-    <carbonio-mailbox-sdk.version>1.14.0</carbonio-mailbox-sdk.version>
-    <commons-io.version>2.16.1</commons-io.version>
-    <guice.version>6.0.0</guice.version>
-    <jackson.version>2.17.2</jackson.version>
-    <javaee-api.version>8.0.1</javaee-api.version>
-    <jetty-version>10.0.24</jetty-version>
-    <jsonassert.version>1.5.3</jsonassert.version>
+    <carbonio-mailbox-sdk.version>1.16.0</carbonio-mailbox-sdk.version>
     <junit5.version>5.11.0</junit5.version>
-    <logback-classic.version>1.5.7</logback-classic.version>
-    <mock-server.version>5.15.0</mock-server.version>
     <mockito.version>5.20.0</mockito.version>
-    <resteasy.version>4.7.9.Final</resteasy.version>
-    <swagger-core-version>1.6.14</swagger-core-version>
 
     <!-- Plugins -->
-    <build-helper-maven-plugin.version>3.6.1</build-helper-maven-plugin.version>
-    <maven-assembly-plugin.version>3.7.1</maven-assembly-plugin.version>
     <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
     <maven-failsafe.version>3.5.4</maven-failsafe.version>
     <maven-jacoco.version>0.8.12</maven-jacoco.version>
     <maven-jar-plugin.version>3.4.2</maven-jar-plugin.version>
     <maven-surefire.version>3.5.4</maven-surefire.version>
     <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
-    <openapi-generator-maven-plugin.version>7.8.0</openapi-generator-maven-plugin.version>
 
     <!-- Other properties -->
     <maven.compiler.source>21</maven.compiler.source>
@@ -79,110 +66,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 
   <dependencyManagement>
     <dependencies>
-      <!-- Guice dependencies -->
-      <dependency>
-        <groupId>com.google.inject</groupId>
-        <artifactId>guice</artifactId>
-        <version>${guice.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.jboss.resteasy</groupId>
-        <artifactId>resteasy-guice</artifactId>
-        <version>${resteasy.version}</version>
-      </dependency>
-
-      <!-- Logger -->
-      <dependency>
-        <artifactId>logback-classic</artifactId>
-        <groupId>ch.qos.logback</groupId>
-        <version>${logback-classic.version}</version>
-      </dependency>
-
-      <!-- Jetty dependencies -->
-      <dependency>
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-server</artifactId>
-        <version>${jetty-version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-servlet</artifactId>
-        <version>${jetty-version}</version>
-      </dependency>
-
-      <!-- JavaEE API -->
-      <dependency>
-        <groupId>javax</groupId>
-        <artifactId>javaee-api</artifactId>
-        <version>${javaee-api.version}</version>
-        <scope>provided</scope>
-      </dependency>
-
-      <!-- RESTEasy dependencies -->
-      <dependency>
-        <groupId>org.jboss.resteasy</groupId>
-        <artifactId>resteasy-core</artifactId>
-        <version>${resteasy.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.jboss.resteasy</groupId>
-        <artifactId>resteasy-servlet-initializer</artifactId>
-        <version>${resteasy.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.jboss.resteasy</groupId>
-        <artifactId>resteasy-jackson2-provider</artifactId>
-        <version>${resteasy.version}</version>
-      </dependency>
-
-      <!-- Jackson dependencies -->
-      <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-core</artifactId>
-        <version>${jackson.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-databind</artifactId>
-        <version>${jackson.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-annotations</artifactId>
-        <version>${jackson.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>com.fasterxml.jackson.datatype</groupId>
-        <artifactId>jackson-datatype-jsr310</artifactId>
-        <version>${jackson.version}</version>
-      </dependency>
-
-      <!-- Swagger dependencies -->
-      <dependency>
-        <groupId>io.swagger</groupId>
-        <artifactId>swagger-annotations</artifactId>
-        <version>${swagger-core-version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>io.swagger</groupId>
-        <artifactId>swagger-jaxrs</artifactId>
-        <version>${swagger-core-version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-
       <!-- Cache -->
       <dependency>
         <groupId>com.github.ben-manes.caffeine</groupId>
@@ -195,12 +78,6 @@ SPDX-License-Identifier: AGPL-3.0-only
         <groupId>com.zextras</groupId>
         <artifactId>carbonio-mailbox-sdk</artifactId>
         <version>${carbonio-mailbox-sdk.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>jakarta.activation</groupId>
-        <artifactId>jakarta.activation-api</artifactId>
-        <version>2.0.1</version>
       </dependency>
 
       <!-- Test dependencies -->
@@ -231,76 +108,12 @@ SPDX-License-Identifier: AGPL-3.0-only
         <version>${assertj.version}</version>
         <scope>test</scope>
       </dependency>
-
-      <dependency>
-        <groupId>org.mock-server</groupId>
-        <artifactId>mockserver-netty-no-dependencies</artifactId>
-        <version>${mock-server.version}</version>
-        <scope>test</scope>
-      </dependency>
-
-      <dependency>
-        <groupId>org.mock-server</groupId>
-        <artifactId>mockserver-client-java-no-dependencies</artifactId>
-        <version>${mock-server.version}</version>
-        <scope>test</scope>
-      </dependency>
-
-      <!-- Helper to test JSON responses -->
-      <dependency>
-        <groupId>org.skyscreamer</groupId>
-        <artifactId>jsonassert</artifactId>
-        <version>${jsonassert.version}</version>
-        <scope>test</scope>
-      </dependency>
-
-      <dependency>
-        <groupId>commons-io</groupId>
-        <artifactId>commons-io</artifactId>
-        <version>${commons-io.version}</version>
-        <scope>test</scope>
-      </dependency>
     </dependencies>
   </dependencyManagement>
 
   <build>
     <pluginManagement>
       <plugins>
-        <plugin>
-          <groupId>org.openapitools</groupId>
-          <artifactId>openapi-generator-maven-plugin</artifactId>
-          <version>${openapi-generator-maven-plugin.version}</version>
-          <executions>
-            <execution>
-              <configuration>
-                <generatorName>jaxrs-resteasy</generatorName>
-                <groupId>com.zextras.carbonio.user_management</groupId>
-                <artifactId>carbonio-user-management-generated</artifactId>
-                <apiPackage>com.zextras.carbonio.user_management.generated</apiPackage>
-                <packageName>com.zextras.carbonio.user_management</packageName>
-                <modelPackage>com.zextras.carbonio.user_management.generated.model</modelPackage>
-                <configOptions>
-                  <artifactDescription>User Management generated</artifactDescription>
-                  <library>resteasy</library>
-                  <serializationLibrary>jackson</serializationLibrary>
-                  <dateLibrary>java8</dateLibrary>
-                </configOptions>
-                <generateApiTests>false</generateApiTests>
-                <inputSpec>
-                  resources/user-management.yaml
-                </inputSpec>
-                <output>./</output>
-              </configuration>
-              <goals>
-                <goal>generate</goal>
-              </goals>
-              <phase>
-                generate-sources
-              </phase>
-            </execution>
-          </executions>
-        </plugin>
-
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
@@ -311,28 +124,6 @@ SPDX-License-Identifier: AGPL-3.0-only
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-resources-plugin</artifactId>
           <version>${maven-resources-plugin.version}</version>
-        </plugin>
-
-        <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>build-helper-maven-plugin</artifactId>
-          <version>${build-helper-maven-plugin.version}</version>
-          <executions>
-            <execution>
-              <configuration>
-                <sources>
-                  <source>
-                    src/gen/java
-                  </source>
-                </sources>
-              </configuration>
-              <goals>
-                <goal>add-source</goal>
-              </goals>
-              <id>add-source</id>
-              <phase>generate-sources</phase>
-            </execution>
-          </executions>
         </plugin>
 
         <plugin>
@@ -372,21 +163,4 @@ SPDX-License-Identifier: AGPL-3.0-only
     </repository>
   </repositories>
 
-  <profiles>
-    <profile>
-      <id>dev</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <properties>
-        <changelist>-SNAPSHOT</changelist>
-      </properties>
-    </profile>
-    <profile>
-      <id>prod</id>
-      <properties>
-        <changelist></changelist>
-      </properties>
-    </profile>
-  </profiles>
 </project>
