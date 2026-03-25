@@ -2,9 +2,7 @@
 #
 # SPDX-License-Identifier: AGPL-3.0-only
 
-FROM registry.access.redhat.com/ubi9/ubi-minimal:9.5
-
-RUN microdnf install -y java-21-openjdk-headless && microdnf clean all
+FROM eclipse-temurin:21-jdk-alpine
 
 WORKDIR /app
 
