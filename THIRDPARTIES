@@ -1,8 +1,8 @@
 AGPL-3.0-only (https://spdx.org/licenses/AGPL-3.0-only.html) applies to:
 
-  Carbonio Quarkus Extensions - Bootstrap Runtime (com.zextras.carbonio.quarkus:carbonio-quarkus-extensions-bootstrap:1.6.5-1)
-  Carbonio Quarkus Extensions - gRPC SDK Runtime (com.zextras.carbonio.quarkus:carbonio-quarkus-extensions-grpc-sdk:1.6.5-1)
-  Carbonio Quarkus Extensions - REST Runtime (com.zextras.carbonio.quarkus:carbonio-quarkus-extensions-rest:1.6.5-1)
+  Carbonio Quarkus Extensions - Bootstrap Runtime (com.zextras.carbonio.quarkus:carbonio-quarkus-extensions-bootstrap:1.7.2-1)
+  Carbonio Quarkus Extensions - gRPC SDK Runtime (com.zextras.carbonio.quarkus:carbonio-quarkus-extensions-grpc-sdk:1.7.2-1)
+  Carbonio Quarkus Extensions - REST Runtime (com.zextras.carbonio.quarkus:carbonio-quarkus-extensions-rest:1.7.2-1)
 
 Apache-2.0 (https://spdx.org/licenses/Apache-2.0.html) applies to:
 
@@ -282,6 +282,6 @@ The BSD 2-Clause License (https://spdx.org/licenses/The BSD 2-Clause License.htm
 
 Unknown license (https://spdx.org/licenses/Unknown license.html) applies to:
 
-  Carbonio User Management - gRPC SDK (com.zextras.carbonio.user-management:carbonio-user-management-grpc-sdk:1.0.3-wip.7.51369a26)
+  Carbonio User Management - gRPC SDK (com.zextras.carbonio.user-management:carbonio-user-management-grpc-sdk:1.0.3-wip.9.337001d9)
   carbonio-mailbox-sdk (com.zextras:carbonio-mailbox-sdk:1.16.0)
 
