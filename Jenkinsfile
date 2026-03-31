@@ -11,7 +11,7 @@ library(
     ])
 )
 
-dt3_quarkusPipeline(
+dt3_pipeline(
     repoName: 'carbonio-user-management',
     sdk: [module: 'sdk'],
     jarBuild: [jarName: 'carbonio-user-management.jar'],
