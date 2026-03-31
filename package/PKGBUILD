@@ -4,7 +4,7 @@
 
 pkgname="carbonio-user-management"
 pkgver="0.0.0"
-pkgrel="SNAPSHOT"
+pkgrel="wip.11.96ecf3a4"
 pkgdesc="Carbonio User Management"
 maintainer="Zextras <packages@zextras.com>"
 arch=('x86_64')
