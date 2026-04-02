@@ -15,7 +15,7 @@ dt3_quarkusPipeline(
     repoName: 'carbonio-user-management',
     sdk: [module: 'sdk'],
     jarBuild: [jarName: 'carbonio-user-management.jar'],
-    packaging: [pkgbuildPath: 'package/PKGBUILD'],
+    packaging: [pkgbuildPath: 'package/PKGBUILD', buildFlags: '-ds'],
     docker: [
         [dockerfile: 'docker/Dockerfile',
          imageName: 'carbonio-user-management',
