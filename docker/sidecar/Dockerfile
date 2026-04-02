@@ -17,10 +17,10 @@ COPY package/policies.json         /etc/carbonio/user-management/service-discove
 # App jar (used for --setup only)
 COPY app/target/*-runner.jar /usr/share/carbonio/carbonio-user-management.jar
 
-COPY docker/sidecar/entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh
+# Setup script wrapper
+COPY docker/sidecar/carbonio-user-management-setup /usr/local/bin/carbonio-user-management-setup
+RUN chmod +x /usr/local/bin/carbonio-user-management-setup
 
 ENV SERVICE_NAME=carbonio-user-management
 ENV TOKEN_FILE=/etc/carbonio/user-management/service-discover/token
-
-ENTRYPOINT ["entrypoint.sh"]
+ENV SETUP_SCRIPT="carbonio-user-management-setup setup"
