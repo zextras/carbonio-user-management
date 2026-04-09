@@ -25,6 +25,10 @@ import org.testcontainers.containers.wait.strategy.Wait;
  * via {@code dependsOn()} and started in parallel using {@link Startables#deepStart}.
  * Test account provisioning is done
  * via {@code execInContainer} on the mailbox container.
+ *
+ * <p>All container fields are {@code static} so that a single stack is shared across all IT
+ * classes within one JVM run. {@link #stop()} is a no-op; Testcontainers' JVM shutdown hook
+ * handles cleanup on exit.
  */
 public class MailboxStackTestResource implements QuarkusTestResourceLifecycleManager {
 
@@ -36,15 +40,23 @@ public class MailboxStackTestResource implements QuarkusTestResourceLifecycleMan
   /** zimbraId of the test user, resolved via zmprov to avoid warming the application cache. */
   public static volatile String testUserId;
 
-  private Network network;
-  private GenericContainer<?> openldap;
-  private GenericContainer<?> mariadb;
-  private GenericContainer<?> postfix;
-  private GenericContainer<?> mailbox;
-  private ConsulContainer consul;
+  private static volatile boolean started = false;
+  private static Map<String, String> cachedConfig;
+
+  private static Network network;
+  private static GenericContainer<?> openldap;
+  private static GenericContainer<?> mariadb;
+  private static GenericContainer<?> postfix;
+  private static GenericContainer<?> mailbox;
+  private static ConsulContainer consul;
 
   @Override
   public Map<String, String> start() {
+    if (started) {
+      log.info("Carbonio stack already running — reusing singleton containers.");
+      return cachedConfig;
+    }
+
     log.info("Starting Carbonio stack with individual Testcontainers...");
 
     network = Network.newNetwork();
@@ -98,7 +110,7 @@ public class MailboxStackTestResource implements QuarkusTestResourceLifecycleMan
     Startables.deepStart(mailbox, consul).join();
     log.info("All containers started");
 
-    // Provision test accounts
+    // Provision test accounts (only on first start)
     provisionTestAccounts();
 
     int mailboxPort = mailbox.getMappedPort(8080);
@@ -108,7 +120,7 @@ public class MailboxStackTestResource implements QuarkusTestResourceLifecycleMan
     String consulHost = consul.getHost();
     int consulPort = consul.getFirstMappedPort();
 
-    return Map.ofEntries(
+    cachedConfig = Map.ofEntries(
         Map.entry(CarbonioServiceConfig.NETWORKING_CONFIG_PREFIX
             + CarbonioServiceConfig.NetworkingConfig.SERVICE_HOST, "localhost"),
         Map.entry(CarbonioServiceConfig.NETWORKING_CONFIG_PREFIX
@@ -122,30 +134,14 @@ public class MailboxStackTestResource implements QuarkusTestResourceLifecycleMan
             + UserManagementServiceConfig.NetworkingConfig.MAILBOX_PORT,
             String.valueOf(mailboxPort))
     );
+    started = true;
+    return cachedConfig;
   }
 
   @Override
   public void stop() {
-    log.info("Stopping Carbonio stack...");
-    // Testcontainers stops containers in reverse order; explicit stop for clarity
-    stopQuietly(mailbox);
-    stopQuietly(postfix);
-    stopQuietly(mariadb);
-    stopQuietly(openldap);
-    stopQuietly(consul);
-    if (network != null) {
-      network.close();
-    }
-  }
-
-  private void stopQuietly(GenericContainer<?> container) {
-    if (container != null) {
-      try {
-        container.stop();
-      } catch (Exception e) {
-        log.warn("Error stopping container: {}", e.getMessage());
-      }
-    }
+    // Containers are static singletons: they persist for the full test-run JVM lifetime.
+    // Testcontainers' JVM shutdown hook will stop them when the JVM exits.
   }
 
   /**
