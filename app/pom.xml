@@ -121,7 +121,7 @@ SPDX-License-Identifier: AGPL-3.0-only
     <dependency>
       <groupId>org.testcontainers</groupId>
       <artifactId>consul</artifactId>
-      <version>1.21.3</version>
+      <version>1.21.4</version>
       <scope>test</scope>
     </dependency>
 
