@@ -1,9 +1,0 @@
-#!/bin/bash
-
-# SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
-#
-# SPDX-License-Identifier: AGPL-3.0-only
-
-exec /opt/zextras/common/bin/java \
-  -Djava.net.preferIPv4Stack=true \
-  -jar /usr/share/carbonio/carbonio-user-management.jar
