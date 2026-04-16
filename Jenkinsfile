@@ -13,7 +13,8 @@ library(
 
 dt3_pipeline(
     repoName: 'carbonio-user-management',
-    sdk: [module: 'sdk'],
+    mavenPublish: ['sdk'],
+    sdk: [submoduleChangelogPaths: ['sdk']],
     jarBuild: [jarName: 'carbonio-user-management.jar'],
     packaging: [pkgbuildPath: 'package/PKGBUILD', buildFlags: '-ds'],
     docker: [
