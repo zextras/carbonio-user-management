@@ -7,11 +7,9 @@ package com.zextras.carbonio.user_management.grpc;
 import static com.zextras.carbonio.user_management.UserManagementServiceConfig.MAX_BATCH_USER_IDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.zextras.carbonio.user_management.grpc.GrpcHandler;
 import com.zextras.carbonio.user_management.record.UserInfo;
 import com.zextras.carbonio.user_management.record.UserMyself;
 import com.zextras.carbonio.user_management.sdk.grpc.GetUserByEmailRequest;
@@ -117,7 +115,7 @@ class GrpcHandlerTest {
 
     @Test
     void happyPath() {
-      when(userService.getUserById("user-1", "token-1"))
+      when(userService.getUserById("user-1"))
           .thenReturn(Optional.of(sampleUserInfo()));
 
       TestStreamObserver<UserInfoResponse> observer = new TestStreamObserver<>();
@@ -133,7 +131,7 @@ class GrpcHandlerTest {
 
     @Test
     void returnsNotFoundOnEmpty() {
-      when(userService.getUserById("missing", "token-1")).thenReturn(Optional.empty());
+      when(userService.getUserById("missing")).thenReturn(Optional.empty());
 
       TestStreamObserver<UserInfoResponse> observer = new TestStreamObserver<>();
       handler.getUserById(
@@ -150,7 +148,7 @@ class GrpcHandlerTest {
 
     @Test
     void happyPath() {
-      when(userService.getUserByEmail("user@example.com", "token-1"))
+      when(userService.getUserByEmail("user@example.com"))
           .thenReturn(Optional.of(sampleUserInfo()));
 
       TestStreamObserver<UserInfoResponse> observer = new TestStreamObserver<>();
@@ -163,7 +161,7 @@ class GrpcHandlerTest {
 
     @Test
     void returnsNotFoundOnEmpty() {
-      when(userService.getUserByEmail("nope@x.com", "token-1")).thenReturn(Optional.empty());
+      when(userService.getUserByEmail("nope@x.com")).thenReturn(Optional.empty());
 
       TestStreamObserver<UserInfoResponse> observer = new TestStreamObserver<>();
       handler.getUserByEmail(
@@ -183,7 +181,7 @@ class GrpcHandlerTest {
       UserInfo u1 = new UserInfo("id-1", "a@x.com", "A", "x.com", "ACTIVE", "INTERNAL");
       UserInfo u2 = new UserInfo("id-2", "b@x.com", "B", "x.com", "CLOSED", "GUEST");
 
-      when(userService.getUsers(anyList(), anyString())).thenReturn(List.of(u1, u2));
+      when(userService.getUsers(anyList())).thenReturn(List.of(u1, u2));
 
       TestStreamObserver<GetUsersResponse> observer = new TestStreamObserver<>();
       handler.getUsers(
@@ -198,7 +196,7 @@ class GrpcHandlerTest {
 
     @Test
     void returnsEmptyListWhenNoUsersFound() {
-      when(userService.getUsers(anyList(), anyString())).thenReturn(List.of());
+      when(userService.getUsers(anyList())).thenReturn(List.of());
 
       TestStreamObserver<GetUsersResponse> observer = new TestStreamObserver<>();
       handler.getUsers(
@@ -242,7 +240,7 @@ class GrpcHandlerTest {
       for (int i = 0; i < MAX_BATCH_USER_IDS; i++) {
         builder.addUserIds("id-" + i);
       }
-      when(userService.getUsers(anyList(), anyString())).thenReturn(List.of());
+      when(userService.getUsers(anyList())).thenReturn(List.of());
 
       TestStreamObserver<GetUsersResponse> observer = new TestStreamObserver<>();
       handler.getUsers(builder.build(), observer);

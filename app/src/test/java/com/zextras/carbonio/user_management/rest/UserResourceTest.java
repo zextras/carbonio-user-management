@@ -14,7 +14,6 @@ import static org.mockito.Mockito.when;
 
 import com.zextras.carbonio.user_management.record.UserInfo;
 import com.zextras.carbonio.user_management.record.UserMyself;
-import com.zextras.carbonio.user_management.rest.UserResource;
 import com.zextras.carbonio.user_management.rest.dto.MyselfDto;
 import com.zextras.carbonio.user_management.rest.dto.UserInfoDto;
 import com.zextras.carbonio.user_management.service.UserService;
@@ -84,7 +83,7 @@ class UserResourceTest {
 
     @Test
     void returnsOkWithUserInfoDto() {
-      when(userService.getUserById("user-1", "token-1"))
+      when(userService.getUserById("user-1"))
           .thenReturn(Optional.of(sampleUserInfo()));
 
       Response response = resource.getById("user-1", ctx);
@@ -97,7 +96,7 @@ class UserResourceTest {
 
     @Test
     void returns404WhenUserNotFound() {
-      when(userService.getUserById("missing", "token-1")).thenReturn(Optional.empty());
+      when(userService.getUserById("missing")).thenReturn(Optional.empty());
 
       Response response = resource.getById("missing", ctx);
 
@@ -110,7 +109,7 @@ class UserResourceTest {
 
     @Test
     void returnsOkWithUserInfoDto() {
-      when(userService.getUserByEmail("user@example.com", "token-1"))
+      when(userService.getUserByEmail("user@example.com"))
           .thenReturn(Optional.of(sampleUserInfo()));
 
       Response response = resource.getByEmail("user@example.com", ctx);
@@ -122,7 +121,7 @@ class UserResourceTest {
 
     @Test
     void returns404WhenUserNotFound() {
-      when(userService.getUserByEmail("nope@x.com", "token-1")).thenReturn(Optional.empty());
+      when(userService.getUserByEmail("nope@x.com")).thenReturn(Optional.empty());
 
       Response response = resource.getByEmail("nope@x.com", ctx);
 
@@ -137,7 +136,7 @@ class UserResourceTest {
     void returnsOkWithUserList() {
       UserInfo u1 = new UserInfo("id-1", "a@x.com", "A", "x.com", "ACTIVE", "INTERNAL");
       UserInfo u2 = new UserInfo("id-2", "b@x.com", "B", "x.com", "CLOSED", "GUEST");
-      when(userService.getUsers(anyList(), anyString())).thenReturn(List.of(u1, u2));
+      when(userService.getUsers(anyList())).thenReturn(List.of(u1, u2));
 
       Response response = resource.getUsers(List.of("id-1", "id-2"), ctx);
 
@@ -151,7 +150,7 @@ class UserResourceTest {
 
     @Test
     void returnsEmptyList() {
-      when(userService.getUsers(anyList(), anyString())).thenReturn(List.of());
+      when(userService.getUsers(anyList())).thenReturn(List.of());
 
       Response response = resource.getUsers(List.of("bad-id"), ctx);
 
@@ -182,7 +181,7 @@ class UserResourceTest {
     void accepts200WhenExactlyAtMaxBatch() {
       List<String> ids = IntStream.rangeClosed(1, MAX_BATCH_USER_IDS)
           .mapToObj(i -> "id-" + i).toList();
-      when(userService.getUsers(anyList(), anyString())).thenReturn(List.of());
+      when(userService.getUsers(anyList())).thenReturn(List.of());
 
       Response response = resource.getUsers(ids, ctx);
 

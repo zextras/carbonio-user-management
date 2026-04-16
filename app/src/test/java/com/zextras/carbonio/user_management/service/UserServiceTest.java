@@ -19,34 +19,33 @@ import com.zextras.carbonio.user_management.cache.UserMyselfCache;
 import com.zextras.carbonio.user_management.record.UserInfo;
 import com.zextras.carbonio.user_management.record.UserMyself;
 import com.zextras.mailbox.client.MailboxClientException;
-import com.zextras.mailbox.client.service.ServiceClient;
+import com.zextras.mailbox.client.MailboxServerException;
+import com.zextras.mailbox.client.internal.AccountInfo;
+import com.zextras.mailbox.client.internal.AccountStatus;
+import com.zextras.mailbox.client.internal.MailboxInternalApiClient;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import zimbra.NamedValue;
-import zimbraaccount.Attr;
-import zimbraaccount.GetAccountInfoResponse;
-import zimbraaccount.GetInfoResponse;
 
 class UserServiceTest {
 
-  private ServiceClient mailboxClient;
+  private MailboxInternalApiClient internalClient;
   private UserInfoCache userInfoCache;
   private UserMyselfCache userMyselfCache;
   private UserService userService;
 
   @BeforeEach
   void setUp() {
-    mailboxClient = mock(ServiceClient.class);
+    internalClient = mock(MailboxInternalApiClient.class);
     userInfoCache = mock(UserInfoCache.class);
     userMyselfCache = mock(UserMyselfCache.class);
     when(userInfoCache.isCacheEnabled()).thenReturn(true);
     when(userMyselfCache.isCacheEnabled()).thenReturn(true);
     userService = new UserService(
-        mailboxClient, userInfoCache, userMyselfCache,
+        internalClient, userInfoCache, userMyselfCache,
         org.eclipse.microprofile.context.ManagedExecutor.builder().build());
   }
 
@@ -64,6 +63,12 @@ class UserServiceTest {
     return System.currentTimeMillis() + 3_600_000L;
   }
 
+  private AccountInfo sampleAccountInfo(String userId, String email) {
+    return new AccountInfo(userId, email, "Test User", "cos-1", "dom-1",
+        "example.com", AccountStatus.active, false, false, "en",
+        Map.of("carbonioFeatureFilesEnabled", true), Map.of(), 3_600_000L);
+  }
+
   @Nested
   class GetUserMyselfTests {
 
@@ -76,18 +81,18 @@ class UserServiceTest {
       Optional<UserMyself> result = userService.getUserMyself("token-1");
 
       assertThat(result).contains(myself);
-      verify(mailboxClient, never()).send(any());
+      verifyNoInteractions(internalClient);
     }
 
     @Test
-    void cacheMiss_callsSoap() throws Exception {
+    void cacheMiss_callsInternalApi() throws Exception {
       when(userMyselfCache.getByToken("token-1")).thenReturn(Optional.empty());
-      when(mailboxClient.send(any())).thenThrow(new MailboxClientException("test"));
+      when(internalClient.getMyAccountInfo("token-1")).thenThrow(new MailboxClientException("test"));
 
       Optional<UserMyself> result = userService.getUserMyself("token-1");
 
       assertThat(result).isEmpty();
-      verify(mailboxClient).send(any());
+      verify(internalClient).getMyAccountInfo("token-1");
     }
 
     @Test
@@ -113,24 +118,14 @@ class UserServiceTest {
     }
 
     @Test
-    void soapSuccess_cachesResultAndReturnsMyself() throws Exception {
+    void apiSuccess_cachesResultAndReturnsMyself() throws Exception {
       when(userMyselfCache.getByToken("token-1")).thenReturn(Optional.empty());
 
-      GetInfoResponse response = mock(GetInfoResponse.class);
-      GetInfoResponse.Attrs attrs = mock(GetInfoResponse.Attrs.class);
-      Attr idAttr = mock(Attr.class);
-      when(idAttr.getName()).thenReturn("zimbraId");
-      when(idAttr.getValue()).thenReturn("user-1");
-      Attr nameAttr = mock(Attr.class);
-      when(nameAttr.getName()).thenReturn("displayName");
-      when(nameAttr.getValue()).thenReturn("John Doe");
-      when(attrs.getAttr()).thenReturn(List.of(idAttr, nameAttr));
-      when(response.getAttrs()).thenReturn(attrs);
-      when(response.getName()).thenReturn("user@example.com");
-      when(response.getPublicURL()).thenReturn("example.com");
-      when(response.getLifetime()).thenReturn(3_600_000L);
-      when(response.getPrefs()).thenReturn(null);
-      when(mailboxClient.send(any())).thenReturn(response);
+      AccountInfo accountInfo = new AccountInfo(
+          "user-1", "user@example.com", "John Doe", "cos-1", "dom-1",
+          "example.com", AccountStatus.active, false, false, "en",
+          Map.of("carbonioFeatureFilesEnabled", true), Map.of(), 3_600_000L);
+      when(internalClient.getMyAccountInfo("token-1")).thenReturn(accountInfo);
       when(userMyselfCache.computeExpiresAt(anyLong())).thenReturn(futureExpiresAt());
       when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.empty());
 
@@ -142,9 +137,9 @@ class UserServiceTest {
     }
 
     @Test
-    void soapFailure_returnsEmpty() throws Exception {
+    void apiFailure_returnsEmpty() throws Exception {
       when(userMyselfCache.getByToken("token-1")).thenReturn(Optional.empty());
-      when(mailboxClient.send(any())).thenThrow(new MailboxClientException("test"));
+      when(internalClient.getMyAccountInfo("token-1")).thenThrow(new MailboxClientException("test"));
 
       Optional<UserMyself> result = userService.getUserMyself("token-1");
 
@@ -153,11 +148,11 @@ class UserServiceTest {
     }
 
     @Test
-    void cacheDisabled_soapResultNotCached() throws Exception {
+    void cacheDisabled_apiResultNotCached() throws Exception {
       when(userMyselfCache.isCacheEnabled()).thenReturn(false);
       when(userInfoCache.isCacheEnabled()).thenReturn(false);
       when(userMyselfCache.getByToken("token-1")).thenReturn(Optional.empty());
-      when(mailboxClient.send(any())).thenThrow(new MailboxClientException("test"));
+      when(internalClient.getMyAccountInfo("token-1")).thenThrow(new MailboxClientException("test"));
 
       Optional<UserMyself> result = userService.getUserMyself("token-1");
 
@@ -174,31 +169,29 @@ class UserServiceTest {
       UserInfo userInfo = sampleUserInfo();
       when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.of(userInfo));
 
-      Optional<UserInfo> result = userService.getUserById("user-1", "token-1");
+      Optional<UserInfo> result = userService.getUserById("user-1");
 
       assertThat(result).contains(userInfo);
-      verify(mailboxClient, never()).send(any());
+      verifyNoInteractions(internalClient);
     }
 
     @Test
-    void cacheMiss_callsSoap() throws Exception {
+    void cacheMiss_callsInternalApi() throws Exception {
       when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.empty());
-      when(mailboxClient.send(any())).thenThrow(new MailboxClientException("test"));
+      when(internalClient.getAccountInfo("user-1")).thenThrow(new MailboxClientException("test"));
 
-      Optional<UserInfo> result = userService.getUserById("user-1", "token-1");
+      Optional<UserInfo> result = userService.getUserById("user-1");
 
       assertThat(result).isEmpty();
-      verify(mailboxClient).send(any());
+      verify(internalClient).getAccountInfo("user-1");
     }
 
     @Test
-    void soapSuccess_cachesAndReturnsUserInfo() throws Exception {
+    void apiSuccess_cachesAndReturnsUserInfo() throws Exception {
       when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.empty());
+      when(internalClient.getAccountInfo("user-1")).thenReturn(sampleAccountInfo("user-1", "user@example.com"));
 
-      GetAccountInfoResponse response = mockAccountInfoResponse("user-1", "user@example.com");
-      when(mailboxClient.send(any())).thenReturn(response);
-
-      Optional<UserInfo> result = userService.getUserById("user-1", "token-1");
+      Optional<UserInfo> result = userService.getUserById("user-1");
 
       assertThat(result).isPresent();
       assertThat(result.get().userId()).isEqualTo("user-1");
@@ -206,23 +199,23 @@ class UserServiceTest {
     }
 
     @Test
-    void soapFailure_returnsEmpty() throws Exception {
+    void apiFailure_returnsEmpty() throws Exception {
       when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.empty());
-      when(mailboxClient.send(any())).thenThrow(new MailboxClientException("test"));
+      when(internalClient.getAccountInfo("user-1")).thenThrow(new MailboxClientException("test"));
 
-      Optional<UserInfo> result = userService.getUserById("user-1", "token-1");
+      Optional<UserInfo> result = userService.getUserById("user-1");
 
       assertThat(result).isEmpty();
       verify(userInfoCache, never()).put(any());
     }
 
     @Test
-    void cacheDisabled_soapResultNotCached() throws Exception {
+    void cacheDisabled_apiResultNotCached() throws Exception {
       when(userInfoCache.isCacheEnabled()).thenReturn(false);
       when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.empty());
-      when(mailboxClient.send(any())).thenThrow(new MailboxClientException("test"));
+      when(internalClient.getAccountInfo("user-1")).thenThrow(new MailboxClientException("test"));
 
-      Optional<UserInfo> result = userService.getUserById("user-1", "token-1");
+      Optional<UserInfo> result = userService.getUserById("user-1");
 
       assertThat(result).isEmpty();
       verify(userInfoCache, never()).put(any());
@@ -237,31 +230,30 @@ class UserServiceTest {
       UserInfo userInfo = sampleUserInfo();
       when(userInfoCache.getByEmail("user@example.com")).thenReturn(Optional.of(userInfo));
 
-      Optional<UserInfo> result = userService.getUserByEmail("user@example.com", "token-1");
+      Optional<UserInfo> result = userService.getUserByEmail("user@example.com");
 
       assertThat(result).contains(userInfo);
-      verify(mailboxClient, never()).send(any());
+      verifyNoInteractions(internalClient);
     }
 
     @Test
-    void cacheMiss_callsSoap() throws Exception {
+    void cacheMiss_callsInternalApi() throws Exception {
       when(userInfoCache.getByEmail("user@example.com")).thenReturn(Optional.empty());
-      when(mailboxClient.send(any())).thenThrow(new MailboxClientException("test"));
+      when(internalClient.getAccountByEmail("user@example.com")).thenThrow(new MailboxClientException("test"));
 
-      Optional<UserInfo> result = userService.getUserByEmail("user@example.com", "token-1");
+      Optional<UserInfo> result = userService.getUserByEmail("user@example.com");
 
       assertThat(result).isEmpty();
-      verify(mailboxClient).send(any());
+      verify(internalClient).getAccountByEmail("user@example.com");
     }
 
     @Test
-    void soapSuccess_cachesAndReturnsUserInfo() throws Exception {
+    void apiSuccess_cachesAndReturnsUserInfo() throws Exception {
       when(userInfoCache.getByEmail("user@example.com")).thenReturn(Optional.empty());
+      when(internalClient.getAccountByEmail("user@example.com"))
+          .thenReturn(sampleAccountInfo("user-1", "user@example.com"));
 
-      GetAccountInfoResponse response = mockAccountInfoResponse("user-1", "user@example.com");
-      when(mailboxClient.send(any())).thenReturn(response);
-
-      Optional<UserInfo> result = userService.getUserByEmail("user@example.com", "token-1");
+      Optional<UserInfo> result = userService.getUserByEmail("user@example.com");
 
       assertThat(result).isPresent();
       assertThat(result.get().email()).isEqualTo("user@example.com");
@@ -269,11 +261,11 @@ class UserServiceTest {
     }
 
     @Test
-    void soapFailure_returnsEmpty() throws Exception {
+    void apiFailure_returnsEmpty() throws Exception {
       when(userInfoCache.getByEmail("user@example.com")).thenReturn(Optional.empty());
-      when(mailboxClient.send(any())).thenThrow(new MailboxClientException("test"));
+      when(internalClient.getAccountByEmail("user@example.com")).thenThrow(new MailboxClientException("test"));
 
-      Optional<UserInfo> result = userService.getUserByEmail("user@example.com", "token-1");
+      Optional<UserInfo> result = userService.getUserByEmail("user@example.com");
 
       assertThat(result).isEmpty();
       verify(userInfoCache, never()).put(any());
@@ -284,25 +276,25 @@ class UserServiceTest {
   class GetUsersTests {
 
     @Test
-    void allCacheHitsSkipsSoap() {
+    void allCacheHitsSkipsApi() {
       UserInfo u1 = sampleUserInfo();
       UserInfo u2 = new UserInfo("user-2", "u2@example.com", "Jane", "example.com", "ACTIVE", "INTERNAL");
       when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.of(u1));
       when(userInfoCache.getByUserId("user-2")).thenReturn(Optional.of(u2));
 
-      List<UserInfo> result = userService.getUsers(List.of("user-1", "user-2"), "token-1");
+      List<UserInfo> result = userService.getUsers(List.of("user-1", "user-2"));
 
       assertThat(result).containsExactly(u1, u2);
-      verifyNoInteractions(mailboxClient);
+      verifyNoInteractions(internalClient);
     }
 
     @Test
-    void cacheMiss_callsSoapForMissingIds() throws Exception {
+    void cacheMiss_usesBatchEndpoint() throws Exception {
       when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.empty());
-      GetAccountInfoResponse response = mockAccountInfoResponse("user-1", "user@example.com");
-      when(mailboxClient.send(any())).thenReturn(response);
+      when(internalClient.batchGetAccountsByIds(List.of("user-1")))
+          .thenReturn(List.of(sampleAccountInfo("user-1", "user@example.com")));
 
-      List<UserInfo> result = userService.getUsers(List.of("user-1"), "token-1");
+      List<UserInfo> result = userService.getUsers(List.of("user-1"));
 
       assertThat(result).hasSize(1);
       assertThat(result.get(0).userId()).isEqualTo("user-1");
@@ -311,21 +303,37 @@ class UserServiceTest {
     @Test
     void deduplicatesUserIds() throws Exception {
       when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.empty());
-      GetAccountInfoResponse response = mockAccountInfoResponse("user-1", "user@example.com");
-      when(mailboxClient.send(any())).thenReturn(response);
+      when(internalClient.batchGetAccountsByIds(List.of("user-1")))
+          .thenReturn(List.of(sampleAccountInfo("user-1", "user@example.com")));
 
-      List<UserInfo> result = userService.getUsers(List.of("user-1", "user-1"), "token-1");
+      List<UserInfo> result = userService.getUsers(List.of("user-1", "user-1"));
 
       assertThat(result).hasSize(1);
+    }
+
+    @Test
+    void batchFails_fallsBackToIndividualLookups() throws Exception {
+      when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.empty());
+      when(internalClient.batchGetAccountsByIds(any())).thenThrow(new MailboxServerException("batch error"));
+      when(internalClient.getAccountInfo("user-1"))
+          .thenReturn(sampleAccountInfo("user-1", "user@example.com"));
+
+      List<UserInfo> result = userService.getUsers(List.of("user-1"));
+
+      assertThat(result).hasSize(1);
+      assertThat(result.get(0).userId()).isEqualTo("user-1");
+      verify(internalClient).getAccountInfo("user-1");
     }
 
     @Test
     void returnsOnlyFoundUsers() throws Exception {
       when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.of(sampleUserInfo()));
       when(userInfoCache.getByUserId("user-not-found")).thenReturn(Optional.empty());
-      when(mailboxClient.send(any())).thenThrow(new MailboxClientException("not found"));
+      when(internalClient.batchGetAccountsByIds(List.of("user-not-found")))
+          .thenThrow(new MailboxClientException("not found"));
+      when(internalClient.getAccountInfo("user-not-found")).thenThrow(new MailboxClientException("not found"));
 
-      List<UserInfo> result = userService.getUsers(List.of("user-1", "user-not-found"), "token-1");
+      List<UserInfo> result = userService.getUsers(List.of("user-1", "user-not-found"));
 
       assertThat(result).hasSize(1);
       assertThat(result.get(0).userId()).isEqualTo("user-1");
@@ -333,25 +341,9 @@ class UserServiceTest {
 
     @Test
     void emptyInputReturnsEmpty() {
-      List<UserInfo> result = userService.getUsers(List.of(), "token-1");
+      List<UserInfo> result = userService.getUsers(List.of());
       assertThat(result).isEmpty();
-      verifyNoInteractions(mailboxClient);
+      verifyNoInteractions(internalClient);
     }
-  }
-
-  // -- helpers --
-
-  private GetAccountInfoResponse mockAccountInfoResponse(String userId, String email) {
-    GetAccountInfoResponse response = mock(GetAccountInfoResponse.class);
-    NamedValue idAttr = mock(NamedValue.class);
-    when(idAttr.getName()).thenReturn("zimbraId");
-    when(idAttr.getValue()).thenReturn(userId);
-    NamedValue nameAttr = mock(NamedValue.class);
-    when(nameAttr.getName()).thenReturn("displayName");
-    when(nameAttr.getValue()).thenReturn("Test User");
-    when(response.getAttr()).thenReturn(List.of(idAttr, nameAttr));
-    when(response.getName()).thenReturn(email);
-    when(response.getPublicURL()).thenReturn("example.com");
-    return response;
   }
 }
