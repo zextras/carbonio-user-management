@@ -42,17 +42,17 @@ message GetUserMyselfRequest {
 }
 
 message GetUserByIdRequest {
-  string token = 1;
+  reserved 1;
   string user_id = 2;
 }
 
 message GetUserByEmailRequest {
-  string token = 1;
+  reserved 1;
   string user_email = 2;
 }
 
 message GetUsersRequest {
-  string token = 1;
+  reserved 1;
   repeated string user_ids = 2;
 }
 
