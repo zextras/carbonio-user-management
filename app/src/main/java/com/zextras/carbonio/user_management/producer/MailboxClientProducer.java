@@ -7,6 +7,7 @@ package com.zextras.carbonio.user_management.client;
 import com.zextras.carbonio.quarkus.extensions.bootstrap.NetworkingConfigService;
 import com.zextras.carbonio.user_management.UserManagementServiceConfig.NetworkingConfig;
 import com.zextras.mailbox.client.MailboxClient;
+import com.zextras.mailbox.client.internal.MailboxInternalApiClient;
 import com.zextras.mailbox.client.service.ServiceClient;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;
@@ -45,5 +46,21 @@ public class MailboxClientProducer {
         .build()
         .newServiceClientBuilder()
         .build();
+  }
+
+  @Produces
+  @Singleton
+  public MailboxInternalApiClient mailboxInternalApiClient() {
+    String host = networkingConfigService.get(NetworkingConfig.MAILBOX_INTERNAL_HOST)
+        .orElseThrow(() -> new IllegalStateException(
+            "Missing required config: " + NetworkingConfig.MAILBOX_INTERNAL_HOST));
+    String port = networkingConfigService.get(NetworkingConfig.MAILBOX_INTERNAL_PORT)
+        .orElseThrow(() -> new IllegalStateException(
+            "Missing required config: " + NetworkingConfig.MAILBOX_INTERNAL_PORT));
+
+    String mailboxInternalUrl = "http://" + host + ":" + port;
+    logger.info("Connecting to mailbox internal API at {}", mailboxInternalUrl);
+
+    return new MailboxInternalApiClient(mailboxInternalUrl);
   }
 }
