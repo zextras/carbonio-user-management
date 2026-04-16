@@ -118,13 +118,6 @@ SPDX-License-Identifier: AGPL-3.0-only
       <artifactId>assertj-core</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.testcontainers</groupId>
-      <artifactId>consul</artifactId>
-      <version>1.21.3</version>
-      <scope>test</scope>
-    </dependency>
-
     <!-- REST-assured for @QuarkusIntegrationTest HTTP calls -->
     <dependency>
       <groupId>io.rest-assured</groupId>
@@ -136,6 +129,13 @@ SPDX-License-Identifier: AGPL-3.0-only
     <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-netty-shaded</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- Testcontainers core (GenericContainer, Network, Startables) for integration tests -->
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>testcontainers</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
