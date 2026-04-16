@@ -34,4 +34,9 @@ dt3_pipeline(
     ],
     sonarqube: true,
     reuse: [projectType: 'CE'],
+    failureNotificationRecipients: [
+        'matteo.galvagni@zextras.com',
+        'noman.alishaukat@zextras.com',
+        'riccardo.degan@zextras.com',
+    ],
 )
