@@ -16,7 +16,12 @@ dt3_pipeline(
     mavenPublish: ['sdk'],
     sdk: [submoduleChangelogPaths: ['sdk']],
     jarBuild: [jarName: 'carbonio-user-management.jar'],
-    packaging: [pkgbuildPath: 'package/PKGBUILD', buildFlags: '-ds'],
+    packaging: [
+        pkgbuildPath: 'package/PKGBUILD',
+        buildFlags: '-ds',
+        ubuntuSinglePkg: false,
+        rockySinglePkg: false,
+    ],
     docker: [
         [dockerfile: 'docker/Dockerfile',
          imageName: 'carbonio-user-management',
