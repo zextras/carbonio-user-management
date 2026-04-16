@@ -80,7 +80,6 @@ class GrpcIT extends BaseIT {
   void getUserByIdReturnsUser() {
     var response = stub.getUserById(
         com.zextras.carbonio.user_management.sdk.grpc.GetUserByIdRequest.newBuilder()
-            .setToken(authToken)
             .setUserId(testUserId)
             .build());
     assertEquals(TEST_USER_EMAIL, response.getUser().getEmail());
@@ -92,7 +91,6 @@ class GrpcIT extends BaseIT {
     StatusRuntimeException e = assertThrows(StatusRuntimeException.class, () ->
         stub.getUserById(
             com.zextras.carbonio.user_management.sdk.grpc.GetUserByIdRequest.newBuilder()
-                .setToken(authToken)
                 .setUserId("non-existent-id")
                 .build()));
     assertEquals(Status.Code.NOT_FOUND, e.getStatus().getCode());
@@ -102,7 +100,6 @@ class GrpcIT extends BaseIT {
   void getUserByEmailReturnsUser() {
     var response = stub.getUserByEmail(
         com.zextras.carbonio.user_management.sdk.grpc.GetUserByEmailRequest.newBuilder()
-            .setToken(authToken)
             .setUserEmail(TEST_USER_EMAIL)
             .build());
     assertEquals(TEST_USER_EMAIL, response.getUser().getEmail());
@@ -114,7 +111,6 @@ class GrpcIT extends BaseIT {
     StatusRuntimeException e = assertThrows(StatusRuntimeException.class, () ->
         stub.getUserByEmail(
             com.zextras.carbonio.user_management.sdk.grpc.GetUserByEmailRequest.newBuilder()
-                .setToken(authToken)
                 .setUserEmail("nobody@carbonio.localhost")
                 .build()));
     assertEquals(Status.Code.NOT_FOUND, e.getStatus().getCode());
@@ -124,7 +120,6 @@ class GrpcIT extends BaseIT {
   void getUsersReturnsUsers() {
     var response = stub.getUsers(
         com.zextras.carbonio.user_management.sdk.grpc.GetUsersRequest.newBuilder()
-            .setToken(authToken)
             .addUserIds(testUserId)
             .build());
     assertEquals(1, response.getUsersCount());
@@ -135,15 +130,13 @@ class GrpcIT extends BaseIT {
   void getUsersWithEmptyListReturnsEmpty() {
     var response = stub.getUsers(
         com.zextras.carbonio.user_management.sdk.grpc.GetUsersRequest.newBuilder()
-            .setToken(authToken)
             .build());
     assertEquals(0, response.getUsersCount());
   }
 
   @Test
   void getUsersExceedingMaxReturnsInvalidArgument() {
-    var builder = com.zextras.carbonio.user_management.sdk.grpc.GetUsersRequest.newBuilder()
-        .setToken(authToken);
+    var builder = com.zextras.carbonio.user_management.sdk.grpc.GetUsersRequest.newBuilder();
     for (int i = 0; i < 101; i++) {
       builder.addUserIds("fake-id-" + i);
     }

@@ -120,7 +120,7 @@ class GrpcHandlerTest {
 
       TestStreamObserver<UserInfoResponse> observer = new TestStreamObserver<>();
       handler.getUserById(
-          GetUserByIdRequest.newBuilder().setToken("token-1").setUserId("user-1").build(), observer);
+          GetUserByIdRequest.newBuilder().setUserId("user-1").build(), observer);
 
       assertThat(observer.completed).isTrue();
       assertThat(observer.response.get().getUser().getUserId()).isEqualTo("user-1");
@@ -135,7 +135,7 @@ class GrpcHandlerTest {
 
       TestStreamObserver<UserInfoResponse> observer = new TestStreamObserver<>();
       handler.getUserById(
-          GetUserByIdRequest.newBuilder().setToken("token-1").setUserId("missing").build(), observer);
+          GetUserByIdRequest.newBuilder().setUserId("missing").build(), observer);
 
       assertThat(observer.error.get()).isInstanceOf(StatusRuntimeException.class);
       assertThat(((StatusRuntimeException) observer.error.get()).getStatus().getCode())
@@ -153,7 +153,7 @@ class GrpcHandlerTest {
 
       TestStreamObserver<UserInfoResponse> observer = new TestStreamObserver<>();
       handler.getUserByEmail(
-          GetUserByEmailRequest.newBuilder().setToken("token-1").setUserEmail("user@example.com").build(), observer);
+          GetUserByEmailRequest.newBuilder().setUserEmail("user@example.com").build(), observer);
 
       assertThat(observer.completed).isTrue();
       assertThat(observer.response.get().getUser().getFullName()).isEqualTo("John Doe");
@@ -165,7 +165,7 @@ class GrpcHandlerTest {
 
       TestStreamObserver<UserInfoResponse> observer = new TestStreamObserver<>();
       handler.getUserByEmail(
-          GetUserByEmailRequest.newBuilder().setToken("token-1").setUserEmail("nope@x.com").build(), observer);
+          GetUserByEmailRequest.newBuilder().setUserEmail("nope@x.com").build(), observer);
 
       assertThat(observer.error.get()).isInstanceOf(StatusRuntimeException.class);
       assertThat(((StatusRuntimeException) observer.error.get()).getStatus().getCode())
@@ -185,7 +185,7 @@ class GrpcHandlerTest {
 
       TestStreamObserver<GetUsersResponse> observer = new TestStreamObserver<>();
       handler.getUsers(
-          GetUsersRequest.newBuilder().setToken("token-1").addAllUserIds(List.of("id-1", "id-2")).build(), observer);
+          GetUsersRequest.newBuilder().addAllUserIds(List.of("id-1", "id-2")).build(), observer);
 
       assertThat(observer.completed).isTrue();
       assertThat(observer.response.get().getUsersList()).hasSize(2);
@@ -200,7 +200,7 @@ class GrpcHandlerTest {
 
       TestStreamObserver<GetUsersResponse> observer = new TestStreamObserver<>();
       handler.getUsers(
-          GetUsersRequest.newBuilder().setToken("token-1").addAllUserIds(List.of("bad-id")).build(), observer);
+          GetUsersRequest.newBuilder().addAllUserIds(List.of("bad-id")).build(), observer);
 
       assertThat(observer.completed).isTrue();
       assertThat(observer.response.get().getUsersList()).isEmpty();
@@ -208,7 +208,7 @@ class GrpcHandlerTest {
 
     @Test
     void returnsInvalidArgumentWhenExceedingMaxBatch() {
-      var builder = GetUsersRequest.newBuilder().setToken("token-1");
+      var builder = GetUsersRequest.newBuilder();
       for (int i = 0; i < MAX_BATCH_USER_IDS + 1; i++) {
         builder.addUserIds("id-" + i);
       }
@@ -223,7 +223,7 @@ class GrpcHandlerTest {
 
     @Test
     void returnsInvalidArgumentWhenExactlyAtMaxPlusOne() {
-      var builder = GetUsersRequest.newBuilder().setToken("token-1");
+      var builder = GetUsersRequest.newBuilder();
       for (int i = 0; i < MAX_BATCH_USER_IDS + 1; i++) {
         builder.addUserIds("id-" + i);
       }
@@ -236,7 +236,7 @@ class GrpcHandlerTest {
 
     @Test
     void acceptsExactlyMaxBatchIds() {
-      var builder = GetUsersRequest.newBuilder().setToken("token-1");
+      var builder = GetUsersRequest.newBuilder();
       for (int i = 0; i < MAX_BATCH_USER_IDS; i++) {
         builder.addUserIds("id-" + i);
       }
