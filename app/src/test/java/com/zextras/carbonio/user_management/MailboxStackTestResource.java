@@ -7,24 +7,32 @@ package com.zextras.carbonio.user_management;
 import com.zextras.carbonio.quarkus.extensions.bootstrap.CarbonioServiceConfig;
 import com.zextras.carbonio.user_management.UserManagementServiceConfig;
 import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.Base64;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.lifecycle.Startables;
-import org.testcontainers.consul.ConsulContainer;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.wait.strategy.Wait;
 
 /**
- * Starts the full Carbonio stack (mailbox + dependencies, consul) using individual
- * Testcontainers for integration tests that need a real mailbox instance.
+ * Starts the Carbonio mailbox stack (mailbox + dependencies) and a WireMock container
+ * that stubs Consul endpoints for integration tests.
  *
- * <p>Each service runs as an individual container with random host ports. Dependencies are modeled
- * via {@code dependsOn()} and started in parallel using {@link Startables#deepStart}.
- * Test account provisioning is done
- * via {@code execInContainer} on the mailbox container.
+ * <p><b>Testing philosophy:</b>
+ * <ul>
+ *   <li>Mailbox (+ openldap, mariadb, postfix) — real containers: tests exercise the full
+ *       SOAP authentication and user lookup flow.</li>
+ *   <li>Consul — WireMock stub: the bootstrap extension reads KV config and registers the
+ *       service; a real Consul instance is not needed.</li>
+ * </ul>
  *
  * <p>All container fields are {@code static} so that a single stack is shared across all IT
  * classes within one JVM run. {@link #stop()} is a no-op; Testcontainers' JVM shutdown hook
@@ -48,7 +56,7 @@ public class MailboxStackTestResource implements QuarkusTestResourceLifecycleMan
   private static GenericContainer<?> mariadb;
   private static GenericContainer<?> postfix;
   private static GenericContainer<?> mailbox;
-  private static ConsulContainer consul;
+  private static GenericContainer<?> wireMock;
 
   @Override
   public Map<String, String> start() {
@@ -101,14 +109,25 @@ public class MailboxStackTestResource implements QuarkusTestResourceLifecycleMan
         .waitingFor(Wait.forHttp("/service/health/ready").forPort(8080)
             .withStartupTimeout(Duration.ofMinutes(10)));
 
-    // --- Independent services (no shared network needed) ---
+    // --- Consul mock (WireMock, no shared network needed) ---
 
-    consul = new ConsulContainer("hashicorp/consul:1.22.3");
+    wireMock = new GenericContainer<>("wiremock/wiremock:3.9.2")
+        .withExposedPorts(8080)
+        .waitingFor(Wait.forHttp("/__admin/health").forPort(8080)
+            .withStartupTimeout(Duration.ofMinutes(2)));
 
     // Start all containers in parallel, respecting dependsOn graph
     log.info("Starting all containers in parallel...");
-    Startables.deepStart(mailbox, consul).join();
+    Startables.deepStart(mailbox, wireMock).join();
     log.info("All containers started");
+
+    // Configure WireMock stubs for Consul
+    String wireMockAdminUrl = "http://" + wireMock.getHost() + ":" + wireMock.getMappedPort(8080);
+    try {
+      setupConsulStubs(wireMockAdminUrl);
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to configure Consul WireMock stubs", e);
+    }
 
     // Provision test accounts (only on first start)
     provisionTestAccounts();
@@ -117,17 +136,14 @@ public class MailboxStackTestResource implements QuarkusTestResourceLifecycleMan
     mailboxBaseUrl = "http://localhost:" + mailboxPort;
     log.info("Mailbox available at {}", mailboxBaseUrl);
 
-    String consulHost = consul.getHost();
-    int consulPort = consul.getFirstMappedPort();
-
     cachedConfig = Map.ofEntries(
         Map.entry(CarbonioServiceConfig.NETWORKING_CONFIG_PREFIX
             + CarbonioServiceConfig.NetworkingConfig.SERVICE_HOST, "localhost"),
         Map.entry(CarbonioServiceConfig.NETWORKING_CONFIG_PREFIX
-            + CarbonioServiceConfig.NetworkingConfig.SERVICE_DISCOVER_HOST, consulHost),
+            + CarbonioServiceConfig.NetworkingConfig.SERVICE_DISCOVER_HOST, wireMock.getHost()),
         Map.entry(CarbonioServiceConfig.NETWORKING_CONFIG_PREFIX
             + CarbonioServiceConfig.NetworkingConfig.SERVICE_DISCOVER_PORT,
-            String.valueOf(consulPort)),
+            String.valueOf(wireMock.getMappedPort(8080))),
         Map.entry(CarbonioServiceConfig.NETWORKING_CONFIG_PREFIX
             + UserManagementServiceConfig.NetworkingConfig.MAILBOX_HOST, "localhost"),
         Map.entry(CarbonioServiceConfig.NETWORKING_CONFIG_PREFIX
@@ -142,6 +158,94 @@ public class MailboxStackTestResource implements QuarkusTestResourceLifecycleMan
   public void stop() {
     // Containers are static singletons: they persist for the full test-run JVM lifetime.
     // Testcontainers' JVM shutdown hook will stop them when the JVM exits.
+  }
+
+  /**
+   * Consul WireMock stubs: KV recursive fetch, service registration/deregistration,
+   * and service discovery endpoints.
+   *
+   * <p>CarbonioBootstrapFactory issues a SINGLE recursive GET:
+   *   GET /v1/kv/carbonio-user-management/?recurse
+   * and expects a JSON array of all KV entries under that prefix.
+   */
+  private static void setupConsulStubs(String wireMockAdminUrl) throws Exception {
+    HttpClient client = HttpClient.newHttpClient();
+
+    // Application config — recursive KV stub for the whole prefix
+    postConsulKvRecursiveStub(client, wireMockAdminUrl, "carbonio-user-management/",
+        new String[][]{
+            {"carbonio-user-management/cache/userinfo-ttl", "43200"},
+        });
+
+    // Catch-all unknown KV prefixes → 404
+    postStub(client, wireMockAdminUrl,
+        "{\"priority\":10,"
+        + "\"request\":{\"method\":\"GET\",\"urlPathPattern\":\"/v1/kv/.*\"},"
+        + "\"response\":{\"status\":404}}");
+
+    // Service registration / deregistration → 200
+    for (String pattern : new String[]{
+        "/v1/agent/service/register.*", "/v1/agent/service/deregister/.*",
+        "/v1/agent/check/register.*",   "/v1/agent/check/deregister/.*"}) {
+      postStub(client, wireMockAdminUrl,
+          "{\"request\":{\"method\":\"PUT\",\"urlPathPattern\":\"" + pattern + "\"},"
+          + "\"response\":{\"status\":200}}");
+    }
+
+    // Service discovery → empty array
+    for (String pattern : new String[]{"/v1/health/service/.*", "/v1/catalog/service/.*"}) {
+      postStub(client, wireMockAdminUrl,
+          "{\"request\":{\"method\":\"GET\",\"urlPathPattern\":\"" + pattern + "\"},"
+          + "\"response\":{\"status\":200,"
+          + "\"headers\":{\"Content-Type\":\"application/json\"},\"body\":\"[]\"}}");
+    }
+  }
+
+  /**
+   * Registers a single WireMock stub that matches the Consul recursive KV fetch:
+   *   GET /v1/kv/{prefix}?recurse   (urlPath ignores the query string)
+   *
+   * @param prefix    the KV prefix including trailing slash
+   * @param kvEntries array of {key, plainTextValue} pairs
+   */
+  private static void postConsulKvRecursiveStub(
+      HttpClient client, String baseUrl, String prefix, String[][] kvEntries) throws Exception {
+    StringBuilder arrayBody = new StringBuilder("[");
+    for (int i = 0; i < kvEntries.length; i++) {
+      String key   = kvEntries[i][0];
+      String value = kvEntries[i][1];
+      String b64   = Base64.getEncoder().encodeToString(value.getBytes(StandardCharsets.UTF_8));
+      if (i > 0) arrayBody.append(',');
+      arrayBody.append("{\"LockIndex\":0,\"Key\":\"").append(key)
+               .append("\",\"Flags\":0,\"Value\":\"").append(b64)
+               .append("\",\"CreateIndex\":1,\"ModifyIndex\":1}");
+    }
+    arrayBody.append("]");
+
+    String escapedBody = arrayBody.toString()
+        .replace("\\", "\\\\")
+        .replace("\"", "\\\"");
+
+    postStub(client, baseUrl,
+        "{\"priority\":1,"
+        + "\"request\":{\"method\":\"GET\",\"urlPath\":\"/v1/kv/" + prefix + "\"},"
+        + "\"response\":{\"status\":200,"
+        + "\"headers\":{\"Content-Type\":\"application/json\"},"
+        + "\"body\":\"" + escapedBody + "\"}}");
+  }
+
+  private static void postStub(HttpClient client, String baseUrl, String stubJson)
+      throws Exception {
+    HttpRequest req = HttpRequest.newBuilder()
+        .uri(URI.create(baseUrl + "/__admin/mappings"))
+        .header("Content-Type", "application/json")
+        .POST(HttpRequest.BodyPublishers.ofString(stubJson))
+        .build();
+    HttpResponse<String> resp = client.send(req, HttpResponse.BodyHandlers.ofString());
+    if (resp.statusCode() != 201) {
+      throw new RuntimeException(
+          "Failed to register stub (HTTP " + resp.statusCode() + "): " + resp.body());
+    }
   }
 
   /**
