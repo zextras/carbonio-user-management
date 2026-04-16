@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<!--
+SPDX-FileCopyrightText: 2026 2026 Zextras <https://www.zextras.com>
+
+SPDX-License-Identifier: AGPL-3.0-only
+-->
+
+<S:Envelope xmlns:S="http://www.w3.org/2003/05/soap-envelope">
+  <S:Header>
+    <ns4:context xmlns="urn:zimbraAdmin" xmlns:ns2="urn:zimbraMail" xmlns:ns3="urn:zimbraAccount" xmlns:ns4="urn:zimbra">
+      <ns4:authToken>%AUTH_TOKEN%</ns4:authToken>
+      <ns4:authTokenControl voidOnExpired="true"/>
+    </ns4:context>
+    <context xmlns="urn:zimbra">
+      <authTokenControl voidOnExpired="true"/>
+    </context>
+  </S:Header>
+  <S:Body>
+    <ns3:GetInfoRequest xmlns="urn:zimbraAdmin" xmlns:ns2="urn:zimbraMail" xmlns:ns3="urn:zimbraAccount" xmlns:ns4="urn:zimbra" sections="%SECTIONS%"/>
+  </S:Body>
+</S:Envelope>
