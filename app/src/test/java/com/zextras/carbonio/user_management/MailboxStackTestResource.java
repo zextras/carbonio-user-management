@@ -71,13 +71,13 @@ public class MailboxStackTestResource implements QuarkusTestResourceLifecycleMan
 
     // --- Mailbox stack (shared network) ---
 
-    openldap = new GenericContainer<>("registry.dev.zextras.com/dev/carbonio-openldap:latest")
+    openldap = new GenericContainer<>("registry.dev.zextras.com/dev/carbonio-openldap:devel")
         .withNetwork(network)
         .withNetworkAliases("carbonio-openldap")
         .withExposedPorts(1389)
         .waitingFor(Wait.forListeningPort().withStartupTimeout(Duration.ofMinutes(5)));
 
-    mariadb = new GenericContainer<>("registry.dev.zextras.com/dev/carbonio-mariadb:latest")
+    mariadb = new GenericContainer<>("registry.dev.zextras.com/dev/carbonio-mariadb:devel")
         .withNetwork(network)
         .withNetworkAliases("carbonio-mariadb")
         .withEnv("MARIADB_ROOT_PASSWORD", "password")
@@ -94,7 +94,7 @@ public class MailboxStackTestResource implements QuarkusTestResourceLifecycleMan
         .dependsOn(openldap)
         .waitingFor(Wait.forListeningPort().withStartupTimeout(Duration.ofMinutes(5)));
 
-    mailbox = new GenericContainer<>("registry.dev.zextras.com/dev/carbonio-mailbox:latest")
+    mailbox = new GenericContainer<>("registry.dev.zextras.com/dev/carbonio-mailbox:devel")
         .withNetwork(network)
         .withNetworkAliases("carbonio-mailbox")
         .withCreateContainerCmdModifier(cmd -> cmd.withHostName("docker.carbonio.localhost"))
