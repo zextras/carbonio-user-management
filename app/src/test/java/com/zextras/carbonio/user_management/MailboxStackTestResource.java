@@ -83,7 +83,7 @@ public class MailboxStackTestResource implements QuarkusTestResourceLifecycleMan
         .withEnv("MARIADB_ROOT_PASSWORD", "password")
         .waitingFor(Wait.forListeningPort().withStartupTimeout(Duration.ofMinutes(2)));
 
-    postfix = new GenericContainer<>("registry.dev.zextras.com/dev/carbonio-mta:latest")
+    postfix = new GenericContainer<>("registry.dev.zextras.com/dev/carbonio-mta:devel")
         .withNetwork(network)
         .withNetworkAliases("carbonio-postfix")
         .withEnv("LDAP_HOST", "carbonio-openldap")
