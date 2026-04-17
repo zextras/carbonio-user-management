@@ -54,6 +54,13 @@ SPDX-License-Identifier: AGPL-3.0-only
   </dependencyManagement>
 
   <dependencies>
+    <!-- systemd readiness notification (FFM-based sd_notify) -->
+    <dependency>
+      <groupId>com.zextras.carbonio</groupId>
+      <artifactId>carbonio-systemd-notify</artifactId>
+      <version>1.0.1</version>
+    </dependency>
+
     <!-- Quarkus extensions -->
     <dependency>
       <groupId>com.zextras.carbonio.quarkus</groupId>
@@ -179,10 +186,23 @@ SPDX-License-Identifier: AGPL-3.0-only
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>${maven-compiler-plugin.version}</version>
+        <configuration>
+          <compilerArgs>
+            <arg>--enable-preview</arg>
+          </compilerArgs>
+          <source>${maven.compiler.source}</source>
+          <target>${maven.compiler.target}</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${maven-surefire.version}</version>
         <configuration>
           <skipTests>${skip.unit.tests}</skipTests>
+          <argLine>${argLine} --enable-preview --enable-native-access=ALL-UNNAMED</argLine>
           <systemPropertyVariables>
             <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
           </systemPropertyVariables>
@@ -194,6 +214,7 @@ SPDX-License-Identifier: AGPL-3.0-only
         <version>${maven-failsafe.version}</version>
         <configuration>
           <skipITs>${skip.integration.tests}</skipITs>
+          <argLine>${argLine} --enable-preview --enable-native-access=ALL-UNNAMED</argLine>
           <systemPropertyVariables>
             <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
           </systemPropertyVariables>
