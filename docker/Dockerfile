@@ -10,4 +10,4 @@ RUN mkdir -p /etc/carbonio/user-management
 
 COPY app/target/*-runner.jar carbonio-user-management.jar
 
-ENTRYPOINT ["java", "-Djava.net.preferIPv4Stack=true", "-jar", "/app/carbonio-user-management.jar"]
+ENTRYPOINT ["java", "--enable-preview", "--enable-native-access=ALL-UNNAMED", "-Djava.net.preferIPv4Stack=true", "-jar", "/app/carbonio-user-management.jar"]
