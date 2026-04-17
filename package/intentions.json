@@ -68,6 +68,35 @@
       ]
     },
     {
+      "Name": "carbonio-mcp",
+      "Permissions": [
+        {
+          "Action": "allow",
+          "HTTP": {
+            "PathPrefix": "/auth/token/",
+            "Methods": [
+              "GET"
+            ]
+          }
+        },
+        {
+          "Action": "allow",
+          "HTTP": {
+            "PathPrefix": "/users/id/",
+            "Header": [
+              {
+                "Name": "Cookie",
+                "Present": true
+              }
+            ],
+            "Methods": [
+              "GET"
+            ]
+          }
+        }
+      ]
+    },
+    {
       "Name": "*",
       "Permissions": [
         {
