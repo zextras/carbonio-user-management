@@ -7,12 +7,12 @@ SPDX-License-Identifier: AGPL-3.0-only
 # Carbonio User Management Service
 
 ## Description
-Quarkus microservice that exposes user profile data (UserInfo, UserMyself) via REST and gRPC. Fetches data from Carbonio Mailbox via SOAP and caches results in Caffeine.
+Quarkus microservice that exposes user profile data (UserInfo, UserMyself) via REST and gRPC. Fetches data from Carbonio Mailbox via internal REST API and caches results in Caffeine.
 
 ## Architecture
 - **Multi-module Maven**: `sdk` (gRPC protobuf stubs), `app` (Quarkus service)
 - **Cache**: Caffeine in-process cache with configurable TTL via Consul KV (`cache.userinfo-ttl`, `cache.usermyself-ttl`)
-- **Upstream**: Mailbox SOAP client (`carbonio-mailbox-sdk`)
+- **Upstream**: Mailbox internal REST API (`carbonio-mailbox-internal-api`, port 20001 via Consul mesh)
 - **Endpoints**: REST (`/users/*`) + gRPC (UserManagementService)
 - **Config**: Consul-backed via `carbonio-quarkus-extensions-bootstrap` (`ApplicationConfigService`)
 - **Coalescing**: Concurrent requests for the same key are deduplicated via `ConcurrentHashMap<String, CompletableFuture>` in `UserService`
@@ -23,11 +23,11 @@ app/src/main/java/com/zextras/carbonio/user_management/
   UserManagementServiceConfig.java   — config keys, constants
   cache/UserInfoCache.java           — Caffeine cache for UserInfo (by userId + email index)
   cache/UserMyselfCache.java         — Caffeine cache for UserMyself (by token + userId index)
-  service/UserService.java           — orchestration: cache → SOAP fallback
+  service/UserService.java           — orchestration: cache → internal REST API fallback
   grpc/GrpcHandler.java              — gRPC endpoint
   rest/UserResource.java             — REST endpoint
   rest/TokenAuthFilter.java          — token extraction filter
-  producer/MailboxClientProducer.java — SOAP client CDI producer
+  producer/MailboxClientProducer.java — mailbox internal REST API client CDI producer
 ```
 
 ## Build & Run

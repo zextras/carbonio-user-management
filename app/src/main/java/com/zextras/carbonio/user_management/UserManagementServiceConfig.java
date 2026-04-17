@@ -12,8 +12,6 @@ public final class UserManagementServiceConfig {
 
   public static final class NetworkingConfig {
     private NetworkingConfig() {}
-    @ConfigKey public static final String MAILBOX_HOST = "carbonio.mailbox.host";
-    @ConfigKey public static final String MAILBOX_PORT = "carbonio.mailbox.port";
     @ConfigKey public static final String MAILBOX_INTERNAL_HOST = "carbonio.mailbox.internal.host";
     @ConfigKey public static final String MAILBOX_INTERNAL_PORT = "carbonio.mailbox.internal.port";
   }

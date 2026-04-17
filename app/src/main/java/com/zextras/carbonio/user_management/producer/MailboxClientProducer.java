@@ -6,9 +6,7 @@ package com.zextras.carbonio.user_management.client;
 
 import com.zextras.carbonio.quarkus.extensions.bootstrap.NetworkingConfigService;
 import com.zextras.carbonio.user_management.UserManagementServiceConfig.NetworkingConfig;
-import com.zextras.mailbox.client.MailboxClient;
 import com.zextras.mailbox.client.internal.MailboxInternalApiClient;
-import com.zextras.mailbox.client.service.ServiceClient;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Inject;
@@ -26,26 +24,6 @@ public class MailboxClientProducer {
   @Inject
   public MailboxClientProducer(NetworkingConfigService networkingConfigService) {
     this.networkingConfigService = networkingConfigService;
-  }
-
-  @Produces
-  @Singleton
-  public ServiceClient serviceClient() throws Exception {
-    String host = networkingConfigService.get(NetworkingConfig.MAILBOX_HOST)
-        .orElseThrow(() -> new IllegalStateException(
-            "Missing required config: " + NetworkingConfig.MAILBOX_HOST));
-    String port = networkingConfigService.get(NetworkingConfig.MAILBOX_PORT)
-        .orElseThrow(() -> new IllegalStateException(
-            "Missing required config: " + NetworkingConfig.MAILBOX_PORT));
-
-    String mailboxUrl = "http://" + host + ":" + port;
-    logger.info("Connecting to mailbox at {}", mailboxUrl);
-
-    return new MailboxClient.Builder()
-        .withServer(mailboxUrl)
-        .build()
-        .newServiceClientBuilder()
-        .build();
   }
 
   @Produces

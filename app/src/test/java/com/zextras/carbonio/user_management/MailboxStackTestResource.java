@@ -146,11 +146,6 @@ public class MailboxStackTestResource implements QuarkusTestResourceLifecycleMan
             + CarbonioServiceConfig.NetworkingConfig.SERVICE_DISCOVER_PORT,
             String.valueOf(wireMock.getMappedPort(8080))),
         Map.entry(CarbonioServiceConfig.NETWORKING_CONFIG_PREFIX
-            + UserManagementServiceConfig.NetworkingConfig.MAILBOX_HOST, "localhost"),
-        Map.entry(CarbonioServiceConfig.NETWORKING_CONFIG_PREFIX
-            + UserManagementServiceConfig.NetworkingConfig.MAILBOX_PORT,
-            String.valueOf(mailboxPort)),
-        Map.entry(CarbonioServiceConfig.NETWORKING_CONFIG_PREFIX
             + UserManagementServiceConfig.NetworkingConfig.MAILBOX_INTERNAL_HOST, "localhost"),
         Map.entry(CarbonioServiceConfig.NETWORKING_CONFIG_PREFIX
             + UserManagementServiceConfig.NetworkingConfig.MAILBOX_INTERNAL_PORT,
