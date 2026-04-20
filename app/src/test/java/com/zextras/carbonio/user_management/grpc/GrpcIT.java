@@ -34,8 +34,15 @@ class GrpcIT extends BaseIT {
 
   @BeforeAll
   void setUpGrpc() {
+    // gRPC runs on the same port as HTTP (use-separate-server=false).
+    // RestAssured.port is reliably set by the Quarkus test framework via
+    // MicroProfile Config (quarkus.http.test-port). Prefer it over restPort,
+    // which may be 0 when test.url is not resolvable in the failsafe JVM.
+    int grpcPort = io.restassured.RestAssured.port > 0
+        ? io.restassured.RestAssured.port
+        : Integer.getInteger("quarkus.http.port", 8081);
     channel = io.grpc.Grpc.newChannelBuilderForAddress(
-            "localhost", restPort, io.grpc.InsecureChannelCredentials.create())
+            "localhost", grpcPort, io.grpc.InsecureChannelCredentials.create())
         .build();
     stub = com.zextras.carbonio.user_management.sdk.grpc.UserManagementServiceGrpc
         .newBlockingStub(channel);
