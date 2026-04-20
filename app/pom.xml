@@ -97,6 +97,12 @@ SPDX-License-Identifier: AGPL-3.0-only
       <artifactId>caffeine</artifactId>
     </dependency>
 
+    <!-- OpenTelemetry -->
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-opentelemetry</artifactId>
+    </dependency>
+
     <!-- Test -->
     <dependency>
       <groupId>io.quarkus</groupId>

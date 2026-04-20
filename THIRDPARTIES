@@ -94,6 +94,7 @@ Apache-2.0 (https://spdx.org/licenses/Apache-2.0.html) applies to:
   Quarkus - JSON-P - Runtime (io.quarkus:quarkus-jsonp:3.27.2)
   Quarkus - Mutiny - Runtime (io.quarkus:quarkus-mutiny:3.27.2)
   Quarkus - Netty - Runtime (io.quarkus:quarkus-netty:3.27.2)
+  Quarkus - OpenTelemetry - Runtime (io.quarkus:quarkus-opentelemetry:3.27.2)
   Quarkus - REST - Common - Runtime (io.quarkus:quarkus-rest-common:3.27.2)
   Quarkus - REST - Jackson - Runtime (io.quarkus:quarkus-rest-jackson:3.27.2)
   Quarkus - REST - Jackson Common Bits - Runtime (io.quarkus:quarkus-rest-jackson-common:3.27.2)
@@ -110,6 +111,7 @@ Apache-2.0 (https://spdx.org/licenses/Apache-2.0.html) applies to:
   Quarkus - Vert.x - Runtime (io.quarkus:quarkus-vertx:3.27.2)
   Quarkus - Vert.x Late Bound MDC Provider (io.quarkus:quarkus-vertx-latebound-mdc-provider:3.27.2)
   Quarkus - Virtual Threads - Runtime (io.quarkus:quarkus-virtual-threads:3.27.2)
+  Quarkus - WebSockets Next - SPI (io.quarkus:quarkus-websockets-next-spi:3.27.2)
   quarkus-security (io.quarkus.security:quarkus-security:2.2.1)
   RESTEasy Reactive - Common Runtime (io.quarkus.resteasy.reactive:resteasy-reactive-common:3.27.2)
   RESTEasy Reactive - Common Types (io.quarkus.resteasy.reactive:resteasy-reactive-common-types:3.27.2)
@@ -275,6 +277,28 @@ MIT-0 (https://spdx.org/licenses/MIT-0.html) applies to:
 The Apache License, Version 2.0 (https://spdx.org/licenses/The Apache License, Version 2.0.html) applies to:
 
   JSpecify annotations (org.jspecify:jspecify:1.0.0)
+  OpenTelemetry Instrumentation for Java (io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.10.0)
+  OpenTelemetry Instrumentation for Java (io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations-support:2.10.0-alpha)
+  OpenTelemetry Instrumentation for Java (io.opentelemetry.instrumentation:opentelemetry-instrumentation-api:2.10.0)
+  OpenTelemetry Instrumentation for Java (io.opentelemetry.instrumentation:opentelemetry-instrumentation-api-incubator:2.10.0-alpha)
+  OpenTelemetry Instrumentation for Java (io.opentelemetry.instrumentation:opentelemetry-jdbc:2.10.0-alpha)
+  OpenTelemetry Instrumentation for Java (io.opentelemetry.instrumentation:opentelemetry-runtime-telemetry-java17:2.10.0-alpha)
+  OpenTelemetry Instrumentation for Java (io.opentelemetry.instrumentation:opentelemetry-runtime-telemetry-java8:2.10.0-alpha)
+  OpenTelemetry Java (io.opentelemetry:opentelemetry-api:1.44.1)
+  OpenTelemetry Java (io.opentelemetry:opentelemetry-api-incubator:1.44.1-alpha)
+  OpenTelemetry Java (io.opentelemetry:opentelemetry-context:1.44.1)
+  OpenTelemetry Java (io.opentelemetry:opentelemetry-exporter-common:1.44.1)
+  OpenTelemetry Java (io.opentelemetry:opentelemetry-exporter-otlp:1.44.1)
+  OpenTelemetry Java (io.opentelemetry:opentelemetry-exporter-otlp-common:1.44.1)
+  OpenTelemetry Java (io.opentelemetry:opentelemetry-sdk:1.44.1)
+  OpenTelemetry Java (io.opentelemetry:opentelemetry-sdk-common:1.44.1)
+  OpenTelemetry Java (io.opentelemetry:opentelemetry-sdk-extension-autoconfigure:1.44.1)
+  OpenTelemetry Java (io.opentelemetry:opentelemetry-sdk-extension-autoconfigure-spi:1.44.1)
+  OpenTelemetry Java (io.opentelemetry:opentelemetry-sdk-logs:1.44.1)
+  OpenTelemetry Java (io.opentelemetry:opentelemetry-sdk-metrics:1.44.1)
+  OpenTelemetry Java (io.opentelemetry:opentelemetry-sdk-trace:1.44.1)
+  OpenTelemetry Semantic Conventions Java (io.opentelemetry.semconv:opentelemetry-semconv:1.28.0-alpha)
+  OpenTelemetry Semantic Conventions Java (io.opentelemetry.semconv:opentelemetry-semconv-incubating:1.29.0-alpha)
   Woodstox (com.fasterxml.woodstox:woodstox-core:7.0.0)
 
 The BSD 2-Clause License (https://spdx.org/licenses/The BSD 2-Clause License.html) applies to:
@@ -283,6 +307,6 @@ The BSD 2-Clause License (https://spdx.org/licenses/The BSD 2-Clause License.htm
 
 Unknown license (https://spdx.org/licenses/Unknown license.html) applies to:
 
-  Carbonio User Management - gRPC SDK (com.zextras.carbonio.user-management:carbonio-user-management-grpc-sdk:1.0.3-wip.10.e0f6b27a)
+  Carbonio User Management - gRPC SDK (com.zextras.carbonio.user-management:carbonio-user-management-grpc-sdk:1.0.3-wip.18.42747def)
   carbonio-mailbox-sdk (com.zextras:carbonio-mailbox-sdk:1.16.0)
 
