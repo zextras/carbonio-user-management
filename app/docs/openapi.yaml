@@ -1,7 +1,3 @@
-# SPDX-FileCopyrightText: 2026 Zextras <https://www.zextras.com>
-#
-# SPDX-License-Identifier: AGPL-3.0-only
-
 ---
 openapi: 3.1.0
 paths:
@@ -18,6 +14,9 @@ paths:
       responses:
         "200":
           description: OK
+          content:
+            application/json:
+              schema: {}
         "400":
           description: Bad Request
       summary: Get Users
@@ -34,6 +33,9 @@ paths:
       responses:
         "200":
           description: OK
+          content:
+            application/json:
+              schema: {}
       summary: Get By Email
       tags:
       - User Resource
@@ -48,6 +50,9 @@ paths:
       responses:
         "200":
           description: OK
+          content:
+            application/json:
+              schema: {}
       summary: Get By Id
       tags:
       - User Resource
@@ -56,11 +61,14 @@ paths:
       responses:
         "200":
           description: OK
+          content:
+            application/json:
+              schema: {}
       summary: Get Myself
       tags:
       - User Resource
 info:
-  title: carbonio-user-management-app API
+  title: carbonio-user-management API
   version: unversioned
 servers:
 - url: http://localhost:10000
