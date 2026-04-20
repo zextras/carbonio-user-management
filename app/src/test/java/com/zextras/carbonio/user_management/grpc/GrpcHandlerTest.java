@@ -7,11 +7,9 @@ package com.zextras.carbonio.user_management.grpc;
 import static com.zextras.carbonio.user_management.UserManagementServiceConfig.MAX_BATCH_USER_IDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.zextras.carbonio.user_management.grpc.GrpcHandler;
 import com.zextras.carbonio.user_management.record.UserInfo;
 import com.zextras.carbonio.user_management.record.UserMyself;
 import com.zextras.carbonio.user_management.sdk.grpc.GetUserByEmailRequest;
@@ -117,12 +115,12 @@ class GrpcHandlerTest {
 
     @Test
     void happyPath() {
-      when(userService.getUserById("user-1", "token-1"))
+      when(userService.getUserById("user-1"))
           .thenReturn(Optional.of(sampleUserInfo()));
 
       TestStreamObserver<UserInfoResponse> observer = new TestStreamObserver<>();
       handler.getUserById(
-          GetUserByIdRequest.newBuilder().setToken("token-1").setUserId("user-1").build(), observer);
+          GetUserByIdRequest.newBuilder().setUserId("user-1").build(), observer);
 
       assertThat(observer.completed).isTrue();
       assertThat(observer.response.get().getUser().getUserId()).isEqualTo("user-1");
@@ -133,11 +131,11 @@ class GrpcHandlerTest {
 
     @Test
     void returnsNotFoundOnEmpty() {
-      when(userService.getUserById("missing", "token-1")).thenReturn(Optional.empty());
+      when(userService.getUserById("missing")).thenReturn(Optional.empty());
 
       TestStreamObserver<UserInfoResponse> observer = new TestStreamObserver<>();
       handler.getUserById(
-          GetUserByIdRequest.newBuilder().setToken("token-1").setUserId("missing").build(), observer);
+          GetUserByIdRequest.newBuilder().setUserId("missing").build(), observer);
 
       assertThat(observer.error.get()).isInstanceOf(StatusRuntimeException.class);
       assertThat(((StatusRuntimeException) observer.error.get()).getStatus().getCode())
@@ -150,12 +148,12 @@ class GrpcHandlerTest {
 
     @Test
     void happyPath() {
-      when(userService.getUserByEmail("user@example.com", "token-1"))
+      when(userService.getUserByEmail("user@example.com"))
           .thenReturn(Optional.of(sampleUserInfo()));
 
       TestStreamObserver<UserInfoResponse> observer = new TestStreamObserver<>();
       handler.getUserByEmail(
-          GetUserByEmailRequest.newBuilder().setToken("token-1").setUserEmail("user@example.com").build(), observer);
+          GetUserByEmailRequest.newBuilder().setUserEmail("user@example.com").build(), observer);
 
       assertThat(observer.completed).isTrue();
       assertThat(observer.response.get().getUser().getFullName()).isEqualTo("John Doe");
@@ -163,11 +161,11 @@ class GrpcHandlerTest {
 
     @Test
     void returnsNotFoundOnEmpty() {
-      when(userService.getUserByEmail("nope@x.com", "token-1")).thenReturn(Optional.empty());
+      when(userService.getUserByEmail("nope@x.com")).thenReturn(Optional.empty());
 
       TestStreamObserver<UserInfoResponse> observer = new TestStreamObserver<>();
       handler.getUserByEmail(
-          GetUserByEmailRequest.newBuilder().setToken("token-1").setUserEmail("nope@x.com").build(), observer);
+          GetUserByEmailRequest.newBuilder().setUserEmail("nope@x.com").build(), observer);
 
       assertThat(observer.error.get()).isInstanceOf(StatusRuntimeException.class);
       assertThat(((StatusRuntimeException) observer.error.get()).getStatus().getCode())
@@ -183,11 +181,11 @@ class GrpcHandlerTest {
       UserInfo u1 = new UserInfo("id-1", "a@x.com", "A", "x.com", "ACTIVE", "INTERNAL");
       UserInfo u2 = new UserInfo("id-2", "b@x.com", "B", "x.com", "CLOSED", "GUEST");
 
-      when(userService.getUsers(anyList(), anyString())).thenReturn(List.of(u1, u2));
+      when(userService.getUsers(anyList())).thenReturn(List.of(u1, u2));
 
       TestStreamObserver<GetUsersResponse> observer = new TestStreamObserver<>();
       handler.getUsers(
-          GetUsersRequest.newBuilder().setToken("token-1").addAllUserIds(List.of("id-1", "id-2")).build(), observer);
+          GetUsersRequest.newBuilder().addAllUserIds(List.of("id-1", "id-2")).build(), observer);
 
       assertThat(observer.completed).isTrue();
       assertThat(observer.response.get().getUsersList()).hasSize(2);
@@ -198,11 +196,11 @@ class GrpcHandlerTest {
 
     @Test
     void returnsEmptyListWhenNoUsersFound() {
-      when(userService.getUsers(anyList(), anyString())).thenReturn(List.of());
+      when(userService.getUsers(anyList())).thenReturn(List.of());
 
       TestStreamObserver<GetUsersResponse> observer = new TestStreamObserver<>();
       handler.getUsers(
-          GetUsersRequest.newBuilder().setToken("token-1").addAllUserIds(List.of("bad-id")).build(), observer);
+          GetUsersRequest.newBuilder().addAllUserIds(List.of("bad-id")).build(), observer);
 
       assertThat(observer.completed).isTrue();
       assertThat(observer.response.get().getUsersList()).isEmpty();
@@ -210,7 +208,7 @@ class GrpcHandlerTest {
 
     @Test
     void returnsInvalidArgumentWhenExceedingMaxBatch() {
-      var builder = GetUsersRequest.newBuilder().setToken("token-1");
+      var builder = GetUsersRequest.newBuilder();
       for (int i = 0; i < MAX_BATCH_USER_IDS + 1; i++) {
         builder.addUserIds("id-" + i);
       }
@@ -225,7 +223,7 @@ class GrpcHandlerTest {
 
     @Test
     void returnsInvalidArgumentWhenExactlyAtMaxPlusOne() {
-      var builder = GetUsersRequest.newBuilder().setToken("token-1");
+      var builder = GetUsersRequest.newBuilder();
       for (int i = 0; i < MAX_BATCH_USER_IDS + 1; i++) {
         builder.addUserIds("id-" + i);
       }
@@ -238,11 +236,11 @@ class GrpcHandlerTest {
 
     @Test
     void acceptsExactlyMaxBatchIds() {
-      var builder = GetUsersRequest.newBuilder().setToken("token-1");
+      var builder = GetUsersRequest.newBuilder();
       for (int i = 0; i < MAX_BATCH_USER_IDS; i++) {
         builder.addUserIds("id-" + i);
       }
-      when(userService.getUsers(anyList(), anyString())).thenReturn(List.of());
+      when(userService.getUsers(anyList())).thenReturn(List.of());
 
       TestStreamObserver<GetUsersResponse> observer = new TestStreamObserver<>();
       handler.getUsers(builder.build(), observer);

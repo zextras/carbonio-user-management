@@ -50,8 +50,7 @@ public class UserResource {
       @PathParam("userId") String userId,
       @Context ContainerRequestContext ctx
   ) {
-    String token = (String) ctx.getProperty(AUTH_TOKEN_KEY);
-    return userService.getUserById(userId, token)
+    return userService.getUserById(userId)
         .map(u -> Response.ok(UserInfoDto.from(u)).build())
         .orElse(Response.status(Response.Status.NOT_FOUND).build());
   }
@@ -63,8 +62,7 @@ public class UserResource {
       @PathParam("email") String email,
       @Context ContainerRequestContext ctx
   ) {
-    String token = (String) ctx.getProperty(AUTH_TOKEN_KEY);
-    return userService.getUserByEmail(email, token)
+    return userService.getUserByEmail(email)
         .map(u -> Response.ok(UserInfoDto.from(u)).build())
         .orElse(Response.status(Response.Status.NOT_FOUND).build());
   }
@@ -81,8 +79,7 @@ public class UserResource {
           .entity("User IDs list must contain at most " + MAX_BATCH_USER_IDS + " entries")
           .build();
     }
-    String token = (String) ctx.getProperty(AUTH_TOKEN_KEY);
-    List<UserInfoDto> users = userService.getUsers(userIds, token).stream()
+    List<UserInfoDto> users = userService.getUsers(userIds).stream()
         .map(UserInfoDto::from)
         .toList();
     return Response.ok(users).build();

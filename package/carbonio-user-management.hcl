@@ -15,9 +15,9 @@ services {
         local_service_address = "127.78.0.5"
         upstreams = [
           {
-            destination_name   = "carbonio-mailbox"
+            destination_name   = "carbonio-mailbox-internal-api"
             local_bind_address = "127.78.0.5"
-            local_bind_port    = 20000
+            local_bind_port    = 20001
           }
         ]
       }

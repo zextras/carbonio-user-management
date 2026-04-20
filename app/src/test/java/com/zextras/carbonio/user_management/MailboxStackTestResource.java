@@ -71,19 +71,19 @@ public class MailboxStackTestResource implements QuarkusTestResourceLifecycleMan
 
     // --- Mailbox stack (shared network) ---
 
-    openldap = new GenericContainer<>("registry.dev.zextras.com/dev/carbonio-openldap:latest")
+    openldap = new GenericContainer<>("registry.dev.zextras.com/dev/carbonio-openldap:devel")
         .withNetwork(network)
         .withNetworkAliases("carbonio-openldap")
         .withExposedPorts(1389)
         .waitingFor(Wait.forListeningPort().withStartupTimeout(Duration.ofMinutes(5)));
 
-    mariadb = new GenericContainer<>("registry.dev.zextras.com/dev/carbonio-mariadb:latest")
+    mariadb = new GenericContainer<>("registry.dev.zextras.com/dev/carbonio-mariadb:devel")
         .withNetwork(network)
         .withNetworkAliases("carbonio-mariadb")
         .withEnv("MARIADB_ROOT_PASSWORD", "password")
         .waitingFor(Wait.forListeningPort().withStartupTimeout(Duration.ofMinutes(2)));
 
-    postfix = new GenericContainer<>("registry.dev.zextras.com/dev/carbonio-mta:latest")
+    postfix = new GenericContainer<>("registry.dev.zextras.com/dev/carbonio-mta:devel")
         .withNetwork(network)
         .withNetworkAliases("carbonio-postfix")
         .withEnv("LDAP_HOST", "carbonio-openldap")
@@ -94,7 +94,7 @@ public class MailboxStackTestResource implements QuarkusTestResourceLifecycleMan
         .dependsOn(openldap)
         .waitingFor(Wait.forListeningPort().withStartupTimeout(Duration.ofMinutes(5)));
 
-    mailbox = new GenericContainer<>("registry.dev.zextras.com/dev/carbonio-mailbox:latest")
+    mailbox = new GenericContainer<>("registry.dev.zextras.com/dev/carbonio-mailbox:devel")
         .withNetwork(network)
         .withNetworkAliases("carbonio-mailbox")
         .withCreateContainerCmdModifier(cmd -> cmd.withHostName("docker.carbonio.localhost"))
@@ -104,7 +104,7 @@ public class MailboxStackTestResource implements QuarkusTestResourceLifecycleMan
         .withEnv("MARIADB_ROOT_PASSWORD", "password")
         .withEnv("MARIADB_URL", "carbonio-mariadb")
         .withEnv("MARIADB_PORT", "3306")
-        .withExposedPorts(8080)
+        .withExposedPorts(8080, 10000)
         .dependsOn(openldap, postfix, mariadb)
         .waitingFor(Wait.forHttp("/service/health/ready").forPort(8080)
             .withStartupTimeout(Duration.ofMinutes(10)));
@@ -133,6 +133,7 @@ public class MailboxStackTestResource implements QuarkusTestResourceLifecycleMan
     provisionTestAccounts();
 
     int mailboxPort = mailbox.getMappedPort(8080);
+    int mailboxInternalPort = mailbox.getMappedPort(10000);
     mailboxBaseUrl = "http://localhost:" + mailboxPort;
     log.info("Mailbox available at {}", mailboxBaseUrl);
 
@@ -145,10 +146,10 @@ public class MailboxStackTestResource implements QuarkusTestResourceLifecycleMan
             + CarbonioServiceConfig.NetworkingConfig.SERVICE_DISCOVER_PORT,
             String.valueOf(wireMock.getMappedPort(8080))),
         Map.entry(CarbonioServiceConfig.NETWORKING_CONFIG_PREFIX
-            + UserManagementServiceConfig.NetworkingConfig.MAILBOX_HOST, "localhost"),
+            + UserManagementServiceConfig.NetworkingConfig.MAILBOX_INTERNAL_HOST, "localhost"),
         Map.entry(CarbonioServiceConfig.NETWORKING_CONFIG_PREFIX
-            + UserManagementServiceConfig.NetworkingConfig.MAILBOX_PORT,
-            String.valueOf(mailboxPort))
+            + UserManagementServiceConfig.NetworkingConfig.MAILBOX_INTERNAL_PORT,
+            String.valueOf(mailboxInternalPort))
     );
     started = true;
     return cachedConfig;
