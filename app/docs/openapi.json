@@ -18,7 +18,12 @@
         },
         "responses" : {
           "200" : {
-            "description" : "OK"
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : { }
+              }
+            }
           },
           "400" : {
             "description" : "Bad Request"
@@ -40,7 +45,12 @@
         } ],
         "responses" : {
           "200" : {
-            "description" : "OK"
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : { }
+              }
+            }
           }
         },
         "summary" : "Get By Email",
@@ -59,7 +69,12 @@
         } ],
         "responses" : {
           "200" : {
-            "description" : "OK"
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : { }
+              }
+            }
           }
         },
         "summary" : "Get By Id",
@@ -70,7 +85,12 @@
       "get" : {
         "responses" : {
           "200" : {
-            "description" : "OK"
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : { }
+              }
+            }
           }
         },
         "summary" : "Get Myself",
@@ -79,7 +99,7 @@
     }
   },
   "info" : {
-    "title" : "carbonio-user-management-app API",
+    "title" : "carbonio-user-management API",
     "version" : "unversioned"
   },
   "servers" : [ {
