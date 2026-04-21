@@ -79,7 +79,7 @@
     }
   },
   "info" : {
-    "title" : "carbonio-user-management-app API",
+    "title" : "carbonio-user-management API",
     "version" : "unversioned"
   },
   "servers" : [ {
