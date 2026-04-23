@@ -73,24 +73,9 @@
         {
           "Action": "allow",
           "HTTP": {
-            "PathPrefix": "/auth/token/",
+            "PathPrefix": "/usermanagement.UserManagementService/",
             "Methods": [
-              "GET"
-            ]
-          }
-        },
-        {
-          "Action": "allow",
-          "HTTP": {
-            "PathPrefix": "/users/id/",
-            "Header": [
-              {
-                "Name": "Cookie",
-                "Present": true
-              }
-            ],
-            "Methods": [
-              "GET"
+              "POST"
             ]
           }
         }
