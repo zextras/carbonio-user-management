@@ -39,21 +39,25 @@ message UserMyselfProto {
 
 message GetUserMyselfRequest {
   string token = 1;
+  bool bypass_cache = 2;
 }
 
 message GetUserByIdRequest {
   reserved 1;
   string user_id = 2;
+  bool bypass_cache = 3;
 }
 
 message GetUserByEmailRequest {
   reserved 1;
   string user_email = 2;
+  bool bypass_cache = 3;
 }
 
 message GetUsersRequest {
   reserved 1;
   repeated string user_ids = 2;
+  bool bypass_cache = 3;
 }
 
 message GetUsersResponse {

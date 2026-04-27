@@ -7,6 +7,7 @@ package com.zextras.carbonio.user_management.grpc;
 import static com.zextras.carbonio.user_management.UserManagementServiceConfig.MAX_BATCH_USER_IDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -70,7 +71,7 @@ class GrpcHandlerTest {
           "ACTIVE", "INTERNAL", "it",
           List.of("carbonioFeatureFilesEnabled"),
           Map.of("carbonioWscMaxGroupMembers", "50"));
-      when(userService.getUserMyself("token-1")).thenReturn(Optional.of(myself));
+      when(userService.getUserMyself("token-1", false)).thenReturn(Optional.of(myself));
 
       TestStreamObserver<UserMyselfResponse> observer = new TestStreamObserver<>();
       handler.getUserMyself(
@@ -87,7 +88,7 @@ class GrpcHandlerTest {
 
     @Test
     void returnsUnauthenticatedOnEmpty() {
-      when(userService.getUserMyself("bad-token")).thenReturn(Optional.empty());
+      when(userService.getUserMyself("bad-token", false)).thenReturn(Optional.empty());
 
       TestStreamObserver<UserMyselfResponse> observer = new TestStreamObserver<>();
       handler.getUserMyself(
@@ -108,6 +109,21 @@ class GrpcHandlerTest {
       assertThat(((StatusRuntimeException) observer.error.get()).getStatus().getCode())
           .isEqualTo(Status.Code.INVALID_ARGUMENT);
     }
+
+    @Test
+    void bypassCacheTrueIsForwardedToService() {
+      UserMyself myself = new UserMyself(
+          "user-1", "user@example.com", "John Doe", "example.com",
+          "ACTIVE", "INTERNAL", "en", List.of(), Map.of());
+      when(userService.getUserMyself("token-1", true)).thenReturn(Optional.of(myself));
+
+      TestStreamObserver<UserMyselfResponse> observer = new TestStreamObserver<>();
+      handler.getUserMyself(
+          GetUserMyselfRequest.newBuilder().setToken("token-1").setBypassCache(true).build(), observer);
+
+      assertThat(observer.completed).isTrue();
+      assertThat(observer.response.get().getUser().getInfo().getUserId()).isEqualTo("user-1");
+    }
   }
 
   @Nested
@@ -115,7 +131,7 @@ class GrpcHandlerTest {
 
     @Test
     void happyPath() {
-      when(userService.getUserById("user-1"))
+      when(userService.getUserById("user-1", false))
           .thenReturn(Optional.of(sampleUserInfo()));
 
       TestStreamObserver<UserInfoResponse> observer = new TestStreamObserver<>();
@@ -131,7 +147,7 @@ class GrpcHandlerTest {
 
     @Test
     void returnsNotFoundOnEmpty() {
-      when(userService.getUserById("missing")).thenReturn(Optional.empty());
+      when(userService.getUserById("missing", false)).thenReturn(Optional.empty());
 
       TestStreamObserver<UserInfoResponse> observer = new TestStreamObserver<>();
       handler.getUserById(
@@ -141,6 +157,18 @@ class GrpcHandlerTest {
       assertThat(((StatusRuntimeException) observer.error.get()).getStatus().getCode())
           .isEqualTo(Status.Code.NOT_FOUND);
     }
+
+    @Test
+    void bypassCacheTrueIsForwardedToService() {
+      when(userService.getUserById("user-1", true)).thenReturn(Optional.of(sampleUserInfo()));
+
+      TestStreamObserver<UserInfoResponse> observer = new TestStreamObserver<>();
+      handler.getUserById(
+          GetUserByIdRequest.newBuilder().setUserId("user-1").setBypassCache(true).build(), observer);
+
+      assertThat(observer.completed).isTrue();
+      assertThat(observer.response.get().getUser().getUserId()).isEqualTo("user-1");
+    }
   }
 
   @Nested
@@ -148,7 +176,7 @@ class GrpcHandlerTest {
 
     @Test
     void happyPath() {
-      when(userService.getUserByEmail("user@example.com"))
+      when(userService.getUserByEmail("user@example.com", false))
           .thenReturn(Optional.of(sampleUserInfo()));
 
       TestStreamObserver<UserInfoResponse> observer = new TestStreamObserver<>();
@@ -161,7 +189,7 @@ class GrpcHandlerTest {
 
     @Test
     void returnsNotFoundOnEmpty() {
-      when(userService.getUserByEmail("nope@x.com")).thenReturn(Optional.empty());
+      when(userService.getUserByEmail("nope@x.com", false)).thenReturn(Optional.empty());
 
       TestStreamObserver<UserInfoResponse> observer = new TestStreamObserver<>();
       handler.getUserByEmail(
@@ -170,6 +198,19 @@ class GrpcHandlerTest {
       assertThat(observer.error.get()).isInstanceOf(StatusRuntimeException.class);
       assertThat(((StatusRuntimeException) observer.error.get()).getStatus().getCode())
           .isEqualTo(Status.Code.NOT_FOUND);
+    }
+
+    @Test
+    void bypassCacheTrueIsForwardedToService() {
+      when(userService.getUserByEmail("user@example.com", true)).thenReturn(Optional.of(sampleUserInfo()));
+
+      TestStreamObserver<UserInfoResponse> observer = new TestStreamObserver<>();
+      handler.getUserByEmail(
+          GetUserByEmailRequest.newBuilder().setUserEmail("user@example.com").setBypassCache(true).build(),
+          observer);
+
+      assertThat(observer.completed).isTrue();
+      assertThat(observer.response.get().getUser().getEmail()).isEqualTo("user@example.com");
     }
   }
 
@@ -181,7 +222,7 @@ class GrpcHandlerTest {
       UserInfo u1 = new UserInfo("id-1", "a@x.com", "A", "x.com", "ACTIVE", "INTERNAL");
       UserInfo u2 = new UserInfo("id-2", "b@x.com", "B", "x.com", "CLOSED", "GUEST");
 
-      when(userService.getUsers(anyList())).thenReturn(List.of(u1, u2));
+      when(userService.getUsers(anyList(), eq(false))).thenReturn(List.of(u1, u2));
 
       TestStreamObserver<GetUsersResponse> observer = new TestStreamObserver<>();
       handler.getUsers(
@@ -196,7 +237,7 @@ class GrpcHandlerTest {
 
     @Test
     void returnsEmptyListWhenNoUsersFound() {
-      when(userService.getUsers(anyList())).thenReturn(List.of());
+      when(userService.getUsers(anyList(), eq(false))).thenReturn(List.of());
 
       TestStreamObserver<GetUsersResponse> observer = new TestStreamObserver<>();
       handler.getUsers(
@@ -240,13 +281,26 @@ class GrpcHandlerTest {
       for (int i = 0; i < MAX_BATCH_USER_IDS; i++) {
         builder.addUserIds("id-" + i);
       }
-      when(userService.getUsers(anyList())).thenReturn(List.of());
+      when(userService.getUsers(anyList(), eq(false))).thenReturn(List.of());
 
       TestStreamObserver<GetUsersResponse> observer = new TestStreamObserver<>();
       handler.getUsers(builder.build(), observer);
 
       assertThat(observer.completed).isTrue();
       assertThat(observer.error.get()).isNull();
+    }
+
+    @Test
+    void bypassCacheTrueIsForwardedToService() {
+      UserInfo u1 = new UserInfo("id-1", "a@x.com", "A", "x.com", "ACTIVE", "INTERNAL");
+      when(userService.getUsers(anyList(), eq(true))).thenReturn(List.of(u1));
+
+      TestStreamObserver<GetUsersResponse> observer = new TestStreamObserver<>();
+      handler.getUsers(
+          GetUsersRequest.newBuilder().addUserIds("id-1").setBypassCache(true).build(), observer);
+
+      assertThat(observer.completed).isTrue();
+      assertThat(observer.response.get().getUsersList()).hasSize(1);
     }
   }
 }

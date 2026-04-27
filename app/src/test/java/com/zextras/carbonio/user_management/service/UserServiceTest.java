@@ -78,7 +78,7 @@ class UserServiceTest {
       when(userMyselfCache.getByToken("token-1")).thenReturn(Optional.of(myself));
       when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.of(sampleUserInfo()));
 
-      Optional<UserMyself> result = userService.getUserMyself("token-1");
+      Optional<UserMyself> result = userService.getUserMyself("token-1", false);
 
       assertThat(result).contains(myself);
       verifyNoInteractions(internalClient);
@@ -89,7 +89,7 @@ class UserServiceTest {
       when(userMyselfCache.getByToken("token-1")).thenReturn(Optional.empty());
       when(internalClient.getMyAccountInfo("token-1")).thenThrow(new MailboxClientException("test"));
 
-      Optional<UserMyself> result = userService.getUserMyself("token-1");
+      Optional<UserMyself> result = userService.getUserMyself("token-1", false);
 
       assertThat(result).isEmpty();
       verify(internalClient).getMyAccountInfo("token-1");
@@ -101,7 +101,7 @@ class UserServiceTest {
       when(userMyselfCache.getByToken("token-1")).thenReturn(Optional.of(myself));
       when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.empty());
 
-      userService.getUserMyself("token-1");
+      userService.getUserMyself("token-1", false);
 
       verify(userInfoCache).put(any(UserInfo.class));
     }
@@ -112,7 +112,7 @@ class UserServiceTest {
       when(userMyselfCache.getByToken("token-1")).thenReturn(Optional.of(myself));
       when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.of(sampleUserInfo()));
 
-      userService.getUserMyself("token-1");
+      userService.getUserMyself("token-1", false);
 
       verify(userInfoCache, never()).put(any());
     }
@@ -129,7 +129,7 @@ class UserServiceTest {
       when(userMyselfCache.computeExpiresAt(anyLong())).thenReturn(futureExpiresAt());
       when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.empty());
 
-      Optional<UserMyself> result = userService.getUserMyself("token-1");
+      Optional<UserMyself> result = userService.getUserMyself("token-1", false);
 
       assertThat(result).isPresent();
       assertThat(result.get().userId()).isEqualTo("user-1");
@@ -141,7 +141,7 @@ class UserServiceTest {
       when(userMyselfCache.getByToken("token-1")).thenReturn(Optional.empty());
       when(internalClient.getMyAccountInfo("token-1")).thenThrow(new MailboxClientException("test"));
 
-      Optional<UserMyself> result = userService.getUserMyself("token-1");
+      Optional<UserMyself> result = userService.getUserMyself("token-1", false);
 
       assertThat(result).isEmpty();
       verify(userMyselfCache, never()).put(any(), any(), any(), anyLong());
@@ -154,10 +154,28 @@ class UserServiceTest {
       when(userMyselfCache.getByToken("token-1")).thenReturn(Optional.empty());
       when(internalClient.getMyAccountInfo("token-1")).thenThrow(new MailboxClientException("test"));
 
-      Optional<UserMyself> result = userService.getUserMyself("token-1");
+      Optional<UserMyself> result = userService.getUserMyself("token-1", false);
 
       assertThat(result).isEmpty();
       verify(userMyselfCache, never()).put(any(), any(), any(), anyLong());
+    }
+
+    @Test
+    void bypassCache_skipsCacheRead_callsInternalApi() throws Exception {
+      AccountInfo accountInfo = new AccountInfo(
+          "user-1", "user@example.com", "John Doe", "cos-1", "dom-1",
+          "example.com", AccountStatus.active, false, false, "en",
+          Map.of(), Map.of(), 3_600_000L);
+      when(internalClient.getMyAccountInfo("token-1")).thenReturn(accountInfo);
+      when(userMyselfCache.computeExpiresAt(anyLong())).thenReturn(futureExpiresAt());
+      when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.empty());
+
+      Optional<UserMyself> result = userService.getUserMyself("token-1", true);
+
+      assertThat(result).isPresent();
+      assertThat(result.get().userId()).isEqualTo("user-1");
+      verify(userMyselfCache, never()).getByToken(any());
+      verify(internalClient).getMyAccountInfo("token-1");
     }
   }
 
@@ -169,7 +187,7 @@ class UserServiceTest {
       UserInfo userInfo = sampleUserInfo();
       when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.of(userInfo));
 
-      Optional<UserInfo> result = userService.getUserById("user-1");
+      Optional<UserInfo> result = userService.getUserById("user-1", false);
 
       assertThat(result).contains(userInfo);
       verifyNoInteractions(internalClient);
@@ -180,7 +198,7 @@ class UserServiceTest {
       when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.empty());
       when(internalClient.getAccountInfo("user-1")).thenThrow(new MailboxClientException("test"));
 
-      Optional<UserInfo> result = userService.getUserById("user-1");
+      Optional<UserInfo> result = userService.getUserById("user-1", false);
 
       assertThat(result).isEmpty();
       verify(internalClient).getAccountInfo("user-1");
@@ -191,7 +209,7 @@ class UserServiceTest {
       when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.empty());
       when(internalClient.getAccountInfo("user-1")).thenReturn(sampleAccountInfo("user-1", "user@example.com"));
 
-      Optional<UserInfo> result = userService.getUserById("user-1");
+      Optional<UserInfo> result = userService.getUserById("user-1", false);
 
       assertThat(result).isPresent();
       assertThat(result.get().userId()).isEqualTo("user-1");
@@ -203,7 +221,7 @@ class UserServiceTest {
       when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.empty());
       when(internalClient.getAccountInfo("user-1")).thenThrow(new MailboxClientException("test"));
 
-      Optional<UserInfo> result = userService.getUserById("user-1");
+      Optional<UserInfo> result = userService.getUserById("user-1", false);
 
       assertThat(result).isEmpty();
       verify(userInfoCache, never()).put(any());
@@ -215,10 +233,23 @@ class UserServiceTest {
       when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.empty());
       when(internalClient.getAccountInfo("user-1")).thenThrow(new MailboxClientException("test"));
 
-      Optional<UserInfo> result = userService.getUserById("user-1");
+      Optional<UserInfo> result = userService.getUserById("user-1", false);
 
       assertThat(result).isEmpty();
       verify(userInfoCache, never()).put(any());
+    }
+
+    @Test
+    void bypassCache_skipsCacheRead_callsInternalApi() throws Exception {
+      when(internalClient.getAccountInfo("user-1"))
+          .thenReturn(sampleAccountInfo("user-1", "user@example.com"));
+
+      Optional<UserInfo> result = userService.getUserById("user-1", true);
+
+      assertThat(result).isPresent();
+      assertThat(result.get().userId()).isEqualTo("user-1");
+      verify(userInfoCache, never()).getByUserId(any());
+      verify(internalClient).getAccountInfo("user-1");
     }
   }
 
@@ -230,7 +261,7 @@ class UserServiceTest {
       UserInfo userInfo = sampleUserInfo();
       when(userInfoCache.getByEmail("user@example.com")).thenReturn(Optional.of(userInfo));
 
-      Optional<UserInfo> result = userService.getUserByEmail("user@example.com");
+      Optional<UserInfo> result = userService.getUserByEmail("user@example.com", false);
 
       assertThat(result).contains(userInfo);
       verifyNoInteractions(internalClient);
@@ -241,7 +272,7 @@ class UserServiceTest {
       when(userInfoCache.getByEmail("user@example.com")).thenReturn(Optional.empty());
       when(internalClient.getAccountByEmail("user@example.com")).thenThrow(new MailboxClientException("test"));
 
-      Optional<UserInfo> result = userService.getUserByEmail("user@example.com");
+      Optional<UserInfo> result = userService.getUserByEmail("user@example.com", false);
 
       assertThat(result).isEmpty();
       verify(internalClient).getAccountByEmail("user@example.com");
@@ -253,7 +284,7 @@ class UserServiceTest {
       when(internalClient.getAccountByEmail("user@example.com"))
           .thenReturn(sampleAccountInfo("user-1", "user@example.com"));
 
-      Optional<UserInfo> result = userService.getUserByEmail("user@example.com");
+      Optional<UserInfo> result = userService.getUserByEmail("user@example.com", false);
 
       assertThat(result).isPresent();
       assertThat(result.get().email()).isEqualTo("user@example.com");
@@ -265,10 +296,23 @@ class UserServiceTest {
       when(userInfoCache.getByEmail("user@example.com")).thenReturn(Optional.empty());
       when(internalClient.getAccountByEmail("user@example.com")).thenThrow(new MailboxClientException("test"));
 
-      Optional<UserInfo> result = userService.getUserByEmail("user@example.com");
+      Optional<UserInfo> result = userService.getUserByEmail("user@example.com", false);
 
       assertThat(result).isEmpty();
       verify(userInfoCache, never()).put(any());
+    }
+
+    @Test
+    void bypassCache_skipsCacheRead_callsInternalApi() throws Exception {
+      when(internalClient.getAccountByEmail("user@example.com"))
+          .thenReturn(sampleAccountInfo("user-1", "user@example.com"));
+
+      Optional<UserInfo> result = userService.getUserByEmail("user@example.com", true);
+
+      assertThat(result).isPresent();
+      assertThat(result.get().email()).isEqualTo("user@example.com");
+      verify(userInfoCache, never()).getByEmail(any());
+      verify(internalClient).getAccountByEmail("user@example.com");
     }
   }
 
@@ -282,7 +326,7 @@ class UserServiceTest {
       when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.of(u1));
       when(userInfoCache.getByUserId("user-2")).thenReturn(Optional.of(u2));
 
-      List<UserInfo> result = userService.getUsers(List.of("user-1", "user-2"));
+      List<UserInfo> result = userService.getUsers(List.of("user-1", "user-2"), false);
 
       assertThat(result).containsExactly(u1, u2);
       verifyNoInteractions(internalClient);
@@ -294,7 +338,7 @@ class UserServiceTest {
       when(internalClient.batchGetAccountsByIds(List.of("user-1")))
           .thenReturn(List.of(sampleAccountInfo("user-1", "user@example.com")));
 
-      List<UserInfo> result = userService.getUsers(List.of("user-1"));
+      List<UserInfo> result = userService.getUsers(List.of("user-1"), false);
 
       assertThat(result).hasSize(1);
       assertThat(result.get(0).userId()).isEqualTo("user-1");
@@ -306,7 +350,7 @@ class UserServiceTest {
       when(internalClient.batchGetAccountsByIds(List.of("user-1")))
           .thenReturn(List.of(sampleAccountInfo("user-1", "user@example.com")));
 
-      List<UserInfo> result = userService.getUsers(List.of("user-1", "user-1"));
+      List<UserInfo> result = userService.getUsers(List.of("user-1", "user-1"), false);
 
       assertThat(result).hasSize(1);
     }
@@ -318,7 +362,7 @@ class UserServiceTest {
       when(internalClient.getAccountInfo("user-1"))
           .thenReturn(sampleAccountInfo("user-1", "user@example.com"));
 
-      List<UserInfo> result = userService.getUsers(List.of("user-1"));
+      List<UserInfo> result = userService.getUsers(List.of("user-1"), false);
 
       assertThat(result).hasSize(1);
       assertThat(result.get(0).userId()).isEqualTo("user-1");
@@ -333,7 +377,7 @@ class UserServiceTest {
           .thenThrow(new MailboxClientException("not found"));
       when(internalClient.getAccountInfo("user-not-found")).thenThrow(new MailboxClientException("not found"));
 
-      List<UserInfo> result = userService.getUsers(List.of("user-1", "user-not-found"));
+      List<UserInfo> result = userService.getUsers(List.of("user-1", "user-not-found"), false);
 
       assertThat(result).hasSize(1);
       assertThat(result.get(0).userId()).isEqualTo("user-1");
@@ -341,9 +385,23 @@ class UserServiceTest {
 
     @Test
     void emptyInputReturnsEmpty() {
-      List<UserInfo> result = userService.getUsers(List.of());
+      List<UserInfo> result = userService.getUsers(List.of(), false);
       assertThat(result).isEmpty();
       verifyNoInteractions(internalClient);
+    }
+
+    @Test
+    void bypassCache_treatsAllAsMisses_callsBatchEndpoint() throws Exception {
+      UserInfo u1 = sampleUserInfo();
+      when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.of(u1));
+      when(internalClient.batchGetAccountsByIds(List.of("user-1")))
+          .thenReturn(List.of(sampleAccountInfo("user-1", "user@example.com")));
+
+      List<UserInfo> result = userService.getUsers(List.of("user-1"), true);
+
+      assertThat(result).hasSize(1);
+      verify(userInfoCache, never()).getByUserId(any());
+      verify(internalClient).batchGetAccountsByIds(List.of("user-1"));
     }
   }
 }
