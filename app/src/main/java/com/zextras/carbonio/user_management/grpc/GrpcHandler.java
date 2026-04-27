@@ -50,7 +50,7 @@ public class GrpcHandler extends UserManagementServiceGrpc.UserManagementService
       return;
     }
 
-    userService.getUserMyself(token)
+    userService.getUserMyself(token, request.getBypassCache())
         .ifPresentOrElse(
             myself -> {
               responseObserver.onNext(toMyselfResponse(myself));
@@ -67,7 +67,7 @@ public class GrpcHandler extends UserManagementServiceGrpc.UserManagementService
       GetUserByIdRequest request,
       StreamObserver<UserInfoResponse> responseObserver
   ) {
-    userService.getUserById(request.getUserId())
+    userService.getUserById(request.getUserId(), request.getBypassCache())
         .ifPresentOrElse(
             userInfo -> {
               responseObserver.onNext(toUserInfoResponse(userInfo));
@@ -84,7 +84,7 @@ public class GrpcHandler extends UserManagementServiceGrpc.UserManagementService
       GetUserByEmailRequest request,
       StreamObserver<UserInfoResponse> responseObserver
   ) {
-    userService.getUserByEmail(request.getUserEmail())
+    userService.getUserByEmail(request.getUserEmail(), request.getBypassCache())
         .ifPresentOrElse(
             userInfo -> {
               responseObserver.onNext(toUserInfoResponse(userInfo));
@@ -109,7 +109,7 @@ public class GrpcHandler extends UserManagementServiceGrpc.UserManagementService
       return;
     }
 
-    List<UserInfo> users = userService.getUsers(request.getUserIdsList());
+    List<UserInfo> users = userService.getUsers(request.getUserIdsList(), request.getBypassCache());
 
     GetUsersResponse response = GetUsersResponse.newBuilder()
         .addAllUsers(users.stream().map(this::toUserInfoProto).toList())
