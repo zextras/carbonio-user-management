@@ -1,3 +1,28 @@
+## [1.1.0](https://github.com/zextras/carbonio-user-management/compare/v1.0.3...v1.1.0) (2026-05-04)
+
+### Features
+
+* add bypass_cache flag to all gRPC requests ([#147](https://github.com/zextras/carbonio-user-management/issues/147)) ([f9dd564](https://github.com/zextras/carbonio-user-management/commit/f9dd5647b5f5eb14c7989389d2df86347415a95f))
+* adopt carbonio-systemd-notify for native sd_notify readiness ([#136](https://github.com/zextras/carbonio-user-management/issues/136)) ([cabd380](https://github.com/zextras/carbonio-user-management/commit/cabd38007996037e8ea24c1aaa708d6651128d48))
+* convert config migration to Java class  ([#131](https://github.com/zextras/carbonio-user-management/issues/131)) ([762da60](https://github.com/zextras/carbonio-user-management/commit/762da60598b8b9cb5c2c5b5888ac627895fdfbae))
+* Quarkus refactor with gRPC and internal cache ([#121](https://github.com/zextras/carbonio-user-management/issues/121)) ([324e774](https://github.com/zextras/carbonio-user-management/commit/324e77404e501ee5cbce6ef3f5817369527737f2))
+* realistic ITs ([#137](https://github.com/zextras/carbonio-user-management/issues/137)) ([d212aa3](https://github.com/zextras/carbonio-user-management/commit/d212aa3ceedb65e5c983c268044843c1ec89cebf))
+* systemd hardening and service-discover.target orchestration ([#132](https://github.com/zextras/carbonio-user-management/issues/132)) ([3dee02c](https://github.com/zextras/carbonio-user-management/commit/3dee02ce2dcb3ece6d6f62bc536ed2f54e206d01))
+* use mailbox's internal endpoints instead of soaps ([#140](https://github.com/zextras/carbonio-user-management/issues/140)) ([00432f5](https://github.com/zextras/carbonio-user-management/commit/00432f5ae4ae9801d6d9294c29601860e22bb6f3))
+
+### Bug Fixes
+
+* bump sdk-parent to 1.7.1-1 for .proto inclusion in jar ([#128](https://github.com/zextras/carbonio-user-management/issues/128)) ([32594b9](https://github.com/zextras/carbonio-user-management/commit/32594b96f8ca14d14c9f3c723b35d5911fa6a46a))
+* remove submoduleChangelogPaths from Jenkinsfile ([#129](https://github.com/zextras/carbonio-user-management/issues/129)) ([3d25696](https://github.com/zextras/carbonio-user-management/commit/3d25696215553afae5bd75f9af4917031ddac3d6))
+* replace ubi9-minimal base image with eclipse-temurin:21-jdk-alpine ([#124](https://github.com/zextras/carbonio-user-management/issues/124)) ([b1f7fae](https://github.com/zextras/carbonio-user-management/commit/b1f7fae1aec5539702ca61bcfe655f750d365019))
+* set Consul service protocol to grpc ([#125](https://github.com/zextras/carbonio-user-management/issues/125)) ([6935046](https://github.com/zextras/carbonio-user-management/commit/693504643f0f3dc81ed880f662be38d05ea4da2a))
+* sidecar registration using jar ([#123](https://github.com/zextras/carbonio-user-management/issues/123)) ([3ea3d21](https://github.com/zextras/carbonio-user-management/commit/3ea3d210b376c8020161b8bf4cc77141cab80589))
+* update Consul health check path to Quarkus endpoint ([#122](https://github.com/zextras/carbonio-user-management/issues/122)) ([d004f6b](https://github.com/zextras/carbonio-user-management/commit/d004f6ba43235534b2bfee3457ab42ed2e23287e))
+
+### Performance Improvements
+
+* [CO-3523] define otel service name and version ([#138](https://github.com/zextras/carbonio-user-management/issues/138)) ([fb3eb92](https://github.com/zextras/carbonio-user-management/commit/fb3eb92a745dbf9c4888bf6d12fefa64abd5ef66))
+
 <!--
 SPDX-FileCopyrightText: 2026 2026 Zextras <https://www.zextras.com>
 
