@@ -15,6 +15,7 @@ license=("AGPL-3.0-only")
 depends=(
   "pending-setups"
   "service-discover"
+  "service-discover-base"
   "carbonio-openjdk"
 )
 source=(
