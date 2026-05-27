@@ -1,3 +1,9 @@
+## [1.1.1](https://github.com/zextras/carbonio-user-management/compare/v1.1.0...v1.1.1) (2026-05-27)
+
+### Bug Fixes
+
+* **deps:** add explicit service-discover-base dependency ([#154](https://github.com/zextras/carbonio-user-management/issues/154)) ([f01de4a](https://github.com/zextras/carbonio-user-management/commit/f01de4aada3c3349c522e009841497cb549213d5))
+
 ## [1.1.0](https://github.com/zextras/carbonio-user-management/compare/v1.0.3...v1.1.0) (2026-05-04)
 
 ### Features
