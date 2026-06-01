@@ -26,10 +26,12 @@ dt3_pipeline(
     docker: [
         [dockerfile: 'docker/Dockerfile',
          imageName: 'carbonio-user-management',
+         platforms: ['linux/amd64', 'linux/arm64'] as Set,
          title: 'Carbonio User Management',
          description: 'Carbonio User Management Service'],
         [dockerfile: 'docker/sidecar/Dockerfile',
          imageName: 'carbonio-user-management-sidecar',
+         platforms: ['linux/amd64', 'linux/arm64'] as Set,
          title: 'Carbonio User Management Sidecar',
          description: 'Carbonio User Management Sidecar Service'],
     ],
