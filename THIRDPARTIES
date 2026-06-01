@@ -4,7 +4,7 @@ AGPL-3.0-only (https://spdx.org/licenses/AGPL-3.0-only.html) applies to:
   Carbonio Quarkus Extensions - gRPC SDK Runtime (com.zextras.carbonio.quarkus:carbonio-quarkus-extensions-grpc-sdk:1.8.2-1)
   Carbonio Quarkus Extensions - REST Runtime (com.zextras.carbonio.quarkus:carbonio-quarkus-extensions-rest:1.8.2-1)
   Carbonio Systemd Notify (com.zextras.carbonio:carbonio-systemd-notify:1.0.1)
-  Carbonio User Management - gRPC SDK (com.zextras.carbonio.user-management:carbonio-user-management-grpc-sdk:1.0.3-wip.23.61769c4c)
+  Carbonio User Management - gRPC SDK (com.zextras.carbonio.user-management:carbonio-user-management-grpc-sdk:1.1.1-wip.1.fa63c5b5)
 
 Apache-2.0 (https://spdx.org/licenses/Apache-2.0.html) applies to:
 
