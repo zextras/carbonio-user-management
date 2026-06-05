@@ -34,10 +34,5 @@ dt3_pipeline(
          description: 'Carbonio User Management Sidecar Service'],
     ],
     sonarqube: true,
-    reuse: [projectType: 'CE'],
-    failureNotificationRecipients: [
-        'matteo.galvagni@zextras.com',
-        'noman.alishaukat@zextras.com',
-        'riccardo.degan@zextras.com',
-    ],
+    reuse: [projectType: 'CE']
 )
