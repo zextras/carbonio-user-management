@@ -17,8 +17,6 @@ dt3_pipeline(
     jarBuild: [jarName: 'carbonio-user-management.jar'],
     packaging: [
         buildFlags: '-ds',
-        ubuntuSinglePkg: false,
-        rockySinglePkg: false,
     ],
     docker: [
         [dockerfile: 'docker/Dockerfile',
