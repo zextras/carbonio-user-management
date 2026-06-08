@@ -16,7 +16,6 @@ dt3_pipeline(
     mavenPublish: ['sdk'],
     jarBuild: [jarName: 'carbonio-user-management.jar'],
     packaging: [
-        pkgbuildPath: 'package/PKGBUILD',
         buildFlags: '-ds',
         ubuntuSinglePkg: false,
         rockySinglePkg: false,
@@ -33,6 +32,5 @@ dt3_pipeline(
          title: 'Carbonio User Management Sidecar',
          description: 'Carbonio User Management Sidecar Service'],
     ],
-    sonarqube: true,
     reuse: [projectType: 'CE']
 )
