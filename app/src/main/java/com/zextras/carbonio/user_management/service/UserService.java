@@ -311,7 +311,7 @@ public class UserService {
         info.displayName() != null ? info.displayName() : "",
         info.domain() != null ? info.domain() : "",
         info.status() != null ? info.status().name().toUpperCase() : "ACTIVE",
-        info.isExternal() ? "GUEST" : "INTERNAL"
+        info.isExternalVirtualAccount() ? "GUEST" : "INTERNAL"
     );
   }
 
@@ -329,7 +329,7 @@ public class UserService {
         info.displayName() != null ? info.displayName() : "",
         info.domain() != null ? info.domain() : "",
         info.status() != null ? info.status().name().toUpperCase() : "ACTIVE",
-        info.isExternal() ? "GUEST" : "INTERNAL",
+        info.isExternalVirtualAccount() ? "GUEST" : "INTERNAL",
         info.locale() != null ? info.locale() : Locale.ENGLISH.toString(),
         features,
         info.capabilities() != null ? info.capabilities() : Map.of()

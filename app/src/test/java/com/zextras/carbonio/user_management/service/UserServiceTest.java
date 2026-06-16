@@ -65,7 +65,7 @@ class UserServiceTest {
 
   private AccountInfo sampleAccountInfo(String userId, String email) {
     return new AccountInfo(userId, email, "Test User", "cos-1", "dom-1",
-        "example.com", AccountStatus.active, false, false, "en",
+        "example.com", AccountStatus.active, false, false, false, "en",
         Map.of("carbonioFeatureFilesEnabled", true), Map.of(), 3_600_000L);
   }
 
@@ -123,7 +123,7 @@ class UserServiceTest {
 
       AccountInfo accountInfo = new AccountInfo(
           "user-1", "user@example.com", "John Doe", "cos-1", "dom-1",
-          "example.com", AccountStatus.active, false, false, "en",
+          "example.com", AccountStatus.active, false, false, false, "en",
           Map.of("carbonioFeatureFilesEnabled", true), Map.of(), 3_600_000L);
       when(internalClient.getMyAccountInfo("token-1")).thenReturn(accountInfo);
       when(userMyselfCache.computeExpiresAt(anyLong())).thenReturn(futureExpiresAt());
@@ -164,7 +164,7 @@ class UserServiceTest {
     void bypassCache_skipsCacheRead_callsInternalApi() throws Exception {
       AccountInfo accountInfo = new AccountInfo(
           "user-1", "user@example.com", "John Doe", "cos-1", "dom-1",
-          "example.com", AccountStatus.active, false, false, "en",
+          "example.com", AccountStatus.active, false, false, false, "en",
           Map.of(), Map.of(), 3_600_000L);
       when(internalClient.getMyAccountInfo("token-1")).thenReturn(accountInfo);
       when(userMyselfCache.computeExpiresAt(anyLong())).thenReturn(futureExpiresAt());
