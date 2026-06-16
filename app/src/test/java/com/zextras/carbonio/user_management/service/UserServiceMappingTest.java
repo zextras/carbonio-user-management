@@ -38,9 +38,10 @@ class UserServiceMappingTest {
   }
 
   private AccountInfo accountInfo(String id, String name, String displayName, String domain,
-      AccountStatus status, boolean isExternal) {
+      AccountStatus status, boolean isExternalVirtualAccount) {
     return new AccountInfo(id, name, displayName, "cos-1", "dom-1",
-        domain, status, false, isExternal, "en", Map.of(), Map.of(), 3_600_000L);
+        domain, status, false, false, isExternalVirtualAccount, "en", Map.of(), Map.of(),
+        3_600_000L);
   }
 
   @Nested
@@ -72,9 +73,23 @@ class UserServiceMappingTest {
     }
 
     @Test
-    void mapsInternalWhenNotExternal() {
+    void mapsInternalWhenNotExternalVirtualAccount() {
       AccountInfo info = accountInfo("uid-1", "user@example.com", "User",
           "example.com", AccountStatus.active, false);
+
+      UserInfo result = userService.mapAccountInfoToUserInfo(info);
+
+      assertThat(result.type()).isEqualTo("INTERNAL");
+    }
+
+    @Test
+    void usesIsExternalVirtualAccountNotIsExternal() {
+      // Regression for CO-3822: the guest/internal distinction must be driven by
+      // isExternalVirtualAccount (zimbraIsExternalVirtualAccount), NOT by isExternal
+      // (which reflects mail-transport routing). An account routed externally but that
+      // is not a virtual/guest account must still map to INTERNAL.
+      AccountInfo info = new AccountInfo("uid-1", "user@example.com", "User", "cos-1", "dom-1",
+          "example.com", AccountStatus.active, false, true, false, "en", Map.of(), Map.of(), null);
 
       UserInfo result = userService.mapAccountInfoToUserInfo(info);
 
@@ -104,7 +119,7 @@ class UserServiceMappingTest {
     @Test
     void nullDisplayNameBecomesEmptyString() {
       AccountInfo info = new AccountInfo("uid-1", "user@example.com", null, "cos-1", "dom-1",
-          "example.com", AccountStatus.active, false, false, "en", Map.of(), Map.of(), null);
+          "example.com", AccountStatus.active, false, false, false, "en", Map.of(), Map.of(), null);
 
       UserInfo result = userService.mapAccountInfoToUserInfo(info);
 
@@ -114,7 +129,7 @@ class UserServiceMappingTest {
     @Test
     void nullDomainBecomesEmptyString() {
       AccountInfo info = new AccountInfo("uid-1", "user@example.com", "User", "cos-1", "dom-1",
-          null, AccountStatus.active, false, false, "en", Map.of(), Map.of(), null);
+          null, AccountStatus.active, false, false, false, "en", Map.of(), Map.of(), null);
 
       UserInfo result = userService.mapAccountInfoToUserInfo(info);
 
@@ -124,7 +139,7 @@ class UserServiceMappingTest {
     @Test
     void nullStatusDefaultsToActive() {
       AccountInfo info = new AccountInfo("uid-1", "user@example.com", "User", "cos-1", "dom-1",
-          "example.com", null, false, false, "en", Map.of(), Map.of(), null);
+          "example.com", null, false, false, false, "en", Map.of(), Map.of(), null);
 
       UserInfo result = userService.mapAccountInfoToUserInfo(info);
 
@@ -139,7 +154,7 @@ class UserServiceMappingTest {
     void mapsAllBasicFields() {
       AccountInfo info = new AccountInfo(
           "uid-1", "user@example.com", "John Doe", "cos-1", "dom-1",
-          "example.com", AccountStatus.active, false, false, "it",
+          "example.com", AccountStatus.active, false, false, false, "it",
           Map.of("carbonioFeatureFilesEnabled", true, "carbonioFeatureWscEnabled", false),
           Map.of("carbonioWscMaxGroupMembers", "50"),
           3_600_000L);
@@ -159,7 +174,7 @@ class UserServiceMappingTest {
     void mapsOnlyEnabledFeatures() {
       AccountInfo info = new AccountInfo(
           "uid-1", "user@example.com", "User", "cos-1", "dom-1",
-          "example.com", AccountStatus.active, false, false, "en",
+          "example.com", AccountStatus.active, false, false, false, "en",
           Map.of("carbonioFeatureFilesEnabled", true, "carbonioFeatureWscEnabled", false),
           Map.of(), null);
 
@@ -172,7 +187,7 @@ class UserServiceMappingTest {
     void nullFeaturesBecomesEmptyList() {
       AccountInfo info = new AccountInfo(
           "uid-1", "user@example.com", "User", "cos-1", "dom-1",
-          "example.com", AccountStatus.active, false, false, "en",
+          "example.com", AccountStatus.active, false, false, false, "en",
           null, Map.of(), null);
 
       UserMyself result = userService.mapAccountInfoToUserMyself(info);
@@ -184,7 +199,7 @@ class UserServiceMappingTest {
     void nullCapabilitiesBecomesEmptyMap() {
       AccountInfo info = new AccountInfo(
           "uid-1", "user@example.com", "User", "cos-1", "dom-1",
-          "example.com", AccountStatus.active, false, false, "en",
+          "example.com", AccountStatus.active, false, false, false, "en",
           Map.of(), null, null);
 
       UserMyself result = userService.mapAccountInfoToUserMyself(info);
@@ -196,7 +211,7 @@ class UserServiceMappingTest {
     void mapsCapabilities() {
       AccountInfo info = new AccountInfo(
           "uid-1", "user@example.com", "User", "cos-1", "dom-1",
-          "example.com", AccountStatus.active, false, false, "en",
+          "example.com", AccountStatus.active, false, false, false, "en",
           Map.of(),
           Map.of("carbonioWscMaxGroupMembers", "50", "carbonioFilesMaxUploadSize", "1048576"),
           null);
@@ -212,7 +227,7 @@ class UserServiceMappingTest {
     void nullLocaleDefaultsToEnglish() {
       AccountInfo info = new AccountInfo(
           "uid-1", "user@example.com", "User", "cos-1", "dom-1",
-          "example.com", AccountStatus.active, false, false, null,
+          "example.com", AccountStatus.active, false, false, false, null,
           Map.of(), Map.of(), null);
 
       UserMyself result = userService.mapAccountInfoToUserMyself(info);
@@ -224,7 +239,7 @@ class UserServiceMappingTest {
     void mapsGuestType() {
       AccountInfo info = new AccountInfo(
           "uid-1", "guest@example.com", "Guest", "cos-1", "dom-1",
-          "example.com", AccountStatus.active, false, true, "en",
+          "example.com", AccountStatus.active, false, false, true, "en",
           Map.of(), Map.of(), null);
 
       UserMyself result = userService.mapAccountInfoToUserMyself(info);
@@ -236,7 +251,7 @@ class UserServiceMappingTest {
     void nullStatusDefaultsToActive() {
       AccountInfo info = new AccountInfo(
           "uid-1", "user@example.com", "User", "cos-1", "dom-1",
-          "example.com", null, false, false, "en",
+          "example.com", null, false, false, false, "en",
           Map.of(), Map.of(), null);
 
       UserMyself result = userService.mapAccountInfoToUserMyself(info);
