@@ -52,7 +52,7 @@ class UserServiceCoalesceTest {
 
   private AccountInfo accountInfo(String userId, String email) {
     return new AccountInfo(userId, email, "Test User", "cos-1", "dom-1",
-        "example.com", AccountStatus.active, false, false, "en",
+        "example.com", AccountStatus.active, false, false, false, "en",
         Map.of(), Map.of(), null);
   }
 
