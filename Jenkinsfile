@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 
 library(
-    identifier: 'jenkins-lib-common@dt3-migration',
+    identifier: 'jenkins-lib-common@dt3-pipeline',
     retriever: modernSCM([
         $class: 'GitSCMSource',
         credentialsId: 'jenkins-integration-with-github-account',
@@ -11,17 +11,12 @@ library(
     ])
 )
 
-properties(defaultPipelineProperties())
-
 dt3_pipeline(
     repoName: 'carbonio-user-management',
     mavenPublish: ['sdk'],
     jarBuild: [jarName: 'carbonio-user-management.jar'],
     packaging: [
-        pkgbuildPath: 'package/PKGBUILD',
         buildFlags: '-ds',
-        ubuntuSinglePkg: false,
-        rockySinglePkg: false,
     ],
     docker: [
         [dockerfile: 'docker/Dockerfile',
@@ -35,11 +30,5 @@ dt3_pipeline(
          title: 'Carbonio User Management Sidecar',
          description: 'Carbonio User Management Sidecar Service'],
     ],
-    sonarqube: true,
-    reuse: [projectType: 'CE'],
-    failureNotificationRecipients: [
-        'matteo.galvagni@zextras.com',
-        'noman.alishaukat@zextras.com',
-        'riccardo.degan@zextras.com',
-    ],
+    reuse: [projectType: 'CE']
 )
