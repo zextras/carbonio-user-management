@@ -1,3 +1,14 @@
+## [1.2.0](https://github.com/zextras/carbonio-user-management/compare/v1.1.1...v1.2.0) (2026-06-21)
+
+### Features
+
+* **ci:** [IN-951] add arm64 platform to docker image builds ([#155](https://github.com/zextras/carbonio-user-management/issues/155)) ([9c9f62d](https://github.com/zextras/carbonio-user-management/commit/9c9f62d36e4b1d3c473ace204133f70ab4a0cc2a))
+
+### Bug Fixes
+
+* declare docs license centrally (header-less generated docs) ([#175](https://github.com/zextras/carbonio-user-management/issues/175)) ([1105343](https://github.com/zextras/carbonio-user-management/commit/11053430bf8ae4cd7aff46322018a65e9ecdd4c0))
+* derive guest/internal type from isExternalVirtualAccount ([#172](https://github.com/zextras/carbonio-user-management/issues/172)) ([f00307d](https://github.com/zextras/carbonio-user-management/commit/f00307d9ad9b63d64c0c3edb36873b05e4368c3d))
+
 ## [1.1.1](https://github.com/zextras/carbonio-user-management/compare/v1.1.0...v1.1.1) (2026-05-27)
 
 ### Bug Fixes
