@@ -1,3 +1,9 @@
+## [1.2.1](https://github.com/zextras/carbonio-user-management/compare/v1.2.0...v1.2.1) (2026-06-22)
+
+### Bug Fixes
+
+* units: remove unneeded ReadOnlyPaths ([cc0362e](https://github.com/zextras/carbonio-user-management/commit/cc0362eb4b952ef254a13cca4042cc7d593f5d5b))
+
 ## [1.2.0](https://github.com/zextras/carbonio-user-management/compare/v1.1.1...v1.2.0) (2026-06-21)
 
 ### Features
