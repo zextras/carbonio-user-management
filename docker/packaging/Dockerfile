@@ -28,7 +28,7 @@ COPY --from=prep /staging .
 RUN yap build ubuntu-noble /tmp/staging/
 
 # Stage RHEL/Rocky 8
-FROM docker.io/m0rf30/yap-rocky-8:1.49 AS rocky-8-builder
+FROM docker.io/m0rf30/yap-rocky-8:2.4 AS rocky-8-builder
 WORKDIR /tmp/staging
 COPY --from=prep /staging .
 RUN yap build rocky-8 /tmp/staging/
