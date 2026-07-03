@@ -10,7 +10,7 @@ RUN mkdir -p package && \
     cp ./app/target/*-runner.jar package/carbonio-user-management.jar
 
 # Stage Ubuntu 20.04 (Focal)
-FROM docker.io/m0rf30/yap-ubuntu-focal:1.49 AS ubuntu-focal-builder
+FROM docker.io/m0rf30/yap-ubuntu-focal:1.55 AS ubuntu-focal-builder
 WORKDIR /tmp/staging
 COPY --from=prep /staging .
 RUN yap build ubuntu-focal /tmp/staging/
