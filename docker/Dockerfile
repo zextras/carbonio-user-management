@@ -5,10 +5,10 @@
 # Create the runtime config dir in a BUILDPLATFORM prep stage so the final
 # image needs no target-arch RUN (a RUN in the TARGETPLATFORM stage would
 # require QEMU => exec format error on arm64 cross-builds).
-FROM --platform=$BUILDPLATFORM docker.io/library/eclipse-temurin:21-jdk-alpine AS prep
+FROM --platform=$BUILDPLATFORM docker.io/library/eclipse-temurin:26-jdk-alpine AS prep
 RUN mkdir -p /out/etc/carbonio/user-management
 
-FROM docker.io/library/eclipse-temurin:21-jdk-alpine
+FROM docker.io/library/eclipse-temurin:26-jdk-alpine
 
 WORKDIR /app
 
