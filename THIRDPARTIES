@@ -169,8 +169,7 @@ BSD-2-Clause (https://spdx.org/licenses/BSD-2-Clause.html) applies to:
 BSD-3-Clause (https://spdx.org/licenses/BSD-3-Clause.html) applies to:
 
   Protocol Buffers [Core] (com.google.protobuf:protobuf-java:4.35.0)
-  Protocol Buffers [Core] (com.google.protobuf:protobuf-java:4.35.1)
-  Protocol Buffers [Util] (com.google.protobuf:protobuf-java-util:4.35.1)
+  Protocol Buffers [Util] (com.google.protobuf:protobuf-java-util:4.35.0)
 
 EDL 1.0 (https://spdx.org/licenses/EDL 1.0.html) applies to:
 
