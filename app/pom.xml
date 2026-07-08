@@ -39,6 +39,23 @@ SPDX-License-Identifier: AGPL-3.0-only
         <type>pom</type>
         <scope>import</scope>
       </dependency>
+
+      <!-- Quarkus 3.37.1 BOM manages protobuf-java/protobuf-java-util at 4.35.0, but
+           carbonio-user-management-grpc-sdk (built against carbonio-quarkus-extensions-sdk-parent
+           1.11.2-1) generates gRPC stubs with gencode version 4.35.1 baked in. Protobuf's
+           RuntimeVersion check at class-init requires runtime >= gencode, so pin the runtime
+           here to avoid NoClassDefFoundError/ProtobufRuntimeVersionException. Remove once the
+           sdk-parent's own protobuf-java version is aligned with its codegen version upstream. -->
+      <dependency>
+        <groupId>com.google.protobuf</groupId>
+        <artifactId>protobuf-java</artifactId>
+        <version>4.35.1</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.protobuf</groupId>
+        <artifactId>protobuf-java-util</artifactId>
+        <version>4.35.1</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
