@@ -27,7 +27,7 @@ SPDX-License-Identifier: AGPL-3.0-only
   </parent>
 
   <properties>
-    <quarkus.version>3.34.5</quarkus.version>
+    <quarkus.version>3.37.1</quarkus.version>
   </properties>
 
   <dependencyManagement>
@@ -39,6 +39,7 @@ SPDX-License-Identifier: AGPL-3.0-only
         <type>pom</type>
         <scope>import</scope>
       </dependency>
+
     </dependencies>
   </dependencyManagement>
 
