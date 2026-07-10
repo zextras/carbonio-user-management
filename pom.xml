@@ -34,7 +34,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
   <properties>
     <!-- Maven CI Friendly -->
-    <revision>1.2.3</revision>
+    <revision>1.2.4</revision>
     <changelist>-1</changelist>
 
     <!-- Dependencies -->
