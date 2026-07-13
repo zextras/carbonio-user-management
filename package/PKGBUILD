@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 
 pkgname="carbonio-user-management"
-pkgver="1.2.4"
+pkgver="1.2.5"
 pkgrel="1"
 pkgdesc="Carbonio User Management"
 maintainer="Zextras <packages@zextras.com>"
