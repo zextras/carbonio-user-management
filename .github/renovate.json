@@ -30,6 +30,21 @@
       ],
       "matchCurrentValue": "/^dt3-pipeline$/",
       "enabled": false
+    },
+    {
+      "description": "Keep eclipse-temurin on JDK 21 (LTS). The app runs with java --enable-preview, which locks compiled bytecode to the exact JDK feature version; a base-image-only major bump breaks at runtime. Move JDK deliberately as an app-level project.",
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchPackageNames": [
+        "eclipse-temurin",
+        "docker.io/library/eclipse-temurin"
+      ],
+      "matchCurrentValue": "/^21/",
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "enabled": false
     }
   ]
 }
