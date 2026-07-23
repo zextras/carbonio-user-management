@@ -6,63 +6,9 @@
       "Name": "carbonio-proxy",
       "Permissions": [
         {
-          "Action": "allow",
+          "Action": "deny",
           "HTTP": {
-            "PathPrefix": "/users/myself",
-            "Header": [
-              {
-                "Name": "Cookie",
-                "Present": true
-              }
-            ],
-            "Methods": [
-              "GET"
-            ]
-          }
-        },
-        {
-          "Action": "allow",
-          "HTTP": {
-            "PathPrefix": "/users/id/",
-            "Header": [
-              {
-                "Name": "Cookie",
-                "Present": true
-              }
-            ],
-            "Methods": [
-              "GET"
-            ]
-          }
-        },
-        {
-          "Action": "allow",
-          "HTTP": {
-            "PathPrefix": "/users/email/",
-            "Header": [
-              {
-                "Name": "Cookie",
-                "Present": true
-              }
-            ],
-            "Methods": [
-              "GET"
-            ]
-          }
-        },
-        {
-          "Action": "allow",
-          "HTTP": {
-            "PathExact": "/users",
-            "Header": [
-              {
-                "Name": "Cookie",
-                "Present": true
-              }
-            ],
-            "Methods": [
-              "POST"
-            ]
+            "PathPrefix": "/internal"
           }
         }
       ]
@@ -73,10 +19,7 @@
         {
           "Action": "allow",
           "HTTP": {
-            "PathPrefix": "/usermanagement.UserManagementService/",
-            "Methods": [
-              "POST"
-            ]
+            "PathPrefix": "/internal"
           }
         }
       ]
