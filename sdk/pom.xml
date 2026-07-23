@@ -29,13 +29,6 @@ SPDX-License-Identifier: AGPL-3.0-only
     <sdk.base.package>com.zextras.carbonio.user_management.sdk</sdk.base.package>
   </properties>
 
-  <!--
-    carbonio-quarkus-extensions-rest-sdk-parent now declares its dependency on
-    carbonio-quarkus-extensions-rest-sdk-support using ${project.parent.version} (fixed upstream),
-    which correctly resolves to rest-sdk-parent's own version - i.e. the <parent><version> declared
-    right above - for any cross-repo consumer. No explicit pin needed here anymore.
-  -->
-
   <repositories>
     <repository>
       <id>zextras-java-sdk</id>
