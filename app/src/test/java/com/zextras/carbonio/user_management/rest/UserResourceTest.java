@@ -7,6 +7,7 @@ package com.zextras.carbonio.user_management.rest;
 import static com.zextras.carbonio.user_management.UserManagementServiceConfig.AUTH_TOKEN_KEY;
 import static com.zextras.carbonio.user_management.UserManagementServiceConfig.MAX_BATCH_USER_IDS;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -17,12 +18,13 @@ import com.zextras.carbonio.user_management.record.UserMyself;
 import com.zextras.carbonio.user_management.rest.dto.MyselfDto;
 import com.zextras.carbonio.user_management.rest.dto.UserInfoDto;
 import com.zextras.carbonio.user_management.service.UserService;
+import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.container.ContainerRequestContext;
-import jakarta.ws.rs.core.Response;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.IntStream;
+import org.jboss.resteasy.reactive.RestResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -58,10 +60,10 @@ class UserResourceTest {
           Map.of("carbonioWscMaxGroupMembers", "50"));
       when(userService.getUserMyself("token-1")).thenReturn(Optional.of(myself));
 
-      Response response = resource.getMyself(ctx);
+      RestResponse<MyselfDto> response = resource.getMyself(ctx);
 
       assertThat(response.getStatus()).isEqualTo(200);
-      MyselfDto dto = (MyselfDto) response.getEntity();
+      MyselfDto dto = response.getEntity();
       assertThat(dto.info().userId()).isEqualTo("user-1");
       assertThat(dto.locale()).isEqualTo("it");
       assertThat(dto.features()).containsExactly("carbonioFeatureFilesEnabled");
@@ -72,7 +74,7 @@ class UserResourceTest {
     void returns401WhenTokenInvalid() {
       when(userService.getUserMyself("token-1")).thenReturn(Optional.empty());
 
-      Response response = resource.getMyself(ctx);
+      RestResponse<MyselfDto> response = resource.getMyself(ctx);
 
       assertThat(response.getStatus()).isEqualTo(401);
     }
@@ -86,10 +88,10 @@ class UserResourceTest {
       when(userService.getUserById("user-1"))
           .thenReturn(Optional.of(sampleUserInfo()));
 
-      Response response = resource.getById("user-1", ctx);
+      RestResponse<UserInfoDto> response = resource.getById("user-1", ctx);
 
       assertThat(response.getStatus()).isEqualTo(200);
-      UserInfoDto dto = (UserInfoDto) response.getEntity();
+      UserInfoDto dto = response.getEntity();
       assertThat(dto.userId()).isEqualTo("user-1");
       assertThat(dto.email()).isEqualTo("user@example.com");
     }
@@ -98,7 +100,7 @@ class UserResourceTest {
     void returns404WhenUserNotFound() {
       when(userService.getUserById("missing")).thenReturn(Optional.empty());
 
-      Response response = resource.getById("missing", ctx);
+      RestResponse<UserInfoDto> response = resource.getById("missing", ctx);
 
       assertThat(response.getStatus()).isEqualTo(404);
     }
@@ -112,10 +114,10 @@ class UserResourceTest {
       when(userService.getUserByEmail("user@example.com"))
           .thenReturn(Optional.of(sampleUserInfo()));
 
-      Response response = resource.getByEmail("user@example.com", ctx);
+      RestResponse<UserInfoDto> response = resource.getByEmail("user@example.com", ctx);
 
       assertThat(response.getStatus()).isEqualTo(200);
-      UserInfoDto dto = (UserInfoDto) response.getEntity();
+      UserInfoDto dto = response.getEntity();
       assertThat(dto.fullName()).isEqualTo("John Doe");
     }
 
@@ -123,7 +125,7 @@ class UserResourceTest {
     void returns404WhenUserNotFound() {
       when(userService.getUserByEmail("nope@x.com")).thenReturn(Optional.empty());
 
-      Response response = resource.getByEmail("nope@x.com", ctx);
+      RestResponse<UserInfoDto> response = resource.getByEmail("nope@x.com", ctx);
 
       assertThat(response.getStatus()).isEqualTo(404);
     }
@@ -138,11 +140,10 @@ class UserResourceTest {
       UserInfo u2 = new UserInfo("id-2", "b@x.com", "B", "x.com", "CLOSED", "GUEST");
       when(userService.getUsers(anyList())).thenReturn(List.of(u1, u2));
 
-      Response response = resource.getUsers(List.of("id-1", "id-2"), ctx);
+      RestResponse<List<UserInfoDto>> response = resource.getUsers(List.of("id-1", "id-2"), ctx);
 
       assertThat(response.getStatus()).isEqualTo(200);
-      @SuppressWarnings("unchecked")
-      List<UserInfoDto> dtos = (List<UserInfoDto>) response.getEntity();
+      List<UserInfoDto> dtos = response.getEntity();
       assertThat(dtos).hasSize(2);
       assertThat(dtos.get(0).userId()).isEqualTo("id-1");
       assertThat(dtos.get(1).status()).isEqualTo("CLOSED");
@@ -152,19 +153,19 @@ class UserResourceTest {
     void returnsEmptyList() {
       when(userService.getUsers(anyList())).thenReturn(List.of());
 
-      Response response = resource.getUsers(List.of("bad-id"), ctx);
+      RestResponse<List<UserInfoDto>> response = resource.getUsers(List.of("bad-id"), ctx);
 
       assertThat(response.getStatus()).isEqualTo(200);
-      @SuppressWarnings("unchecked")
-      List<UserInfoDto> dtos = (List<UserInfoDto>) response.getEntity();
+      List<UserInfoDto> dtos = response.getEntity();
       assertThat(dtos).isEmpty();
     }
 
     @Test
     void returns400WhenUserIdsNull() {
-      Response response = resource.getUsers(null, ctx);
+      WebApplicationException exception =
+          assertThrows(WebApplicationException.class, () -> resource.getUsers(null, ctx));
 
-      assertThat(response.getStatus()).isEqualTo(400);
+      assertThat(exception.getResponse().getStatus()).isEqualTo(400);
     }
 
     @Test
@@ -172,9 +173,10 @@ class UserResourceTest {
       List<String> ids = IntStream.rangeClosed(1, MAX_BATCH_USER_IDS + 1)
           .mapToObj(i -> "id-" + i).toList();
 
-      Response response = resource.getUsers(ids, ctx);
+      WebApplicationException exception =
+          assertThrows(WebApplicationException.class, () -> resource.getUsers(ids, ctx));
 
-      assertThat(response.getStatus()).isEqualTo(400);
+      assertThat(exception.getResponse().getStatus()).isEqualTo(400);
     }
 
     @Test
@@ -183,7 +185,7 @@ class UserResourceTest {
           .mapToObj(i -> "id-" + i).toList();
       when(userService.getUsers(anyList())).thenReturn(List.of());
 
-      Response response = resource.getUsers(ids, ctx);
+      RestResponse<List<UserInfoDto>> response = resource.getUsers(ids, ctx);
 
       assertThat(response.getStatus()).isEqualTo(200);
     }
