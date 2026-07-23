@@ -11,19 +11,22 @@ SPDX-License-Identifier: AGPL-3.0-only
 
   <parent>
     <groupId>com.zextras.carbonio.quarkus</groupId>
-    <artifactId>carbonio-quarkus-extensions-sdk-parent</artifactId>
+    <artifactId>carbonio-quarkus-extensions-rest-sdk-parent</artifactId>
     <version>1.11.2-1</version>
     <relativePath/>
   </parent>
 
   <groupId>com.zextras.carbonio.user-management</groupId>
-  <artifactId>carbonio-user-management-grpc-sdk</artifactId>
+  <artifactId>carbonio-user-management-rest-sdk</artifactId>
   <version>${revision}${changelist}</version>
-  <name>Carbonio User Management - gRPC SDK</name>
+  <name>Carbonio User Management - REST SDK</name>
 
   <properties>
     <revision>0.0.0</revision>
     <changelist>-SNAPSHOT</changelist>
+
+    <sdk.openapi.spec>${project.basedir}/../app/docs/openapi.yaml</sdk.openapi.spec>
+    <sdk.base.package>com.zextras.carbonio.user_management.sdk</sdk.base.package>
   </properties>
 
   <repositories>
