@@ -88,7 +88,7 @@ class UserResourceTest {
       when(userService.getUserById("user-1"))
           .thenReturn(Optional.of(sampleUserInfo()));
 
-      RestResponse<UserInfoDto> response = resource.getById("user-1", ctx);
+      RestResponse<UserInfoDto> response = resource.getById("user-1");
 
       assertThat(response.getStatus()).isEqualTo(200);
       UserInfoDto dto = response.getEntity();
@@ -100,7 +100,7 @@ class UserResourceTest {
     void returns404WhenUserNotFound() {
       when(userService.getUserById("missing")).thenReturn(Optional.empty());
 
-      RestResponse<UserInfoDto> response = resource.getById("missing", ctx);
+      RestResponse<UserInfoDto> response = resource.getById("missing");
 
       assertThat(response.getStatus()).isEqualTo(404);
     }
@@ -114,7 +114,7 @@ class UserResourceTest {
       when(userService.getUserByEmail("user@example.com"))
           .thenReturn(Optional.of(sampleUserInfo()));
 
-      RestResponse<UserInfoDto> response = resource.getByEmail("user@example.com", ctx);
+      RestResponse<UserInfoDto> response = resource.getByEmail("user@example.com");
 
       assertThat(response.getStatus()).isEqualTo(200);
       UserInfoDto dto = response.getEntity();
@@ -125,7 +125,7 @@ class UserResourceTest {
     void returns404WhenUserNotFound() {
       when(userService.getUserByEmail("nope@x.com")).thenReturn(Optional.empty());
 
-      RestResponse<UserInfoDto> response = resource.getByEmail("nope@x.com", ctx);
+      RestResponse<UserInfoDto> response = resource.getByEmail("nope@x.com");
 
       assertThat(response.getStatus()).isEqualTo(404);
     }
@@ -140,7 +140,7 @@ class UserResourceTest {
       UserInfo u2 = new UserInfo("id-2", "b@x.com", "B", "x.com", "CLOSED", "GUEST");
       when(userService.getUsers(anyList())).thenReturn(List.of(u1, u2));
 
-      RestResponse<List<UserInfoDto>> response = resource.getUsers(List.of("id-1", "id-2"), ctx);
+      RestResponse<List<UserInfoDto>> response = resource.getUsers(List.of("id-1", "id-2"));
 
       assertThat(response.getStatus()).isEqualTo(200);
       List<UserInfoDto> dtos = response.getEntity();
@@ -153,7 +153,7 @@ class UserResourceTest {
     void returnsEmptyList() {
       when(userService.getUsers(anyList())).thenReturn(List.of());
 
-      RestResponse<List<UserInfoDto>> response = resource.getUsers(List.of("bad-id"), ctx);
+      RestResponse<List<UserInfoDto>> response = resource.getUsers(List.of("bad-id"));
 
       assertThat(response.getStatus()).isEqualTo(200);
       List<UserInfoDto> dtos = response.getEntity();
@@ -163,7 +163,7 @@ class UserResourceTest {
     @Test
     void returns400WhenUserIdsNull() {
       WebApplicationException exception =
-          assertThrows(WebApplicationException.class, () -> resource.getUsers(null, ctx));
+          assertThrows(WebApplicationException.class, () -> resource.getUsers(null));
 
       assertThat(exception.getResponse().getStatus()).isEqualTo(400);
     }
@@ -174,7 +174,7 @@ class UserResourceTest {
           .mapToObj(i -> "id-" + i).toList();
 
       WebApplicationException exception =
-          assertThrows(WebApplicationException.class, () -> resource.getUsers(ids, ctx));
+          assertThrows(WebApplicationException.class, () -> resource.getUsers(ids));
 
       assertThat(exception.getResponse().getStatus()).isEqualTo(400);
     }
@@ -185,7 +185,7 @@ class UserResourceTest {
           .mapToObj(i -> "id-" + i).toList();
       when(userService.getUsers(anyList())).thenReturn(List.of());
 
-      RestResponse<List<UserInfoDto>> response = resource.getUsers(ids, ctx);
+      RestResponse<List<UserInfoDto>> response = resource.getUsers(ids);
 
       assertThat(response.getStatus()).isEqualTo(200);
     }

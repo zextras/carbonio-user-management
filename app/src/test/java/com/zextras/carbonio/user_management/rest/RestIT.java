@@ -87,22 +87,27 @@ class RestIT extends BaseIT {
   }
 
   @Test
-  void getByIdWithInvalidTokenReturns401() {
+  void getByIdWithInvalidTokenStillReturnsUser() {
+    // by-id is a trusted forward, mesh-gated (not app-gated): an invalid/garbage cookie is
+    // simply ignored, the lookup is not affected by any token.
     given()
         .cookie("ZM_AUTH_TOKEN", "invalid-token")
         .when()
         .get("/internal/users/id/" + testUserId)
         .then()
-        .statusCode(401);
+        .statusCode(200)
+        .body("userId", equalTo(testUserId));
   }
 
   @Test
-  void getByIdWithoutTokenReturns401() {
+  void getByIdWithoutTokenStillReturnsUser() {
+    // by-id does not require a token at all.
     given()
         .when()
         .get("/internal/users/id/" + testUserId)
         .then()
-        .statusCode(401);
+        .statusCode(200)
+        .body("userId", equalTo(testUserId));
   }
 
   // --- Get by email ---
@@ -130,13 +135,27 @@ class RestIT extends BaseIT {
   }
 
   @Test
-  void getByEmailWithInvalidTokenReturns401() {
+  void getByEmailWithInvalidTokenStillReturnsUser() {
+    // by-email is a trusted forward, mesh-gated (not app-gated): an invalid/garbage cookie is
+    // simply ignored, the lookup is not affected by any token.
     given()
         .cookie("ZM_AUTH_TOKEN", "invalid-token")
         .when()
         .get("/internal/users/email/" + TEST_USER_EMAIL)
         .then()
-        .statusCode(401);
+        .statusCode(200)
+        .body("userId", equalTo(testUserId));
+  }
+
+  @Test
+  void getByEmailWithoutTokenStillReturnsUser() {
+    // by-email does not require a token at all.
+    given()
+        .when()
+        .get("/internal/users/email/" + TEST_USER_EMAIL)
+        .then()
+        .statusCode(200)
+        .body("userId", equalTo(testUserId));
   }
 
   // --- Batch ---
@@ -218,7 +237,9 @@ class RestIT extends BaseIT {
   }
 
   @Test
-  void batchWithInvalidTokenReturns401() {
+  void batchWithInvalidTokenStillReturnsUsers() {
+    // batch is a trusted forward, mesh-gated (not app-gated): an invalid/garbage cookie is
+    // simply ignored, the lookup is not affected by any token.
     given()
         .cookie("ZM_AUTH_TOKEN", "invalid-token")
         .contentType("application/json")
@@ -226,6 +247,20 @@ class RestIT extends BaseIT {
         .when()
         .post("/internal/users")
         .then()
-        .statusCode(401);
+        .statusCode(200)
+        .body("[0].userId", equalTo(testUserId));
+  }
+
+  @Test
+  void batchWithoutTokenStillReturnsUsers() {
+    // batch does not require a token at all.
+    given()
+        .contentType("application/json")
+        .body("[\"" + testUserId + "\"]")
+        .when()
+        .post("/internal/users")
+        .then()
+        .statusCode(200)
+        .body("[0].userId", equalTo(testUserId));
   }
 }

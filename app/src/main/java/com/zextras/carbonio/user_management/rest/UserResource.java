@@ -48,6 +48,7 @@ public class UserResource {
 
   @GET
   @Path("/myself")
+  @RequiresToken
   public RestResponse<MyselfDto> getMyself(@Context ContainerRequestContext ctx) {
     String token = (String) ctx.getProperty(AUTH_TOKEN_KEY);
     return userService.getUserMyself(token)
@@ -57,11 +58,7 @@ public class UserResource {
 
   @GET
   @Path("/id/{userId}")
-  @RequiresTokenValidation
-  public RestResponse<UserInfoDto> getById(
-      @PathParam("userId") String userId,
-      @Context ContainerRequestContext ctx
-  ) {
+  public RestResponse<UserInfoDto> getById(@PathParam("userId") String userId) {
     return userService.getUserById(userId)
         .map(u -> RestResponse.ok(UserInfoDto.from(u)))
         .orElseGet(() -> RestResponse.status(Response.Status.NOT_FOUND));
@@ -69,11 +66,7 @@ public class UserResource {
 
   @GET
   @Path("/email/{email}")
-  @RequiresTokenValidation
-  public RestResponse<UserInfoDto> getByEmail(
-      @PathParam("email") String email,
-      @Context ContainerRequestContext ctx
-  ) {
+  public RestResponse<UserInfoDto> getByEmail(@PathParam("email") String email) {
     return userService.getUserByEmail(email)
         .map(u -> RestResponse.ok(UserInfoDto.from(u)))
         .orElseGet(() -> RestResponse.status(Response.Status.NOT_FOUND));
@@ -81,11 +74,7 @@ public class UserResource {
 
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
-  @RequiresTokenValidation
-  public RestResponse<List<UserInfoDto>> getUsers(
-      List<String> userIds,
-      @Context ContainerRequestContext ctx
-  ) {
+  public RestResponse<List<UserInfoDto>> getUsers(List<String> userIds) {
     if (userIds == null || userIds.size() > MAX_BATCH_USER_IDS) {
       throw new WebApplicationException(
           Response.status(Response.Status.BAD_REQUEST)

@@ -6,9 +6,7 @@ package com.zextras.carbonio.user_management.rest;
 
 import static com.zextras.carbonio.user_management.UserManagementServiceConfig.AUTH_TOKEN_KEY;
 
-import com.zextras.carbonio.user_management.service.UserService;
 import jakarta.annotation.Priority;
-import jakarta.inject.Inject;
 import jakarta.ws.rs.Priorities;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
@@ -17,10 +15,17 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.Provider;
 
 /**
- * Global filter: extracts the auth token from the cookie and stores it in the request context.
- * Aborts with 401 if no token is present.
+ * Filter bound to {@link RequiresToken}: extracts the auth token from the {@code ZM_AUTH_TOKEN}
+ * cookie and stores it in the request context, aborting with 401 if it is missing or blank.
+ *
+ * <p>Only {@code myself} carries {@link RequiresToken}. There the token is not an authorization
+ * gate but the functional identity input that {@code getUserMyself} forwards to mailbox to
+ * resolve "who am I". The by-id/by-email/batch lookups are trusted forwards to mailbox's
+ * internal API — service-to-service authorization is handled by mailbox via the Consul mesh —
+ * so they are not bound to this filter and neither require nor read any token.
  */
 @Provider
+@RequiresToken
 @Priority(Priorities.AUTHENTICATION)
 public class TokenAuthFilter implements ContainerRequestFilter {
 
@@ -37,30 +42,5 @@ public class TokenAuthFilter implements ContainerRequestFilter {
   private String extractToken(ContainerRequestContext ctx) {
     Cookie cookie = ctx.getCookies().get(AUTH_TOKEN_KEY);
     return cookie != null ? cookie.getValue() : null;
-  }
-
-  /**
-   * Secondary filter bound to {@link RequiresTokenValidation}: pre-validates the token via
-   * the service layer. Endpoints without this annotation (e.g. /myself) skip pre-validation.
-   */
-  @Provider
-  @RequiresTokenValidation
-  @Priority(Priorities.AUTHENTICATION + 1)
-  public static class TokenValidationFilter implements ContainerRequestFilter {
-
-    private final UserService userService;
-
-    @Inject
-    public TokenValidationFilter(UserService userService) {
-      this.userService = userService;
-    }
-
-    @Override
-    public void filter(ContainerRequestContext ctx) {
-      String token = (String) ctx.getProperty(AUTH_TOKEN_KEY);
-      if (token == null || userService.getUserMyself(token).isEmpty()) {
-        ctx.abortWith(Response.status(Response.Status.UNAUTHORIZED).build());
-      }
-    }
   }
 }
