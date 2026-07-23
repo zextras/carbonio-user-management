@@ -63,19 +63,13 @@ public class UserService {
   }
 
   public Optional<UserMyself> getUserMyself(String token) {
-    return getUserMyself(token, false);
-  }
-
-  public Optional<UserMyself> getUserMyself(String token, boolean bypassCache) {
     logger.debug("GetUserMyself requested");
 
-    if (!bypassCache) {
-      Optional<UserMyself> cached = userMyselfCache.getByToken(token);
-      if (cached.isPresent()) {
-        logger.debug("GetUserMyself cache hit");
-        safeWarmUserInfoCache(cached.get());
-        return cached;
-      }
+    Optional<UserMyself> cached = userMyselfCache.getByToken(token);
+    if (cached.isPresent()) {
+      logger.debug("GetUserMyself cache hit");
+      safeWarmUserInfoCache(cached.get());
+      return cached;
     }
 
     // Coalesce concurrent lookups for the same token
@@ -135,17 +129,11 @@ public class UserService {
   }
 
   public Optional<UserInfo> getUserById(String userId) {
-    return getUserById(userId, false);
-  }
-
-  public Optional<UserInfo> getUserById(String userId, boolean bypassCache) {
     logger.debug("GetUserById requested: {}", userId);
 
-    if (!bypassCache) {
-      Optional<UserInfo> cached = userInfoCache.getByUserId(userId);
-      if (cached.isPresent()) {
-        return cached;
-      }
+    Optional<UserInfo> cached = userInfoCache.getByUserId(userId);
+    if (cached.isPresent()) {
+      return cached;
     }
 
     // Coalesce concurrent lookups for the same userId
@@ -179,17 +167,11 @@ public class UserService {
   }
 
   public Optional<UserInfo> getUserByEmail(String email) {
-    return getUserByEmail(email, false);
-  }
-
-  public Optional<UserInfo> getUserByEmail(String email, boolean bypassCache) {
     logger.debug("GetUserByEmail requested: {}", email);
 
-    if (!bypassCache) {
-      Optional<UserInfo> cached = userInfoCache.getByEmail(email);
-      if (cached.isPresent()) {
-        return cached;
-      }
+    Optional<UserInfo> cached = userInfoCache.getByEmail(email);
+    if (cached.isPresent()) {
+      return cached;
     }
 
     // Coalesce concurrent lookups for the same email
@@ -223,23 +205,15 @@ public class UserService {
   }
 
   public List<UserInfo> getUsers(List<String> userIds) {
-    return getUsers(userIds, false);
-  }
-
-  public List<UserInfo> getUsers(List<String> userIds, boolean bypassCache) {
     List<String> uniqueIds = userIds.stream().distinct().toList();
     Map<String, UserInfo> results = new HashMap<>();
 
     List<String> misses = new ArrayList<>();
-    if (bypassCache) {
-      misses.addAll(uniqueIds);
-    } else {
-      for (String userId : uniqueIds) {
-        userInfoCache.getByUserId(userId).ifPresentOrElse(
-            info -> results.put(userId, info),
-            () -> misses.add(userId)
-        );
-      }
+    for (String userId : uniqueIds) {
+      userInfoCache.getByUserId(userId).ifPresentOrElse(
+          info -> results.put(userId, info),
+          () -> misses.add(userId)
+      );
     }
 
     if (!misses.isEmpty()) {
@@ -265,7 +239,7 @@ public class UserService {
         // Individual fallback: parallel
         List<CompletableFuture<Void>> futures = misses.stream()
             .map(userId -> CompletableFuture.supplyAsync(
-                    () -> getUserById(userId, false), executor)
+                    () -> getUserById(userId), executor)
                 .thenAccept(opt -> opt.ifPresent(info -> {
                   synchronized (results) {
                     results.put(info.userId(), info);

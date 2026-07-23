@@ -54,11 +54,6 @@ SPDX-License-Identifier: AGPL-3.0-only
     <!-- Quarkus extensions -->
     <dependency>
       <groupId>com.zextras.carbonio.quarkus</groupId>
-      <artifactId>carbonio-quarkus-extensions-grpc-sdk</artifactId>
-      <version>${carbonio-quarkus-extensions.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.zextras.carbonio.quarkus</groupId>
       <artifactId>carbonio-quarkus-extensions-rest</artifactId>
       <version>${carbonio-quarkus-extensions.version}</version>
     </dependency>
@@ -66,13 +61,6 @@ SPDX-License-Identifier: AGPL-3.0-only
       <groupId>com.zextras.carbonio.quarkus</groupId>
       <artifactId>carbonio-quarkus-extensions-bootstrap</artifactId>
       <version>${carbonio-quarkus-extensions.version}</version>
-    </dependency>
-
-    <!-- SDK gRPC stubs -->
-    <dependency>
-      <groupId>com.zextras.carbonio.user-management</groupId>
-      <artifactId>carbonio-user-management-grpc-sdk</artifactId>
-      <version>${project.version}</version>
     </dependency>
 
     <!-- Mailbox SOAP client -->
@@ -125,13 +113,6 @@ SPDX-License-Identifier: AGPL-3.0-only
     <dependency>
       <groupId>io.rest-assured</groupId>
       <artifactId>rest-assured</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <!-- gRPC client for @QuarkusIntegrationTest gRPC calls -->
-    <dependency>
-      <groupId>io.grpc</groupId>
-      <artifactId>grpc-netty-shaded</artifactId>
       <scope>test</scope>
     </dependency>
 
