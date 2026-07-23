@@ -23,7 +23,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
 
-@Path("/users")
+@Path("/internal/users")
 @Produces(MediaType.APPLICATION_JSON)
 public class UserResource {
 

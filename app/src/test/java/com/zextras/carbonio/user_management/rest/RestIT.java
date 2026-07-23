@@ -35,7 +35,7 @@ class RestIT extends BaseIT {
     given()
         .cookie("ZM_AUTH_TOKEN", authToken)
         .when()
-        .get("/users/myself")
+        .get("/internal/users/myself")
         .then()
         .statusCode(200)
         .body("info.email", equalTo(TEST_USER_EMAIL))
@@ -48,7 +48,7 @@ class RestIT extends BaseIT {
     given()
         .cookie("ZM_AUTH_TOKEN", "invalid-token-that-does-not-exist")
         .when()
-        .get("/users/myself")
+        .get("/internal/users/myself")
         .then()
         .statusCode(401);
   }
@@ -57,7 +57,7 @@ class RestIT extends BaseIT {
   void getMyselfWithoutTokenReturns401() {
     given()
         .when()
-        .get("/users/myself")
+        .get("/internal/users/myself")
         .then()
         .statusCode(401);
   }
@@ -69,7 +69,7 @@ class RestIT extends BaseIT {
     given()
         .cookie("ZM_AUTH_TOKEN", authToken)
         .when()
-        .get("/users/id/" + testUserId)
+        .get("/internal/users/id/" + testUserId)
         .then()
         .statusCode(200)
         .body("email", equalTo(TEST_USER_EMAIL))
@@ -81,7 +81,7 @@ class RestIT extends BaseIT {
     given()
         .cookie("ZM_AUTH_TOKEN", authToken)
         .when()
-        .get("/users/id/non-existent-user-id")
+        .get("/internal/users/id/non-existent-user-id")
         .then()
         .statusCode(404);
   }
@@ -91,7 +91,7 @@ class RestIT extends BaseIT {
     given()
         .cookie("ZM_AUTH_TOKEN", "invalid-token")
         .when()
-        .get("/users/id/" + testUserId)
+        .get("/internal/users/id/" + testUserId)
         .then()
         .statusCode(401);
   }
@@ -100,7 +100,7 @@ class RestIT extends BaseIT {
   void getByIdWithoutTokenReturns401() {
     given()
         .when()
-        .get("/users/id/" + testUserId)
+        .get("/internal/users/id/" + testUserId)
         .then()
         .statusCode(401);
   }
@@ -112,7 +112,7 @@ class RestIT extends BaseIT {
     given()
         .cookie("ZM_AUTH_TOKEN", authToken)
         .when()
-        .get("/users/email/" + TEST_USER_EMAIL)
+        .get("/internal/users/email/" + TEST_USER_EMAIL)
         .then()
         .statusCode(200)
         .body("email", equalTo(TEST_USER_EMAIL))
@@ -124,7 +124,7 @@ class RestIT extends BaseIT {
     given()
         .cookie("ZM_AUTH_TOKEN", authToken)
         .when()
-        .get("/users/email/nobody@carbonio.localhost")
+        .get("/internal/users/email/nobody@carbonio.localhost")
         .then()
         .statusCode(404);
   }
@@ -134,7 +134,7 @@ class RestIT extends BaseIT {
     given()
         .cookie("ZM_AUTH_TOKEN", "invalid-token")
         .when()
-        .get("/users/email/" + TEST_USER_EMAIL)
+        .get("/internal/users/email/" + TEST_USER_EMAIL)
         .then()
         .statusCode(401);
   }
@@ -148,7 +148,7 @@ class RestIT extends BaseIT {
         .contentType("application/json")
         .body("[\"" + testUserId + "\"]")
         .when()
-        .post("/users")
+        .post("/internal/users")
         .then()
         .statusCode(200)
         .body("[0].email", equalTo(TEST_USER_EMAIL))
@@ -164,7 +164,7 @@ class RestIT extends BaseIT {
         .contentType("application/json")
         .body(body)
         .when()
-        .post("/users")
+        .post("/internal/users")
         .then()
         .statusCode(200)
         .extract()
@@ -180,7 +180,7 @@ class RestIT extends BaseIT {
         .contentType("application/json")
         .body("[]")
         .when()
-        .post("/users")
+        .post("/internal/users")
         .then()
         .statusCode(200)
         .body("$", empty());
@@ -197,7 +197,7 @@ class RestIT extends BaseIT {
         .contentType("application/json")
         .body(ids)
         .when()
-        .post("/users")
+        .post("/internal/users")
         .then()
         .statusCode(400);
   }
@@ -210,7 +210,7 @@ class RestIT extends BaseIT {
         .contentType("application/json")
         .body(body)
         .when()
-        .post("/users")
+        .post("/internal/users")
         .then()
         .statusCode(200)
         .body("$", hasSize(1))
@@ -224,7 +224,7 @@ class RestIT extends BaseIT {
         .contentType("application/json")
         .body("[\"" + testUserId + "\"]")
         .when()
-        .post("/users")
+        .post("/internal/users")
         .then()
         .statusCode(401);
   }
