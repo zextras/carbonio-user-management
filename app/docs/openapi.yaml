@@ -1,7 +1,7 @@
 ---
 openapi: 3.1.0
 paths:
-  /users:
+  /internal/users:
     post:
       requestBody:
         content:
@@ -22,7 +22,7 @@ paths:
       summary: Get Users
       tags:
       - User Resource
-  /users/email/{email}:
+  /internal/users/email/{email}:
     get:
       parameters:
       - name: email
@@ -39,7 +39,7 @@ paths:
       summary: Get By Email
       tags:
       - User Resource
-  /users/id/{userId}:
+  /internal/users/id/{userId}:
     get:
       parameters:
       - name: userId
@@ -56,7 +56,7 @@ paths:
       summary: Get By Id
       tags:
       - User Resource
-  /users/myself:
+  /internal/users/myself:
     get:
       responses:
         "200":

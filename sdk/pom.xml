@@ -29,6 +29,22 @@ SPDX-License-Identifier: AGPL-3.0-only
     <sdk.base.package>com.zextras.carbonio.user_management.sdk</sdk.base.package>
   </properties>
 
+  <!--
+    carbonio-quarkus-extensions-rest-sdk-parent declares its dependency on
+    carbonio-quarkus-extensions-rest-sdk-support using dollar-brace project.version. That
+    expression is re-evaluated against whichever project inherits the POM, so a cross-repo
+    consumer like this module, which necessarily overrides revision/changelist to its own
+    CI-friendly values, would otherwise resolve the wrong (own) version instead of the parent's
+    1.11.2-1. Pin it explicitly.
+  -->
+  <dependencies>
+    <dependency>
+      <groupId>com.zextras.carbonio.quarkus</groupId>
+      <artifactId>carbonio-quarkus-extensions-rest-sdk-support</artifactId>
+      <version>1.11.2-1</version>
+    </dependency>
+  </dependencies>
+
   <repositories>
     <repository>
       <id>zextras-java-sdk</id>
