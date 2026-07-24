@@ -33,7 +33,7 @@ class RestIT extends BaseIT {
   @Test
   void getMyselfReturnsAuthenticatedUser() {
     given()
-        .cookie("ZM_AUTH_TOKEN", authToken)
+        .header("ZM_AUTH_TOKEN", authToken)
         .when()
         .get("/internal/users/myself")
         .then()
@@ -46,7 +46,7 @@ class RestIT extends BaseIT {
   @Test
   void getMyselfWithInvalidTokenReturns401() {
     given()
-        .cookie("ZM_AUTH_TOKEN", "invalid-token-that-does-not-exist")
+        .header("ZM_AUTH_TOKEN", "invalid-token-that-does-not-exist")
         .when()
         .get("/internal/users/myself")
         .then()

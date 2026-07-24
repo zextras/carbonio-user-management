@@ -12,8 +12,8 @@ import com.zextras.carbonio.user_management.rest.dto.UserInfoDto;
 import com.zextras.carbonio.user_management.service.UserService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.CookieParam;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -47,7 +47,7 @@ public class UserResource {
 
   @GET
   @Path("/myself")
-  public RestResponse<MyselfDto> getMyself(@CookieParam(AUTH_TOKEN_KEY) String token) {
+  public RestResponse<MyselfDto> getMyself(@HeaderParam(AUTH_TOKEN_KEY) String token) {
     if (token == null || token.isBlank()) {
       return RestResponse.status(Response.Status.UNAUTHORIZED);
     }

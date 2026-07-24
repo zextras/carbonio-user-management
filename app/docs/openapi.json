@@ -144,7 +144,7 @@
       "get" : {
         "parameters" : [ {
           "name" : "ZM_AUTH_TOKEN",
-          "in" : "cookie",
+          "in" : "header",
           "schema" : {
             "type" : "string"
           }
