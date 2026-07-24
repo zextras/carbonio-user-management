@@ -6,7 +6,6 @@ package com.zextras.carbonio.user_management.rest;
 
 import static com.zextras.carbonio.user_management.UserManagementServiceConfig.MAX_BATCH_USER_IDS;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -18,7 +17,6 @@ import com.zextras.carbonio.user_management.record.UserMyself;
 import com.zextras.carbonio.user_management.rest.dto.MyselfDto;
 import com.zextras.carbonio.user_management.rest.dto.UserInfoDto;
 import com.zextras.carbonio.user_management.service.UserService;
-import jakarta.ws.rs.WebApplicationException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -182,10 +180,10 @@ class UserResourceTest {
 
     @Test
     void returns400WhenUserIdsNull() {
-      WebApplicationException exception =
-          assertThrows(WebApplicationException.class, () -> resource.getUsers(null));
+      RestResponse<List<UserInfoDto>> response = resource.getUsers(null);
 
-      assertThat(exception.getResponse().getStatus()).isEqualTo(400);
+      assertThat(response.getStatus()).isEqualTo(400);
+      verifyNoInteractions(userService);
     }
 
     @Test
@@ -193,10 +191,10 @@ class UserResourceTest {
       List<String> ids = IntStream.rangeClosed(1, MAX_BATCH_USER_IDS + 1)
           .mapToObj(i -> "id-" + i).toList();
 
-      WebApplicationException exception =
-          assertThrows(WebApplicationException.class, () -> resource.getUsers(ids));
+      RestResponse<List<UserInfoDto>> response = resource.getUsers(ids);
 
-      assertThat(exception.getResponse().getStatus()).isEqualTo(400);
+      assertThat(response.getStatus()).isEqualTo(400);
+      verifyNoInteractions(userService);
     }
 
     @Test

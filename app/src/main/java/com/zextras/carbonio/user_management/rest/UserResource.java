@@ -18,7 +18,6 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
@@ -29,10 +28,9 @@ import org.jboss.resteasy.reactive.RestResponse;
  * than a raw {@link Response} so that the emitted OpenAPI spec (and the REST SDK generated from
  * it) carries a real response schema on every 200 - SmallRye OpenAPI reads the {@code T} type
  * argument straight off the method signature, no {@code @APIResponse}/{@code @Schema} annotations
- * needed. The one case that legitimately can't stay typed ({@code getUsers}'s validation-failure
- * 400, whose entity is a plain error string, not a {@code List<UserInfoDto>}) is expressed as a
- * thrown {@link WebApplicationException} carrying its own {@link Response} instead, so the
- * method's declared success type never has to widen to {@code Object}.
+ * needed. Every method follows the same shape: a typed {@code RestResponse.ok(...)} on success and
+ * a bodiless {@code RestResponse.status(...)} for the non-2xx cases - nothing is ever thrown, and
+ * no response ever carries an ad hoc error entity.
  */
 @Path("/internal/users")
 @Produces(MediaType.APPLICATION_JSON)
@@ -76,10 +74,7 @@ public class UserResource {
   @Consumes(MediaType.APPLICATION_JSON)
   public RestResponse<List<UserInfoDto>> getUsers(List<String> userIds) {
     if (userIds == null || userIds.size() > MAX_BATCH_USER_IDS) {
-      throw new WebApplicationException(
-          Response.status(Response.Status.BAD_REQUEST)
-              .entity("User IDs list must contain at most " + MAX_BATCH_USER_IDS + " entries")
-              .build());
+      return RestResponse.status(Response.Status.BAD_REQUEST);
     }
     List<UserInfoDto> users = userService.getUsers(userIds).stream()
         .map(UserInfoDto::from)
