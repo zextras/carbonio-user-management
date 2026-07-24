@@ -12,14 +12,13 @@ import com.zextras.carbonio.user_management.rest.dto.UserInfoDto;
 import com.zextras.carbonio.user_management.service.UserService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.CookieParam;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.WebApplicationException;
-import jakarta.ws.rs.container.ContainerRequestContext;
-import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
@@ -48,9 +47,10 @@ public class UserResource {
 
   @GET
   @Path("/myself")
-  @RequiresToken
-  public RestResponse<MyselfDto> getMyself(@Context ContainerRequestContext ctx) {
-    String token = (String) ctx.getProperty(AUTH_TOKEN_KEY);
+  public RestResponse<MyselfDto> getMyself(@CookieParam(AUTH_TOKEN_KEY) String token) {
+    if (token == null || token.isBlank()) {
+      return RestResponse.status(Response.Status.UNAUTHORIZED);
+    }
     return userService.getUserMyself(token)
         .map(r -> RestResponse.ok(MyselfDto.from(r)))
         .orElseGet(() -> RestResponse.status(Response.Status.UNAUTHORIZED));

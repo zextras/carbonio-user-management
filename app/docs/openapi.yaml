@@ -95,6 +95,11 @@ paths:
       - User Resource
   /internal/users/myself:
     get:
+      parameters:
+      - name: ZM_AUTH_TOKEN
+        in: cookie
+        schema:
+          type: string
       responses:
         "200":
           description: OK

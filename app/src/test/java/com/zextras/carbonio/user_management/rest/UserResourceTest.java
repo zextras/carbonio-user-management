@@ -4,13 +4,13 @@
 
 package com.zextras.carbonio.user_management.rest;
 
-import static com.zextras.carbonio.user_management.UserManagementServiceConfig.AUTH_TOKEN_KEY;
 import static com.zextras.carbonio.user_management.UserManagementServiceConfig.MAX_BATCH_USER_IDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import com.zextras.carbonio.user_management.record.UserInfo;
@@ -19,7 +19,6 @@ import com.zextras.carbonio.user_management.rest.dto.MyselfDto;
 import com.zextras.carbonio.user_management.rest.dto.UserInfoDto;
 import com.zextras.carbonio.user_management.service.UserService;
 import jakarta.ws.rs.WebApplicationException;
-import jakarta.ws.rs.container.ContainerRequestContext;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -33,14 +32,11 @@ class UserResourceTest {
 
   private UserService userService;
   private UserResource resource;
-  private ContainerRequestContext ctx;
 
   @BeforeEach
   void setUp() {
     userService = mock(UserService.class);
     resource = new UserResource(userService);
-    ctx = mock(ContainerRequestContext.class);
-    when(ctx.getProperty(AUTH_TOKEN_KEY)).thenReturn("token-1");
   }
 
   private UserInfo sampleUserInfo() {
@@ -60,7 +56,7 @@ class UserResourceTest {
           Map.of("carbonioWscMaxGroupMembers", "50"));
       when(userService.getUserMyself("token-1")).thenReturn(Optional.of(myself));
 
-      RestResponse<MyselfDto> response = resource.getMyself(ctx);
+      RestResponse<MyselfDto> response = resource.getMyself("token-1");
 
       assertThat(response.getStatus()).isEqualTo(200);
       MyselfDto dto = response.getEntity();
@@ -74,9 +70,33 @@ class UserResourceTest {
     void returns401WhenTokenInvalid() {
       when(userService.getUserMyself("token-1")).thenReturn(Optional.empty());
 
-      RestResponse<MyselfDto> response = resource.getMyself(ctx);
+      RestResponse<MyselfDto> response = resource.getMyself("token-1");
 
       assertThat(response.getStatus()).isEqualTo(401);
+    }
+
+    @Test
+    void returns401WhenCookieTokenMissing() {
+      RestResponse<MyselfDto> response = resource.getMyself(null);
+
+      assertThat(response.getStatus()).isEqualTo(401);
+      verifyNoInteractions(userService);
+    }
+
+    @Test
+    void returns401WhenCookieTokenEmpty() {
+      RestResponse<MyselfDto> response = resource.getMyself("");
+
+      assertThat(response.getStatus()).isEqualTo(401);
+      verifyNoInteractions(userService);
+    }
+
+    @Test
+    void returns401WhenCookieTokenBlank() {
+      RestResponse<MyselfDto> response = resource.getMyself("   ");
+
+      assertThat(response.getStatus()).isEqualTo(401);
+      verifyNoInteractions(userService);
     }
   }
 
