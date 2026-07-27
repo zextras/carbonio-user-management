@@ -33,9 +33,9 @@ class RestIT extends BaseIT {
   @Test
   void getMyselfReturnsAuthenticatedUser() {
     given()
-        .cookie("ZM_AUTH_TOKEN", authToken)
+        .header("ZM_AUTH_TOKEN", authToken)
         .when()
-        .get("/users/myself")
+        .get("/internal/users/myself")
         .then()
         .statusCode(200)
         .body("info.email", equalTo(TEST_USER_EMAIL))
@@ -46,9 +46,9 @@ class RestIT extends BaseIT {
   @Test
   void getMyselfWithInvalidTokenReturns401() {
     given()
-        .cookie("ZM_AUTH_TOKEN", "invalid-token-that-does-not-exist")
+        .header("ZM_AUTH_TOKEN", "invalid-token-that-does-not-exist")
         .when()
-        .get("/users/myself")
+        .get("/internal/users/myself")
         .then()
         .statusCode(401);
   }
@@ -57,7 +57,84 @@ class RestIT extends BaseIT {
   void getMyselfWithoutTokenReturns401() {
     given()
         .when()
-        .get("/users/myself")
+        .get("/internal/users/myself")
+        .then()
+        .statusCode(401);
+  }
+
+  // --- Myself cache bypass ---
+
+  /**
+   * Proves {@code bypassCache=true} really skips the cache read and goes back to mailbox: the
+   * account is modified behind the service's back, so only a fresh mailbox round trip can observe
+   * the new value. A fresh token is used so this test owns its own cache entry.
+   */
+  @Test
+  void getMyselfWithBypassCacheRevalidatesAgainstMailbox() throws Exception {
+    String token = soapAuthenticate(TEST_USER_EMAIL, TEST_PASSWORD);
+    MailboxStackTestResource.setTestUserDisplayName("Before Bypass");
+    try {
+      // Cold cache: mailbox hit #1, result cached under this token
+      given()
+          .header("ZM_AUTH_TOKEN", token)
+          .when()
+          .get("/internal/users/myself")
+          .then()
+          .statusCode(200)
+          .body("info.fullName", equalTo("Before Bypass"));
+
+      MailboxStackTestResource.setTestUserDisplayName("After Bypass");
+
+      // No bypass: served from cache, still the stale value -> mailbox was NOT hit
+      given()
+          .header("ZM_AUTH_TOKEN", token)
+          .when()
+          .get("/internal/users/myself")
+          .then()
+          .statusCode(200)
+          .body("info.fullName", equalTo("Before Bypass"));
+
+      // Bypass: cache read skipped -> mailbox hit #2, fresh value
+      given()
+          .header("ZM_AUTH_TOKEN", token)
+          .queryParam("bypassCache", true)
+          .when()
+          .get("/internal/users/myself")
+          .then()
+          .statusCode(200)
+          .body("info.fullName", equalTo("After Bypass"));
+
+      // The bypass refreshed the entry rather than disabling the cache
+      given()
+          .header("ZM_AUTH_TOKEN", token)
+          .when()
+          .get("/internal/users/myself")
+          .then()
+          .statusCode(200)
+          .body("info.fullName", equalTo("After Bypass"));
+    } finally {
+      MailboxStackTestResource.setTestUserDisplayName("");
+    }
+  }
+
+  @Test
+  void getMyselfWithBypassCacheFalseBehavesLikeNoParameter() {
+    given()
+        .header("ZM_AUTH_TOKEN", authToken)
+        .queryParam("bypassCache", false)
+        .when()
+        .get("/internal/users/myself")
+        .then()
+        .statusCode(200)
+        .body("info.userId", equalTo(testUserId));
+  }
+
+  @Test
+  void getMyselfWithBypassCacheAndNoTokenStillReturns401() {
+    given()
+        .queryParam("bypassCache", true)
+        .when()
+        .get("/internal/users/myself")
         .then()
         .statusCode(401);
   }
@@ -69,7 +146,7 @@ class RestIT extends BaseIT {
     given()
         .cookie("ZM_AUTH_TOKEN", authToken)
         .when()
-        .get("/users/id/" + testUserId)
+        .get("/internal/users/id/" + testUserId)
         .then()
         .statusCode(200)
         .body("email", equalTo(TEST_USER_EMAIL))
@@ -81,28 +158,46 @@ class RestIT extends BaseIT {
     given()
         .cookie("ZM_AUTH_TOKEN", authToken)
         .when()
-        .get("/users/id/non-existent-user-id")
+        .get("/internal/users/id/non-existent-user-id")
         .then()
         .statusCode(404);
   }
 
   @Test
-  void getByIdWithInvalidTokenReturns401() {
+  void getByIdWithInvalidTokenStillReturnsUser() {
+    // by-id is a trusted forward, mesh-gated (not app-gated): an invalid/garbage cookie is
+    // simply ignored, the lookup is not affected by any token.
     given()
         .cookie("ZM_AUTH_TOKEN", "invalid-token")
         .when()
-        .get("/users/id/" + testUserId)
+        .get("/internal/users/id/" + testUserId)
         .then()
-        .statusCode(401);
+        .statusCode(200)
+        .body("userId", equalTo(testUserId));
   }
 
   @Test
-  void getByIdWithoutTokenReturns401() {
+  void getByIdWithoutTokenStillReturnsUser() {
+    // by-id does not require a token at all.
     given()
         .when()
-        .get("/users/id/" + testUserId)
+        .get("/internal/users/id/" + testUserId)
         .then()
-        .statusCode(401);
+        .statusCode(200)
+        .body("userId", equalTo(testUserId));
+  }
+
+  @Test
+  void getByIdIgnoresBypassCache() {
+    // The cache bypass exists only on /myself, where a stale entry is an authorization-freshness
+    // problem. On by-id it is an unknown query parameter and is simply ignored.
+    given()
+        .queryParam("bypassCache", true)
+        .when()
+        .get("/internal/users/id/" + testUserId)
+        .then()
+        .statusCode(200)
+        .body("userId", equalTo(testUserId));
   }
 
   // --- Get by email ---
@@ -112,7 +207,7 @@ class RestIT extends BaseIT {
     given()
         .cookie("ZM_AUTH_TOKEN", authToken)
         .when()
-        .get("/users/email/" + TEST_USER_EMAIL)
+        .get("/internal/users/email/" + TEST_USER_EMAIL)
         .then()
         .statusCode(200)
         .body("email", equalTo(TEST_USER_EMAIL))
@@ -124,19 +219,33 @@ class RestIT extends BaseIT {
     given()
         .cookie("ZM_AUTH_TOKEN", authToken)
         .when()
-        .get("/users/email/nobody@carbonio.localhost")
+        .get("/internal/users/email/nobody@carbonio.localhost")
         .then()
         .statusCode(404);
   }
 
   @Test
-  void getByEmailWithInvalidTokenReturns401() {
+  void getByEmailWithInvalidTokenStillReturnsUser() {
+    // by-email is a trusted forward, mesh-gated (not app-gated): an invalid/garbage cookie is
+    // simply ignored, the lookup is not affected by any token.
     given()
         .cookie("ZM_AUTH_TOKEN", "invalid-token")
         .when()
-        .get("/users/email/" + TEST_USER_EMAIL)
+        .get("/internal/users/email/" + TEST_USER_EMAIL)
         .then()
-        .statusCode(401);
+        .statusCode(200)
+        .body("userId", equalTo(testUserId));
+  }
+
+  @Test
+  void getByEmailWithoutTokenStillReturnsUser() {
+    // by-email does not require a token at all.
+    given()
+        .when()
+        .get("/internal/users/email/" + TEST_USER_EMAIL)
+        .then()
+        .statusCode(200)
+        .body("userId", equalTo(testUserId));
   }
 
   // --- Batch ---
@@ -148,7 +257,7 @@ class RestIT extends BaseIT {
         .contentType("application/json")
         .body("[\"" + testUserId + "\"]")
         .when()
-        .post("/users")
+        .post("/internal/users")
         .then()
         .statusCode(200)
         .body("[0].email", equalTo(TEST_USER_EMAIL))
@@ -164,7 +273,7 @@ class RestIT extends BaseIT {
         .contentType("application/json")
         .body(body)
         .when()
-        .post("/users")
+        .post("/internal/users")
         .then()
         .statusCode(200)
         .extract()
@@ -180,7 +289,7 @@ class RestIT extends BaseIT {
         .contentType("application/json")
         .body("[]")
         .when()
-        .post("/users")
+        .post("/internal/users")
         .then()
         .statusCode(200)
         .body("$", empty());
@@ -197,7 +306,7 @@ class RestIT extends BaseIT {
         .contentType("application/json")
         .body(ids)
         .when()
-        .post("/users")
+        .post("/internal/users")
         .then()
         .statusCode(400);
   }
@@ -210,7 +319,7 @@ class RestIT extends BaseIT {
         .contentType("application/json")
         .body(body)
         .when()
-        .post("/users")
+        .post("/internal/users")
         .then()
         .statusCode(200)
         .body("$", hasSize(1))
@@ -218,14 +327,30 @@ class RestIT extends BaseIT {
   }
 
   @Test
-  void batchWithInvalidTokenReturns401() {
+  void batchWithInvalidTokenStillReturnsUsers() {
+    // batch is a trusted forward, mesh-gated (not app-gated): an invalid/garbage cookie is
+    // simply ignored, the lookup is not affected by any token.
     given()
         .cookie("ZM_AUTH_TOKEN", "invalid-token")
         .contentType("application/json")
         .body("[\"" + testUserId + "\"]")
         .when()
-        .post("/users")
+        .post("/internal/users")
         .then()
-        .statusCode(401);
+        .statusCode(200)
+        .body("[0].userId", equalTo(testUserId));
+  }
+
+  @Test
+  void batchWithoutTokenStillReturnsUsers() {
+    // batch does not require a token at all.
+    given()
+        .contentType("application/json")
+        .body("[\"" + testUserId + "\"]")
+        .when()
+        .post("/internal/users")
+        .then()
+        .statusCode(200)
+        .body("[0].userId", equalTo(testUserId));
   }
 }

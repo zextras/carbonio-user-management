@@ -1,8 +1,7 @@
 AGPL-3.0-only (https://spdx.org/licenses/AGPL-3.0-only.html) applies to:
 
-  Carbonio Quarkus Extensions - Bootstrap Runtime (com.zextras.carbonio.quarkus:carbonio-quarkus-extensions-bootstrap:1.11.2-1)
-  Carbonio Quarkus Extensions - gRPC SDK Runtime (com.zextras.carbonio.quarkus:carbonio-quarkus-extensions-grpc-sdk:1.11.2-1)
-  Carbonio Quarkus Extensions - REST Runtime (com.zextras.carbonio.quarkus:carbonio-quarkus-extensions-rest:1.11.2-1)
+  Carbonio Quarkus Extensions - Bootstrap Runtime (com.zextras.carbonio.quarkus:carbonio-quarkus-extensions-bootstrap:1.12.0-1)
+  Carbonio Quarkus Extensions - REST Runtime (com.zextras.carbonio.quarkus:carbonio-quarkus-extensions-rest:1.12.0-1)
   Carbonio Systemd Notify (com.zextras.carbonio:carbonio-systemd-notify:1.0.1)
 
 Apache-2.0 (https://spdx.org/licenses/Apache-2.0.html) applies to:
@@ -18,8 +17,6 @@ Apache-2.0 (https://spdx.org/licenses/Apache-2.0.html) applies to:
   Converter: Jackson (com.squareup.retrofit2:converter-jackson:2.11.0)
   error-prone annotations (com.google.errorprone:error_prone_annotations:2.49.0)
   fastinfoset (com.sun.xml.fastinfoset:FastInfoset:2.1.1)
-  FindBugs-jsr305 (com.google.code.findbugs:jsr305:3.0.2)
-  Google Android Annotations Library (com.google.android:annotations:4.1.1.4)
   Gson (com.google.code.gson:gson:2.14.0)
   Guava InternalFutureFailureAccess and InternalFutures (com.google.guava:failureaccess:1.0.1)
   Guava: Google Core Libraries for Java (com.google.guava:guava:33.6.0-jre)
@@ -75,10 +72,6 @@ Apache-2.0 (https://spdx.org/licenses/Apache-2.0.html) applies to:
   Quarkus - Credentials - Runtime (io.quarkus:quarkus-credentials:3.37.2)
   Quarkus - Development mode - SPI (io.quarkus:quarkus-development-mode-spi:3.37.2)
   Quarkus - FS Util (io.quarkus:quarkus-fs-util:1.4.2)
-  Quarkus - gRPC - API (io.quarkus:quarkus-grpc-api:3.37.2)
-  Quarkus - gRPC - Reflection (io.quarkus:quarkus-grpc-reflection:3.37.2)
-  Quarkus - gRPC - Runtime (io.quarkus:quarkus-grpc:3.37.2)
-  Quarkus - gRPC - Stubs for health and reflection (io.quarkus:quarkus-grpc-stubs:3.37.2)
   Quarkus - gRPC Common - Runtime (io.quarkus:quarkus-grpc-common:3.37.2)
   Quarkus - IDE Launcher (io.quarkus:quarkus-ide-launcher:3.37.2)
   Quarkus - Jackson - Runtime (io.quarkus:quarkus-jackson:3.37.2)
@@ -94,7 +87,6 @@ Apache-2.0 (https://spdx.org/licenses/Apache-2.0.html) applies to:
   Quarkus - SmallRye Context Propagation - Runtime (io.quarkus:quarkus-smallrye-context-propagation:3.37.2)
   Quarkus - SmallRye Health - Runtime (io.quarkus:quarkus-smallrye-health:3.37.2)
   Quarkus - SmallRye OpenAPI - Runtime (io.quarkus:quarkus-smallrye-openapi:3.37.2)
-  Quarkus - SmallRye Stork - Runtime (io.quarkus:quarkus-smallrye-stork:3.37.2)
   Quarkus - Swagger UI - Runtime (io.quarkus:quarkus-swagger-ui:3.37.2)
   Quarkus - TLS Registry - Runtime (io.quarkus:quarkus-tls-registry:3.37.2)
   Quarkus - TLS Registry - Runtime SPI (io.quarkus:quarkus-tls-registry-spi:3.37.2)
@@ -145,8 +137,6 @@ Apache-2.0 (https://spdx.org/licenses/Apache-2.0.html) applies to:
   SmallRye Mutiny - Vert.x Web (io.smallrye.reactive:smallrye-mutiny-vertx-web:3.22.2)
   SmallRye Mutiny - Vert.x Web Common (io.smallrye.reactive:smallrye-mutiny-vertx-web-common:3.22.2)
   SmallRye Mutiny Zero JDK Flow / Reactive Streams Adapters (io.smallrye.reactive:mutiny-zero-flow-adapters:1.2.1)
-  SmallRye Stork : Core (io.smallrye.stork:stork-core:2.7.9)
-  SmallRye Stork : Main API classes (io.smallrye.stork:stork-api:2.7.9)
   SmallRye: OpenAPI Core (io.smallrye:smallrye-open-api-core:4.3.3)
   SmallRye: OpenAPI Model (io.smallrye:smallrye-open-api-model:4.3.3)
   SnakeYAML (org.yaml:snakeyaml:2.6)
@@ -169,7 +159,6 @@ BSD-2-Clause (https://spdx.org/licenses/BSD-2-Clause.html) applies to:
 BSD-3-Clause (https://spdx.org/licenses/BSD-3-Clause.html) applies to:
 
   Protocol Buffers [Core] (com.google.protobuf:protobuf-java:4.35.0)
-  Protocol Buffers [Util] (com.google.protobuf:protobuf-java-util:4.35.0)
 
 EDL 1.0 (https://spdx.org/licenses/EDL 1.0.html) applies to:
 
@@ -248,10 +237,6 @@ GPL2 w/ CPE (https://spdx.org/licenses/GPL2 w/ CPE.html) applies to:
 MIT (https://spdx.org/licenses/MIT.html) applies to:
 
   SLF4J API Module (org.slf4j:slf4j-api:2.0.18)
-
-MIT license (https://spdx.org/licenses/MIT license.html) applies to:
-
-  Animal Sniffer Annotations (org.codehaus.mojo:animal-sniffer-annotations:1.27)
 
 MIT-0 (https://spdx.org/licenses/MIT-0.html) applies to:
 

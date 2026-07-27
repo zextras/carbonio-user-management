@@ -4,12 +4,13 @@
 
 package com.zextras.carbonio.user_management.rest;
 
-import static com.zextras.carbonio.user_management.UserManagementServiceConfig.AUTH_TOKEN_KEY;
 import static com.zextras.carbonio.user_management.UserManagementServiceConfig.MAX_BATCH_USER_IDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import com.zextras.carbonio.user_management.record.UserInfo;
@@ -17,12 +18,11 @@ import com.zextras.carbonio.user_management.record.UserMyself;
 import com.zextras.carbonio.user_management.rest.dto.MyselfDto;
 import com.zextras.carbonio.user_management.rest.dto.UserInfoDto;
 import com.zextras.carbonio.user_management.service.UserService;
-import jakarta.ws.rs.container.ContainerRequestContext;
-import jakarta.ws.rs.core.Response;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.IntStream;
+import org.jboss.resteasy.reactive.RestResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -31,14 +31,11 @@ class UserResourceTest {
 
   private UserService userService;
   private UserResource resource;
-  private ContainerRequestContext ctx;
 
   @BeforeEach
   void setUp() {
     userService = mock(UserService.class);
     resource = new UserResource(userService);
-    ctx = mock(ContainerRequestContext.class);
-    when(ctx.getProperty(AUTH_TOKEN_KEY)).thenReturn("token-1");
   }
 
   private UserInfo sampleUserInfo() {
@@ -56,12 +53,12 @@ class UserResourceTest {
           "ACTIVE", "INTERNAL", "it",
           List.of("carbonioFeatureFilesEnabled"),
           Map.of("carbonioWscMaxGroupMembers", "50"));
-      when(userService.getUserMyself("token-1")).thenReturn(Optional.of(myself));
+      when(userService.getUserMyself("token-1", false)).thenReturn(Optional.of(myself));
 
-      Response response = resource.getMyself(ctx);
+      RestResponse<MyselfDto> response = resource.getMyself("token-1", false);
 
       assertThat(response.getStatus()).isEqualTo(200);
-      MyselfDto dto = (MyselfDto) response.getEntity();
+      MyselfDto dto = response.getEntity();
       assertThat(dto.info().userId()).isEqualTo("user-1");
       assertThat(dto.locale()).isEqualTo("it");
       assertThat(dto.features()).containsExactly("carbonioFeatureFilesEnabled");
@@ -70,9 +67,85 @@ class UserResourceTest {
 
     @Test
     void returns401WhenTokenInvalid() {
-      when(userService.getUserMyself("token-1")).thenReturn(Optional.empty());
+      when(userService.getUserMyself("token-1", false)).thenReturn(Optional.empty());
 
-      Response response = resource.getMyself(ctx);
+      RestResponse<MyselfDto> response = resource.getMyself("token-1", false);
+
+      assertThat(response.getStatus()).isEqualTo(401);
+    }
+
+    @Test
+    void returns401WhenCookieTokenMissing() {
+      RestResponse<MyselfDto> response = resource.getMyself(null, false);
+
+      assertThat(response.getStatus()).isEqualTo(401);
+      verifyNoInteractions(userService);
+    }
+
+    @Test
+    void returns401WhenCookieTokenEmpty() {
+      RestResponse<MyselfDto> response = resource.getMyself("", false);
+
+      assertThat(response.getStatus()).isEqualTo(401);
+      verifyNoInteractions(userService);
+    }
+
+    @Test
+    void returns401WhenCookieTokenBlank() {
+      RestResponse<MyselfDto> response = resource.getMyself("   ", false);
+
+      assertThat(response.getStatus()).isEqualTo(401);
+      verifyNoInteractions(userService);
+    }
+  }
+
+  /**
+   * {@code bypassCache} is the request-side opt out of the myself cache: the token is re-validated
+   * against mailbox instead of being answered from the cached entry.
+   */
+  @Nested
+  class GetMyselfBypassCacheTests {
+
+    private UserMyself myself() {
+      return new UserMyself("user-1", "user@example.com", "John Doe", "example.com",
+          "ACTIVE", "INTERNAL", "en", List.of(), Map.of());
+    }
+
+    @Test
+    void forwardsBypassToTheService() {
+      when(userService.getUserMyself("token-1", true)).thenReturn(Optional.of(myself()));
+
+      RestResponse<MyselfDto> response = resource.getMyself("token-1", true);
+
+      assertThat(response.getStatus()).isEqualTo(200);
+      verify(userService).getUserMyself("token-1", true);
+    }
+
+    @Test
+    void defaultsToNoBypassWhenParameterAbsent() {
+      // JAX-RS binds a missing @QueryParam boolean to false
+      when(userService.getUserMyself("token-1", false)).thenReturn(Optional.of(myself()));
+
+      resource.getMyself("token-1", false);
+
+      verify(userService).getUserMyself("token-1", false);
+    }
+
+    @Test
+    void stillReturns401WhenTokenMissingEvenWithBypass() {
+      RestResponse<MyselfDto> response = resource.getMyself(null, true);
+
+      assertThat(response.getStatus()).isEqualTo(401);
+      verifyNoInteractions(userService);
+    }
+
+    @Test
+    void returns401WhenBypassRevalidationFails() {
+      // A session revoked meanwhile: mailbox rejects the token, the stale cached entry must not
+      // be used as a fallback.
+      when(userService.getUserMyself("token-1", true)).thenReturn(Optional.empty());
+
+      RestResponse<MyselfDto> response = resource.getMyself("token-1", true);
 
       assertThat(response.getStatus()).isEqualTo(401);
     }
@@ -86,10 +159,10 @@ class UserResourceTest {
       when(userService.getUserById("user-1"))
           .thenReturn(Optional.of(sampleUserInfo()));
 
-      Response response = resource.getById("user-1", ctx);
+      RestResponse<UserInfoDto> response = resource.getById("user-1");
 
       assertThat(response.getStatus()).isEqualTo(200);
-      UserInfoDto dto = (UserInfoDto) response.getEntity();
+      UserInfoDto dto = response.getEntity();
       assertThat(dto.userId()).isEqualTo("user-1");
       assertThat(dto.email()).isEqualTo("user@example.com");
     }
@@ -98,7 +171,7 @@ class UserResourceTest {
     void returns404WhenUserNotFound() {
       when(userService.getUserById("missing")).thenReturn(Optional.empty());
 
-      Response response = resource.getById("missing", ctx);
+      RestResponse<UserInfoDto> response = resource.getById("missing");
 
       assertThat(response.getStatus()).isEqualTo(404);
     }
@@ -112,10 +185,10 @@ class UserResourceTest {
       when(userService.getUserByEmail("user@example.com"))
           .thenReturn(Optional.of(sampleUserInfo()));
 
-      Response response = resource.getByEmail("user@example.com", ctx);
+      RestResponse<UserInfoDto> response = resource.getByEmail("user@example.com");
 
       assertThat(response.getStatus()).isEqualTo(200);
-      UserInfoDto dto = (UserInfoDto) response.getEntity();
+      UserInfoDto dto = response.getEntity();
       assertThat(dto.fullName()).isEqualTo("John Doe");
     }
 
@@ -123,7 +196,7 @@ class UserResourceTest {
     void returns404WhenUserNotFound() {
       when(userService.getUserByEmail("nope@x.com")).thenReturn(Optional.empty());
 
-      Response response = resource.getByEmail("nope@x.com", ctx);
+      RestResponse<UserInfoDto> response = resource.getByEmail("nope@x.com");
 
       assertThat(response.getStatus()).isEqualTo(404);
     }
@@ -138,11 +211,10 @@ class UserResourceTest {
       UserInfo u2 = new UserInfo("id-2", "b@x.com", "B", "x.com", "CLOSED", "GUEST");
       when(userService.getUsers(anyList())).thenReturn(List.of(u1, u2));
 
-      Response response = resource.getUsers(List.of("id-1", "id-2"), ctx);
+      RestResponse<List<UserInfoDto>> response = resource.getUsers(List.of("id-1", "id-2"));
 
       assertThat(response.getStatus()).isEqualTo(200);
-      @SuppressWarnings("unchecked")
-      List<UserInfoDto> dtos = (List<UserInfoDto>) response.getEntity();
+      List<UserInfoDto> dtos = response.getEntity();
       assertThat(dtos).hasSize(2);
       assertThat(dtos.get(0).userId()).isEqualTo("id-1");
       assertThat(dtos.get(1).status()).isEqualTo("CLOSED");
@@ -152,19 +224,19 @@ class UserResourceTest {
     void returnsEmptyList() {
       when(userService.getUsers(anyList())).thenReturn(List.of());
 
-      Response response = resource.getUsers(List.of("bad-id"), ctx);
+      RestResponse<List<UserInfoDto>> response = resource.getUsers(List.of("bad-id"));
 
       assertThat(response.getStatus()).isEqualTo(200);
-      @SuppressWarnings("unchecked")
-      List<UserInfoDto> dtos = (List<UserInfoDto>) response.getEntity();
+      List<UserInfoDto> dtos = response.getEntity();
       assertThat(dtos).isEmpty();
     }
 
     @Test
     void returns400WhenUserIdsNull() {
-      Response response = resource.getUsers(null, ctx);
+      RestResponse<List<UserInfoDto>> response = resource.getUsers(null);
 
       assertThat(response.getStatus()).isEqualTo(400);
+      verifyNoInteractions(userService);
     }
 
     @Test
@@ -172,9 +244,10 @@ class UserResourceTest {
       List<String> ids = IntStream.rangeClosed(1, MAX_BATCH_USER_IDS + 1)
           .mapToObj(i -> "id-" + i).toList();
 
-      Response response = resource.getUsers(ids, ctx);
+      RestResponse<List<UserInfoDto>> response = resource.getUsers(ids);
 
       assertThat(response.getStatus()).isEqualTo(400);
+      verifyNoInteractions(userService);
     }
 
     @Test
@@ -183,7 +256,7 @@ class UserResourceTest {
           .mapToObj(i -> "id-" + i).toList();
       when(userService.getUsers(anyList())).thenReturn(List.of());
 
-      Response response = resource.getUsers(ids, ctx);
+      RestResponse<List<UserInfoDto>> response = resource.getUsers(ids);
 
       assertThat(response.getStatus()).isEqualTo(200);
     }

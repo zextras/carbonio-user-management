@@ -1,7 +1,39 @@
 ---
 openapi: 3.1.0
+components:
+  schemas:
+    MyselfDto:
+      type: object
+      properties:
+        info:
+          $ref: "#/components/schemas/UserInfoDto"
+        locale:
+          type: string
+        features:
+          type: array
+          items:
+            type: string
+        capabilities:
+          type: object
+          additionalProperties:
+            type: string
+    UserInfoDto:
+      type: object
+      properties:
+        userId:
+          type: string
+        email:
+          type: string
+        fullName:
+          type: string
+        domain:
+          type: string
+        status:
+          type: string
+        type:
+          type: string
 paths:
-  /users:
+  /internal/users:
     post:
       requestBody:
         content:
@@ -16,13 +48,16 @@ paths:
           description: OK
           content:
             application/json:
-              schema: {}
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserInfoDto"
         "400":
           description: Bad Request
       summary: Get Users
       tags:
       - User Resource
-  /users/email/{email}:
+  /internal/users/email/{email}:
     get:
       parameters:
       - name: email
@@ -35,11 +70,12 @@ paths:
           description: OK
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: "#/components/schemas/UserInfoDto"
       summary: Get By Email
       tags:
       - User Resource
-  /users/id/{userId}:
+  /internal/users/id/{userId}:
     get:
       parameters:
       - name: userId
@@ -52,18 +88,29 @@ paths:
           description: OK
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: "#/components/schemas/UserInfoDto"
       summary: Get By Id
       tags:
       - User Resource
-  /users/myself:
+  /internal/users/myself:
     get:
+      parameters:
+      - name: bypassCache
+        in: query
+        schema:
+          type: boolean
+      - name: ZM_AUTH_TOKEN
+        in: header
+        schema:
+          type: string
       responses:
         "200":
           description: OK
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: "#/components/schemas/MyselfDto"
       summary: Get Myself
       tags:
       - User Resource

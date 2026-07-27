@@ -25,8 +25,7 @@ app/src/main/java/com/zextras/carbonio/user_management/
   cache/UserMyselfCache.java         — Caffeine cache for UserMyself (by token + userId index)
   service/UserService.java           — orchestration: cache → internal REST API fallback
   grpc/GrpcHandler.java              — gRPC endpoint
-  rest/UserResource.java             — REST endpoint
-  rest/TokenAuthFilter.java          — token extraction filter
+  rest/UserResource.java             — REST endpoint (myself's token is an explicit @CookieParam)
   producer/MailboxClientProducer.java — mailbox internal REST API client CDI producer
 ```
 

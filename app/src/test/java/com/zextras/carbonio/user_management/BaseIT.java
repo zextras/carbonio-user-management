@@ -53,7 +53,7 @@ public abstract class BaseIT {
     testUserId = MailboxStackTestResource.testUserId;
   }
 
-  static String soapAuthenticate(String account, String password) throws Exception {
+  protected static String soapAuthenticate(String account, String password) throws Exception {
     String mailboxUrl = MailboxStackTestResource.mailboxBaseUrl;
     if (mailboxUrl == null) {
       throw new IllegalStateException("Mailbox URL not available — is MailboxStackTestResource running?");
