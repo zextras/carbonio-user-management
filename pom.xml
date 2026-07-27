@@ -49,6 +49,7 @@ SPDX-License-Identifier: AGPL-3.0-only
     <maven-jar-plugin.version>3.5.0</maven-jar-plugin.version>
     <maven-surefire.version>3.5.6</maven-surefire.version>
     <maven-resources-plugin.version>3.5.0</maven-resources-plugin.version>
+    <sonar-maven-plugin.version>5.5.0.6356</sonar-maven-plugin.version>
 
     <!-- Other properties -->
     <maven.compiler.source>21</maven.compiler.source>
@@ -82,6 +83,14 @@ SPDX-License-Identifier: AGPL-3.0-only
   </dependencyManagement>
 
   <build>
+    <plugins>
+      <plugin>
+        <groupId>org.sonarsource.scanner.maven</groupId>
+        <artifactId>sonar-maven-plugin</artifactId>
+        <version>${sonar-maven-plugin.version}</version>
+      </plugin>
+    </plugins>
+
     <pluginManagement>
       <plugins>
         <plugin>
