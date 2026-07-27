@@ -162,6 +162,29 @@ public class MailboxStackTestResource implements QuarkusTestResourceLifecycleMan
   }
 
   /**
+   * Changes the test user's {@code displayName} directly in mailbox, behind the application's
+   * back. Used to make a stale cache entry observable: only a new mailbox round trip can see
+   * the new value.
+   *
+   * @param displayName the new display name; empty string unsets the attribute
+   */
+  public static void setTestUserDisplayName(String displayName) {
+    try {
+      var result = mailbox.execInContainer("sh", "-c",
+          "zmprov ma test-user@carbonio.localhost displayName '" + displayName + "'");
+      if (result.getExitCode() != 0) {
+        throw new IllegalStateException(
+            "zmprov ma displayName failed: exit=" + result.getExitCode()
+                + " stdout=" + result.getStdout() + " stderr=" + result.getStderr());
+      }
+    } catch (RuntimeException e) {
+      throw e;
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to set test user displayName", e);
+    }
+  }
+
+  /**
    * Consul WireMock stubs: KV recursive fetch, service registration/deregistration,
    * and service discovery endpoints.
    *

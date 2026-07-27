@@ -62,14 +62,25 @@ public class UserService {
     this.executor = executor;
   }
 
-  public Optional<UserMyself> getUserMyself(String token) {
-    logger.debug("GetUserMyself requested");
+  /**
+   * Resolves the caller identity from its auth token.
+   *
+   * <p>When {@code bypassCache} is true the cached entry is not read, so the token is always
+   * re-validated against mailbox: this is what a caller asks for when it cannot tolerate a
+   * revoked session surviving in cache for the remaining token lifetime. The freshly fetched
+   * result is still written back to the cache, so a bypass refreshes the entry rather than
+   * disabling caching for everyone else.
+   */
+  public Optional<UserMyself> getUserMyself(String token, boolean bypassCache) {
+    logger.debug("GetUserMyself requested (bypassCache={})", bypassCache);
 
-    Optional<UserMyself> cached = userMyselfCache.getByToken(token);
-    if (cached.isPresent()) {
-      logger.debug("GetUserMyself cache hit");
-      safeWarmUserInfoCache(cached.get());
-      return cached;
+    if (!bypassCache) {
+      Optional<UserMyself> cached = userMyselfCache.getByToken(token);
+      if (cached.isPresent()) {
+        logger.debug("GetUserMyself cache hit");
+        safeWarmUserInfoCache(cached.get());
+        return cached;
+      }
     }
 
     // Coalesce concurrent lookups for the same token

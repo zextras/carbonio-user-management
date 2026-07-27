@@ -143,6 +143,12 @@
     "/internal/users/myself" : {
       "get" : {
         "parameters" : [ {
+          "name" : "bypassCache",
+          "in" : "query",
+          "schema" : {
+            "type" : "boolean"
+          }
+        }, {
           "name" : "ZM_AUTH_TOKEN",
           "in" : "header",
           "schema" : {

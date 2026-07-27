@@ -10,10 +10,13 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import com.github.benmanes.caffeine.cache.Ticker;
+import com.zextras.carbonio.quarkus.extensions.bootstrap.ApplicationConfigService;
 import com.zextras.carbonio.user_management.cache.UserInfoCache;
 import com.zextras.carbonio.user_management.cache.UserMyselfCache;
 import com.zextras.carbonio.user_management.record.UserInfo;
@@ -23,6 +26,7 @@ import com.zextras.mailbox.client.MailboxServerException;
 import com.zextras.mailbox.client.internal.AccountInfo;
 import com.zextras.mailbox.client.internal.AccountStatus;
 import com.zextras.mailbox.client.internal.MailboxInternalApiClient;
+import java.time.Clock;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -78,7 +82,7 @@ class UserServiceTest {
       when(userMyselfCache.getByToken("token-1")).thenReturn(Optional.of(myself));
       when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.of(sampleUserInfo()));
 
-      Optional<UserMyself> result = userService.getUserMyself("token-1");
+      Optional<UserMyself> result = userService.getUserMyself("token-1", false);
 
       assertThat(result).contains(myself);
       verifyNoInteractions(internalClient);
@@ -89,7 +93,7 @@ class UserServiceTest {
       when(userMyselfCache.getByToken("token-1")).thenReturn(Optional.empty());
       when(internalClient.getMyAccountInfo("token-1")).thenThrow(new MailboxClientException("test"));
 
-      Optional<UserMyself> result = userService.getUserMyself("token-1");
+      Optional<UserMyself> result = userService.getUserMyself("token-1", false);
 
       assertThat(result).isEmpty();
       verify(internalClient).getMyAccountInfo("token-1");
@@ -101,7 +105,7 @@ class UserServiceTest {
       when(userMyselfCache.getByToken("token-1")).thenReturn(Optional.of(myself));
       when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.empty());
 
-      userService.getUserMyself("token-1");
+      userService.getUserMyself("token-1", false);
 
       verify(userInfoCache).put(any(UserInfo.class));
     }
@@ -112,7 +116,7 @@ class UserServiceTest {
       when(userMyselfCache.getByToken("token-1")).thenReturn(Optional.of(myself));
       when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.of(sampleUserInfo()));
 
-      userService.getUserMyself("token-1");
+      userService.getUserMyself("token-1", false);
 
       verify(userInfoCache, never()).put(any());
     }
@@ -129,7 +133,7 @@ class UserServiceTest {
       when(userMyselfCache.computeExpiresAt(anyLong())).thenReturn(futureExpiresAt());
       when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.empty());
 
-      Optional<UserMyself> result = userService.getUserMyself("token-1");
+      Optional<UserMyself> result = userService.getUserMyself("token-1", false);
 
       assertThat(result).isPresent();
       assertThat(result.get().userId()).isEqualTo("user-1");
@@ -141,7 +145,7 @@ class UserServiceTest {
       when(userMyselfCache.getByToken("token-1")).thenReturn(Optional.empty());
       when(internalClient.getMyAccountInfo("token-1")).thenThrow(new MailboxClientException("test"));
 
-      Optional<UserMyself> result = userService.getUserMyself("token-1");
+      Optional<UserMyself> result = userService.getUserMyself("token-1", false);
 
       assertThat(result).isEmpty();
       verify(userMyselfCache, never()).put(any(), any(), any(), anyLong());
@@ -154,10 +158,96 @@ class UserServiceTest {
       when(userMyselfCache.getByToken("token-1")).thenReturn(Optional.empty());
       when(internalClient.getMyAccountInfo("token-1")).thenThrow(new MailboxClientException("test"));
 
-      Optional<UserMyself> result = userService.getUserMyself("token-1");
+      Optional<UserMyself> result = userService.getUserMyself("token-1", false);
 
       assertThat(result).isEmpty();
       verify(userMyselfCache, never()).put(any(), any(), any(), anyLong());
+    }
+
+    @Test
+    void bypassCache_ignoresCachedEntryAndRevalidatesAgainstMailbox() throws Exception {
+      when(userMyselfCache.getByToken("token-1")).thenReturn(Optional.of(sampleMyself()));
+      when(internalClient.getMyAccountInfo("token-1"))
+          .thenReturn(sampleAccountInfo("user-1", "user@example.com"));
+      when(userMyselfCache.computeExpiresAt(anyLong())).thenReturn(futureExpiresAt());
+      when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.of(sampleUserInfo()));
+
+      Optional<UserMyself> result = userService.getUserMyself("token-1", true);
+
+      assertThat(result).isPresent();
+      assertThat(result.get().userId()).isEqualTo("user-1");
+      verify(userMyselfCache, never()).getByToken("token-1");
+      verify(internalClient).getMyAccountInfo("token-1");
+    }
+
+    @Test
+    void bypassCache_stillWritesFreshResultBackToCache() throws Exception {
+      when(userMyselfCache.getByToken("token-1")).thenReturn(Optional.of(sampleMyself()));
+      when(internalClient.getMyAccountInfo("token-1"))
+          .thenReturn(sampleAccountInfo("user-1", "user@example.com"));
+      when(userMyselfCache.computeExpiresAt(anyLong())).thenReturn(futureExpiresAt());
+      when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.of(sampleUserInfo()));
+
+      userService.getUserMyself("token-1", true);
+
+      verify(userMyselfCache).put(eq("token-1"), eq("user-1"), any(), anyLong());
+    }
+
+    @Test
+    void bypassCache_returnsEmptyWhenMailboxRejectsTheToken() throws Exception {
+      // A revoked session must stop working immediately for a bypassing caller, even though a
+      // stale entry is still cached.
+      when(userMyselfCache.getByToken("token-1")).thenReturn(Optional.of(sampleMyself()));
+      when(internalClient.getMyAccountInfo("token-1")).thenThrow(new MailboxClientException("test"));
+
+      Optional<UserMyself> result = userService.getUserMyself("token-1", true);
+
+      assertThat(result).isEmpty();
+    }
+  }
+
+  /**
+   * Same scenario as above but against a real {@link UserMyselfCache}, so the hit/miss accounting
+   * is the production one and the mailbox call count can be asserted end to end.
+   */
+  @Nested
+  class GetUserMyselfBypassWithRealCacheTests {
+
+    private UserService serviceWithRealCache() {
+      ApplicationConfigService configService = mock(ApplicationConfigService.class);
+      when(configService.get("cache.usermyself-ttl")).thenReturn(Optional.empty());
+      UserMyselfCache realCache = new UserMyselfCache(
+          configService, Ticker.systemTicker(), Clock.systemUTC());
+      return new UserService(internalClient, userInfoCache, realCache,
+          org.eclipse.microprofile.context.ManagedExecutor.builder().build());
+    }
+
+    @Test
+    void secondCallHitsTheCache_thirdCallBypassesAndHitsMailboxAgain() throws Exception {
+      UserService service = serviceWithRealCache();
+      when(internalClient.getMyAccountInfo("token-1"))
+          .thenReturn(sampleAccountInfo("user-1", "user@example.com"));
+      when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.of(sampleUserInfo()));
+
+      service.getUserMyself("token-1", false);   // cold: mailbox hit #1
+      service.getUserMyself("token-1", false);   // warm: served from cache
+      verify(internalClient, times(1)).getMyAccountInfo("token-1");
+
+      service.getUserMyself("token-1", true);    // bypass: mailbox hit #2
+      verify(internalClient, times(2)).getMyAccountInfo("token-1");
+    }
+
+    @Test
+    void bypassRefreshesTheEntryInsteadOfDisablingTheCache() throws Exception {
+      UserService service = serviceWithRealCache();
+      when(internalClient.getMyAccountInfo("token-1"))
+          .thenReturn(sampleAccountInfo("user-1", "user@example.com"));
+      when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.of(sampleUserInfo()));
+
+      service.getUserMyself("token-1", true);    // bypass on a cold cache: mailbox hit #1
+      service.getUserMyself("token-1", false);   // must now be served from cache
+
+      verify(internalClient, times(1)).getMyAccountInfo("token-1");
     }
   }
 

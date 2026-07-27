@@ -18,6 +18,7 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
@@ -43,13 +44,25 @@ public class UserResource {
     this.userService = userService;
   }
 
+  /**
+   * {@code bypassCache=true} forces the token to be re-validated against mailbox instead of being
+   * answered from {@code UserMyselfCache}. Callers that must not keep honouring a session revoked
+   * meanwhile (password change, "end all sessions") need it, because an entry lives for the whole
+   * remaining token lifetime when {@code cache.usermyself-ttl} is unset. It is deliberately a
+   * boolean query parameter and not {@code Cache-Control: no-cache}: the generated SDK turns a
+   * header parameter into a second {@code String} argument next to the token, which swaps silently
+   * at the call site, while a boolean cannot. The fresh result is still written back to the cache -
+   * this is a per-request read bypass, not a cache disable.
+   */
   @GET
   @Path("/myself")
-  public RestResponse<MyselfDto> getMyself(@HeaderParam(AUTH_TOKEN_KEY) String token) {
+  public RestResponse<MyselfDto> getMyself(
+      @HeaderParam(AUTH_TOKEN_KEY) String token,
+      @QueryParam("bypassCache") boolean bypassCache) {
     if (token == null || token.isBlank()) {
       return RestResponse.status(Response.Status.UNAUTHORIZED);
     }
-    return userService.getUserMyself(token)
+    return userService.getUserMyself(token, bypassCache)
         .map(r -> RestResponse.ok(MyselfDto.from(r)))
         .orElseGet(() -> RestResponse.status(Response.Status.UNAUTHORIZED));
   }

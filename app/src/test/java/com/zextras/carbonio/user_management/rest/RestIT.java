@@ -62,6 +62,83 @@ class RestIT extends BaseIT {
         .statusCode(401);
   }
 
+  // --- Myself cache bypass ---
+
+  /**
+   * Proves {@code bypassCache=true} really skips the cache read and goes back to mailbox: the
+   * account is modified behind the service's back, so only a fresh mailbox round trip can observe
+   * the new value. A fresh token is used so this test owns its own cache entry.
+   */
+  @Test
+  void getMyselfWithBypassCacheRevalidatesAgainstMailbox() throws Exception {
+    String token = soapAuthenticate(TEST_USER_EMAIL, TEST_PASSWORD);
+    MailboxStackTestResource.setTestUserDisplayName("Before Bypass");
+    try {
+      // Cold cache: mailbox hit #1, result cached under this token
+      given()
+          .header("ZM_AUTH_TOKEN", token)
+          .when()
+          .get("/internal/users/myself")
+          .then()
+          .statusCode(200)
+          .body("info.fullName", equalTo("Before Bypass"));
+
+      MailboxStackTestResource.setTestUserDisplayName("After Bypass");
+
+      // No bypass: served from cache, still the stale value -> mailbox was NOT hit
+      given()
+          .header("ZM_AUTH_TOKEN", token)
+          .when()
+          .get("/internal/users/myself")
+          .then()
+          .statusCode(200)
+          .body("info.fullName", equalTo("Before Bypass"));
+
+      // Bypass: cache read skipped -> mailbox hit #2, fresh value
+      given()
+          .header("ZM_AUTH_TOKEN", token)
+          .queryParam("bypassCache", true)
+          .when()
+          .get("/internal/users/myself")
+          .then()
+          .statusCode(200)
+          .body("info.fullName", equalTo("After Bypass"));
+
+      // The bypass refreshed the entry rather than disabling the cache
+      given()
+          .header("ZM_AUTH_TOKEN", token)
+          .when()
+          .get("/internal/users/myself")
+          .then()
+          .statusCode(200)
+          .body("info.fullName", equalTo("After Bypass"));
+    } finally {
+      MailboxStackTestResource.setTestUserDisplayName("");
+    }
+  }
+
+  @Test
+  void getMyselfWithBypassCacheFalseBehavesLikeNoParameter() {
+    given()
+        .header("ZM_AUTH_TOKEN", authToken)
+        .queryParam("bypassCache", false)
+        .when()
+        .get("/internal/users/myself")
+        .then()
+        .statusCode(200)
+        .body("info.userId", equalTo(testUserId));
+  }
+
+  @Test
+  void getMyselfWithBypassCacheAndNoTokenStillReturns401() {
+    given()
+        .queryParam("bypassCache", true)
+        .when()
+        .get("/internal/users/myself")
+        .then()
+        .statusCode(401);
+  }
+
   // --- Get by ID ---
 
   @Test
@@ -103,6 +180,19 @@ class RestIT extends BaseIT {
   void getByIdWithoutTokenStillReturnsUser() {
     // by-id does not require a token at all.
     given()
+        .when()
+        .get("/internal/users/id/" + testUserId)
+        .then()
+        .statusCode(200)
+        .body("userId", equalTo(testUserId));
+  }
+
+  @Test
+  void getByIdIgnoresBypassCache() {
+    // The cache bypass exists only on /myself, where a stale entry is an authorization-freshness
+    // problem. On by-id it is an unknown query parameter and is simply ignored.
+    given()
+        .queryParam("bypassCache", true)
         .when()
         .get("/internal/users/id/" + testUserId)
         .then()

@@ -21,6 +21,15 @@
           "HTTP": {
             "PathPrefix": "/internal"
           }
+        },
+        {
+          "Action": "allow",
+          "HTTP": {
+            "PathPrefix": "/q/health/live",
+            "Methods": [
+              "GET"
+            ]
+          }
         }
       ]
     }
