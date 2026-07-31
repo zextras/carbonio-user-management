@@ -12,7 +12,6 @@ import static org.mockito.Mockito.when;
 
 import com.github.benmanes.caffeine.cache.Ticker;
 import com.zextras.carbonio.quarkus.extensions.bootstrap.ApplicationConfigService;
-import com.zextras.carbonio.user_management.cache.UserInfoCache;
 import com.zextras.carbonio.user_management.record.UserInfo;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -101,8 +100,9 @@ class UserInfoCacheTest {
 
     currentTime.set(TimeUnit.SECONDS.toNanos(DEFAULT_TTL_SECONDS - 100));
 
-    UserInfo user1Updated = new UserInfo(
-        "user-1", "user@example.com", "Updated Name", "example.com", "ACTIVE", "INTERNAL");
+    UserInfo user1Updated =
+        new UserInfo(
+            "user-1", "user@example.com", "Updated Name", "example.com", "ACTIVE", "INTERNAL");
     cache.put(user1Updated);
 
     // 12h + 1s from original put, but only 101s from re-put → still alive

@@ -5,7 +5,6 @@
 package com.zextras.carbonio.user_management;
 
 import com.zextras.carbonio.quarkus.extensions.bootstrap.CarbonioServiceConfig;
-import com.zextras.carbonio.user_management.UserManagementServiceConfig;
 import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -17,26 +16,27 @@ import java.util.Base64;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testcontainers.lifecycle.Startables;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.lifecycle.Startables;
 
 /**
- * Starts the Carbonio mailbox stack (mailbox + dependencies) and a WireMock container
- * that stubs Consul endpoints for integration tests.
+ * Starts the Carbonio mailbox stack (mailbox + dependencies) and a WireMock container that stubs
+ * Consul endpoints for integration tests.
  *
  * <p><b>Testing philosophy:</b>
+ *
  * <ul>
- *   <li>Mailbox (+ openldap, mariadb, postfix) — real containers: tests exercise the full
- *       SOAP authentication and user lookup flow.</li>
- *   <li>Consul — WireMock stub: the bootstrap extension reads KV config and registers the
- *       service; a real Consul instance is not needed.</li>
+ *   <li>Mailbox (+ openldap, mariadb, postfix) — real containers: tests exercise the full SOAP
+ *       authentication and user lookup flow.
+ *   <li>Consul — WireMock stub: the bootstrap extension reads KV config and registers the service;
+ *       a real Consul instance is not needed.
  * </ul>
  *
- * <p>All container fields are {@code static} so that a single stack is shared across all IT
- * classes within one JVM run. {@link #stop()} is a no-op; Testcontainers' JVM shutdown hook
- * handles cleanup on exit.
+ * <p>All container fields are {@code static} so that a single stack is shared across all IT classes
+ * within one JVM run. {@link #stop()} is a no-op; Testcontainers' JVM shutdown hook handles cleanup
+ * on exit.
  */
 public class MailboxStackTestResource implements QuarkusTestResourceLifecycleManager {
 
@@ -71,50 +71,59 @@ public class MailboxStackTestResource implements QuarkusTestResourceLifecycleMan
 
     // --- Mailbox stack (shared network) ---
 
-    openldap = new GenericContainer<>("registry.dev.zextras.com/dev/carbonio-openldap:devel")
-        .withNetwork(network)
-        .withNetworkAliases("carbonio-openldap")
-        .withExposedPorts(1389)
-        .waitingFor(Wait.forListeningPort().withStartupTimeout(Duration.ofMinutes(5)));
+    openldap =
+        new GenericContainer<>("registry.dev.zextras.com/dev/carbonio-openldap:devel")
+            .withNetwork(network)
+            .withNetworkAliases("carbonio-openldap")
+            .withExposedPorts(1389)
+            .waitingFor(Wait.forListeningPort().withStartupTimeout(Duration.ofMinutes(5)));
 
-    mariadb = new GenericContainer<>("registry.dev.zextras.com/dev/carbonio-mariadb:devel")
-        .withNetwork(network)
-        .withNetworkAliases("carbonio-mariadb")
-        .withEnv("MARIADB_ROOT_PASSWORD", "password")
-        .waitingFor(Wait.forListeningPort().withStartupTimeout(Duration.ofMinutes(2)));
+    mariadb =
+        new GenericContainer<>("registry.dev.zextras.com/dev/carbonio-mariadb:devel")
+            .withNetwork(network)
+            .withNetworkAliases("carbonio-mariadb")
+            .withEnv("MARIADB_ROOT_PASSWORD", "password")
+            .waitingFor(Wait.forListeningPort().withStartupTimeout(Duration.ofMinutes(2)));
 
-    postfix = new GenericContainer<>("registry.dev.zextras.com/dev/carbonio-mta:devel")
-        .withNetwork(network)
-        .withNetworkAliases("carbonio-postfix")
-        .withEnv("LDAP_HOST", "carbonio-openldap")
-        .withEnv("LDAP_PORT", "1389")
-        .withEnv("LDAP_ROOT_PASSWORD", "qh6hWZvc")
-        .withEnv("LDAP_ADMIN_PASSWORD", "password")
-        .withExposedPorts(25)
-        .dependsOn(openldap)
-        .waitingFor(Wait.forListeningPort().withStartupTimeout(Duration.ofMinutes(5)));
+    postfix =
+        new GenericContainer<>("registry.dev.zextras.com/dev/carbonio-mta:devel")
+            .withNetwork(network)
+            .withNetworkAliases("carbonio-postfix")
+            .withEnv("LDAP_HOST", "carbonio-openldap")
+            .withEnv("LDAP_PORT", "1389")
+            .withEnv("LDAP_ROOT_PASSWORD", "qh6hWZvc")
+            .withEnv("LDAP_ADMIN_PASSWORD", "password")
+            .withExposedPorts(25)
+            .dependsOn(openldap)
+            .waitingFor(Wait.forListeningPort().withStartupTimeout(Duration.ofMinutes(5)));
 
-    mailbox = new GenericContainer<>("registry.dev.zextras.com/dev/carbonio-mailbox:devel")
-        .withNetwork(network)
-        .withNetworkAliases("carbonio-mailbox")
-        .withCreateContainerCmdModifier(cmd -> cmd.withHostName("docker.carbonio.localhost"))
-        .withEnv("LDAP_URL", "ldap://carbonio-openldap:1389")
-        .withEnv("LDAP_ROOT_PASSWORD", "qh6hWZvc")
-        .withEnv("LDAP_ADMIN_PASSWORD", "password")
-        .withEnv("MARIADB_ROOT_PASSWORD", "password")
-        .withEnv("MARIADB_URL", "carbonio-mariadb")
-        .withEnv("MARIADB_PORT", "3306")
-        .withExposedPorts(8080, 10000)
-        .dependsOn(openldap, postfix, mariadb)
-        .waitingFor(Wait.forHttp("/service/health/ready").forPort(8080)
-            .withStartupTimeout(Duration.ofMinutes(10)));
+    mailbox =
+        new GenericContainer<>("registry.dev.zextras.com/dev/carbonio-mailbox:devel")
+            .withNetwork(network)
+            .withNetworkAliases("carbonio-mailbox")
+            .withCreateContainerCmdModifier(cmd -> cmd.withHostName("docker.carbonio.localhost"))
+            .withEnv("LDAP_URL", "ldap://carbonio-openldap:1389")
+            .withEnv("LDAP_ROOT_PASSWORD", "qh6hWZvc")
+            .withEnv("LDAP_ADMIN_PASSWORD", "password")
+            .withEnv("MARIADB_ROOT_PASSWORD", "password")
+            .withEnv("MARIADB_URL", "carbonio-mariadb")
+            .withEnv("MARIADB_PORT", "3306")
+            .withExposedPorts(8080, 10000)
+            .dependsOn(openldap, postfix, mariadb)
+            .waitingFor(
+                Wait.forHttp("/service/health/ready")
+                    .forPort(8080)
+                    .withStartupTimeout(Duration.ofMinutes(10)));
 
     // --- Consul mock (WireMock, no shared network needed) ---
 
-    wireMock = new GenericContainer<>("wiremock/wiremock:3.9.2")
-        .withExposedPorts(8080)
-        .waitingFor(Wait.forHttp("/__admin/health").forPort(8080)
-            .withStartupTimeout(Duration.ofMinutes(2)));
+    wireMock =
+        new GenericContainer<>("wiremock/wiremock:3.9.2")
+            .withExposedPorts(8080)
+            .waitingFor(
+                Wait.forHttp("/__admin/health")
+                    .forPort(8080)
+                    .withStartupTimeout(Duration.ofMinutes(2)));
 
     // Start all containers in parallel, respecting dependsOn graph
     log.info("Starting all containers in parallel...");
@@ -137,20 +146,28 @@ public class MailboxStackTestResource implements QuarkusTestResourceLifecycleMan
     mailboxBaseUrl = "http://localhost:" + mailboxPort;
     log.info("Mailbox available at {}", mailboxBaseUrl);
 
-    cachedConfig = Map.ofEntries(
-        Map.entry(CarbonioServiceConfig.NETWORKING_CONFIG_PREFIX
-            + CarbonioServiceConfig.NetworkingConfig.SERVICE_HOST, "localhost"),
-        Map.entry(CarbonioServiceConfig.NETWORKING_CONFIG_PREFIX
-            + CarbonioServiceConfig.NetworkingConfig.SERVICE_DISCOVER_HOST, wireMock.getHost()),
-        Map.entry(CarbonioServiceConfig.NETWORKING_CONFIG_PREFIX
-            + CarbonioServiceConfig.NetworkingConfig.SERVICE_DISCOVER_PORT,
-            String.valueOf(wireMock.getMappedPort(8080))),
-        Map.entry(CarbonioServiceConfig.NETWORKING_CONFIG_PREFIX
-            + UserManagementServiceConfig.NetworkingConfig.MAILBOX_INTERNAL_HOST, "localhost"),
-        Map.entry(CarbonioServiceConfig.NETWORKING_CONFIG_PREFIX
-            + UserManagementServiceConfig.NetworkingConfig.MAILBOX_INTERNAL_PORT,
-            String.valueOf(mailboxInternalPort))
-    );
+    cachedConfig =
+        Map.ofEntries(
+            Map.entry(
+                CarbonioServiceConfig.NETWORKING_CONFIG_PREFIX
+                    + CarbonioServiceConfig.NetworkingConfig.SERVICE_HOST,
+                "localhost"),
+            Map.entry(
+                CarbonioServiceConfig.NETWORKING_CONFIG_PREFIX
+                    + CarbonioServiceConfig.NetworkingConfig.SERVICE_DISCOVER_HOST,
+                wireMock.getHost()),
+            Map.entry(
+                CarbonioServiceConfig.NETWORKING_CONFIG_PREFIX
+                    + CarbonioServiceConfig.NetworkingConfig.SERVICE_DISCOVER_PORT,
+                String.valueOf(wireMock.getMappedPort(8080))),
+            Map.entry(
+                CarbonioServiceConfig.NETWORKING_CONFIG_PREFIX
+                    + UserManagementServiceConfig.NetworkingConfig.MAILBOX_INTERNAL_HOST,
+                "localhost"),
+            Map.entry(
+                CarbonioServiceConfig.NETWORKING_CONFIG_PREFIX
+                    + UserManagementServiceConfig.NetworkingConfig.MAILBOX_INTERNAL_PORT,
+                String.valueOf(mailboxInternalPort)));
     started = true;
     return cachedConfig;
   }
@@ -162,20 +179,27 @@ public class MailboxStackTestResource implements QuarkusTestResourceLifecycleMan
   }
 
   /**
-   * Changes the test user's {@code displayName} directly in mailbox, behind the application's
-   * back. Used to make a stale cache entry observable: only a new mailbox round trip can see
-   * the new value.
+   * Changes the test user's {@code displayName} directly in mailbox, behind the application's back.
+   * Used to make a stale cache entry observable: only a new mailbox round trip can see the new
+   * value.
    *
    * @param displayName the new display name; empty string unsets the attribute
    */
   public static void setTestUserDisplayName(String displayName) {
     try {
-      var result = mailbox.execInContainer("sh", "-c",
-          "zmprov ma test-user@carbonio.localhost displayName '" + displayName + "'");
+      var result =
+          mailbox.execInContainer(
+              "sh",
+              "-c",
+              "zmprov ma test-user@carbonio.localhost displayName '" + displayName + "'");
       if (result.getExitCode() != 0) {
         throw new IllegalStateException(
-            "zmprov ma displayName failed: exit=" + result.getExitCode()
-                + " stdout=" + result.getStdout() + " stderr=" + result.getStderr());
+            "zmprov ma displayName failed: exit="
+                + result.getExitCode()
+                + " stdout="
+                + result.getStdout()
+                + " stderr="
+                + result.getStderr());
       }
     } catch (RuntimeException e) {
       throw e;
@@ -185,86 +209,109 @@ public class MailboxStackTestResource implements QuarkusTestResourceLifecycleMan
   }
 
   /**
-   * Consul WireMock stubs: KV recursive fetch, service registration/deregistration,
-   * and service discovery endpoints.
+   * Consul WireMock stubs: KV recursive fetch, service registration/deregistration, and service
+   * discovery endpoints.
    *
-   * <p>CarbonioBootstrapFactory issues a SINGLE recursive GET:
-   *   GET /v1/kv/carbonio-user-management/?recurse
-   * and expects a JSON array of all KV entries under that prefix.
+   * <p>CarbonioBootstrapFactory issues a SINGLE recursive GET: GET
+   * /v1/kv/carbonio-user-management/?recurse and expects a JSON array of all KV entries under that
+   * prefix.
    */
   private static void setupConsulStubs(String wireMockAdminUrl) throws Exception {
     HttpClient client = HttpClient.newHttpClient();
 
     // Application config — recursive KV stub for the whole prefix
-    postConsulKvRecursiveStub(client, wireMockAdminUrl, "carbonio-user-management/",
-        new String[][]{
-            {"carbonio-user-management/cache/userinfo-ttl", "43200"},
+    postConsulKvRecursiveStub(
+        client,
+        wireMockAdminUrl,
+        "carbonio-user-management/",
+        new String[][] {
+          {"carbonio-user-management/cache/userinfo-ttl", "43200"},
         });
 
     // Catch-all unknown KV prefixes → 404
-    postStub(client, wireMockAdminUrl,
+    postStub(
+        client,
+        wireMockAdminUrl,
         "{\"priority\":10,"
-        + "\"request\":{\"method\":\"GET\",\"urlPathPattern\":\"/v1/kv/.*\"},"
-        + "\"response\":{\"status\":404}}");
+            + "\"request\":{\"method\":\"GET\",\"urlPathPattern\":\"/v1/kv/.*\"},"
+            + "\"response\":{\"status\":404}}");
 
     // Service registration / deregistration → 200
-    for (String pattern : new String[]{
-        "/v1/agent/service/register.*", "/v1/agent/service/deregister/.*",
-        "/v1/agent/check/register.*",   "/v1/agent/check/deregister/.*"}) {
-      postStub(client, wireMockAdminUrl,
-          "{\"request\":{\"method\":\"PUT\",\"urlPathPattern\":\"" + pattern + "\"},"
-          + "\"response\":{\"status\":200}}");
+    for (String pattern :
+        new String[] {
+          "/v1/agent/service/register.*", "/v1/agent/service/deregister/.*",
+          "/v1/agent/check/register.*", "/v1/agent/check/deregister/.*"
+        }) {
+      postStub(
+          client,
+          wireMockAdminUrl,
+          "{\"request\":{\"method\":\"PUT\",\"urlPathPattern\":\""
+              + pattern
+              + "\"},"
+              + "\"response\":{\"status\":200}}");
     }
 
     // Service discovery → empty array
-    for (String pattern : new String[]{"/v1/health/service/.*", "/v1/catalog/service/.*"}) {
-      postStub(client, wireMockAdminUrl,
-          "{\"request\":{\"method\":\"GET\",\"urlPathPattern\":\"" + pattern + "\"},"
-          + "\"response\":{\"status\":200,"
-          + "\"headers\":{\"Content-Type\":\"application/json\"},\"body\":\"[]\"}}");
+    for (String pattern : new String[] {"/v1/health/service/.*", "/v1/catalog/service/.*"}) {
+      postStub(
+          client,
+          wireMockAdminUrl,
+          "{\"request\":{\"method\":\"GET\",\"urlPathPattern\":\""
+              + pattern
+              + "\"},"
+              + "\"response\":{\"status\":200,"
+              + "\"headers\":{\"Content-Type\":\"application/json\"},\"body\":\"[]\"}}");
     }
   }
 
   /**
-   * Registers a single WireMock stub that matches the Consul recursive KV fetch:
-   *   GET /v1/kv/{prefix}?recurse   (urlPath ignores the query string)
+   * Registers a single WireMock stub that matches the Consul recursive KV fetch: GET
+   * /v1/kv/{prefix}?recurse (urlPath ignores the query string)
    *
-   * @param prefix    the KV prefix including trailing slash
+   * @param prefix the KV prefix including trailing slash
    * @param kvEntries array of {key, plainTextValue} pairs
    */
   private static void postConsulKvRecursiveStub(
       HttpClient client, String baseUrl, String prefix, String[][] kvEntries) throws Exception {
     StringBuilder arrayBody = new StringBuilder("[");
     for (int i = 0; i < kvEntries.length; i++) {
-      String key   = kvEntries[i][0];
+      String key = kvEntries[i][0];
       String value = kvEntries[i][1];
-      String b64   = Base64.getEncoder().encodeToString(value.getBytes(StandardCharsets.UTF_8));
+      String b64 = Base64.getEncoder().encodeToString(value.getBytes(StandardCharsets.UTF_8));
       if (i > 0) arrayBody.append(',');
-      arrayBody.append("{\"LockIndex\":0,\"Key\":\"").append(key)
-               .append("\",\"Flags\":0,\"Value\":\"").append(b64)
-               .append("\",\"CreateIndex\":1,\"ModifyIndex\":1}");
+      arrayBody
+          .append("{\"LockIndex\":0,\"Key\":\"")
+          .append(key)
+          .append("\",\"Flags\":0,\"Value\":\"")
+          .append(b64)
+          .append("\",\"CreateIndex\":1,\"ModifyIndex\":1}");
     }
     arrayBody.append("]");
 
-    String escapedBody = arrayBody.toString()
-        .replace("\\", "\\\\")
-        .replace("\"", "\\\"");
+    String escapedBody = arrayBody.toString().replace("\\", "\\\\").replace("\"", "\\\"");
 
-    postStub(client, baseUrl,
+    postStub(
+        client,
+        baseUrl,
         "{\"priority\":1,"
-        + "\"request\":{\"method\":\"GET\",\"urlPath\":\"/v1/kv/" + prefix + "\"},"
-        + "\"response\":{\"status\":200,"
-        + "\"headers\":{\"Content-Type\":\"application/json\"},"
-        + "\"body\":\"" + escapedBody + "\"}}");
+            + "\"request\":{\"method\":\"GET\",\"urlPath\":\"/v1/kv/"
+            + prefix
+            + "\"},"
+            + "\"response\":{\"status\":200,"
+            + "\"headers\":{\"Content-Type\":\"application/json\"},"
+            + "\"body\":\""
+            + escapedBody
+            + "\"}}");
   }
 
   private static void postStub(HttpClient client, String baseUrl, String stubJson)
       throws Exception {
-    HttpRequest req = HttpRequest.newBuilder()
-        .uri(URI.create(baseUrl + "/__admin/mappings"))
-        .header("Content-Type", "application/json")
-        .POST(HttpRequest.BodyPublishers.ofString(stubJson))
-        .build();
+    HttpRequest req =
+        HttpRequest.newBuilder()
+            .uri(URI.create(baseUrl + "/__admin/mappings"))
+            .header("Content-Type", "application/json")
+            .POST(HttpRequest.BodyPublishers.ofString(stubJson))
+            .build();
     HttpResponse<String> resp = client.send(req, HttpResponse.BodyHandlers.ofString());
     if (resp.statusCode() != 201) {
       throw new RuntimeException(
@@ -274,43 +321,55 @@ public class MailboxStackTestResource implements QuarkusTestResourceLifecycleMan
 
   /**
    * Creates test accounts in mailbox via zmprov (execInContainer) and resolves the zimbraId
-   * directly from LDAP — without ever calling the application — so that integration tests
-   * start with a cold cache.
+   * directly from LDAP — without ever calling the application — so that integration tests start
+   * with a cold cache.
    */
   private void provisionTestAccounts() {
     log.info("Provisioning test accounts in mailbox...");
     try {
       // Single execInContainer: waits for zmprov readiness, then provisions in one shot
-      var result = mailbox.execInContainer("sh", "-c",
-          "for i in $(seq 1 30); do "
-          + "  echo 'gd carbonio.localhost' | zmprov 2>&1 | grep -qv ERROR && break; "
-          + "  sleep 2; "
-          + "done && "
-          + "zmprov <<'EOF'\n"
-          + "cd carbonio.localhost\n"
-          + "mcf zimbraSmtpHostname carbonio-postfix\n"
-          + "mcf zimbraDefaultDomainName carbonio.localhost\n"
-          + "ca test-user@carbonio.localhost test-password\n"
-          + "EOF");
+      var result =
+          mailbox.execInContainer(
+              "sh",
+              "-c",
+              "for i in $(seq 1 30); do "
+                  + "  echo 'gd carbonio.localhost' | zmprov 2>&1 | grep -qv ERROR && break; "
+                  + "  sleep 2; "
+                  + "done && "
+                  + "zmprov <<'EOF'\n"
+                  + "cd carbonio.localhost\n"
+                  + "mcf zimbraSmtpHostname carbonio-postfix\n"
+                  + "mcf zimbraDefaultDomainName carbonio.localhost\n"
+                  + "ca test-user@carbonio.localhost test-password\n"
+                  + "EOF");
 
       if (result.getExitCode() == 0) {
         log.info("Test account provisioning succeeded");
       } else {
-        log.warn("Provisioning exited with code {} (accounts may already exist): {}",
-            result.getExitCode(), result.getStderr());
+        log.warn(
+            "Provisioning exited with code {} (accounts may already exist): {}",
+            result.getExitCode(),
+            result.getStderr());
       }
 
       // Resolve zimbraId via zmprov ga (reads from LDAP, never touches the application cache)
-      var gaResult = mailbox.execInContainer("sh", "-c",
-          "zmprov ga test-user@carbonio.localhost zimbraId | grep zimbraId: | awk '{print $2}'");
+      var gaResult =
+          mailbox.execInContainer(
+              "sh",
+              "-c",
+              "zmprov ga test-user@carbonio.localhost zimbraId | grep zimbraId: | awk '{print"
+                  + " $2}'");
       if (gaResult.getExitCode() == 0 && !gaResult.getStdout().isBlank()) {
         testUserId = gaResult.getStdout().trim();
         log.info("Resolved test user zimbraId: {}", testUserId);
       } else {
         throw new IllegalStateException(
-            "Failed to resolve zimbraId: exit=" + gaResult.getExitCode()
-                + " stdout=" + gaResult.getStdout()
-                + " stderr=" + gaResult.getStderr());
+            "Failed to resolve zimbraId: exit="
+                + gaResult.getExitCode()
+                + " stdout="
+                + gaResult.getStdout()
+                + " stderr="
+                + gaResult.getStderr());
       }
     } catch (RuntimeException e) {
       throw e;

@@ -29,12 +29,20 @@ public class MailboxClientProducer {
   @Produces
   @Singleton
   public MailboxInternalApiClient mailboxInternalApiClient() {
-    String host = networkingConfigService.get(NetworkingConfig.MAILBOX_INTERNAL_HOST)
-        .orElseThrow(() -> new IllegalStateException(
-            "Missing required config: " + NetworkingConfig.MAILBOX_INTERNAL_HOST));
-    String port = networkingConfigService.get(NetworkingConfig.MAILBOX_INTERNAL_PORT)
-        .orElseThrow(() -> new IllegalStateException(
-            "Missing required config: " + NetworkingConfig.MAILBOX_INTERNAL_PORT));
+    String host =
+        networkingConfigService
+            .get(NetworkingConfig.MAILBOX_INTERNAL_HOST)
+            .orElseThrow(
+                () ->
+                    new IllegalStateException(
+                        "Missing required config: " + NetworkingConfig.MAILBOX_INTERNAL_HOST));
+    String port =
+        networkingConfigService
+            .get(NetworkingConfig.MAILBOX_INTERNAL_PORT)
+            .orElseThrow(
+                () ->
+                    new IllegalStateException(
+                        "Missing required config: " + NetworkingConfig.MAILBOX_INTERNAL_PORT));
 
     String mailboxInternalUrl = "http://" + host + ":" + port;
     logger.info("Connecting to mailbox internal API at {}", mailboxInternalUrl);

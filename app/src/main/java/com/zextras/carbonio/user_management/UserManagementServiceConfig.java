@@ -12,13 +12,17 @@ public final class UserManagementServiceConfig {
 
   public static final class NetworkingConfig {
     private NetworkingConfig() {}
+
     @ConfigKey public static final String MAILBOX_INTERNAL_HOST = "carbonio.mailbox.internal.host";
     @ConfigKey public static final String MAILBOX_INTERNAL_PORT = "carbonio.mailbox.internal.port";
   }
 
   public static final class ApplicationConfig {
     private ApplicationConfig() {}
-    @ConfigKey(ifNotPresent = "Uses remaining token validity time") public static final String CACHE_USERMYSELF_TTL = "cache.usermyself-ttl";
+
+    @ConfigKey(ifNotPresent = "Uses remaining token validity time")
+    public static final String CACHE_USERMYSELF_TTL = "cache.usermyself-ttl";
+
     @ConfigKey public static final String CACHE_USERINFO_TTL = "cache.userinfo-ttl";
   }
 
@@ -26,6 +30,7 @@ public final class UserManagementServiceConfig {
 
   public static final class ZimbraAttributes {
     private ZimbraAttributes() {}
+
     public static final String DISPLAY_NAME = "displayName";
     public static final String ID = "zimbraId";
     public static final String ACCOUNT_STATUS = "zimbraAccountStatus";
@@ -34,9 +39,9 @@ public final class UserManagementServiceConfig {
 
   public static final class ZimbraPreferences {
     private ZimbraPreferences() {}
+
     public static final String LOCALE = "zimbraPrefLocale";
   }
 
   public static final int MAX_BATCH_USER_IDS = 100;
-
 }

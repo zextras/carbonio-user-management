@@ -55,11 +55,7 @@ class RestIT extends BaseIT {
 
   @Test
   void getMyselfWithoutTokenReturns401() {
-    given()
-        .when()
-        .get("/internal/users/myself")
-        .then()
-        .statusCode(401);
+    given().when().get("/internal/users/myself").then().statusCode(401);
   }
 
   // --- Myself cache bypass ---
@@ -268,16 +264,18 @@ class RestIT extends BaseIT {
   void batchWithDuplicateIdsReturnsDeduplicatedResults() {
     // Sending the same ID twice should not return duplicates
     String body = "[\"" + testUserId + "\",\"" + testUserId + "\"]";
-    List<?> results = given()
-        .cookie("ZM_AUTH_TOKEN", authToken)
-        .contentType("application/json")
-        .body(body)
-        .when()
-        .post("/internal/users")
-        .then()
-        .statusCode(200)
-        .extract()
-        .jsonPath().getList("$");
+    List<?> results =
+        given()
+            .cookie("ZM_AUTH_TOKEN", authToken)
+            .contentType("application/json")
+            .body(body)
+            .when()
+            .post("/internal/users")
+            .then()
+            .statusCode(200)
+            .extract()
+            .jsonPath()
+            .getList("$");
     // Service may or may not deduplicate; verify at least one result with correct data
     assertTrue(results.size() >= 1 && results.size() <= 2);
   }
@@ -298,9 +296,7 @@ class RestIT extends BaseIT {
   @Test
   void batchExceedingMaxReturns400() {
     // Build a list of 101 fake IDs
-    List<String> ids = IntStream.rangeClosed(1, 101)
-        .mapToObj(i -> "fake-id-" + i)
-        .toList();
+    List<String> ids = IntStream.rangeClosed(1, 101).mapToObj(i -> "fake-id-" + i).toList();
     given()
         .cookie("ZM_AUTH_TOKEN", authToken)
         .contentType("application/json")

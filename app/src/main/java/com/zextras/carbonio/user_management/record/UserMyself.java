@@ -16,13 +16,18 @@ public record UserMyself(
     String type,
     String locale,
     List<String> features,
-    Map<String, String> capabilities
-) {
+    Map<String, String> capabilities) {
 
   public UserMyself(
-      String userId, String email, String fullName, String domain,
-      String status, String type, String locale,
-      List<String> features, Map<String, String> capabilities) {
+      String userId,
+      String email,
+      String fullName,
+      String domain,
+      String status,
+      String type,
+      String locale,
+      List<String> features,
+      Map<String, String> capabilities) {
     this.userId = userId;
     this.email = email;
     this.fullName = fullName;

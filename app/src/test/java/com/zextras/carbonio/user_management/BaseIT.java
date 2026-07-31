@@ -16,12 +16,12 @@ import org.junit.jupiter.api.BeforeAll;
 /**
  * Base class for integration tests against a real Carbonio mailbox stack.
  *
- * <p>Provides shared setup: RestAssured configuration, SOAP authentication for the test user,
- * and userId resolution. The userId is resolved directly from LDAP (via
- * {@link MailboxStackTestResource}) so that tests start with a cold application cache.
+ * <p>Provides shared setup: RestAssured configuration, SOAP authentication for the test user, and
+ * userId resolution. The userId is resolved directly from LDAP (via {@link
+ * MailboxStackTestResource}) so that tests start with a cold application cache.
  *
- * <p>Concrete subclasses must be annotated with {@code @QuarkusIntegrationTest}
- * and {@code @WithTestResource(MailboxStackTestResource.class)}.
+ * <p>Concrete subclasses must be annotated with {@code @QuarkusIntegrationTest} and
+ * {@code @WithTestResource(MailboxStackTestResource.class)}.
  */
 public abstract class BaseIT {
 
@@ -56,25 +56,31 @@ public abstract class BaseIT {
   protected static String soapAuthenticate(String account, String password) throws Exception {
     String mailboxUrl = MailboxStackTestResource.mailboxBaseUrl;
     if (mailboxUrl == null) {
-      throw new IllegalStateException("Mailbox URL not available — is MailboxStackTestResource running?");
+      throw new IllegalStateException(
+          "Mailbox URL not available — is MailboxStackTestResource running?");
     }
 
-    String soapRequest = String.format("""
-        <soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
-          <soap:Body>
-            <AuthRequest xmlns="urn:zimbraAccount">
-              <account by="name">%s</account>
-              <password>%s</password>
-            </AuthRequest>
-          </soap:Body>
-        </soap:Envelope>""", account, password);
+    String soapRequest =
+        String.format(
+            """
+            <soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
+              <soap:Body>
+                <AuthRequest xmlns="urn:zimbraAccount">
+                  <account by="name">%s</account>
+                  <password>%s</password>
+                </AuthRequest>
+              </soap:Body>
+            </soap:Envelope>\
+            """,
+            account, password);
 
     HttpClient client = HttpClient.newHttpClient();
-    HttpRequest request = HttpRequest.newBuilder()
-        .uri(URI.create(mailboxUrl + "/service/soap/AuthRequest"))
-        .header("Content-Type", "application/soap+xml; charset=utf-8")
-        .POST(HttpRequest.BodyPublishers.ofString(soapRequest))
-        .build();
+    HttpRequest request =
+        HttpRequest.newBuilder()
+            .uri(URI.create(mailboxUrl + "/service/soap/AuthRequest"))
+            .header("Content-Type", "application/soap+xml; charset=utf-8")
+            .POST(HttpRequest.BodyPublishers.ofString(soapRequest))
+            .build();
 
     HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 

@@ -48,19 +48,30 @@ class UserServiceTest {
     userMyselfCache = mock(UserMyselfCache.class);
     when(userInfoCache.isCacheEnabled()).thenReturn(true);
     when(userMyselfCache.isCacheEnabled()).thenReturn(true);
-    userService = new UserService(
-        internalClient, userInfoCache, userMyselfCache,
-        org.eclipse.microprofile.context.ManagedExecutor.builder().build());
+    userService =
+        new UserService(
+            internalClient,
+            userInfoCache,
+            userMyselfCache,
+            org.eclipse.microprofile.context.ManagedExecutor.builder().build());
   }
 
   private UserInfo sampleUserInfo() {
-    return new UserInfo("user-1", "user@example.com", "John Doe", "example.com", "ACTIVE", "INTERNAL");
+    return new UserInfo(
+        "user-1", "user@example.com", "John Doe", "example.com", "ACTIVE", "INTERNAL");
   }
 
   private UserMyself sampleMyself() {
     return new UserMyself(
-        "user-1", "user@example.com", "John Doe", "example.com",
-        "ACTIVE", "INTERNAL", "en", List.of("carbonioFeatureFilesEnabled"), Map.of());
+        "user-1",
+        "user@example.com",
+        "John Doe",
+        "example.com",
+        "ACTIVE",
+        "INTERNAL",
+        "en",
+        List.of("carbonioFeatureFilesEnabled"),
+        Map.of());
   }
 
   private long futureExpiresAt() {
@@ -68,9 +79,21 @@ class UserServiceTest {
   }
 
   private AccountInfo sampleAccountInfo(String userId, String email) {
-    return new AccountInfo(userId, email, "Test User", "cos-1", "dom-1",
-        "example.com", AccountStatus.active, false, false, false, "en",
-        Map.of("carbonioFeatureFilesEnabled", true), Map.of(), 3_600_000L);
+    return new AccountInfo(
+        userId,
+        email,
+        "Test User",
+        "cos-1",
+        "dom-1",
+        "example.com",
+        AccountStatus.active,
+        false,
+        false,
+        false,
+        "en",
+        Map.of("carbonioFeatureFilesEnabled", true),
+        Map.of(),
+        3_600_000L);
   }
 
   @Nested
@@ -91,7 +114,8 @@ class UserServiceTest {
     @Test
     void cacheMiss_callsInternalApi() throws Exception {
       when(userMyselfCache.getByToken("token-1")).thenReturn(Optional.empty());
-      when(internalClient.getMyAccountInfo("token-1")).thenThrow(new MailboxClientException("test"));
+      when(internalClient.getMyAccountInfo("token-1"))
+          .thenThrow(new MailboxClientException("test"));
 
       Optional<UserMyself> result = userService.getUserMyself("token-1", false);
 
@@ -125,10 +149,22 @@ class UserServiceTest {
     void apiSuccess_cachesResultAndReturnsMyself() throws Exception {
       when(userMyselfCache.getByToken("token-1")).thenReturn(Optional.empty());
 
-      AccountInfo accountInfo = new AccountInfo(
-          "user-1", "user@example.com", "John Doe", "cos-1", "dom-1",
-          "example.com", AccountStatus.active, false, false, false, "en",
-          Map.of("carbonioFeatureFilesEnabled", true), Map.of(), 3_600_000L);
+      AccountInfo accountInfo =
+          new AccountInfo(
+              "user-1",
+              "user@example.com",
+              "John Doe",
+              "cos-1",
+              "dom-1",
+              "example.com",
+              AccountStatus.active,
+              false,
+              false,
+              false,
+              "en",
+              Map.of("carbonioFeatureFilesEnabled", true),
+              Map.of(),
+              3_600_000L);
       when(internalClient.getMyAccountInfo("token-1")).thenReturn(accountInfo);
       when(userMyselfCache.computeExpiresAt(anyLong())).thenReturn(futureExpiresAt());
       when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.empty());
@@ -143,7 +179,8 @@ class UserServiceTest {
     @Test
     void apiFailure_returnsEmpty() throws Exception {
       when(userMyselfCache.getByToken("token-1")).thenReturn(Optional.empty());
-      when(internalClient.getMyAccountInfo("token-1")).thenThrow(new MailboxClientException("test"));
+      when(internalClient.getMyAccountInfo("token-1"))
+          .thenThrow(new MailboxClientException("test"));
 
       Optional<UserMyself> result = userService.getUserMyself("token-1", false);
 
@@ -156,7 +193,8 @@ class UserServiceTest {
       when(userMyselfCache.isCacheEnabled()).thenReturn(false);
       when(userInfoCache.isCacheEnabled()).thenReturn(false);
       when(userMyselfCache.getByToken("token-1")).thenReturn(Optional.empty());
-      when(internalClient.getMyAccountInfo("token-1")).thenThrow(new MailboxClientException("test"));
+      when(internalClient.getMyAccountInfo("token-1"))
+          .thenThrow(new MailboxClientException("test"));
 
       Optional<UserMyself> result = userService.getUserMyself("token-1", false);
 
@@ -198,7 +236,8 @@ class UserServiceTest {
       // A revoked session must stop working immediately for a bypassing caller, even though a
       // stale entry is still cached.
       when(userMyselfCache.getByToken("token-1")).thenReturn(Optional.of(sampleMyself()));
-      when(internalClient.getMyAccountInfo("token-1")).thenThrow(new MailboxClientException("test"));
+      when(internalClient.getMyAccountInfo("token-1"))
+          .thenThrow(new MailboxClientException("test"));
 
       Optional<UserMyself> result = userService.getUserMyself("token-1", true);
 
@@ -216,9 +255,12 @@ class UserServiceTest {
     private UserService serviceWithRealCache() {
       ApplicationConfigService configService = mock(ApplicationConfigService.class);
       when(configService.get("cache.usermyself-ttl")).thenReturn(Optional.empty());
-      UserMyselfCache realCache = new UserMyselfCache(
-          configService, Ticker.systemTicker(), Clock.systemUTC());
-      return new UserService(internalClient, userInfoCache, realCache,
+      UserMyselfCache realCache =
+          new UserMyselfCache(configService, Ticker.systemTicker(), Clock.systemUTC());
+      return new UserService(
+          internalClient,
+          userInfoCache,
+          realCache,
           org.eclipse.microprofile.context.ManagedExecutor.builder().build());
     }
 
@@ -229,11 +271,11 @@ class UserServiceTest {
           .thenReturn(sampleAccountInfo("user-1", "user@example.com"));
       when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.of(sampleUserInfo()));
 
-      service.getUserMyself("token-1", false);   // cold: mailbox hit #1
-      service.getUserMyself("token-1", false);   // warm: served from cache
+      service.getUserMyself("token-1", false); // cold: mailbox hit #1
+      service.getUserMyself("token-1", false); // warm: served from cache
       verify(internalClient, times(1)).getMyAccountInfo("token-1");
 
-      service.getUserMyself("token-1", true);    // bypass: mailbox hit #2
+      service.getUserMyself("token-1", true); // bypass: mailbox hit #2
       verify(internalClient, times(2)).getMyAccountInfo("token-1");
     }
 
@@ -244,8 +286,8 @@ class UserServiceTest {
           .thenReturn(sampleAccountInfo("user-1", "user@example.com"));
       when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.of(sampleUserInfo()));
 
-      service.getUserMyself("token-1", true);    // bypass on a cold cache: mailbox hit #1
-      service.getUserMyself("token-1", false);   // must now be served from cache
+      service.getUserMyself("token-1", true); // bypass on a cold cache: mailbox hit #1
+      service.getUserMyself("token-1", false); // must now be served from cache
 
       verify(internalClient, times(1)).getMyAccountInfo("token-1");
     }
@@ -279,7 +321,8 @@ class UserServiceTest {
     @Test
     void apiSuccess_cachesAndReturnsUserInfo() throws Exception {
       when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.empty());
-      when(internalClient.getAccountInfo("user-1")).thenReturn(sampleAccountInfo("user-1", "user@example.com"));
+      when(internalClient.getAccountInfo("user-1"))
+          .thenReturn(sampleAccountInfo("user-1", "user@example.com"));
 
       Optional<UserInfo> result = userService.getUserById("user-1");
 
@@ -329,7 +372,8 @@ class UserServiceTest {
     @Test
     void cacheMiss_callsInternalApi() throws Exception {
       when(userInfoCache.getByEmail("user@example.com")).thenReturn(Optional.empty());
-      when(internalClient.getAccountByEmail("user@example.com")).thenThrow(new MailboxClientException("test"));
+      when(internalClient.getAccountByEmail("user@example.com"))
+          .thenThrow(new MailboxClientException("test"));
 
       Optional<UserInfo> result = userService.getUserByEmail("user@example.com");
 
@@ -353,7 +397,8 @@ class UserServiceTest {
     @Test
     void apiFailure_returnsEmpty() throws Exception {
       when(userInfoCache.getByEmail("user@example.com")).thenReturn(Optional.empty());
-      when(internalClient.getAccountByEmail("user@example.com")).thenThrow(new MailboxClientException("test"));
+      when(internalClient.getAccountByEmail("user@example.com"))
+          .thenThrow(new MailboxClientException("test"));
 
       Optional<UserInfo> result = userService.getUserByEmail("user@example.com");
 
@@ -368,7 +413,8 @@ class UserServiceTest {
     @Test
     void allCacheHitsSkipsApi() {
       UserInfo u1 = sampleUserInfo();
-      UserInfo u2 = new UserInfo("user-2", "u2@example.com", "Jane", "example.com", "ACTIVE", "INTERNAL");
+      UserInfo u2 =
+          new UserInfo("user-2", "u2@example.com", "Jane", "example.com", "ACTIVE", "INTERNAL");
       when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.of(u1));
       when(userInfoCache.getByUserId("user-2")).thenReturn(Optional.of(u2));
 
@@ -404,7 +450,8 @@ class UserServiceTest {
     @Test
     void batchFails_fallsBackToIndividualLookups() throws Exception {
       when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.empty());
-      when(internalClient.batchGetAccountsByIds(any())).thenThrow(new MailboxServerException("batch error"));
+      when(internalClient.batchGetAccountsByIds(any()))
+          .thenThrow(new MailboxServerException("batch error"));
       when(internalClient.getAccountInfo("user-1"))
           .thenReturn(sampleAccountInfo("user-1", "user@example.com"));
 
@@ -421,7 +468,8 @@ class UserServiceTest {
       when(userInfoCache.getByUserId("user-not-found")).thenReturn(Optional.empty());
       when(internalClient.batchGetAccountsByIds(List.of("user-not-found")))
           .thenThrow(new MailboxClientException("not found"));
-      when(internalClient.getAccountInfo("user-not-found")).thenThrow(new MailboxClientException("not found"));
+      when(internalClient.getAccountInfo("user-not-found"))
+          .thenThrow(new MailboxClientException("not found"));
 
       List<UserInfo> result = userService.getUsers(List.of("user-1", "user-not-found"));
 

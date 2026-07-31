@@ -5,8 +5,6 @@
 package com.zextras.carbonio.user_management.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -28,8 +26,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
- * Tests for the request coalescing behavior in UserService.
- * Concurrent calls for the same key should result in a single API call.
+ * Tests for the request coalescing behavior in UserService. Concurrent calls for the same key
+ * should result in a single API call.
  */
 class UserServiceCoalesceTest {
 
@@ -45,15 +43,30 @@ class UserServiceCoalesceTest {
     userMyselfCache = mock(UserMyselfCache.class);
     when(userInfoCache.isCacheEnabled()).thenReturn(true);
     when(userMyselfCache.isCacheEnabled()).thenReturn(true);
-    userService = new UserService(
-        internalClient, userInfoCache, userMyselfCache,
-        org.eclipse.microprofile.context.ManagedExecutor.builder().build());
+    userService =
+        new UserService(
+            internalClient,
+            userInfoCache,
+            userMyselfCache,
+            org.eclipse.microprofile.context.ManagedExecutor.builder().build());
   }
 
   private AccountInfo accountInfo(String userId, String email) {
-    return new AccountInfo(userId, email, "Test User", "cos-1", "dom-1",
-        "example.com", AccountStatus.active, false, false, false, "en",
-        Map.of(), Map.of(), null);
+    return new AccountInfo(
+        userId,
+        email,
+        "Test User",
+        "cos-1",
+        "dom-1",
+        "example.com",
+        AccountStatus.active,
+        false,
+        false,
+        false,
+        "en",
+        Map.of(),
+        Map.of(),
+        null);
   }
 
   @Test
@@ -66,23 +79,25 @@ class UserServiceCoalesceTest {
     AtomicInteger apiCallCount = new AtomicInteger(0);
 
     AccountInfo response = accountInfo("user-1", "u@x.com");
-    when(internalClient.getAccountInfo("user-1")).thenAnswer(inv -> {
-      apiCallCount.incrementAndGet();
-      apiStarted.countDown();
-      apiProceed.await(10, TimeUnit.SECONDS);
-      return response;
-    });
+    when(internalClient.getAccountInfo("user-1"))
+        .thenAnswer(
+            inv -> {
+              apiCallCount.incrementAndGet();
+              apiStarted.countDown();
+              apiProceed.await(10, TimeUnit.SECONDS);
+              return response;
+            });
 
     // Launch first call
-    CompletableFuture<Optional<UserInfo>> call1 = CompletableFuture.supplyAsync(
-        () -> userService.getUserById("user-1"));
+    CompletableFuture<Optional<UserInfo>> call1 =
+        CompletableFuture.supplyAsync(() -> userService.getUserById("user-1"));
 
     // Wait for API to be entered by first call
     assertThat(apiStarted.await(10, TimeUnit.SECONDS)).isTrue();
 
     // Launch second call — should coalesce with the first
-    CompletableFuture<Optional<UserInfo>> call2 = CompletableFuture.supplyAsync(
-        () -> userService.getUserById("user-1"));
+    CompletableFuture<Optional<UserInfo>> call2 =
+        CompletableFuture.supplyAsync(() -> userService.getUserById("user-1"));
 
     // Give call2 time to reach coalesce and find existing inflight future
     Thread.sleep(200);
@@ -117,10 +132,10 @@ class UserServiceCoalesceTest {
     when(internalClient.getAccountInfo("user-2")).thenReturn(response2);
 
     // Launch both calls in parallel
-    CompletableFuture<Optional<UserInfo>> call1 = CompletableFuture.supplyAsync(
-        () -> userService.getUserById("user-1"));
-    CompletableFuture<Optional<UserInfo>> call2 = CompletableFuture.supplyAsync(
-        () -> userService.getUserById("user-2"));
+    CompletableFuture<Optional<UserInfo>> call1 =
+        CompletableFuture.supplyAsync(() -> userService.getUserById("user-1"));
+    CompletableFuture<Optional<UserInfo>> call2 =
+        CompletableFuture.supplyAsync(() -> userService.getUserById("user-2"));
 
     Optional<UserInfo> result1 = call1.get(10, TimeUnit.SECONDS);
     Optional<UserInfo> result2 = call2.get(10, TimeUnit.SECONDS);
