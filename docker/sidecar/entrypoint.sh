@@ -17,6 +17,8 @@ java -jar /usr/share/carbonio/carbonio-user-management.jar \
 unset SETUP_CONSUL_TOKEN
 
 echo "[sidecar] Starting envoy for ${SERVICE_NAME}"
+# shellcheck disable=SC2086 # ENVOY_EXTRA_ARGS is deliberately unquoted: it is a
+# space-separated list of extra flags, and quoting would collapse it into one argument.
 exec consul connect envoy \
   -sidecar-for="${SERVICE_NAME}" \
   -admin-bind=localhost:0 \
