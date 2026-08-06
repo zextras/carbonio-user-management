@@ -12,7 +12,6 @@ import static org.mockito.Mockito.when;
 
 import com.github.benmanes.caffeine.cache.Ticker;
 import com.zextras.carbonio.quarkus.extensions.bootstrap.ApplicationConfigService;
-import com.zextras.carbonio.user_management.cache.UserMyselfCache;
 import com.zextras.carbonio.user_management.record.UserMyself;
 import java.time.Clock;
 import java.time.Instant;
@@ -42,8 +41,15 @@ class UserMyselfCacheTest {
 
   private UserMyself sampleMyself() {
     return new UserMyself(
-        "user-1", "user@example.com", "John Doe", "example.com",
-        "ACTIVE", "INTERNAL", "en", List.of("carbonioFeatureFilesEnabled"), Map.of());
+        "user-1",
+        "user@example.com",
+        "John Doe",
+        "example.com",
+        "ACTIVE",
+        "INTERNAL",
+        "en",
+        List.of("carbonioFeatureFilesEnabled"),
+        Map.of());
   }
 
   @Test
@@ -94,7 +100,9 @@ class UserMyselfCacheTest {
   void ttlUsesMinOfConfigAndRemaining() {
     // Config = 5 seconds, remaining = 30 seconds -> should use 5s
     when(configService.get("cache.usermyself-ttl")).thenReturn(Optional.of("5"));
-    UserMyselfCache configCache = new UserMyselfCache(configService, currentTime::get, Clock.fixed(Instant.EPOCH, ZoneOffset.UTC));
+    UserMyselfCache configCache =
+        new UserMyselfCache(
+            configService, currentTime::get, Clock.fixed(Instant.EPOCH, ZoneOffset.UTC));
 
     configCache.put("token-abc", "user-1", sampleMyself(), 30_000L);
 
@@ -106,7 +114,9 @@ class UserMyselfCacheTest {
   void ttlUsesRemainingWhenSmallerThanConfig() {
     // Config = 60 seconds, remaining = 5 seconds -> should use 5s
     when(configService.get("cache.usermyself-ttl")).thenReturn(Optional.of("60"));
-    UserMyselfCache configCache = new UserMyselfCache(configService, currentTime::get, Clock.fixed(Instant.EPOCH, ZoneOffset.UTC));
+    UserMyselfCache configCache =
+        new UserMyselfCache(
+            configService, currentTime::get, Clock.fixed(Instant.EPOCH, ZoneOffset.UTC));
 
     configCache.put("token-abc", "user-1", sampleMyself(), 5_000L);
 
@@ -164,9 +174,17 @@ class UserMyselfCacheTest {
   void differentUsersHaveIndependentTokens() {
     long expiresAt = 30_000L;
     UserMyself myself1 = sampleMyself();
-    UserMyself myself2 = new UserMyself(
-        "user-2", "other@example.com", "Jane Doe", "example.com",
-        "ACTIVE", "INTERNAL", "it", List.of(), Map.of());
+    UserMyself myself2 =
+        new UserMyself(
+            "user-2",
+            "other@example.com",
+            "Jane Doe",
+            "example.com",
+            "ACTIVE",
+            "INTERNAL",
+            "it",
+            List.of(),
+            Map.of());
 
     cache.put("token-A", "user-1", myself1, expiresAt);
     cache.put("token-B", "user-2", myself2, expiresAt);

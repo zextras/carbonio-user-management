@@ -7,7 +7,6 @@ package com.zextras.carbonio.user_management.rest;
 import static com.zextras.carbonio.user_management.UserManagementServiceConfig.MAX_BATCH_USER_IDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -39,8 +38,8 @@ class UserResourceTest {
   }
 
   private UserInfo sampleUserInfo() {
-    return new UserInfo("user-1", "user@example.com", "John Doe",
-        "example.com", "ACTIVE", "INTERNAL");
+    return new UserInfo(
+        "user-1", "user@example.com", "John Doe", "example.com", "ACTIVE", "INTERNAL");
   }
 
   @Nested
@@ -48,11 +47,17 @@ class UserResourceTest {
 
     @Test
     void returnsOkWithMyselfDto() {
-      UserMyself myself = new UserMyself(
-          "user-1", "user@example.com", "John Doe", "example.com",
-          "ACTIVE", "INTERNAL", "it",
-          List.of("carbonioFeatureFilesEnabled"),
-          Map.of("carbonioWscMaxGroupMembers", "50"));
+      UserMyself myself =
+          new UserMyself(
+              "user-1",
+              "user@example.com",
+              "John Doe",
+              "example.com",
+              "ACTIVE",
+              "INTERNAL",
+              "it",
+              List.of("carbonioFeatureFilesEnabled"),
+              Map.of("carbonioWscMaxGroupMembers", "50"));
       when(userService.getUserMyself("token-1", false)).thenReturn(Optional.of(myself));
 
       RestResponse<MyselfDto> response = resource.getMyself("token-1", false);
@@ -107,8 +112,16 @@ class UserResourceTest {
   class GetMyselfBypassCacheTests {
 
     private UserMyself myself() {
-      return new UserMyself("user-1", "user@example.com", "John Doe", "example.com",
-          "ACTIVE", "INTERNAL", "en", List.of(), Map.of());
+      return new UserMyself(
+          "user-1",
+          "user@example.com",
+          "John Doe",
+          "example.com",
+          "ACTIVE",
+          "INTERNAL",
+          "en",
+          List.of(),
+          Map.of());
     }
 
     @Test
@@ -156,8 +169,7 @@ class UserResourceTest {
 
     @Test
     void returnsOkWithUserInfoDto() {
-      when(userService.getUserById("user-1"))
-          .thenReturn(Optional.of(sampleUserInfo()));
+      when(userService.getUserById("user-1")).thenReturn(Optional.of(sampleUserInfo()));
 
       RestResponse<UserInfoDto> response = resource.getById("user-1");
 
@@ -241,8 +253,8 @@ class UserResourceTest {
 
     @Test
     void returns400WhenExceedingMaxBatch() {
-      List<String> ids = IntStream.rangeClosed(1, MAX_BATCH_USER_IDS + 1)
-          .mapToObj(i -> "id-" + i).toList();
+      List<String> ids =
+          IntStream.rangeClosed(1, MAX_BATCH_USER_IDS + 1).mapToObj(i -> "id-" + i).toList();
 
       RestResponse<List<UserInfoDto>> response = resource.getUsers(ids);
 
@@ -252,8 +264,8 @@ class UserResourceTest {
 
     @Test
     void accepts200WhenExactlyAtMaxBatch() {
-      List<String> ids = IntStream.rangeClosed(1, MAX_BATCH_USER_IDS)
-          .mapToObj(i -> "id-" + i).toList();
+      List<String> ids =
+          IntStream.rangeClosed(1, MAX_BATCH_USER_IDS).mapToObj(i -> "id-" + i).toList();
       when(userService.getUsers(anyList())).thenReturn(List.of());
 
       RestResponse<List<UserInfoDto>> response = resource.getUsers(ids);

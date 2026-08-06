@@ -10,9 +10,7 @@ import io.quarkus.runtime.StartupEvent;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 
-/**
- * Signals systemd readiness when the Quarkus HTTP server has fully started.
- */
+/** Signals systemd readiness when the Quarkus HTTP server has fully started. */
 @ApplicationScoped
 public class SystemdReadinessNotifier {
 

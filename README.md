@@ -80,6 +80,37 @@ Starts the full Docker stack (mailbox, consul, postgres) and the app with hot-re
 mvn -pl app quarkus:dev
 ```
 
+## Development 🛠
+
+This repo uses the [`pre-commit`](https://pre-commit.com/) framework (`.pre-commit-config.yaml`).
+Install it once per clone:
+
+```bash
+pip install --user pre-commit
+pre-commit install --hook-type pre-commit --hook-type commit-msg
+```
+
+Besides linting/formatting, `pre-commit` locally regenerates the files CI previously
+generated and bot-committed (Jenkins now only verifies them):
+
+- `THIRDPARTIES` — regenerated via a vendored copy of jenkins-lib-common's
+  license-maven-plugin invocation/template (`.ci/thirdparties/`).
+- `package/PKGBUILD` `sha256sums` — verified/autofixed via a vendored copy of
+  jenkins-lib-common's `checksum-verify.sh` (`.ci/checksum-verify.sh`); `SKIP` entries
+  (build artifacts, or sources whose content embeds `pkgver`) are always preserved.
+
+If a hook regenerates a file, `pre-commit` will fail that commit (by design — it does not
+auto-stage changes for you). Review the diff, `git add` the regenerated file(s), and
+re-run `git commit`.
+
+Note: unlike some sibling services, this one exposes a real JAX-RS REST surface
+(`/internal/users/*`, via `UserResource` / `@Path`) plus health endpoints (`/q/health/*`,
+from `quarkus-smallrye-health`). Its `app/docs/openapi.json`, `app/docs/openapi.yaml` and
+`app/docs/configs.md` are all **actively regenerated** by `mvn package`
+(`quarkus-smallrye-openapi` + the config-doc extension) and are covered like any other
+generated artifact — byte-identical check via the pre-commit hook / CI verification, not a
+frozen historical artifact.
+
 ## License 📚
 
 User Management service for Zextras Carbonio.
