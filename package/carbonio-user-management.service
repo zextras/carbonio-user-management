@@ -10,8 +10,7 @@ After=network-online.target
 PartOf=carbonio-directory-server.target
 
 [Service]
-Type=notify
-NotifyAccess=main
+Type=simple
 ExecStart=/opt/zextras/common/bin/java \
   --enable-preview \
   --enable-native-access=ALL-UNNAMED \
