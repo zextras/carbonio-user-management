@@ -69,10 +69,13 @@ SPDX-License-Identifier: AGPL-3.0-only
       <artifactId>carbonio-mailbox-sdk</artifactId>
     </dependency>
 
-    <!-- Cache -->
+    <!-- Cache: the Quarkus Caffeine extension registers Caffeine's internal cache/scheduler
+         classes for the native image. Raw com.github.ben-manes:caffeine is the documented native
+         trap (quarkus-native-it-gotchas.md) - the cache fails at first use in a native binary
+         because those classes are absent from the image's reflection metadata. -->
     <dependency>
-      <groupId>com.github.ben-manes.caffeine</groupId>
-      <artifactId>caffeine</artifactId>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-caffeine</artifactId>
     </dependency>
 
     <!-- OpenTelemetry -->
