@@ -11,11 +11,7 @@ PartOf=carbonio-directory-server.target
 
 [Service]
 Type=simple
-ExecStart=/opt/zextras/common/bin/java \
-  --enable-preview \
-  --enable-native-access=ALL-UNNAMED \
-  -Djava.net.preferIPv4Stack=true \
-  -jar /usr/share/carbonio/carbonio-user-management.jar
+ExecStart=/usr/bin/carbonio-user-management
 User=carbonio-user-management
 Group=carbonio-user-management
 Restart=on-failure

@@ -14,19 +14,19 @@ library(
 dt3_pipeline(
     repoName: 'carbonio-user-management',
     mavenPublish: ['sdk'],
-    jarBuild: [jarName: 'carbonio-user-management.jar'],
+    nativeBuild: [runnerName: 'carbonio-user-management-runner'],
     packaging: [
         buildFlags: '-ds',
     ],
     docker: [
         [dockerfile: 'docker/Dockerfile',
          imageName: 'carbonio-user-management',
-         platforms: ['linux/amd64', 'linux/arm64'] as Set,
+         platforms: ['linux/amd64'] as Set,
          title: 'Carbonio User Management',
          description: 'Carbonio User Management Service'],
         [dockerfile: 'docker/sidecar/Dockerfile',
          imageName: 'carbonio-user-management-sidecar',
-         platforms: ['linux/amd64', 'linux/arm64'] as Set,
+         platforms: ['linux/amd64'] as Set,
          title: 'Carbonio User Management Sidecar',
          description: 'Carbonio User Management Sidecar Service'],
     ],

@@ -16,15 +16,15 @@ depends=(
   "pending-setups"
   "service-discover"
   "service-discover-base"
-  "carbonio-openjdk"
 )
 source=(
+  "${pkgname}"
   "${pkgname}-legacy.service"
   "${pkgname}-setup"
   "${pkgname}-sidecar-legacy.service"
   "${pkgname}-sidecar.service"
   "${pkgname}.hcl"
-  "${pkgname}.jar"
+  "${pkgname}-runner"
   "${pkgname}.service"
   "121-${pkgname}.sh"
   "intentions.json"
@@ -32,13 +32,14 @@ source=(
   "service-protocol.json"
 )
 sha256sums=(
-  'f5e07d535aab47c9a6d5e12bf577e586866a33cb9ed15fccafdc0840c57531a7'
-  '59eaf6ceef77fae2eb094fcd3f8bacb8cb2e3115ba630625fb8534cfcc07f3ee'
+  '85983ac84eadf620a3bdadd3347d6771062af2dd0fac624d40cce3c5d0dfebc3'
+  'b6c2d0219e6041079bc9aee14b3694e9c895ac37772d3a8ff6f8a32f6f6470e7'
+  '2145b0b7455b5a42d8824bdaf10dafbc79d9b55a54f95a72a91500e806d5aa88'
   '1f4a0c07ff93e6c357c2e7895767f4f0d55281a49eb966136dd93202d6bb4403'
   '86ab5b6983724f71a9093a7a040786fa26960ef992b72bedd074822517fcdbcb'
   'a722c5b8a0a4b273e9b65a51c1de5924d51c091229e7c9f92c14ef0a98f73097'
   'SKIP'
-  '1516aff19a728d05c2bea60f28087bee4b501f291a02eea136e50afddd9b38ac'
+  'd7a1af6c50a8957142fe8ca16821b2bc09ef72a37e12d52fc92cfe679401d80f'
   '16ffff744c3ca3e53efce86ad20b321796dfbd24358cbb04636ede4aebcc9a8c'
   '4cb68cfa07220a3a20115fb27fb5f7f59a4c9467f14b03424d703289c7ae675b'
   'd4413a87bd9d2ec97799b31639d7ff539f9b91d0162468db09017b92b322dfc8'
@@ -54,8 +55,10 @@ _package() {
     "${pkgdir}/etc/zextras/pending-setups.d/121-${pkgname}.sh"
   install -Dm755 "${srcdir}/${pkgname}-setup" \
     "${pkgdir}/usr/bin/${pkgname}-setup"
-  install -Dm755 "${srcdir}/${pkgname}.jar" \
-    "${pkgdir}/usr/share/carbonio/${pkgname}.jar"
+  install -Dm755 "${srcdir}/${pkgname}-runner" \
+    "${pkgdir}/usr/share/carbonio/${pkgname}-runner"
+  install -Dm755 "${srcdir}/${pkgname}" \
+    "${pkgdir}/usr/bin/${pkgname}"
 
   install -Dm644 "${srcdir}/${pkgname}.hcl" \
     "${pkgdir}/etc/zextras/service-discover/${pkgname}.hcl"
