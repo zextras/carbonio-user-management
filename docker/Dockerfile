@@ -1,20 +1,26 @@
-# SPDX-FileCopyrightText: 2026 2026 Zextras <https://www.zextras.com>
+# SPDX-FileCopyrightText: 2026 Zextras <https://www.zextras.com>
 #
 # SPDX-License-Identifier: AGPL-3.0-only
 
-# Create the runtime config dir in a BUILDPLATFORM prep stage so the final
-# image needs no target-arch RUN (a RUN in the TARGETPLATFORM stage would
-# require QEMU => exec format error on arm64 cross-builds).
-FROM --platform=$BUILDPLATFORM docker.io/library/eclipse-temurin:21-jdk-alpine AS prep
-RUN mkdir -p /out/etc/carbonio/user-management
+# Native build: the GraalVM runner is a glibc-linked amd64 ELF binary, so the
+# base must be glibc (NOT alpine/musl) and the image is amd64-only (a native
+# binary is architecture-specific). Mirrors carbonio-tasks-ce.
+FROM --platform=linux/amd64 docker.io/library/ubuntu:noble
 
-FROM docker.io/library/eclipse-temurin:21-jdk-alpine
+LABEL maintainer="Zextras <https://www.zextras.com>"
+LABEL description="Carbonio User Management Service (native binary)"
+
+RUN groupadd -r carbonio-user-management \
+  && useradd -r -g carbonio-user-management carbonio-user-management \
+  && mkdir -p /etc/carbonio/user-management
 
 WORKDIR /app
 
-# Empty runtime config dir, created QEMU-free above.
-COPY --from=prep /out/etc /etc
+COPY app/target/*-runner /app/carbonio-user-management-runner
+RUN chmod +x /app/carbonio-user-management-runner
 
-COPY app/target/*-runner.jar carbonio-user-management.jar
+USER carbonio-user-management
 
-ENTRYPOINT ["java", "--enable-preview", "--enable-native-access=ALL-UNNAMED", "-Djava.net.preferIPv4Stack=true", "-jar", "/app/carbonio-user-management.jar"]
+EXPOSE 10000
+
+ENTRYPOINT ["/app/carbonio-user-management-runner", "-Djava.net.preferIPv4Stack=true"]

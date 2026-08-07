@@ -10,13 +10,8 @@ After=network-online.target
 PartOf=carbonio-directory-server.target
 
 [Service]
-Type=notify
-NotifyAccess=main
-ExecStart=/opt/zextras/common/bin/java \
-  --enable-preview \
-  --enable-native-access=ALL-UNNAMED \
-  -Djava.net.preferIPv4Stack=true \
-  -jar /usr/share/carbonio/carbonio-user-management.jar
+Type=simple
+ExecStart=/usr/bin/carbonio-user-management
 User=carbonio-user-management
 Group=carbonio-user-management
 Restart=on-failure

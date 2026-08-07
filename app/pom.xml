@@ -44,13 +44,6 @@ SPDX-License-Identifier: AGPL-3.0-only
   </dependencyManagement>
 
   <dependencies>
-    <!-- systemd readiness notification (FFM-based sd_notify) -->
-    <dependency>
-      <groupId>com.zextras.carbonio</groupId>
-      <artifactId>carbonio-systemd-notify</artifactId>
-      <version>1.0.1</version>
-    </dependency>
-
     <!-- Quarkus extensions -->
     <dependency>
       <groupId>com.zextras.carbonio.quarkus</groupId>
@@ -69,10 +62,25 @@ SPDX-License-Identifier: AGPL-3.0-only
       <artifactId>carbonio-mailbox-sdk</artifactId>
     </dependency>
 
-    <!-- Cache -->
+    <!-- carbonio-mailbox-sdk uses Retrofit; retrofit2 RequestFactory$Builder references
+         kotlin.coroutines.Continuation (Retrofit's suspend-function support). Without
+         kotlinx-coroutines on the classpath the GraalVM native build fails at link-at-build-time
+         with "unresolved type kotlin.coroutines.Continuation". Same fix docs-connector uses for
+         the Powerstore-SDK Retrofit client. -->
     <dependency>
-      <groupId>com.github.ben-manes.caffeine</groupId>
-      <artifactId>caffeine</artifactId>
+      <groupId>org.jetbrains.kotlinx</groupId>
+      <artifactId>kotlinx-coroutines-core-jvm</artifactId>
+      <version>1.11.0</version>
+      <scope>runtime</scope>
+    </dependency>
+
+    <!-- Cache: the Quarkus Caffeine extension registers Caffeine's internal cache/scheduler
+         classes for the native image. Raw com.github.ben-manes:caffeine is the documented native
+         trap (quarkus-native-it-gotchas.md) - the cache fails at first use in a native binary
+         because those classes are absent from the image's reflection metadata. -->
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-caffeine</artifactId>
     </dependency>
 
     <!-- OpenTelemetry -->

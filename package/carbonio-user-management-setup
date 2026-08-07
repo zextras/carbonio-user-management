@@ -24,9 +24,8 @@ if [[ "${EXIT_CODE}" != "0" ]]; then
   exit 1;
 fi
 
-# Delegate all Consul setup logic to the service jar
-/opt/zextras/common/bin/java \
-  -jar /usr/share/carbonio/carbonio-user-management.jar \
+# Delegate all Consul setup logic to the native runner
+/usr/share/carbonio/carbonio-user-management-runner \
   --setup http://127.0.0.1:8500
 SETUP_EXIT_CODE="$?"
 
