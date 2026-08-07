@@ -5,7 +5,6 @@ List of third-party dependencies grouped by their license type.
 
         * Carbonio Quarkus Extensions - Bootstrap Runtime (com.zextras.carbonio.quarkus:carbonio-quarkus-extensions-bootstrap:1.13.0-1 - no url defined)
         * Carbonio Quarkus Extensions - REST Runtime (com.zextras.carbonio.quarkus:carbonio-quarkus-extensions-rest:1.13.0-1 - no url defined)
-        * Carbonio Systemd Notify (com.zextras.carbonio:carbonio-systemd-notify:1.0.1 - https://github.com/zextras/carbonio-systemd-notify)
 
     Apache 2.0:
 
@@ -102,6 +101,8 @@ List of third-party dependencies grouped by their license type.
     Apache-2.0:
 
         * Gson (com.google.code.gson:gson:2.14.0 - https://github.com/google/gson)
+        * Kotlin Stdlib (org.jetbrains.kotlin:kotlin-stdlib:2.4.0 - https://kotlinlang.org/)
+        * kotlinx-coroutines-core (org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.11.0 - https://github.com/Kotlin/kotlinx.coroutines)
         * proto-google-common-protos (com.google.api.grpc:proto-google-common-protos:2.71.0 - https://github.com/googleapis/sdk-platform-java)
 
     BSD-2-Clause:
@@ -240,8 +241,10 @@ List of third-party dependencies grouped by their license type.
         * Jackson-dataformat-YAML (com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.22.0 - https://github.com/FasterXML/jackson-dataformats-text)
         * Jackson-module-parameter-names (com.fasterxml.jackson.module:jackson-module-parameter-names:2.22.0 - https://github.com/FasterXML/jackson-modules-java8/jackson-module-parameter-names)
         * Jakarta Dependency Injection (jakarta.inject:jakarta.inject-api:2.0.1 - https://github.com/eclipse-ee4j/injection-api)
+        * JetBrains Java Annotations (org.jetbrains:annotations:26.1.0 - https://github.com/JetBrains/java-annotations)
         * Netty/TomcatNative [OpenSSL - Classes] (io.netty:netty-tcnative-classes:2.0.77.Final - https://github.com/netty/netty-tcnative/netty-tcnative-classes/)
         * Quarkus - ArC - Runtime (io.quarkus:quarkus-arc:3.37.2 - https://github.com/quarkusio/quarkus)
+        * Quarkus - Caffeine - Runtime (io.quarkus:quarkus-caffeine:3.37.2 - https://github.com/quarkusio/quarkus)
         * Quarkus - Core - Runtime (io.quarkus:quarkus-core:3.37.2 - https://github.com/quarkusio/quarkus)
         * Quarkus - Credentials - Runtime (io.quarkus:quarkus-credentials:3.37.2 - https://github.com/quarkusio/quarkus)
         * Quarkus - Development mode - SPI (io.quarkus:quarkus-development-mode-spi:3.37.2 - https://github.com/quarkusio/quarkus)
