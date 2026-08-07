@@ -1,0 +1,25 @@
+{
+  "comment": [
+    "carbonio-mailbox-sdk native-image metadata. MailboxInternalApiClient talks to the mailbox",
+    "internal API through a Retrofit client: it builds a JDK dynamic proxy over InternalApi",
+    "(Retrofit.create -> Proxy.newProxyInstance) and its converter reflectively reads the response",
+    "DTOs. GraalVM needs BOTH registered — without the proxy every mailbox lookup fails at runtime",
+    "with MissingReflectionRegistrationError (seen in RestIT native); without the DTOs the converter",
+    "would deserialise them to null (silent, the way docs-connector's QuotaStatus did). The mailbox-sdk",
+    "ships no native metadata of its own, so user-management registers exactly what InternalApi uses.",
+    "Same pattern docs-connector uses for the Powerstore-SDK Retrofit client.",
+    "",
+    "PROXY: the Retrofit service interface. DTOs: AccountInfo (record; getMyAccountInfo / getAccountInfo",
+    "/ getAccountByEmail / batchGetAccounts) with its nested AccountStatus enum; SharedAccount and",
+    "MailUsage (other InternalApi return types); BatchRequest (batch request body, serialised)."
+  ],
+  "reflection": [
+    { "type": { "proxy": ["com.zextras.mailbox.client.internal.InternalApi"] } },
+
+    { "type": "com.zextras.mailbox.client.internal.AccountInfo", "allDeclaredFields": true, "allDeclaredConstructors": true, "allDeclaredMethods": true },
+    { "type": "com.zextras.mailbox.client.internal.AccountStatus", "allDeclaredFields": true, "allDeclaredConstructors": true, "allDeclaredMethods": true },
+    { "type": "com.zextras.mailbox.client.internal.SharedAccount", "allDeclaredFields": true, "allDeclaredConstructors": true, "allDeclaredMethods": true },
+    { "type": "com.zextras.mailbox.client.internal.MailUsage", "allDeclaredFields": true, "allDeclaredConstructors": true, "allDeclaredMethods": true },
+    { "type": "com.zextras.mailbox.client.internal.BatchRequest", "allDeclaredFields": true, "allDeclaredConstructors": true, "allDeclaredMethods": true }
+  ]
+}
