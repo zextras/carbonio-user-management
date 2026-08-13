@@ -40,7 +40,7 @@ SPDX-License-Identifier: AGPL-3.0-only
     <!-- Dependencies -->
     <assertj.version>3.27.7</assertj.version>
     <carbonio-mailbox-sdk.version>1.18.0</carbonio-mailbox-sdk.version>
-    <carbonio-quarkus-extensions.version>1.13.0-1</carbonio-quarkus-extensions.version>
+    <carbonio-quarkus-extensions.version>1.14.0-1</carbonio-quarkus-extensions.version>
 
     <!-- Plugins -->
     <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
