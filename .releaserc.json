@@ -1,5 +1,5 @@
 {
-  "branches": ["devel"],
+  "branches": ["main"],
   "tagFormat": "v${version}",
   "plugins": [
     [
