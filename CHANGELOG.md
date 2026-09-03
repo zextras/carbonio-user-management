@@ -1,3 +1,9 @@
+## [1.3.5](https://github.com/zextras/carbonio-user-management/compare/v1.3.4...v1.3.5) (2026-09-03)
+
+### Bug Fixes
+
+* **deps:** bump carbonio-mailbox-sdk to 1.19.2 ([#196](https://github.com/zextras/carbonio-user-management/issues/196)) ([0236ae8](https://github.com/zextras/carbonio-user-management/commit/0236ae80c36bef7f79fff5a25341b7c99a7f9436))
+
 ## [1.3.4](https://github.com/zextras/carbonio-user-management/compare/v1.3.3...v1.3.4) (2026-09-02)
 
 ## [1.3.3](https://github.com/zextras/carbonio-user-management/compare/v1.3.2...v1.3.3) (2026-08-14)
