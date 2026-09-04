@@ -48,7 +48,7 @@ SPDX-License-Identifier: AGPL-3.0-only
     <dependency>
       <groupId>com.zextras.carbonio</groupId>
       <artifactId>carbonio-systemd-notify</artifactId>
-      <version>1.0.1</version>
+      <version>1.0.2</version>
     </dependency>
 
     <!-- Quarkus extensions -->
