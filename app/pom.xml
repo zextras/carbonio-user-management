@@ -27,7 +27,7 @@ SPDX-License-Identifier: AGPL-3.0-only
   </parent>
 
   <properties>
-    <quarkus.version>3.37.2</quarkus.version>
+    <quarkus.version>3.39.2</quarkus.version>
   </properties>
 
   <dependencyManagement>
