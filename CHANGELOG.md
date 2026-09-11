@@ -1,3 +1,5 @@
+## [1.3.7](https://github.com/zextras/carbonio-user-management/compare/v1.3.6...v1.3.7) (2026-09-11)
+
 ## [1.3.6](https://github.com/zextras/carbonio-user-management/compare/v1.3.5...v1.3.6) (2026-09-09)
 
 ## [1.3.5](https://github.com/zextras/carbonio-user-management/compare/v1.3.4...v1.3.5) (2026-09-03)
