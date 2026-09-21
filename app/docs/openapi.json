@@ -45,6 +45,12 @@
           },
           "type" : {
             "type" : "string"
+          },
+          "cosId" : {
+            "type" : "string"
+          },
+          "domainId" : {
+            "type" : "string"
           }
         }
       }

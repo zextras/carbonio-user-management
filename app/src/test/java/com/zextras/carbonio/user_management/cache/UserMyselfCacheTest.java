@@ -47,6 +47,8 @@ class UserMyselfCacheTest {
         "example.com",
         "ACTIVE",
         "INTERNAL",
+        "cos-1",
+        "dom-1",
         "en",
         List.of("carbonioFeatureFilesEnabled"),
         Map.of());
@@ -182,6 +184,8 @@ class UserMyselfCacheTest {
             "example.com",
             "ACTIVE",
             "INTERNAL",
+            "cos-2",
+            "dom-2",
             "it",
             List.of(),
             Map.of());

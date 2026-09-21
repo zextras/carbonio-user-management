@@ -58,7 +58,14 @@ class UserServiceTest {
 
   private UserInfo sampleUserInfo() {
     return new UserInfo(
-        "user-1", "user@example.com", "John Doe", "example.com", "ACTIVE", "INTERNAL");
+        "user-1",
+        "user@example.com",
+        "John Doe",
+        "example.com",
+        "ACTIVE",
+        "INTERNAL",
+        "cos-1",
+        "dom-1");
   }
 
   private UserMyself sampleMyself() {
@@ -69,6 +76,8 @@ class UserServiceTest {
         "example.com",
         "ACTIVE",
         "INTERNAL",
+        "cos-1",
+        "dom-1",
         "en",
         List.of("carbonioFeatureFilesEnabled"),
         Map.of());
@@ -173,6 +182,8 @@ class UserServiceTest {
 
       assertThat(result).isPresent();
       assertThat(result.get().userId()).isEqualTo("user-1");
+      assertThat(result.get().cosId()).isEqualTo("cos-1");
+      assertThat(result.get().domainId()).isEqualTo("dom-1");
       verify(userMyselfCache).put(eq("token-1"), eq("user-1"), any(), anyLong());
     }
 
@@ -328,6 +339,8 @@ class UserServiceTest {
 
       assertThat(result).isPresent();
       assertThat(result.get().userId()).isEqualTo("user-1");
+      assertThat(result.get().cosId()).isEqualTo("cos-1");
+      assertThat(result.get().domainId()).isEqualTo("dom-1");
       verify(userInfoCache).put(any(UserInfo.class));
     }
 
@@ -391,6 +404,8 @@ class UserServiceTest {
 
       assertThat(result).isPresent();
       assertThat(result.get().email()).isEqualTo("user@example.com");
+      assertThat(result.get().cosId()).isEqualTo("cos-1");
+      assertThat(result.get().domainId()).isEqualTo("dom-1");
       verify(userInfoCache).put(any(UserInfo.class));
     }
 
@@ -414,7 +429,15 @@ class UserServiceTest {
     void allCacheHitsSkipsApi() {
       UserInfo u1 = sampleUserInfo();
       UserInfo u2 =
-          new UserInfo("user-2", "u2@example.com", "Jane", "example.com", "ACTIVE", "INTERNAL");
+          new UserInfo(
+              "user-2",
+              "u2@example.com",
+              "Jane",
+              "example.com",
+              "ACTIVE",
+              "INTERNAL",
+              "cos-2",
+              "dom-2");
       when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.of(u1));
       when(userInfoCache.getByUserId("user-2")).thenReturn(Optional.of(u2));
 
@@ -434,6 +457,8 @@ class UserServiceTest {
 
       assertThat(result).hasSize(1);
       assertThat(result.get(0).userId()).isEqualTo("user-1");
+      assertThat(result.get(0).cosId()).isEqualTo("cos-1");
+      assertThat(result.get(0).domainId()).isEqualTo("dom-1");
     }
 
     @Test

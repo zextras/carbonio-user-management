@@ -39,7 +39,14 @@ class UserResourceTest {
 
   private UserInfo sampleUserInfo() {
     return new UserInfo(
-        "user-1", "user@example.com", "John Doe", "example.com", "ACTIVE", "INTERNAL");
+        "user-1",
+        "user@example.com",
+        "John Doe",
+        "example.com",
+        "ACTIVE",
+        "INTERNAL",
+        "cos-1",
+        "dom-1");
   }
 
   @Nested
@@ -55,6 +62,8 @@ class UserResourceTest {
               "example.com",
               "ACTIVE",
               "INTERNAL",
+              "cos-1",
+              "dom-1",
               "it",
               List.of("carbonioFeatureFilesEnabled"),
               Map.of("carbonioWscMaxGroupMembers", "50"));
@@ -65,6 +74,8 @@ class UserResourceTest {
       assertThat(response.getStatus()).isEqualTo(200);
       MyselfDto dto = response.getEntity();
       assertThat(dto.info().userId()).isEqualTo("user-1");
+      assertThat(dto.info().cosId()).isEqualTo("cos-1");
+      assertThat(dto.info().domainId()).isEqualTo("dom-1");
       assertThat(dto.locale()).isEqualTo("it");
       assertThat(dto.features()).containsExactly("carbonioFeatureFilesEnabled");
       assertThat(dto.capabilities()).containsEntry("carbonioWscMaxGroupMembers", "50");
@@ -119,6 +130,8 @@ class UserResourceTest {
           "example.com",
           "ACTIVE",
           "INTERNAL",
+          "cos-1",
+          "dom-1",
           "en",
           List.of(),
           Map.of());
@@ -177,6 +190,8 @@ class UserResourceTest {
       UserInfoDto dto = response.getEntity();
       assertThat(dto.userId()).isEqualTo("user-1");
       assertThat(dto.email()).isEqualTo("user@example.com");
+      assertThat(dto.cosId()).isEqualTo("cos-1");
+      assertThat(dto.domainId()).isEqualTo("dom-1");
     }
 
     @Test
@@ -219,8 +234,10 @@ class UserResourceTest {
 
     @Test
     void returnsOkWithUserList() {
-      UserInfo u1 = new UserInfo("id-1", "a@x.com", "A", "x.com", "ACTIVE", "INTERNAL");
-      UserInfo u2 = new UserInfo("id-2", "b@x.com", "B", "x.com", "CLOSED", "GUEST");
+      UserInfo u1 =
+          new UserInfo("id-1", "a@x.com", "A", "x.com", "ACTIVE", "INTERNAL", "cos-1", "dom-1");
+      UserInfo u2 =
+          new UserInfo("id-2", "b@x.com", "B", "x.com", "CLOSED", "GUEST", "cos-2", "dom-2");
       when(userService.getUsers(anyList())).thenReturn(List.of(u1, u2));
 
       RestResponse<List<UserInfoDto>> response = resource.getUsers(List.of("id-1", "id-2"));

@@ -32,6 +32,10 @@ components:
           type: string
         type:
           type: string
+        cosId:
+          type: string
+        domainId:
+          type: string
 paths:
   /internal/users:
     post:
