@@ -46,7 +46,8 @@ class UserResourceTest {
         "ACTIVE",
         "INTERNAL",
         "cos-1",
-        "dom-1");
+        "dom-1",
+        true);
   }
 
   @Nested
@@ -64,6 +65,7 @@ class UserResourceTest {
               "INTERNAL",
               "cos-1",
               "dom-1",
+              true,
               "it",
               List.of("carbonioFeatureFilesEnabled"),
               Map.of("carbonioWscMaxGroupMembers", "50"));
@@ -76,6 +78,7 @@ class UserResourceTest {
       assertThat(dto.info().userId()).isEqualTo("user-1");
       assertThat(dto.info().cosId()).isEqualTo("cos-1");
       assertThat(dto.info().domainId()).isEqualTo("dom-1");
+      assertThat(dto.info().isGlobalAdmin()).isTrue();
       assertThat(dto.locale()).isEqualTo("it");
       assertThat(dto.features()).containsExactly("carbonioFeatureFilesEnabled");
       assertThat(dto.capabilities()).containsEntry("carbonioWscMaxGroupMembers", "50");
@@ -132,6 +135,7 @@ class UserResourceTest {
           "INTERNAL",
           "cos-1",
           "dom-1",
+          false,
           "en",
           List.of(),
           Map.of());
@@ -192,6 +196,7 @@ class UserResourceTest {
       assertThat(dto.email()).isEqualTo("user@example.com");
       assertThat(dto.cosId()).isEqualTo("cos-1");
       assertThat(dto.domainId()).isEqualTo("dom-1");
+      assertThat(dto.isGlobalAdmin()).isTrue();
     }
 
     @Test
@@ -235,9 +240,10 @@ class UserResourceTest {
     @Test
     void returnsOkWithUserList() {
       UserInfo u1 =
-          new UserInfo("id-1", "a@x.com", "A", "x.com", "ACTIVE", "INTERNAL", "cos-1", "dom-1");
+          new UserInfo(
+              "id-1", "a@x.com", "A", "x.com", "ACTIVE", "INTERNAL", "cos-1", "dom-1", true);
       UserInfo u2 =
-          new UserInfo("id-2", "b@x.com", "B", "x.com", "CLOSED", "GUEST", "cos-2", "dom-2");
+          new UserInfo("id-2", "b@x.com", "B", "x.com", "CLOSED", "GUEST", "cos-2", "dom-2", false);
       when(userService.getUsers(anyList())).thenReturn(List.of(u1, u2));
 
       RestResponse<List<UserInfoDto>> response = resource.getUsers(List.of("id-1", "id-2"));

@@ -14,7 +14,8 @@ public record UserInfoDto(
     String status,
     String type,
     String cosId,
-    String domainId) {
+    String domainId,
+    boolean isGlobalAdmin) {
 
   public static UserInfoDto from(UserInfo info) {
     return new UserInfoDto(
@@ -25,6 +26,7 @@ public record UserInfoDto(
         info.status(),
         info.type(),
         info.cosId(),
-        info.domainId());
+        info.domainId(),
+        info.isGlobalAdmin());
   }
 }

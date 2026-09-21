@@ -110,7 +110,8 @@ public class UserService {
             myself.status(),
             myself.type(),
             myself.cosId(),
-            myself.domainId());
+            myself.domainId(),
+            myself.isGlobalAdmin());
     cacheInfo(userInfo);
   }
 
@@ -307,7 +308,8 @@ public class UserService {
         info.status() != null ? info.status().name().toUpperCase() : "ACTIVE",
         info.isExternalVirtualAccount() ? "GUEST" : "INTERNAL",
         info.cosId(),
-        info.domainId());
+        info.domainId(),
+        info.isGlobalAdmin());
   }
 
   UserMyself mapAccountInfoToUserMyself(AccountInfo info) {
@@ -328,6 +330,7 @@ public class UserService {
         info.isExternalVirtualAccount() ? "GUEST" : "INTERNAL",
         info.cosId(),
         info.domainId(),
+        info.isGlobalAdmin(),
         info.locale() != null ? info.locale() : Locale.ENGLISH.toString(),
         features,
         info.capabilities() != null ? info.capabilities() : Map.of());

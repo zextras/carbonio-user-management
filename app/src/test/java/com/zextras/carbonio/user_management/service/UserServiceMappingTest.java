@@ -85,6 +85,31 @@ class UserServiceMappingTest {
       assertThat(result.type()).isEqualTo("INTERNAL");
       assertThat(result.cosId()).isEqualTo("cos-1");
       assertThat(result.domainId()).isEqualTo("dom-1");
+      assertThat(result.isGlobalAdmin()).isFalse();
+    }
+
+    @Test
+    void mapsGlobalAdminTrue() {
+      AccountInfo info =
+          new AccountInfo(
+              "uid-admin",
+              "admin@example.com",
+              "Admin",
+              "cos-1",
+              "dom-1",
+              "example.com",
+              AccountStatus.active,
+              true,
+              false,
+              false,
+              "en",
+              Map.of(),
+              Map.of(),
+              null);
+
+      UserInfo result = userService.mapAccountInfoToUserInfo(info);
+
+      assertThat(result.isGlobalAdmin()).isTrue();
     }
 
     @Test
@@ -298,6 +323,7 @@ class UserServiceMappingTest {
       assertThat(result.locale()).isEqualTo("it");
       assertThat(result.cosId()).isEqualTo("cos-1");
       assertThat(result.domainId()).isEqualTo("dom-1");
+      assertThat(result.isGlobalAdmin()).isFalse();
     }
 
     @Test

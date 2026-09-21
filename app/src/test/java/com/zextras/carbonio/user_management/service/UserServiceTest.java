@@ -65,7 +65,8 @@ class UserServiceTest {
         "ACTIVE",
         "INTERNAL",
         "cos-1",
-        "dom-1");
+        "dom-1",
+        false);
   }
 
   private UserMyself sampleMyself() {
@@ -78,6 +79,7 @@ class UserServiceTest {
         "INTERNAL",
         "cos-1",
         "dom-1",
+        false,
         "en",
         List.of("carbonioFeatureFilesEnabled"),
         Map.of());
@@ -184,6 +186,7 @@ class UserServiceTest {
       assertThat(result.get().userId()).isEqualTo("user-1");
       assertThat(result.get().cosId()).isEqualTo("cos-1");
       assertThat(result.get().domainId()).isEqualTo("dom-1");
+      assertThat(result.get().isGlobalAdmin()).isFalse();
       verify(userMyselfCache).put(eq("token-1"), eq("user-1"), any(), anyLong());
     }
 
@@ -437,7 +440,8 @@ class UserServiceTest {
               "ACTIVE",
               "INTERNAL",
               "cos-2",
-              "dom-2");
+              "dom-2",
+              false);
       when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.of(u1));
       when(userInfoCache.getByUserId("user-2")).thenReturn(Optional.of(u2));
 

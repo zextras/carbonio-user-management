@@ -49,6 +49,7 @@ class UserMyselfCacheTest {
         "INTERNAL",
         "cos-1",
         "dom-1",
+        false,
         "en",
         List.of("carbonioFeatureFilesEnabled"),
         Map.of());
@@ -186,6 +187,7 @@ class UserMyselfCacheTest {
             "INTERNAL",
             "cos-2",
             "dom-2",
+            false,
             "it",
             List.of(),
             Map.of());

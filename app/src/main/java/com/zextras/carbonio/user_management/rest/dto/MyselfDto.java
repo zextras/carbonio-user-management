@@ -21,7 +21,8 @@ public record MyselfDto(
             myself.status(),
             myself.type(),
             myself.cosId(),
-            myself.domainId());
+            myself.domainId(),
+            myself.isGlobalAdmin());
     return new MyselfDto(info, myself.locale(), myself.features(), myself.capabilities());
   }
 }

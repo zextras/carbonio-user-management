@@ -38,7 +38,7 @@ class UserInfoCacheTest {
 
   private UserInfo sampleUser(String id, String email) {
     return new UserInfo(
-        id, email, "Full Name", "example.com", "ACTIVE", "INTERNAL", "cos-1", "dom-1");
+        id, email, "Full Name", "example.com", "ACTIVE", "INTERNAL", "cos-1", "dom-1", false);
   }
 
   @Test
@@ -110,7 +110,8 @@ class UserInfoCacheTest {
             "ACTIVE",
             "INTERNAL",
             "cos-1",
-            "dom-1");
+            "dom-1",
+            false);
     cache.put(user1Updated);
 
     // 12h + 1s from original put, but only 101s from re-put → still alive

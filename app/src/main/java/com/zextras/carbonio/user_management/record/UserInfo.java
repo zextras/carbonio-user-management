@@ -12,4 +12,5 @@ public record UserInfo(
     String status,
     String type,
     String cosId,
-    String domainId) {}
+    String domainId,
+    boolean isGlobalAdmin) {}

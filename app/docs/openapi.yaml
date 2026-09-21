@@ -36,6 +36,8 @@ components:
           type: string
         domainId:
           type: string
+        isGlobalAdmin:
+          type: boolean
 paths:
   /internal/users:
     post:
