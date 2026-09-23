@@ -19,7 +19,10 @@ public record MyselfDto(
             myself.fullName(),
             myself.domain(),
             myself.status(),
-            myself.type());
+            myself.type(),
+            myself.cosId(),
+            myself.domainId(),
+            myself.isGlobalAdmin());
     return new MyselfDto(info, myself.locale(), myself.features(), myself.capabilities());
   }
 }

@@ -83,6 +83,61 @@ class UserServiceMappingTest {
       assertThat(result.domain()).isEqualTo("example.com");
       assertThat(result.status()).isEqualTo("ACTIVE");
       assertThat(result.type()).isEqualTo("INTERNAL");
+      assertThat(result.cosId()).isEqualTo("cos-1");
+      assertThat(result.domainId()).isEqualTo("dom-1");
+      assertThat(result.isGlobalAdmin()).isFalse();
+    }
+
+    @Test
+    void mapsGlobalAdminTrue() {
+      AccountInfo info =
+          new AccountInfo(
+              "uid-admin",
+              "admin@example.com",
+              "Admin",
+              "cos-1",
+              "dom-1",
+              "example.com",
+              AccountStatus.active,
+              true,
+              false,
+              false,
+              "en",
+              Map.of(),
+              Map.of(),
+              null);
+
+      UserInfo result = userService.mapAccountInfoToUserInfo(info);
+
+      assertThat(result.isGlobalAdmin()).isTrue();
+    }
+
+    @Test
+    void nullCosIdIsPreserved_notDefaulted() {
+      // A mailbox account inheriting the domain-default COS has no explicit zimbraCOSId, so the
+      // internal API returns cosId=null. It must pass through as null (the hierarchical-config
+      // resolver then skips the COS tier), never be turned into "".
+      AccountInfo info =
+          new AccountInfo(
+              "uid-1",
+              "user@example.com",
+              "User",
+              null,
+              "dom-1",
+              "example.com",
+              AccountStatus.active,
+              false,
+              false,
+              false,
+              "en",
+              Map.of(),
+              Map.of(),
+              null);
+
+      UserInfo result = userService.mapAccountInfoToUserInfo(info);
+
+      assertThat(result.cosId()).isNull();
+      assertThat(result.domainId()).isEqualTo("dom-1");
     }
 
     @Test
@@ -266,6 +321,9 @@ class UserServiceMappingTest {
       assertThat(result.status()).isEqualTo("ACTIVE");
       assertThat(result.type()).isEqualTo("INTERNAL");
       assertThat(result.locale()).isEqualTo("it");
+      assertThat(result.cosId()).isEqualTo("cos-1");
+      assertThat(result.domainId()).isEqualTo("dom-1");
+      assertThat(result.isGlobalAdmin()).isFalse();
     }
 
     @Test

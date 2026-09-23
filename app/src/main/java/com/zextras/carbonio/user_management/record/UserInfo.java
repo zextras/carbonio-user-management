@@ -5,4 +5,12 @@
 package com.zextras.carbonio.user_management.record;
 
 public record UserInfo(
-    String userId, String email, String fullName, String domain, String status, String type) {}
+    String userId,
+    String email,
+    String fullName,
+    String domain,
+    String status,
+    String type,
+    String cosId,
+    String domainId,
+    boolean isGlobalAdmin) {}

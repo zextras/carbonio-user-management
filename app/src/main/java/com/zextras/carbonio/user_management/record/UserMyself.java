@@ -14,6 +14,9 @@ public record UserMyself(
     String domain,
     String status,
     String type,
+    String cosId,
+    String domainId,
+    boolean isGlobalAdmin,
     String locale,
     List<String> features,
     Map<String, String> capabilities) {
@@ -25,6 +28,9 @@ public record UserMyself(
       String domain,
       String status,
       String type,
+      String cosId,
+      String domainId,
+      boolean isGlobalAdmin,
       String locale,
       List<String> features,
       Map<String, String> capabilities) {
@@ -34,6 +40,9 @@ public record UserMyself(
     this.domain = domain;
     this.status = status;
     this.type = type;
+    this.cosId = cosId;
+    this.domainId = domainId;
+    this.isGlobalAdmin = isGlobalAdmin;
     this.locale = locale;
     this.features = features != null ? List.copyOf(features) : List.of();
     this.capabilities = capabilities != null ? Map.copyOf(capabilities) : Map.of();
