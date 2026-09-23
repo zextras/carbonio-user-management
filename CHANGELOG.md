@@ -1,3 +1,9 @@
+## [1.4.0](https://github.com/zextras/carbonio-user-management/compare/v1.3.9...v1.4.0) (2026-09-23)
+
+### Features
+
+* expose cosId, domainId and isGlobalAdmin on user info ([#201](https://github.com/zextras/carbonio-user-management/issues/201)) ([c416bcc](https://github.com/zextras/carbonio-user-management/commit/c416bccecf0bd7040cf1977a4516ff6e984b2716))
+
 ## [1.3.9](https://github.com/zextras/carbonio-user-management/compare/v1.3.8...v1.3.9) (2026-09-22)
 
 ## [1.3.8](https://github.com/zextras/carbonio-user-management/compare/v1.3.7...v1.3.8) (2026-09-16)
