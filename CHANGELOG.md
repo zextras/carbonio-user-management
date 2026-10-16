@@ -1,3 +1,9 @@
+## [1.4.4](https://github.com/zextras/carbonio-user-management/compare/v1.4.3...v1.4.4) (2026-10-16)
+
+### Bug Fixes
+
+* **ci:** replace mapfile in checksum-verify for macOS bash 3.2 ([#205](https://github.com/zextras/carbonio-user-management/issues/205)) ([79bf1c4](https://github.com/zextras/carbonio-user-management/commit/79bf1c4ac18158760053df741bd4eb12c3edc13e)), closes [jenkins-lib-common#216](https://github.com/zextras/jenkins-lib-common/issues/216)
+
 ## [1.4.3](https://github.com/zextras/carbonio-user-management/compare/v1.4.2...v1.4.3) (2026-10-15)
 
 ## [1.4.2](https://github.com/zextras/carbonio-user-management/compare/v1.4.1...v1.4.2) (2026-10-13)
