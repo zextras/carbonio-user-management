@@ -5,7 +5,7 @@ List of third-party dependencies grouped by their license type.
 
         * Carbonio Quarkus Extensions - Bootstrap Runtime (com.zextras.carbonio.quarkus:carbonio-quarkus-extensions-bootstrap:1.14.0-1 - no url defined)
         * Carbonio Quarkus Extensions - REST Runtime (com.zextras.carbonio.quarkus:carbonio-quarkus-extensions-rest:1.14.0-1 - no url defined)
-        * Carbonio Systemd Notify (com.zextras.carbonio:carbonio-systemd-notify:1.0.1 - https://github.com/zextras/carbonio-systemd-notify)
+        * Carbonio Systemd Notify (com.zextras.carbonio:carbonio-systemd-notify:1.0.2 - https://github.com/zextras/carbonio-systemd-notify)
 
     Apache 2.0:
 
