@@ -1,3 +1,5 @@
+## [1.4.5](https://github.com/zextras/carbonio-user-management/compare/v1.4.4...v1.4.5) (2026-10-21)
+
 ## [1.4.4](https://github.com/zextras/carbonio-user-management/compare/v1.4.3...v1.4.4) (2026-10-16)
 
 ### Bug Fixes
