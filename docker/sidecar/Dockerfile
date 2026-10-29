@@ -9,7 +9,7 @@
 # selects the arch-matched layer, so no target-arch RUN and no QEMU.
 FROM docker.io/library/eclipse-temurin:21-jre-jammy AS jre
 
-FROM registry.dev.zextras.com/dev/carbonio-sidecar:devel
+FROM registry.dev.zextras.com/dev/carbonio-sidecar:main
 
 # Arch-matched JRE copied from the multi-arch temurin image (QEMU-free).
 COPY --from=jre /opt/java/openjdk /opt/java/openjdk
