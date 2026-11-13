@@ -12,6 +12,13 @@ SPDX-License-Identifier: AGPL-3.0-only
 
   <modelVersion>4.0.0</modelVersion>
 
+  <parent>
+    <groupId>com.zextras.carbonio.quarkus</groupId>
+    <artifactId>carbonio-quarkus-extensions-parent</artifactId>
+    <version>1.16.3-172.0f9643d3-SNAPSHOT</version>
+    <relativePath/>
+  </parent>
+
   <licenses>
     <license>
       <comments>Copyright (C) 2022 Zextras, https://www.zextras.com</comments>
@@ -40,27 +47,17 @@ SPDX-License-Identifier: AGPL-3.0-only
     <!-- Dependencies -->
     <assertj.version>3.27.7</assertj.version>
     <carbonio-mailbox-sdk.version>1.19.2</carbonio-mailbox-sdk.version>
-    <carbonio-quarkus-extensions.version>1.14.0-1</carbonio-quarkus-extensions.version>
+    <carbonio-quarkus-extensions.version>1.16.3-172.0f9643d3-SNAPSHOT</carbonio-quarkus-extensions.version>
 
     <!-- Plugins -->
-    <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
-    <maven-failsafe.version>3.5.6</maven-failsafe.version>
-    <maven-jacoco.version>0.8.15</maven-jacoco.version>
-    <maven-jar-plugin.version>3.5.0</maven-jar-plugin.version>
-    <maven-surefire.version>3.5.6</maven-surefire.version>
     <maven-resources-plugin.version>3.5.0</maven-resources-plugin.version>
-    <sonar-maven-plugin.version>5.5.0.6356</sonar-maven-plugin.version>
 
     <!-- Other properties -->
-    <maven.compiler.source>21</maven.compiler.source>
-    <maven.compiler.target>21</maven.compiler.target>
     <maven.version.ignore>(?i).*-(alpha|beta|m|rc)([-.]?\d+)?</maven.version.ignore>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-    <!-- Flags to skip/run tests and the report generation -->
-    <skip.integration.tests>true</skip.integration.tests>
-    <skip.unit.tests>true</skip.unit.tests>
-    <skip.jacoco.full.report.generation>true</skip.jacoco.full.report.generation>
+    <!-- Launch flags of the JVM tests and of the app started by @QuarkusIntegrationTest: FFM-based systemd-notify readiness -->
+    <testJvmArgs>--enable-preview --enable-native-access=ALL-UNNAMED</testJvmArgs>
   </properties>
 
   <dependencyManagement>
@@ -83,52 +80,12 @@ SPDX-License-Identifier: AGPL-3.0-only
   </dependencyManagement>
 
   <build>
-    <plugins>
-      <plugin>
-        <groupId>org.sonarsource.scanner.maven</groupId>
-        <artifactId>sonar-maven-plugin</artifactId>
-        <version>${sonar-maven-plugin.version}</version>
-      </plugin>
-    </plugins>
-
     <pluginManagement>
       <plugins>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-jar-plugin</artifactId>
-          <version>${maven-jar-plugin.version}</version>
-        </plugin>
-
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-resources-plugin</artifactId>
           <version>${maven-resources-plugin.version}</version>
-        </plugin>
-
-        <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>flatten-maven-plugin</artifactId>
-          <version>1.7.3</version>
-          <configuration>
-              <updatePomFile>true</updatePomFile>
-              <flattenMode>resolveCiFriendliesOnly</flattenMode>
-          </configuration>
-          <executions>
-              <execution>
-                  <id>flatten</id>
-                  <phase>process-resources</phase>
-                  <goals>
-                      <goal>flatten</goal>
-                  </goals>
-              </execution>
-              <execution>
-                  <id>flatten.clean</id>
-                  <phase>clean</phase>
-                  <goals>
-                      <goal>clean</goal>
-                  </goals>
-              </execution>
-          </executions>
         </plugin>
       </plugins>
     </pluginManagement>
