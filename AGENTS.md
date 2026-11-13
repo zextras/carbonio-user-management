@@ -34,18 +34,21 @@ app/src/main/java/com/zextras/carbonio/user_management/
 # Build (uber-jar)
 mvn -pl app package -DskipTests
 
-# Unit tests
-mvn -pl app test
+# Unit tests only
+mvn verify -DskipITs
 
-# Integration tests (requires Docker)
-mvn -pl app verify -Dskip.integration.tests=false
+# Unit and integration tests (requires Docker)
+mvn verify
+
+# Integration tests only
+mvn verify -DskipUTs
 
 # Dev mode (requires docker/devmode compose)
 mvn -pl app quarkus:dev
 ```
 
 ## Code Conventions
-- Java 21, Jakarta EE (CDI, JAX-RS), Quarkus 3.27.2
+- Java 21, Jakarta EE (CDI, JAX-RS), Quarkus 3.40.1 (managed by `carbonio-quarkus-extensions-parent`)
 - SPDX license headers on every file (`AGPL-3.0-only`)
 - Records for immutable value types (`UserInfo`, `UserMyself`)
 - Conventional commits (`feat:`, `fix:`, `chore:`)
@@ -53,6 +56,7 @@ mvn -pl app quarkus:dev
 - Integration tests: `@QuarkusIntegrationTest` + `MailboxStackTestResource` (Testcontainers)
 
 ## Things to Know
+- Test and coverage standard (Surefire/Failsafe, JaCoCo, Sonar paths) comes from `carbonio-quarkus-extensions-parent`; do not add skip flags, `<argLine>` or JaCoCo executions. Extra JVM flags for tests and for the app started by `@QuarkusIntegrationTest` go in the `testJvmArgs` property of the root pom
 - Caffeine TTL is read from Consul at insertion time (not at startup), cached for 60s
 - `UserMyselfCache` enforces one-token-per-user via a reverse index
 - Integration tests need a real Carbonio mailbox stack (Docker images from internal registry)

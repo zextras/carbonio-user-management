@@ -3,8 +3,8 @@ List of third-party dependencies grouped by their license type.
 
     AGPL-3.0-only:
 
-        * Carbonio Quarkus Extensions - Bootstrap Runtime (com.zextras.carbonio.quarkus:carbonio-quarkus-extensions-bootstrap:1.14.0-1 - no url defined)
-        * Carbonio Quarkus Extensions - REST Runtime (com.zextras.carbonio.quarkus:carbonio-quarkus-extensions-rest:1.14.0-1 - no url defined)
+        * Carbonio Quarkus Extensions - Bootstrap Runtime (com.zextras.carbonio.quarkus:carbonio-quarkus-extensions-bootstrap:1.16.3-172.0f9643d3-20261113.203626-1 - no url defined)
+        * Carbonio Quarkus Extensions - REST Runtime (com.zextras.carbonio.quarkus:carbonio-quarkus-extensions-rest:1.16.3-172.0f9643d3-20261113.203626-1 - no url defined)
         * Carbonio Systemd Notify (com.zextras.carbonio:carbonio-systemd-notify:1.0.1 - https://github.com/zextras/carbonio-systemd-notify)
 
     Apache 2.0:
@@ -234,13 +234,9 @@ List of third-party dependencies grouped by their license type.
         * Guava InternalFutureFailureAccess and InternalFutures (com.google.guava:failureaccess:1.0.1 - https://github.com/google/guava/failureaccess)
         * Jackson datatype: jdk8 (com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.21.7 - https://github.com/FasterXML/jackson-modules-java8/jackson-datatype-jdk8)
         * Jackson datatype: JSR310 (com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.21.7 - https://github.com/FasterXML/jackson-modules-java8/jackson-datatype-jsr310)
-        * Jackson datatype: JSR310 (com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.22.0 - https://github.com/FasterXML/jackson-modules-java8/jackson-datatype-jsr310)
         * Jackson-annotations (com.fasterxml.jackson.core:jackson-annotations:2.21 - https://github.com/FasterXML/jackson)
-        * Jackson-annotations (com.fasterxml.jackson.core:jackson-annotations:2.22 - https://github.com/FasterXML/jackson)
         * Jackson-core (com.fasterxml.jackson.core:jackson-core:2.21.7 - https://github.com/FasterXML/jackson-core)
-        * Jackson-core (com.fasterxml.jackson.core:jackson-core:2.22.0 - https://github.com/FasterXML/jackson-core)
         * jackson-databind (com.fasterxml.jackson.core:jackson-databind:2.21.7 - https://github.com/FasterXML/jackson)
-        * jackson-databind (com.fasterxml.jackson.core:jackson-databind:2.22.0 - https://github.com/FasterXML/jackson)
         * Jackson-dataformat-YAML (com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.21.7 - https://github.com/FasterXML/jackson-dataformats-text)
         * Jackson-module-parameter-names (com.fasterxml.jackson.module:jackson-module-parameter-names:2.21.7 - https://github.com/FasterXML/jackson-modules-java8/jackson-module-parameter-names)
         * Jakarta Dependency Injection (jakarta.inject:jakarta.inject-api:2.0.1 - https://github.com/eclipse-ee4j/injection-api)
