@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test;
 /**
  * REST endpoint integration tests against a real Carbonio mailbox stack.
  *
- * <p>Run with: {@code mvn verify -Dskip.integration.tests=false}
+ * <p>Runs by default with {@code mvn verify}; skip with {@code -DskipITs} (or {@code -DskipTests}).
  */
 @QuarkusIntegrationTest
 @WithTestResource(MailboxStackTestResource.class)
