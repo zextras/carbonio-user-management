@@ -1,3 +1,9 @@
+## [1.4.7](https://github.com/zextras/carbonio-user-management/compare/v1.4.6...v1.4.7) (2026-11-16)
+
+### Bug Fixes
+
+* [CO-3502] bind the user-management sidecar to its service lifecycle ([#213](https://github.com/zextras/carbonio-user-management/issues/213)) ([e851990](https://github.com/zextras/carbonio-user-management/commit/e851990ecf8770408107cc289a41f7e4bba9c31b))
+
 ## [1.4.6](https://github.com/zextras/carbonio-user-management/compare/v1.4.5...v1.4.6) (2026-10-29)
 
 ## [1.4.5](https://github.com/zextras/carbonio-user-management/compare/v1.4.4...v1.4.5) (2026-10-21)
