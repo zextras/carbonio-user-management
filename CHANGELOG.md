@@ -1,3 +1,9 @@
+## [1.4.9](https://github.com/zextras/carbonio-user-management/compare/v1.4.8...v1.4.9) (2026-11-17)
+
+### Bug Fixes
+
+* [CO-3502] treat exit 143 as success for user-management and user-management-legacy ([#214](https://github.com/zextras/carbonio-user-management/issues/214)) ([cd8cbd8](https://github.com/zextras/carbonio-user-management/commit/cd8cbd88360ba308a28525fe10ab6c9ed5166be2))
+
 ## [1.4.8](https://github.com/zextras/carbonio-user-management/compare/v1.4.7...v1.4.8) (2026-11-16)
 
 ## [1.4.7](https://github.com/zextras/carbonio-user-management/compare/v1.4.6...v1.4.7) (2026-11-16)
