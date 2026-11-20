@@ -10,14 +10,15 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 Overridable by `/etc/carbonio/user-management/config.properties`
 
-| Key | Default |
-| --- | ------- |
-| `carbonio.mailbox.internal.host` | `127.78.0.5` |
-| `carbonio.mailbox.internal.port` | `20001` |
-| `carbonio.service-discover.host` | `127.0.0.1` |
-| `carbonio.service-discover.port` | `8500` |
-| `carbonio.service.host` | `127.78.0.5` |
-| `carbonio.service.port` | `10000` |
+| Key | Default | If not set |
+| --- | ------- | ---------- |
+| `carbonio.ldap.url` | *(not set)* | Directory endpoints answer 500 |
+| `carbonio.mailbox.internal.host` | `127.78.0.5` |  |
+| `carbonio.mailbox.internal.port` | `20001` |  |
+| `carbonio.service-discover.host` | `127.0.0.1` |  |
+| `carbonio.service-discover.port` | `8500` |  |
+| `carbonio.service.host` | `127.78.0.5` |  |
+| `carbonio.service.port` | `10000` |  |
 
 ## Application Config
 
@@ -27,6 +28,9 @@ Overridable by Consul KV
 | --- | ------- | ---------- |
 | `carbonio-user-management/cache/userinfo-ttl` | `43200` |  |
 | `carbonio-user-management/cache/usermyself-ttl` | *(not set)* | Uses remaining token validity time |
+| `carbonio-user-management/ldap/base-dn` | *(not set)* | Searches from the root DSE |
+| `carbonio-user-management/ldap/bind-dn` | *(not set)* | Uses uid=zimbra,cn=admins,cn=zimbra |
+| `carbonio-user-management/ldap/bind-password` | *(not set)* | Directory endpoints answer 500 |
 | `carbonio-user-management/server/idle-timeout` | *(not set)* | Quarkus default: 30s |
 | `carbonio-user-management/server/max-connections` | *(not set)* | Quarkus default: no limit |
 | `carbonio-user-management/server/max-threads` | *(not set)* | Quarkus default: 200 |
