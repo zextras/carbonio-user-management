@@ -12,6 +12,10 @@ PartOf=carbonio-directory-server.target
 [Service]
 Type=notify
 NotifyAccess=main
+RuntimeDirectory=carbonio-user-management
+RuntimeDirectoryMode=0700
+Environment=QUARKUS_CONFIG_LOCATIONS=/run/carbonio-user-management/ldap.properties
+ExecStartPre=+/usr/libexec/carbonio-user-management/ldap-config
 ExecStart=/opt/zextras/common/bin/java \
   --enable-preview \
   --enable-native-access=ALL-UNNAMED \

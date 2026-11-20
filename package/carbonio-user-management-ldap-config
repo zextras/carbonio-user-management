@@ -1,0 +1,42 @@
+#!/bin/bash
+
+set -euo pipefail
+
+configd=/opt/zextras/bin/configd
+owner=carbonio-user-management
+dir=/run/carbonio-user-management
+out="${dir}/ldap.properties"
+
+lc() {
+  "${configd}" localconfig -q -s -x -m nokey "$1" 2>/dev/null || true
+}
+
+escape() {
+  local value=${1//\\/\\\\}
+  if [[ ${value} == [[:space:]]* ]]; then
+    value="\\${value}"
+  fi
+  printf '%s' "${value}"
+}
+
+property() {
+  if [[ -n $2 ]]; then
+    printf '%s=%s\n' "$1" "$(escape "$2")"
+  fi
+}
+
+umask 077
+mkdir -p "${dir}"
+tmp=$(mktemp "${dir}/.ldap.properties.XXXXXX")
+trap 'rm -f "${tmp}"' EXIT
+
+if [[ -x ${configd} ]]; then
+  {
+    property networking-config.carbonio.ldap.url "$(lc ldap_url)"
+    property application-config.ldap.bind-dn "$(lc zimbra_ldap_userdn)"
+    property application-config.ldap.bind-password "$(lc zimbra_ldap_password)"
+  } >"${tmp}"
+fi
+
+chown "${owner}:${owner}" "${tmp}"
+mv -f "${tmp}" "${out}"
