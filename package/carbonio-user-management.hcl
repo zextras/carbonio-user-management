@@ -4,7 +4,7 @@
 
 services {
   check {
-    http     = "http://127.78.0.5:10000/health/live"
+    http     = "http://127.78.0.5:10000/q/health/live"
     method   = "GET"
     timeout  = "1s"
     interval = "5s"
@@ -15,9 +15,9 @@ services {
         local_service_address = "127.78.0.5"
         upstreams = [
           {
-            destination_name   = "carbonio-mailbox"
+            destination_name   = "carbonio-mailbox-internal-api"
             local_bind_address = "127.78.0.5"
-            local_bind_port    = 20000
+            local_bind_port    = 20001
           }
         ]
       }

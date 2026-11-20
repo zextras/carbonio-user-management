@@ -1,0 +1,11 @@
+#!/bin/sh
+
+# SPDX-FileCopyrightText: 2026 Zextras <https://www.zextras.com>
+#
+# SPDX-License-Identifier: AGPL-3.0-only
+
+if [ "$1" = "setup" ]; then
+  export SETUP_CONSUL_TOKEN="${CONSUL_HTTP_TOKEN:-00000000-0000-0000-0000-000000000000}"
+  java -jar /usr/share/carbonio/carbonio-user-management.jar --setup "${CONSUL_HTTP_ADDR:-http://127.0.0.1:8500}"
+  unset SETUP_CONSUL_TOKEN
+fi

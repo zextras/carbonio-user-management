@@ -5,28 +5,19 @@
 # Maven
 target/
 dist/
+.flattened-pom.xml
 .classpath
-.project                                                                                            
-.settings/                                                                                          
-boot/dependency-reduced-pom.xml
-boot/.classpath                                                                                     
-boot/.project                                                                                       
-boot/.settings/                                                                                     
-core/.classpath                                                                                     
-core/.project                                                                                       
-core/.settings/ 
-generated/.classpath                                                                                     
-generated/.project                                                                                       
-generated/.settings/ 
-generated/.openapi-generator/
-generated/src
+.project
+.settings/
 
 # JetBrains IDE
 .idea/
 *.iml
+.run/
 
 LICENSES
 artifacts/
 /package/carbonio-user-management.jar
 
 .vscode/
+.claude/specs/

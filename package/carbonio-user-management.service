@@ -10,13 +10,18 @@ After=network-online.target
 PartOf=carbonio-directory-server.target
 
 [Service]
-Type=simple
-ExecStart=/usr/bin/carbonio-user-management
+Type=notify
+NotifyAccess=main
+ExecStart=/opt/zextras/common/bin/java \
+  --enable-preview \
+  --enable-native-access=ALL-UNNAMED \
+  -Djava.net.preferIPv4Stack=true \
+  -jar /usr/share/carbonio/carbonio-user-management.jar
 User=carbonio-user-management
 Group=carbonio-user-management
 Restart=on-failure
 RestartSec=15s
-TimeoutSec=60s
+TimeoutStartSec=120s
 TimeoutStopSec=120s
 
 [Install]

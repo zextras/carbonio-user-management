@@ -3,12 +3,18 @@
   "Name": "carbonio-user-management",
   "Sources": [
     {
-      "Name": "carbonio-files",
+      "Name": "carbonio-proxy",
       "Permissions": [
         {
           "Action": "allow",
           "HTTP": {
-            "PathPrefix": "/auth/token/",
+            "PathPrefix": "/users/myself",
+            "Header": [
+              {
+                "Name": "Cookie",
+                "Present": true
+              }
+            ],
             "Methods": [
               "GET"
             ]
@@ -24,30 +30,6 @@
                 "Present": true
               }
             ],
-            "Methods": [
-              "GET"
-            ]
-          }
-        },
-        {
-          "Action": "allow",
-          "HTTP": {
-            "PathPrefix": "/users/myself/",
-            "Header": [
-              {
-                "Name": "Cookie",
-                "Present": true
-              }
-            ],
-            "Methods": [
-              "GET"
-            ]
-          }
-        },
-        {
-          "Action": "allow",
-          "HTTP": {
-            "PathPrefix": "/health/",
             "Methods": [
               "GET"
             ]
@@ -67,25 +49,11 @@
               "GET"
             ]
           }
-        }
-      ]
-    },
-    {
-      "Name": "carbonio-ws-collaboration",
-      "Permissions": [
-        {
-          "Action": "allow",
-          "HTTP": {
-            "PathPrefix": "/auth/token/",
-            "Methods": [
-              "GET"
-            ]
-          }
         },
         {
           "Action": "allow",
           "HTTP": {
-            "PathPrefix": "/users/id/",
+            "PathExact": "/users",
             "Header": [
               {
                 "Name": "Cookie",
@@ -93,228 +61,21 @@
               }
             ],
             "Methods": [
-              "GET"
-            ]
-          }
-        },
-        {
-          "Action": "allow",
-          "HTTP": {
-            "PathPrefix": "/users/myself/",
-            "Header": [
-              {
-                "Name": "Cookie",
-                "Present": true
-              }
-            ],
-            "Methods": [
-              "GET"
-            ]
-          }
-        },
-        {
-          "Action": "allow",
-          "HTTP": {
-            "PathPrefix": "/users",
-            "Header": [
-              {
-                "Name": "Cookie",
-                "Present": true
-              }
-            ],
-            "Methods": [
-              "GET"
-            ]
-          }
-        },
-        {
-          "Action": "allow",
-          "HTTP": {
-            "PathPrefix": "/health/",
-            "Methods": [
-              "GET"
-            ]
-          }
-        },
-        {
-          "Action": "allow",
-          "HTTP": {
-            "PathPrefix": "/users/email/",
-            "Header": [
-              {
-                "Name": "Cookie",
-                "Present": true
-              }
-            ],
-            "Methods": [
-              "GET"
+              "POST"
             ]
           }
         }
       ]
     },
     {
-      "Name": "carbonio-message-dispatcher-auth",
+      "Name": "*",
       "Permissions": [
         {
           "Action": "allow",
           "HTTP": {
-            "PathPrefix": "/auth/token/",
+            "PathPrefix": "/usermanagement.UserManagementService/",
             "Methods": [
-              "GET"
-            ]
-          }
-        },
-        {
-          "Action": "allow",
-          "HTTP": {
-            "PathPrefix": "/users/myself/",
-            "Header": [
-              {
-                "Name": "Cookie",
-                "Present": true
-              }
-            ],
-            "Methods": [
-              "GET"
-            ]
-          }
-        },
-        {
-          "Action": "allow",
-          "HTTP": {
-            "PathPrefix": "/health/",
-            "Methods": [
-              "GET"
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "Name": "carbonio-tasks",
-      "Permissions": [
-        {
-          "Action": "allow",
-          "HTTP": {
-            "PathPrefix": "/auth/token/",
-            "Methods": [
-              "GET"
-            ]
-          }
-        },
-        {
-          "Action": "allow",
-          "HTTP": {
-            "PathPrefix": "/users/myself/",
-            "Header": [
-              {
-                "Name": "Cookie",
-                "Present": true
-              }
-            ],
-            "Methods": [
-              "GET"
-            ]
-          }
-        },
-        {
-          "Action": "allow",
-          "HTTP": {
-            "PathPrefix": "/health/",
-            "Methods": [
-              "GET"
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "Name": "carbonio-docs-connector",
-      "Permissions": [
-        {
-          "Action": "allow",
-          "HTTP": {
-            "PathPrefix": "/auth/token/",
-            "Methods": [
-              "GET"
-            ]
-          }
-        },
-        {
-          "Action": "allow",
-          "HTTP": {
-            "PathPrefix": "/users/id/",
-            "Header": [
-              {
-                "Name": "Cookie",
-                "Present": true
-              }
-            ],
-            "Methods": [
-              "GET"
-            ]
-          }
-        },
-        {
-          "Action": "allow",
-          "HTTP": {
-            "PathPrefix": "/users/myself/",
-            "Header": [
-              {
-                "Name": "Cookie",
-                "Present": true
-              }
-            ],
-            "Methods": [
-              "GET"
-            ]
-          }
-        },
-        {
-          "Action": "allow",
-          "HTTP": {
-            "PathPrefix": "/health/",
-            "Methods": [
-              "GET"
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "Name": "carbonio-notification-push",
-      "Permissions": [
-        {
-          "Action": "allow",
-          "HTTP": {
-            "PathPrefix": "/auth/token/",
-            "Methods": [
-              "GET"
-            ]
-          }
-        },
-        {
-          "Action": "allow",
-          "HTTP": {
-            "PathPrefix": "/users/myself/",
-            "Header": [
-              {
-                "Name": "Cookie",
-                "Present": true
-              }
-            ],
-            "Methods": [
-              "GET"
-            ]
-          }
-        },
-        {
-          "Action": "allow",
-          "HTTP": {
-            "PathPrefix": "/health/",
-            "Methods": [
-              "GET"
+              "POST"
             ]
           }
         }
