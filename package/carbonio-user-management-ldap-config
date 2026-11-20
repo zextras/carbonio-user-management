@@ -27,7 +27,7 @@ property() {
 
 umask 077
 mkdir -p "${dir}"
-tmp=$(mktemp "${dir}/.ldap.properties.XXXXXX")
+tmp=$(mktemp "$(dirname "${dir}")/.carbonio-user-management-ldap.XXXXXX")
 trap 'rm -f "${tmp}"' EXIT
 
 if [[ -x ${configd} ]]; then
