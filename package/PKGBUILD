@@ -3,8 +3,8 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 
 pkgname="carbonio-user-management"
-pkgver="0.0.0"
-pkgrel="SNAPSHOT"
+pkgver="1.4.9"
+pkgrel="1"
 pkgdesc="Carbonio User Management"
 maintainer="Zextras <packages@zextras.com>"
 arch=('x86_64')
@@ -15,6 +15,7 @@ license=("AGPL-3.0-only")
 depends=(
   "pending-setups"
   "service-discover"
+  "service-discover-base"
   "carbonio-openjdk"
 )
 source=(
@@ -32,18 +33,18 @@ source=(
   "service-protocol.json"
 )
 sha256sums=(
-  'e81092f748ae467c53a1996e5547a28e11a144fea46f6830290dfc2c9f505786'
+  '7169786450b93c2faebd136913fcddfd8b84de69d3c01c885a160ac734cd40a9'
   'd324cf4be45537b0f62d9baf28013d085048c2e13493de2c75c3b6c72b585559'
-  '2323474eedf016b106cf7ddfab52477b1713466c66b01bec777b81662145e602'
-  '213cce880a895c4f5d5ca9814029c8daf4ca47be6d9f2232f5f24d9c5b16f239'
-  '0b8cd9ce410ec0d707dfd348494c7b9ebbc8fb8b779f80db32f855157b91ac79'
+  '59eaf6ceef77fae2eb094fcd3f8bacb8cb2e3115ba630625fb8534cfcc07f3ee'
+  '1f4a0c07ff93e6c357c2e7895767f4f0d55281a49eb966136dd93202d6bb4403'
+  '8e19b44c64ebb9b717d20e38853442c8b99697d71f985cf742bb10e9e66bd733'
   'a722c5b8a0a4b273e9b65a51c1de5924d51c091229e7c9f92c14ef0a98f73097'
   'SKIP'
-  '48d6d9d384c70f189aec505eff045c87eb58d14125ae1fc5e51c87a514c55702'
-  '41e10587c1f04ef0a1d53608bc2ca94bb520177b0f39f42433cfae3e279c96a8'
-  '5672a515cd5d11cff3bfb910bc21f59811bfc4d496e789886a82ada93344687f'
+  '6d8bb7d78edbaae46933d9f800fbeac6f7a86ab85aca6e043d2ebff21cff48c5'
+  '16ffff744c3ca3e53efce86ad20b321796dfbd24358cbb04636ede4aebcc9a8c'
+  '4cb68cfa07220a3a20115fb27fb5f7f59a4c9467f14b03424d703289c7ae675b'
   'd4413a87bd9d2ec97799b31639d7ff539f9b91d0162468db09017b92b322dfc8'
-  'e97598402da18060b265f47f2ede7a890f91a01f9a8cd95bc28049ccfffb8a64'
+  '47d5f15e64f822ade45c4ffc963cf7975d89083db6937dd660466b8bdd763cdb'
 )
 backup=(
   "etc/zextras/service-discover/${pkgname}.hcl"

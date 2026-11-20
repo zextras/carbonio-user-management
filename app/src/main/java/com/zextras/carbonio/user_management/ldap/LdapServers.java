@@ -23,9 +23,8 @@ public final class LdapServers {
     if (urls == null || urls.isBlank()) {
       throw new IllegalArgumentException("No LDAP URL configured");
     }
-    List<LDAPURL> parsed = Arrays.stream(urls.trim().split("[\\s,]+"))
-        .map(LdapServers::parse)
-        .toList();
+    List<LDAPURL> parsed =
+        Arrays.stream(urls.trim().split("[\\s,]+")).map(LdapServers::parse).toList();
 
     String scheme = parsed.getFirst().getScheme();
     if (parsed.stream().anyMatch(url -> !url.getScheme().equals(scheme))) {

@@ -3,5 +3,40 @@
   "extends": [
     "github>zextras/infra-renovate-config",
     "github>zextras/infra-renovate-config:java"
+  ],
+  "separateMultipleMajor": false,
+  "vulnerabilityAlerts": {
+    "groupName": null
+  },
+  "packageRules": [
+    {
+      "description": "Group all patch-level updates into a single PR",
+      "matchUpdateTypes": [
+        "patch"
+      ],
+      "groupName": "all patch updates"
+    },
+    {
+      "description": "Group all minor-level updates into a single PR",
+      "matchUpdateTypes": [
+        "minor"
+      ],
+      "groupName": "all minor updates"
+    },
+    {
+      "description": "Keep eclipse-temurin on JDK 21 (LTS). The app runs with java --enable-preview, which locks compiled bytecode to the exact JDK feature version; a base-image-only major bump breaks at runtime. Move JDK deliberately as an app-level project.",
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchPackageNames": [
+        "eclipse-temurin",
+        "docker.io/library/eclipse-temurin"
+      ],
+      "matchCurrentValue": "/^21/",
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "enabled": false
+    }
   ]
 }

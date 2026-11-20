@@ -11,9 +11,11 @@ import java.util.function.BiConsumer;
 
 /**
  * Migrates networking config keys from the old layout to the new one:
+ *
  * <ul>
- *   <li>{@code carbonio.user-management.host/port} → {@code carbonio.service.host/port}</li>
- *   <li>{@code carbonio.mailbox.url} → {@code carbonio.mailbox.host} + {@code carbonio.mailbox.port}</li>
+ *   <li>{@code carbonio.user-management.host/port} → {@code carbonio.service.host/port}
+ *   <li>{@code carbonio.mailbox.url} → {@code carbonio.mailbox.host} + {@code
+ *       carbonio.mailbox.port}
  * </ul>
  */
 public class V1__MigrateNetworkingConfig extends ConfigMigration {
@@ -23,8 +25,7 @@ public class V1__MigrateNetworkingConfig extends ConfigMigration {
     return Map.of(
         "carbonio.user-management.host", this::renameToService,
         "carbonio.user-management.port", this::renameToService,
-        "carbonio.mailbox.url", this::splitMailboxUrl
-    );
+        "carbonio.mailbox.url", this::splitMailboxUrl);
   }
 
   @Override

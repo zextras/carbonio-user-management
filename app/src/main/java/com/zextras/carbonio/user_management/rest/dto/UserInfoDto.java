@@ -12,12 +12,21 @@ public record UserInfoDto(
     String fullName,
     String domain,
     String status,
-    String type
-) {
+    String type,
+    String cosId,
+    String domainId,
+    boolean isGlobalAdmin) {
 
   public static UserInfoDto from(UserInfo info) {
     return new UserInfoDto(
-        info.userId(), info.email(), info.fullName(),
-        info.domain(), info.status(), info.type());
+        info.userId(),
+        info.email(),
+        info.fullName(),
+        info.domain(),
+        info.status(),
+        info.type(),
+        info.cosId(),
+        info.domainId(),
+        info.isGlobalAdmin());
   }
 }

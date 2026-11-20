@@ -42,32 +42,36 @@ public class UserService {
   private final ExecutorService executor;
 
   // Coalescing maps: prevent concurrent calls for the same key.
-  private final ConcurrentHashMap<String, CompletableFuture<Optional<UserInfo>>>
-      inflightById = new ConcurrentHashMap<>();
-  private final ConcurrentHashMap<String, CompletableFuture<Optional<UserInfo>>>
-      inflightByEmail = new ConcurrentHashMap<>();
-  private final ConcurrentHashMap<String, CompletableFuture<Optional<UserMyself>>>
-      inflightMyself = new ConcurrentHashMap<>();
+  private final ConcurrentHashMap<String, CompletableFuture<Optional<UserInfo>>> inflightById =
+      new ConcurrentHashMap<>();
+  private final ConcurrentHashMap<String, CompletableFuture<Optional<UserInfo>>> inflightByEmail =
+      new ConcurrentHashMap<>();
+  private final ConcurrentHashMap<String, CompletableFuture<Optional<UserMyself>>> inflightMyself =
+      new ConcurrentHashMap<>();
 
   @Inject
   public UserService(
       MailboxInternalApiClient internalClient,
       UserInfoCache userInfoCache,
       UserMyselfCache userMyselfCache,
-      ManagedExecutor executor
-  ) {
+      ManagedExecutor executor) {
     this.internalClient = internalClient;
     this.userInfoCache = userInfoCache;
     this.userMyselfCache = userMyselfCache;
     this.executor = executor;
   }
 
-  public Optional<UserMyself> getUserMyself(String token) {
-    return getUserMyself(token, false);
-  }
-
+  /**
+   * Resolves the caller identity from its auth token.
+   *
+   * <p>When {@code bypassCache} is true the cached entry is not read, so the token is always
+   * re-validated against mailbox: this is what a caller asks for when it cannot tolerate a revoked
+   * session surviving in cache for the remaining token lifetime. The freshly fetched result is
+   * still written back to the cache, so a bypass refreshes the entry rather than disabling caching
+   * for everyone else.
+   */
   public Optional<UserMyself> getUserMyself(String token, boolean bypassCache) {
-    logger.debug("GetUserMyself requested");
+    logger.debug("GetUserMyself requested (bypassCache={})", bypassCache);
 
     if (!bypassCache) {
       Optional<UserMyself> cached = userMyselfCache.getByToken(token);
@@ -88,19 +92,26 @@ public class UserService {
     try {
       warmUserInfoCacheIfAbsent(myself);
     } catch (Exception e) {
-      logger.warn("Warming UserInfo cache failed for userId={}, ignoring",
-          myself.userId(), e);
+      logger.warn("Warming UserInfo cache failed for userId={}, ignoring", myself.userId(), e);
     }
   }
 
   private void warmUserInfoCacheIfAbsent(UserMyself myself) {
     String userId = myself.userId();
     if (userInfoCache.getByUserId(userId).isPresent()) {
-      return;  // already cached
+      return; // already cached
     }
-    UserInfo userInfo = new UserInfo(
-        myself.userId(), myself.email(), myself.fullName(),
-        myself.domain(), myself.status(), myself.type());
+    UserInfo userInfo =
+        new UserInfo(
+            myself.userId(),
+            myself.email(),
+            myself.fullName(),
+            myself.domain(),
+            myself.status(),
+            myself.type(),
+            myself.cosId(),
+            myself.domainId(),
+            myself.isGlobalAdmin());
     cacheInfo(userInfo);
   }
 
@@ -113,9 +124,10 @@ public class UserService {
         logger.error("GetUserMyself: mailbox response missing userId or email");
         return Optional.empty();
       }
-      long expiresAt = info.sessionLifetimeMs() != null
-          ? userMyselfCache.computeExpiresAt(info.sessionLifetimeMs())
-          : userMyselfCache.computeExpiresAt(3_600_000L);
+      long expiresAt =
+          info.sessionLifetimeMs() != null
+              ? userMyselfCache.computeExpiresAt(info.sessionLifetimeMs())
+              : userMyselfCache.computeExpiresAt(3_600_000L);
 
       myself = cacheMyself(myself.userId(), token, myself, expiresAt);
 
@@ -135,17 +147,11 @@ public class UserService {
   }
 
   public Optional<UserInfo> getUserById(String userId) {
-    return getUserById(userId, false);
-  }
-
-  public Optional<UserInfo> getUserById(String userId, boolean bypassCache) {
     logger.debug("GetUserById requested: {}", userId);
 
-    if (!bypassCache) {
-      Optional<UserInfo> cached = userInfoCache.getByUserId(userId);
-      if (cached.isPresent()) {
-        return cached;
-      }
+    Optional<UserInfo> cached = userInfoCache.getByUserId(userId);
+    if (cached.isPresent()) {
+      return cached;
     }
 
     // Coalesce concurrent lookups for the same userId
@@ -167,7 +173,8 @@ public class UserService {
       return Optional.of(userInfo);
 
     } catch (TimeoutException e) {
-      logger.error("GetUserById timed out after {}s for userId {}", MAILBOX_TIMEOUT_SECONDS, userId);
+      logger.error(
+          "GetUserById timed out after {}s for userId {}", MAILBOX_TIMEOUT_SECONDS, userId);
       return Optional.empty();
     } catch (MailboxServerException e) {
       logger.error("GetUserById server error for userId {}", userId, e);
@@ -179,17 +186,11 @@ public class UserService {
   }
 
   public Optional<UserInfo> getUserByEmail(String email) {
-    return getUserByEmail(email, false);
-  }
-
-  public Optional<UserInfo> getUserByEmail(String email, boolean bypassCache) {
     logger.debug("GetUserByEmail requested: {}", email);
 
-    if (!bypassCache) {
-      Optional<UserInfo> cached = userInfoCache.getByEmail(email);
-      if (cached.isPresent()) {
-        return cached;
-      }
+    Optional<UserInfo> cached = userInfoCache.getByEmail(email);
+    if (cached.isPresent()) {
+      return cached;
     }
 
     // Coalesce concurrent lookups for the same email
@@ -211,7 +212,8 @@ public class UserService {
       return Optional.of(userInfo);
 
     } catch (TimeoutException e) {
-      logger.error("GetUserByEmail timed out after {}s for email {}", MAILBOX_TIMEOUT_SECONDS, email);
+      logger.error(
+          "GetUserByEmail timed out after {}s for email {}", MAILBOX_TIMEOUT_SECONDS, email);
       return Optional.empty();
     } catch (MailboxServerException e) {
       logger.error("GetUserByEmail server error for email {}", email, e);
@@ -223,30 +225,22 @@ public class UserService {
   }
 
   public List<UserInfo> getUsers(List<String> userIds) {
-    return getUsers(userIds, false);
-  }
-
-  public List<UserInfo> getUsers(List<String> userIds, boolean bypassCache) {
     List<String> uniqueIds = userIds.stream().distinct().toList();
     Map<String, UserInfo> results = new HashMap<>();
 
     List<String> misses = new ArrayList<>();
-    if (bypassCache) {
-      misses.addAll(uniqueIds);
-    } else {
-      for (String userId : uniqueIds) {
-        userInfoCache.getByUserId(userId).ifPresentOrElse(
-            info -> results.put(userId, info),
-            () -> misses.add(userId)
-        );
-      }
+    for (String userId : uniqueIds) {
+      userInfoCache
+          .getByUserId(userId)
+          .ifPresentOrElse(info -> results.put(userId, info), () -> misses.add(userId));
     }
 
     if (!misses.isEmpty()) {
       // Try batch endpoint first; fall back to individual lookups on error
       boolean batchSucceeded = false;
       try {
-        List<AccountInfo> batch = sendWithTimeout(() -> internalClient.batchGetAccountsByIds(misses));
+        List<AccountInfo> batch =
+            sendWithTimeout(() -> internalClient.batchGetAccountsByIds(misses));
         for (AccountInfo info : batch) {
           UserInfo userInfo = mapAccountInfoToUserInfo(info);
           if (userInfo.userId() != null) {
@@ -263,24 +257,26 @@ public class UserService {
 
       if (!batchSucceeded) {
         // Individual fallback: parallel
-        List<CompletableFuture<Void>> futures = misses.stream()
-            .map(userId -> CompletableFuture.supplyAsync(
-                    () -> getUserById(userId, false), executor)
-                .thenAccept(opt -> opt.ifPresent(info -> {
-                  synchronized (results) {
-                    results.put(info.userId(), info);
-                  }
-                })))
-            .toList();
+        List<CompletableFuture<Void>> futures =
+            misses.stream()
+                .map(
+                    userId ->
+                        CompletableFuture.supplyAsync(() -> getUserById(userId), executor)
+                            .thenAccept(
+                                opt ->
+                                    opt.ifPresent(
+                                        info -> {
+                                          synchronized (results) {
+                                            results.put(info.userId(), info);
+                                          }
+                                        })))
+                .toList();
         CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).join();
       }
     }
 
     // Return in original order, skipping not-found
-    return uniqueIds.stream()
-        .filter(results::containsKey)
-        .map(results::get)
-        .toList();
+    return uniqueIds.stream().filter(results::containsKey).map(results::get).toList();
   }
 
   // -- Cache helpers --
@@ -293,8 +289,7 @@ public class UserService {
     return userInfo;
   }
 
-  private UserMyself cacheMyself(
-      String userId, String token, UserMyself myself, long expiresAt) {
+  private UserMyself cacheMyself(String userId, String token, UserMyself myself, long expiresAt) {
     if (!userMyselfCache.isCacheEnabled()) {
       return myself;
     }
@@ -311,17 +306,20 @@ public class UserService {
         info.displayName() != null ? info.displayName() : "",
         info.domain() != null ? info.domain() : "",
         info.status() != null ? info.status().name().toUpperCase() : "ACTIVE",
-        info.isExternal() ? "GUEST" : "INTERNAL"
-    );
+        info.isExternalVirtualAccount() ? "GUEST" : "INTERNAL",
+        info.cosId(),
+        info.domainId(),
+        info.isGlobalAdmin());
   }
 
   UserMyself mapAccountInfoToUserMyself(AccountInfo info) {
-    List<String> features = info.features() != null
-        ? info.features().entrySet().stream()
-            .filter(Map.Entry::getValue)
-            .map(Map.Entry::getKey)
-            .toList()
-        : List.of();
+    List<String> features =
+        info.features() != null
+            ? info.features().entrySet().stream()
+                .filter(Map.Entry::getValue)
+                .map(Map.Entry::getKey)
+                .toList()
+            : List.of();
 
     return new UserMyself(
         info.id(),
@@ -329,11 +327,13 @@ public class UserService {
         info.displayName() != null ? info.displayName() : "",
         info.domain() != null ? info.domain() : "",
         info.status() != null ? info.status().name().toUpperCase() : "ACTIVE",
-        info.isExternal() ? "GUEST" : "INTERNAL",
+        info.isExternalVirtualAccount() ? "GUEST" : "INTERNAL",
+        info.cosId(),
+        info.domainId(),
+        info.isGlobalAdmin(),
         info.locale() != null ? info.locale() : Locale.ENGLISH.toString(),
         features,
-        info.capabilities() != null ? info.capabilities() : Map.of()
-    );
+        info.capabilities() != null ? info.capabilities() : Map.of());
   }
 
   private static final long COALESCE_TIMEOUT_SECONDS = 5;
@@ -345,13 +345,11 @@ public class UserService {
   }
 
   /**
-   * Deduplicates concurrent lookups for the same key. Secondary threads wait up to
-   * {@link #COALESCE_TIMEOUT_SECONDS} seconds before giving up.
+   * Deduplicates concurrent lookups for the same key. Secondary threads wait up to {@link
+   * #COALESCE_TIMEOUT_SECONDS} seconds before giving up.
    */
   private <T> T coalesce(
-      ConcurrentHashMap<String, CompletableFuture<T>> inflight,
-      String key,
-      Supplier<T> loader) {
+      ConcurrentHashMap<String, CompletableFuture<T>> inflight, String key, Supplier<T> loader) {
     CompletableFuture<T> future = new CompletableFuture<>();
     CompletableFuture<T> existing = inflight.putIfAbsent(key, future);
     if (existing != null) {
@@ -381,19 +379,20 @@ public class UserService {
     }
   }
 
-  /**
-   * Executes a mailbox call with a timeout of {@link #MAILBOX_TIMEOUT_SECONDS} seconds.
-   */
+  /** Executes a mailbox call with a timeout of {@link #MAILBOX_TIMEOUT_SECONDS} seconds. */
   private <R> R sendWithTimeout(MailboxCall<R> call)
       throws MailboxClientException, MailboxServerException, TimeoutException {
     try {
-      return CompletableFuture.supplyAsync(() -> {
-        try {
-          return call.call();
-        } catch (MailboxClientException | MailboxServerException e) {
-          throw new CompletionException(e);
-        }
-      }, executor).get(MAILBOX_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+      return CompletableFuture.supplyAsync(
+              () -> {
+                try {
+                  return call.call();
+                } catch (MailboxClientException | MailboxServerException e) {
+                  throw new CompletionException(e);
+                }
+              },
+              executor)
+          .get(MAILBOX_TIMEOUT_SECONDS, TimeUnit.SECONDS);
     } catch (java.util.concurrent.ExecutionException e) {
       Throwable cause = e.getCause();
       if (cause instanceof CompletionException ce) cause = ce.getCause();

@@ -29,8 +29,7 @@ public class LdapConnectionPoolProducer {
   @Inject
   public LdapConnectionPoolProducer(
       NetworkingConfigService networkingConfigService,
-      ApplicationConfigService applicationConfigService
-  ) {
+      ApplicationConfigService applicationConfigService) {
     this.networkingConfigService = networkingConfigService;
     this.applicationConfigService = applicationConfigService;
   }
@@ -38,14 +37,19 @@ public class LdapConnectionPoolProducer {
   @Produces
   @Singleton
   public LDAPConnectionPool ldapConnectionPool() throws LDAPException {
-    String urls = required(networkingConfigService.get(NetworkingConfig.LDAP_URL).orElse(null),
-        NetworkingConfig.LDAP_URL);
-    String bindDn = applicationConfigService.get(ApplicationConfig.LDAP_BIND_DN)
-        .filter(value -> !value.isBlank())
-        .orElse(DEFAULT_LDAP_BIND_DN);
-    String bindPassword = required(
-        applicationConfigService.get(ApplicationConfig.LDAP_BIND_PASSWORD).orElse(null),
-        ApplicationConfig.LDAP_BIND_PASSWORD);
+    String urls =
+        required(
+            networkingConfigService.get(NetworkingConfig.LDAP_URL).orElse(null),
+            NetworkingConfig.LDAP_URL);
+    String bindDn =
+        applicationConfigService
+            .get(ApplicationConfig.LDAP_BIND_DN)
+            .filter(value -> !value.isBlank())
+            .orElse(DEFAULT_LDAP_BIND_DN);
+    String bindPassword =
+        required(
+            applicationConfigService.get(ApplicationConfig.LDAP_BIND_PASSWORD).orElse(null),
+            ApplicationConfig.LDAP_BIND_PASSWORD);
 
     logger.info("Connecting to LDAP at {} as {}", urls, bindDn);
     return new LDAPConnectionPool(

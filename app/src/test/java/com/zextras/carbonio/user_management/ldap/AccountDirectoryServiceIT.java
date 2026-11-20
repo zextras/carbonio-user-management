@@ -34,7 +34,8 @@ class AccountDirectoryServiceIT {
   private static final String ACCOUNT_COS_ID = "cos-1111-2222-3333-444444444444";
   private static final String ACCOUNT_WITHOUT_COS_ID = "b2c3d4e5-f6a7-8901-bcde-f12345678901";
   private static final String DOMAIN_WITHOUT_COS_ID = "11111111-2222-3333-4444-555555555555";
-  private static final String ACCOUNT_IN_DOMAIN_WITHOUT_COS_ID = "c3d4e5f6-a7b8-9012-cdef-123456789012";
+  private static final String ACCOUNT_IN_DOMAIN_WITHOUT_COS_ID =
+      "c3d4e5f6-a7b8-9012-cdef-123456789012";
 
   private static GenericContainer<?> ldapContainer;
   private static LDAPConnectionPool pool;
@@ -43,14 +44,22 @@ class AccountDirectoryServiceIT {
 
   @BeforeAll
   static void setUp() throws Exception {
-    ldapContainer = new GenericContainer<>(LDAP_IMAGE)
-        .withExposedPorts(LDAP_PORT)
-        .waitingFor(Wait.forLogMessage(".*slapd starting.*", 2)
-            .withStartupTimeout(Duration.ofMinutes(5)));
+    ldapContainer =
+        new GenericContainer<>(LDAP_IMAGE)
+            .withExposedPorts(LDAP_PORT)
+            .waitingFor(
+                Wait.forLogMessage(".*slapd starting.*", 2)
+                    .withStartupTimeout(Duration.ofMinutes(5)));
     ldapContainer.start();
 
-    pool = new LDAPConnectionPool(new LDAPConnection(
-        ldapContainer.getHost(), ldapContainer.getMappedPort(LDAP_PORT), BIND_DN, BIND_PASSWORD), 2);
+    pool =
+        new LDAPConnectionPool(
+            new LDAPConnection(
+                ldapContainer.getHost(),
+                ldapContainer.getMappedPort(LDAP_PORT),
+                BIND_DN,
+                BIND_PASSWORD),
+            2);
     service = new AccountDirectoryService(pool, BASE_DN);
 
     loadLdif("ldap/account-directory-test-data.ldif");
@@ -82,8 +91,9 @@ class AccountDirectoryServiceIT {
   @Test
   void fallsBackToGlobalDefaultCos() {
     assertThat(service.findByAccountId(ACCOUNT_IN_DOMAIN_WITHOUT_COS_ID))
-        .contains(new AccountDirectory(
-            ACCOUNT_IN_DOMAIN_WITHOUT_COS_ID, defaultCosId, DOMAIN_WITHOUT_COS_ID));
+        .contains(
+            new AccountDirectory(
+                ACCOUNT_IN_DOMAIN_WITHOUT_COS_ID, defaultCosId, DOMAIN_WITHOUT_COS_ID));
   }
 
   @Test
@@ -105,18 +115,21 @@ class AccountDirectoryServiceIT {
   }
 
   private static String lookupDefaultCosId() throws Exception {
-    SearchResult result = pool.search(BASE_DN, SearchScope.SUB,
-        Filter.createANDFilter(
-            Filter.createEqualityFilter("cn", "default"),
-            Filter.createEqualityFilter("objectClass", "zimbraCOS")),
-        "zimbraId");
+    SearchResult result =
+        pool.search(
+            BASE_DN,
+            SearchScope.SUB,
+            Filter.createANDFilter(
+                Filter.createEqualityFilter("cn", "default"),
+                Filter.createEqualityFilter("objectClass", "zimbraCOS")),
+            "zimbraId");
     assertThat(result.getEntryCount()).as("default COS in the LDAP image").isPositive();
     return result.getSearchEntries().getFirst().getAttributeValue("zimbraId");
   }
 
   private static void loadLdif(String resource) throws Exception {
-    try (InputStream stream = AccountDirectoryServiceIT.class.getClassLoader()
-        .getResourceAsStream(resource);
+    try (InputStream stream =
+            AccountDirectoryServiceIT.class.getClassLoader().getResourceAsStream(resource);
         LDIFReader reader = new LDIFReader(stream)) {
       Entry entry;
       while ((entry = reader.readEntry()) != null) {

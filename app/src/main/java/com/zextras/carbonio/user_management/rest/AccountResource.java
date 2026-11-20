@@ -10,10 +10,11 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.jboss.resteasy.reactive.RestResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Path("/accounts")
+@Path("/internal/accounts")
 @Produces(MediaType.APPLICATION_JSON)
 public class AccountResource {
 
@@ -28,15 +29,15 @@ public class AccountResource {
 
   @GET
   @Path("/{accountId}")
-  @RequiresTokenValidation
-  public Response getDirectory(@PathParam("accountId") String accountId) {
+  public RestResponse<AccountDirectoryDto> getDirectory(@PathParam("accountId") String accountId) {
     try {
-      return accountDirectoryService.findByAccountId(accountId)
-          .map(d -> Response.ok(AccountDirectoryDto.from(d)).build())
-          .orElse(Response.status(Response.Status.NOT_FOUND).build());
+      return accountDirectoryService
+          .findByAccountId(accountId)
+          .map(d -> RestResponse.ok(AccountDirectoryDto.from(d)))
+          .orElseGet(() -> RestResponse.status(Response.Status.NOT_FOUND));
     } catch (DirectoryException e) {
       logger.error("Directory lookup failed for account {}", accountId, e);
-      return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+      return RestResponse.status(Response.Status.INTERNAL_SERVER_ERROR);
     }
   }
 }

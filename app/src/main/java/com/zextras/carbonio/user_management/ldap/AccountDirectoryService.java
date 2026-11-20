@@ -39,9 +39,13 @@ public class AccountDirectoryService {
 
   public Optional<AccountDirectory> findByAccountId(String accountId) {
     try {
-      Optional<SearchResultEntry> account = searchOne(
-          ZimbraObjectClasses.ACCOUNT, ZimbraAttributes.ID, accountId,
-          ZimbraAttributes.COS_ID, ZimbraAttributes.MAIL);
+      Optional<SearchResultEntry> account =
+          searchOne(
+              ZimbraObjectClasses.ACCOUNT,
+              ZimbraAttributes.ID,
+              accountId,
+              ZimbraAttributes.COS_ID,
+              ZimbraAttributes.MAIL);
       if (account.isEmpty()) {
         return Optional.empty();
       }
@@ -53,9 +57,13 @@ public class AccountDirectoryService {
       }
       String domainName = mail.substring(mail.indexOf('@') + 1);
 
-      Optional<SearchResultEntry> domain = searchOne(
-          ZimbraObjectClasses.DOMAIN, ZimbraAttributes.DOMAIN_NAME, domainName,
-          ZimbraAttributes.ID, ZimbraAttributes.DOMAIN_DEFAULT_COS_ID);
+      Optional<SearchResultEntry> domain =
+          searchOne(
+              ZimbraObjectClasses.DOMAIN,
+              ZimbraAttributes.DOMAIN_NAME,
+              domainName,
+              ZimbraAttributes.ID,
+              ZimbraAttributes.DOMAIN_DEFAULT_COS_ID);
       if (domain.isEmpty()) {
         logger.warn("Domain {} not found for account {}", domainName, accountId);
         return Optional.empty();
@@ -66,26 +74,28 @@ public class AccountDirectoryService {
         cosId = domain.get().getAttributeValue(ZimbraAttributes.DOMAIN_DEFAULT_COS_ID);
       }
       if (cosId == null) {
-        cosId = searchOne(
-            ZimbraObjectClasses.COS, ZimbraAttributes.COMMON_NAME,
-            ZimbraObjectClasses.DEFAULT_COS_NAME, ZimbraAttributes.ID)
-            .map(entry -> entry.getAttributeValue(ZimbraAttributes.ID))
-            .orElse(null);
+        cosId =
+            searchOne(
+                    ZimbraObjectClasses.COS, ZimbraAttributes.COMMON_NAME,
+                    ZimbraObjectClasses.DEFAULT_COS_NAME, ZimbraAttributes.ID)
+                .map(entry -> entry.getAttributeValue(ZimbraAttributes.ID))
+                .orElse(null);
       }
 
-      return Optional.of(new AccountDirectory(
-          accountId, cosId, domain.get().getAttributeValue(ZimbraAttributes.ID)));
+      return Optional.of(
+          new AccountDirectory(
+              accountId, cosId, domain.get().getAttributeValue(ZimbraAttributes.ID)));
     } catch (LDAPException e) {
       throw new DirectoryException("LDAP query failed for account " + accountId, e);
     }
   }
 
   private Optional<SearchResultEntry> searchOne(
-      String objectClass, String attribute, String value, String... returned
-  ) throws LDAPException {
-    Filter filter = Filter.createANDFilter(
-        Filter.createEqualityFilter(attribute, value),
-        Filter.createEqualityFilter(ZimbraObjectClasses.OBJECT_CLASS, objectClass));
+      String objectClass, String attribute, String value, String... returned) throws LDAPException {
+    Filter filter =
+        Filter.createANDFilter(
+            Filter.createEqualityFilter(attribute, value),
+            Filter.createEqualityFilter(ZimbraObjectClasses.OBJECT_CLASS, objectClass));
     SearchResult result = ldap.search(new SearchRequest(baseDn, SearchScope.SUB, filter, returned));
     return result.getSearchEntries().stream().findFirst();
   }

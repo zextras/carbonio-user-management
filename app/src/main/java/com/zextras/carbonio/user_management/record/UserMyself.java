@@ -14,21 +14,35 @@ public record UserMyself(
     String domain,
     String status,
     String type,
+    String cosId,
+    String domainId,
+    boolean isGlobalAdmin,
     String locale,
     List<String> features,
-    Map<String, String> capabilities
-) {
+    Map<String, String> capabilities) {
 
   public UserMyself(
-      String userId, String email, String fullName, String domain,
-      String status, String type, String locale,
-      List<String> features, Map<String, String> capabilities) {
+      String userId,
+      String email,
+      String fullName,
+      String domain,
+      String status,
+      String type,
+      String cosId,
+      String domainId,
+      boolean isGlobalAdmin,
+      String locale,
+      List<String> features,
+      Map<String, String> capabilities) {
     this.userId = userId;
     this.email = email;
     this.fullName = fullName;
     this.domain = domain;
     this.status = status;
     this.type = type;
+    this.cosId = cosId;
+    this.domainId = domainId;
+    this.isGlobalAdmin = isGlobalAdmin;
     this.locale = locale;
     this.features = features != null ? List.copyOf(features) : List.of();
     this.capabilities = capabilities != null ? Map.copyOf(capabilities) : Map.of();

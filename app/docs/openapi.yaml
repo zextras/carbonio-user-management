@@ -1,11 +1,54 @@
-# SPDX-FileCopyrightText: 2026 Zextras <https://www.zextras.com>
-#
-# SPDX-License-Identifier: AGPL-3.0-only
-
 ---
 openapi: 3.1.0
+components:
+  schemas:
+    AccountDirectoryDto:
+      type: object
+      properties:
+        accountId:
+          type: string
+        cosId:
+          type: string
+        domainId:
+          type: string
+    MyselfDto:
+      type: object
+      properties:
+        info:
+          $ref: "#/components/schemas/UserInfoDto"
+        locale:
+          type: string
+        features:
+          type: array
+          items:
+            type: string
+        capabilities:
+          type: object
+          additionalProperties:
+            type: string
+    UserInfoDto:
+      type: object
+      properties:
+        userId:
+          type: string
+        email:
+          type: string
+        fullName:
+          type: string
+        domain:
+          type: string
+        status:
+          type: string
+        type:
+          type: string
+        cosId:
+          type: string
+        domainId:
+          type: string
+        isGlobalAdmin:
+          type: boolean
 paths:
-  /accounts/{accountId}:
+  /internal/accounts/{accountId}:
     get:
       parameters:
       - name: accountId
@@ -18,11 +61,12 @@ paths:
           description: OK
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: "#/components/schemas/AccountDirectoryDto"
       summary: Get Directory
       tags:
       - Account Resource
-  /users:
+  /internal/users:
     post:
       requestBody:
         content:
@@ -37,13 +81,16 @@ paths:
           description: OK
           content:
             application/json:
-              schema: {}
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserInfoDto"
         "400":
           description: Bad Request
       summary: Get Users
       tags:
       - User Resource
-  /users/email/{email}:
+  /internal/users/email/{email}:
     get:
       parameters:
       - name: email
@@ -56,11 +103,12 @@ paths:
           description: OK
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: "#/components/schemas/UserInfoDto"
       summary: Get By Email
       tags:
       - User Resource
-  /users/id/{userId}:
+  /internal/users/id/{userId}:
     get:
       parameters:
       - name: userId
@@ -73,18 +121,29 @@ paths:
           description: OK
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: "#/components/schemas/UserInfoDto"
       summary: Get By Id
       tags:
       - User Resource
-  /users/myself:
+  /internal/users/myself:
     get:
+      parameters:
+      - name: bypassCache
+        in: query
+        schema:
+          type: boolean
+      - name: ZM_AUTH_TOKEN
+        in: header
+        schema:
+          type: string
       responses:
         "200":
           description: OK
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: "#/components/schemas/MyselfDto"
       summary: Get Myself
       tags:
       - User Resource

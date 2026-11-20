@@ -33,11 +33,12 @@ class LdapServersTest {
   }
 
   @ParameterizedTest
-  @ValueSource(strings = {
-      "ldap://a.example.com:389 ldap://b.example.com:1389",
-      "ldap://a.example.com:389,ldap://b.example.com:1389",
-      "  ldap://a.example.com:389   ldap://b.example.com:1389  "
-  })
+  @ValueSource(
+      strings = {
+        "ldap://a.example.com:389 ldap://b.example.com:1389",
+        "ldap://a.example.com:389,ldap://b.example.com:1389",
+        "  ldap://a.example.com:389   ldap://b.example.com:1389  "
+      })
   void severalUrlsFailOverInOrder(String urls) {
     ServerSet set = LdapServers.from(urls);
 
@@ -58,22 +59,21 @@ class LdapServersTest {
   }
 
   @ParameterizedTest
-  @ValueSource(strings = {
-      "",
-      "   ",
-      "http://ldap.example.com",
-      "ldap://",
-      "not a url",
-      "ldap://a.example.com ldaps://b.example.com"
-  })
+  @ValueSource(
+      strings = {
+        "",
+        "   ",
+        "http://ldap.example.com",
+        "ldap://",
+        "not a url",
+        "ldap://a.example.com ldaps://b.example.com"
+      })
   void rejectsInvalidInput(String urls) {
-    assertThatThrownBy(() -> LdapServers.from(urls))
-        .isInstanceOf(IllegalArgumentException.class);
+    assertThatThrownBy(() -> LdapServers.from(urls)).isInstanceOf(IllegalArgumentException.class);
   }
 
   @Test
   void rejectsNull() {
-    assertThatThrownBy(() -> LdapServers.from(null))
-        .isInstanceOf(IllegalArgumentException.class);
+    assertThatThrownBy(() -> LdapServers.from(null)).isInstanceOf(IllegalArgumentException.class);
   }
 }

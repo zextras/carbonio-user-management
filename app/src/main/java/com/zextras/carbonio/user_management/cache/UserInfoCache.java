@@ -22,13 +22,13 @@ import java.util.concurrent.TimeUnit;
  * Cache for {@link UserInfo}, keyed by userId with a secondary index by email.
  *
  * <p>Each entry's TTL is read from config ({@code cache.userinfo-ttl}) at insertion time via
- * Caffeine's {@code VarExpiration} API, so config changes on Consul take effect immediately
- * without restart.
+ * Caffeine's {@code VarExpiration} API, so config changes on Consul take effect immediately without
+ * restart.
  *
- * <p>Caffeine doesn't support multi-key lookup natively. The secondary index
- * ({@code emailToUserId}) is a ConcurrentHashMap kept in sync via Caffeine's
- * {@code removalListener}: when an entry expires or is invalidated, the listener automatically
- * removes the corresponding email mapping.
+ * <p>Caffeine doesn't support multi-key lookup natively. The secondary index ({@code
+ * emailToUserId}) is a ConcurrentHashMap kept in sync via Caffeine's {@code removalListener}: when
+ * an entry expires or is invalidated, the listener automatically removes the corresponding email
+ * mapping.
  */
 @Singleton
 public class UserInfoCache {
@@ -45,20 +45,24 @@ public class UserInfoCache {
   public UserInfoCache(ApplicationConfigService configService, Ticker ticker) {
     this.configService = configService;
     this.emailToUserId = new ConcurrentHashMap<>();
-    this.ttlCache = Caffeine.newBuilder()
-        .ticker(ticker)
-        .expireAfterWrite(CONFIG_CACHE_SECONDS, TimeUnit.SECONDS)
-        .build();
+    this.ttlCache =
+        Caffeine.newBuilder()
+            .ticker(ticker)
+            .expireAfterWrite(CONFIG_CACHE_SECONDS, TimeUnit.SECONDS)
+            .build();
 
-    this.cache = Caffeine.newBuilder()
-        .ticker(ticker)
-        .expireAfter(Expiry.<String, UserInfo>creating((k, v) -> Duration.ofNanos(Long.MAX_VALUE)))
-        .removalListener((key, value, cause) -> {
-          if (value != null && value.email() != null) {
-            emailToUserId.remove(value.email());
-          }
-        })
-        .build();
+    this.cache =
+        Caffeine.newBuilder()
+            .ticker(ticker)
+            .expireAfter(
+                Expiry.<String, UserInfo>creating((k, v) -> Duration.ofNanos(Long.MAX_VALUE)))
+            .removalListener(
+                (key, value, cause) -> {
+                  if (value != null && value.email() != null) {
+                    emailToUserId.remove(value.email());
+                  }
+                })
+            .build();
   }
 
   public Optional<UserInfo> getByUserId(String userId) {
@@ -75,7 +79,10 @@ public class UserInfoCache {
 
   public void put(UserInfo userInfo) {
     long ttlSeconds = readTtlSeconds();
-    cache.policy().expireVariably().orElseThrow()
+    cache
+        .policy()
+        .expireVariably()
+        .orElseThrow()
         .put(userInfo.userId(), userInfo, Duration.ofSeconds(ttlSeconds));
     if (userInfo.email() != null) {
       emailToUserId.put(userInfo.email(), userInfo.userId());
@@ -96,9 +103,12 @@ public class UserInfoCache {
   }
 
   public long readTtlSeconds() {
-    return ttlCache.get("userinfo-ttl", k ->
-        configService.get(ApplicationConfig.CACHE_USERINFO_TTL)
-            .map(Long::parseLong)
-            .orElse(DEFAULT_TTL_SECONDS));
+    return ttlCache.get(
+        "userinfo-ttl",
+        k ->
+            configService
+                .get(ApplicationConfig.CACHE_USERINFO_TTL)
+                .map(Long::parseLong)
+                .orElse(DEFAULT_TTL_SECONDS));
   }
 }

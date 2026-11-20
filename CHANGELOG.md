@@ -1,3 +1,119 @@
+## [1.4.9](https://github.com/zextras/carbonio-user-management/compare/v1.4.8...v1.4.9) (2026-11-17)
+
+### Bug Fixes
+
+* [CO-3502] treat exit 143 as success for user-management and user-management-legacy ([#214](https://github.com/zextras/carbonio-user-management/issues/214)) ([cd8cbd8](https://github.com/zextras/carbonio-user-management/commit/cd8cbd88360ba308a28525fe10ab6c9ed5166be2))
+
+## [1.4.8](https://github.com/zextras/carbonio-user-management/compare/v1.4.7...v1.4.8) (2026-11-16)
+
+## [1.4.7](https://github.com/zextras/carbonio-user-management/compare/v1.4.6...v1.4.7) (2026-11-16)
+
+### Bug Fixes
+
+* [CO-3502] bind the user-management sidecar to its service lifecycle ([#213](https://github.com/zextras/carbonio-user-management/issues/213)) ([e851990](https://github.com/zextras/carbonio-user-management/commit/e851990ecf8770408107cc289a41f7e4bba9c31b))
+
+## [1.4.6](https://github.com/zextras/carbonio-user-management/compare/v1.4.5...v1.4.6) (2026-10-29)
+
+## [1.4.5](https://github.com/zextras/carbonio-user-management/compare/v1.4.4...v1.4.5) (2026-10-21)
+
+## [1.4.4](https://github.com/zextras/carbonio-user-management/compare/v1.4.3...v1.4.4) (2026-10-16)
+
+### Bug Fixes
+
+* **ci:** replace mapfile in checksum-verify for macOS bash 3.2 ([#205](https://github.com/zextras/carbonio-user-management/issues/205)) ([79bf1c4](https://github.com/zextras/carbonio-user-management/commit/79bf1c4ac18158760053df741bd4eb12c3edc13e)), closes [jenkins-lib-common#216](https://github.com/zextras/jenkins-lib-common/issues/216)
+
+## [1.4.3](https://github.com/zextras/carbonio-user-management/compare/v1.4.2...v1.4.3) (2026-10-15)
+
+## [1.4.2](https://github.com/zextras/carbonio-user-management/compare/v1.4.1...v1.4.2) (2026-10-13)
+
+## [1.4.1](https://github.com/zextras/carbonio-user-management/compare/v1.4.0...v1.4.1) (2026-09-25)
+
+## [1.4.0](https://github.com/zextras/carbonio-user-management/compare/v1.3.9...v1.4.0) (2026-09-23)
+
+### Features
+
+* expose cosId, domainId and isGlobalAdmin on user info ([#201](https://github.com/zextras/carbonio-user-management/issues/201)) ([c416bcc](https://github.com/zextras/carbonio-user-management/commit/c416bccecf0bd7040cf1977a4516ff6e984b2716))
+
+## [1.3.9](https://github.com/zextras/carbonio-user-management/compare/v1.3.8...v1.3.9) (2026-09-22)
+
+## [1.3.8](https://github.com/zextras/carbonio-user-management/compare/v1.3.7...v1.3.8) (2026-09-16)
+
+## [1.3.7](https://github.com/zextras/carbonio-user-management/compare/v1.3.6...v1.3.7) (2026-09-11)
+
+## [1.3.6](https://github.com/zextras/carbonio-user-management/compare/v1.3.5...v1.3.6) (2026-09-09)
+
+## [1.3.5](https://github.com/zextras/carbonio-user-management/compare/v1.3.4...v1.3.5) (2026-09-03)
+
+### Bug Fixes
+
+* **deps:** bump carbonio-mailbox-sdk to 1.19.2 ([#196](https://github.com/zextras/carbonio-user-management/issues/196)) ([0236ae8](https://github.com/zextras/carbonio-user-management/commit/0236ae80c36bef7f79fff5a25341b7c99a7f9436))
+
+## [1.3.4](https://github.com/zextras/carbonio-user-management/compare/v1.3.3...v1.3.4) (2026-09-02)
+
+## [1.3.3](https://github.com/zextras/carbonio-user-management/compare/v1.3.2...v1.3.3) (2026-08-14)
+
+## [1.3.2](https://github.com/zextras/carbonio-user-management/compare/v1.3.1...v1.3.2) (2026-08-14)
+
+## [1.3.1](https://github.com/zextras/carbonio-user-management/compare/v1.3.0...v1.3.1) (2026-08-06)
+
+## [1.3.0](https://github.com/zextras/carbonio-user-management/compare/v1.2.5...v1.3.0) (2026-07-27)
+
+## [1.2.5](https://github.com/zextras/carbonio-user-management/compare/v1.2.4...v1.2.5) (2026-07-13)
+
+## [1.2.4](https://github.com/zextras/carbonio-user-management/compare/v1.2.3...v1.2.4) (2026-07-10)
+
+## [1.2.3](https://github.com/zextras/carbonio-user-management/compare/v1.2.2...v1.2.3) (2026-07-10)
+
+## [1.2.2](https://github.com/zextras/carbonio-user-management/compare/v1.2.1...v1.2.2) (2026-07-02)
+
+## [1.2.1](https://github.com/zextras/carbonio-user-management/compare/v1.2.0...v1.2.1) (2026-06-22)
+
+### Bug Fixes
+
+* units: remove unneeded ReadOnlyPaths ([cc0362e](https://github.com/zextras/carbonio-user-management/commit/cc0362eb4b952ef254a13cca4042cc7d593f5d5b))
+
+## [1.2.0](https://github.com/zextras/carbonio-user-management/compare/v1.1.1...v1.2.0) (2026-06-21)
+
+### Features
+
+* **ci:** [IN-951] add arm64 platform to docker image builds ([#155](https://github.com/zextras/carbonio-user-management/issues/155)) ([9c9f62d](https://github.com/zextras/carbonio-user-management/commit/9c9f62d36e4b1d3c473ace204133f70ab4a0cc2a))
+
+### Bug Fixes
+
+* declare docs license centrally (header-less generated docs) ([#175](https://github.com/zextras/carbonio-user-management/issues/175)) ([1105343](https://github.com/zextras/carbonio-user-management/commit/11053430bf8ae4cd7aff46322018a65e9ecdd4c0))
+* derive guest/internal type from isExternalVirtualAccount ([#172](https://github.com/zextras/carbonio-user-management/issues/172)) ([f00307d](https://github.com/zextras/carbonio-user-management/commit/f00307d9ad9b63d64c0c3edb36873b05e4368c3d))
+
+## [1.1.1](https://github.com/zextras/carbonio-user-management/compare/v1.1.0...v1.1.1) (2026-05-27)
+
+### Bug Fixes
+
+* **deps:** add explicit service-discover-base dependency ([#154](https://github.com/zextras/carbonio-user-management/issues/154)) ([f01de4a](https://github.com/zextras/carbonio-user-management/commit/f01de4aada3c3349c522e009841497cb549213d5))
+
+## [1.1.0](https://github.com/zextras/carbonio-user-management/compare/v1.0.3...v1.1.0) (2026-05-04)
+
+### Features
+
+* add bypass_cache flag to all gRPC requests ([#147](https://github.com/zextras/carbonio-user-management/issues/147)) ([f9dd564](https://github.com/zextras/carbonio-user-management/commit/f9dd5647b5f5eb14c7989389d2df86347415a95f))
+* adopt carbonio-systemd-notify for native sd_notify readiness ([#136](https://github.com/zextras/carbonio-user-management/issues/136)) ([cabd380](https://github.com/zextras/carbonio-user-management/commit/cabd38007996037e8ea24c1aaa708d6651128d48))
+* convert config migration to Java class  ([#131](https://github.com/zextras/carbonio-user-management/issues/131)) ([762da60](https://github.com/zextras/carbonio-user-management/commit/762da60598b8b9cb5c2c5b5888ac627895fdfbae))
+* Quarkus refactor with gRPC and internal cache ([#121](https://github.com/zextras/carbonio-user-management/issues/121)) ([324e774](https://github.com/zextras/carbonio-user-management/commit/324e77404e501ee5cbce6ef3f5817369527737f2))
+* realistic ITs ([#137](https://github.com/zextras/carbonio-user-management/issues/137)) ([d212aa3](https://github.com/zextras/carbonio-user-management/commit/d212aa3ceedb65e5c983c268044843c1ec89cebf))
+* systemd hardening and service-discover.target orchestration ([#132](https://github.com/zextras/carbonio-user-management/issues/132)) ([3dee02c](https://github.com/zextras/carbonio-user-management/commit/3dee02ce2dcb3ece6d6f62bc536ed2f54e206d01))
+* use mailbox's internal endpoints instead of soaps ([#140](https://github.com/zextras/carbonio-user-management/issues/140)) ([00432f5](https://github.com/zextras/carbonio-user-management/commit/00432f5ae4ae9801d6d9294c29601860e22bb6f3))
+
+### Bug Fixes
+
+* bump sdk-parent to 1.7.1-1 for .proto inclusion in jar ([#128](https://github.com/zextras/carbonio-user-management/issues/128)) ([32594b9](https://github.com/zextras/carbonio-user-management/commit/32594b96f8ca14d14c9f3c723b35d5911fa6a46a))
+* remove submoduleChangelogPaths from Jenkinsfile ([#129](https://github.com/zextras/carbonio-user-management/issues/129)) ([3d25696](https://github.com/zextras/carbonio-user-management/commit/3d25696215553afae5bd75f9af4917031ddac3d6))
+* replace ubi9-minimal base image with eclipse-temurin:21-jdk-alpine ([#124](https://github.com/zextras/carbonio-user-management/issues/124)) ([b1f7fae](https://github.com/zextras/carbonio-user-management/commit/b1f7fae1aec5539702ca61bcfe655f750d365019))
+* set Consul service protocol to grpc ([#125](https://github.com/zextras/carbonio-user-management/issues/125)) ([6935046](https://github.com/zextras/carbonio-user-management/commit/693504643f0f3dc81ed880f662be38d05ea4da2a))
+* sidecar registration using jar ([#123](https://github.com/zextras/carbonio-user-management/issues/123)) ([3ea3d21](https://github.com/zextras/carbonio-user-management/commit/3ea3d210b376c8020161b8bf4cc77141cab80589))
+* update Consul health check path to Quarkus endpoint ([#122](https://github.com/zextras/carbonio-user-management/issues/122)) ([d004f6b](https://github.com/zextras/carbonio-user-management/commit/d004f6ba43235534b2bfee3457ab42ed2e23287e))
+
+### Performance Improvements
+
+* [CO-3523] define otel service name and version ([#138](https://github.com/zextras/carbonio-user-management/issues/138)) ([fb3eb92](https://github.com/zextras/carbonio-user-management/commit/fb3eb92a745dbf9c4888bf6d12fefa64abd5ef66))
+
 <!--
 SPDX-FileCopyrightText: 2026 2026 Zextras <https://www.zextras.com>
 

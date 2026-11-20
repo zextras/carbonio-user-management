@@ -23,13 +23,13 @@ import java.util.concurrent.TimeUnit;
 /**
  * Cache for {@link UserMyself}, keyed by auth token (one entry per user).
  *
- * <p>Each entry's TTL is computed at insertion time as the minimum of the config value
- * ({@code cache.usermyself-ttl}) and the remaining session lifetime from mailbox. If config
- * is absent, the session remaining time is used directly.
+ * <p>Each entry's TTL is computed at insertion time as the minimum of the config value ({@code
+ * cache.usermyself-ttl}) and the remaining session lifetime from mailbox. If config is absent, the
+ * session remaining time is used directly.
  *
  * <p>A reverse index {@code userIdToToken} enforces one-token-per-user: when a new token is
- * inserted for a userId that already has a cached token, the old entry is invalidated first.
- * The forward index {@code tokenToUserId} provides token-to-userId resolution.
+ * inserted for a userId that already has a cached token, the old entry is invalidated first. The
+ * forward index {@code tokenToUserId} provides token-to-userId resolution.
  *
  * <p>Both indexes are kept in sync via Caffeine's {@code removalListener}.
  */
@@ -51,24 +51,27 @@ public class UserMyselfCache {
     this.clock = clock;
     this.tokenToUserId = new ConcurrentHashMap<>();
     this.userIdToToken = new ConcurrentHashMap<>();
-    this.ttlCache = Caffeine.newBuilder()
-        .ticker(ticker)
-        .expireAfterWrite(CONFIG_CACHE_SECONDS, TimeUnit.SECONDS)
-        .build();
+    this.ttlCache =
+        Caffeine.newBuilder()
+            .ticker(ticker)
+            .expireAfterWrite(CONFIG_CACHE_SECONDS, TimeUnit.SECONDS)
+            .build();
 
-    this.cache = Caffeine.newBuilder()
-        .ticker(ticker)
-        .expireAfter(
-            Expiry.<String, UserMyself>creating((k, v) -> Duration.ofNanos(Long.MAX_VALUE)))
-        .removalListener((String key, UserMyself value, RemovalCause cause) -> {
-          if (key != null && cause != RemovalCause.REPLACED) {
-            String userId = tokenToUserId.remove(key);
-            if (userId != null) {
-              userIdToToken.remove(userId, key);
-            }
-          }
-        })
-        .build();
+    this.cache =
+        Caffeine.newBuilder()
+            .ticker(ticker)
+            .expireAfter(
+                Expiry.<String, UserMyself>creating((k, v) -> Duration.ofNanos(Long.MAX_VALUE)))
+            .removalListener(
+                (String key, UserMyself value, RemovalCause cause) -> {
+                  if (key != null && cause != RemovalCause.REPLACED) {
+                    String userId = tokenToUserId.remove(key);
+                    if (userId != null) {
+                      userIdToToken.remove(userId, key);
+                    }
+                  }
+                })
+            .build();
   }
 
   public Optional<UserMyself> getByToken(String token) {
@@ -85,12 +88,14 @@ public class UserMyselfCache {
 
     // Atomically update userId→token index; capture displaced token (if different)
     String[] displaced = {null};
-    userIdToToken.compute(userId, (uid, oldToken) -> {
-      if (oldToken != null && !oldToken.equals(token)) {
-        displaced[0] = oldToken;
-      }
-      return token;
-    });
+    userIdToToken.compute(
+        userId,
+        (uid, oldToken) -> {
+          if (oldToken != null && !oldToken.equals(token)) {
+            displaced[0] = oldToken;
+          }
+          return token;
+        });
 
     // Invalidate displaced token outside compute() to avoid reentrant lock from removal listener
     if (displaced[0] != null) {
@@ -113,17 +118,21 @@ public class UserMyselfCache {
   }
 
   public boolean isCacheEnabled() {
-    long configSeconds = ttlCache.get("usermyself-ttl", k ->
-        configService.get(ApplicationConfig.CACHE_USERMYSELF_TTL)
-            .map(Long::parseLong)
-            .orElse(TTL_ABSENT_SENTINEL));
+    long configSeconds =
+        ttlCache.get(
+            "usermyself-ttl",
+            k ->
+                configService
+                    .get(ApplicationConfig.CACHE_USERMYSELF_TTL)
+                    .map(Long::parseLong)
+                    .orElse(TTL_ABSENT_SENTINEL));
     return configSeconds == TTL_ABSENT_SENTINEL || configSeconds > 0;
   }
 
   /**
-   * Returns an epoch-millis expiration timestamp for a new entry, computed as
-   * {@code now + min(configTtl, sessionRemainingMs)}. Used by the service layer to pass
-   * as {@code expiresAt} to {@link #put}.
+   * Returns an epoch-millis expiration timestamp for a new entry, computed as {@code now +
+   * min(configTtl, sessionRemainingMs)}. Used by the service layer to pass as {@code expiresAt} to
+   * {@link #put}.
    */
   public long computeExpiresAt(long sessionRemainingMs) {
     return clock.millis() + capTtl(sessionRemainingMs).toMillis();
@@ -133,10 +142,14 @@ public class UserMyselfCache {
 
   private Duration capTtl(long remainingMs) {
     Duration remaining = Duration.ofMillis(remainingMs);
-    long configSeconds = ttlCache.get("usermyself-ttl", k ->
-        configService.get(ApplicationConfig.CACHE_USERMYSELF_TTL)
-            .map(Long::parseLong)
-            .orElse(TTL_ABSENT_SENTINEL));
+    long configSeconds =
+        ttlCache.get(
+            "usermyself-ttl",
+            k ->
+                configService
+                    .get(ApplicationConfig.CACHE_USERMYSELF_TTL)
+                    .map(Long::parseLong)
+                    .orElse(TTL_ABSENT_SENTINEL));
     if (configSeconds != TTL_ABSENT_SENTINEL) {
       return min(Duration.ofSeconds(configSeconds), remaining);
     }
