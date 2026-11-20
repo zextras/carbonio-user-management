@@ -37,6 +37,10 @@ List of third-party dependencies grouped by their license type.
         * SmallRye Certificate Generator - Private Key PEM utilities (io.smallrye.certs:smallrye-private-key-pem-parser:0.9.4 - https://github.com/cescoffier/certificate-generator)
         * wildfly-common (org.wildfly.common:wildfly-common:2.0.1 - http://www.jboss.org)
 
+    Apache License, Version 2:
+
+        * UnboundID LDAP SDK for Java (com.unboundid:unboundid-ldapsdk:7.0.4 - https://github.com/pingidentity/ldapsdk)
+
     Apache License, Version 2.0:
 
         * ArC - Runtime (io.quarkus.arc:arc:3.40.1 - https://github.com/quarkusio/quarkus)
@@ -174,11 +178,19 @@ List of third-party dependencies grouped by their license type.
 
         * Jakarta Expression Language API (jakarta.el:jakarta.el-api:6.0.1 - https://projects.eclipse.org/projects/ee4j.el)
 
+    GNU General Public License version 2 (GPLv2):
+
+        * UnboundID LDAP SDK for Java (com.unboundid:unboundid-ldapsdk:7.0.4 - https://github.com/pingidentity/ldapsdk)
+
     GNU General Public License, version 2 with the GNU Classpath Exception:
 
         * Eclipse Parsson (org.eclipse.parsson:parsson:1.1.9 - https://github.com/eclipse-ee4j/parsson/parsson)
         * Jakarta Expression Language API (jakarta.el:jakarta.el-api:6.0.1 - https://projects.eclipse.org/projects/ee4j.el)
         * Jakarta JSON Processing API (jakarta.json:jakarta.json-api:2.1.3 - https://github.com/eclipse-ee4j/jsonp)
+
+    GNU Lesser General Public License version 2.1 (LGPLv2.1):
+
+        * UnboundID LDAP SDK for Java (com.unboundid:unboundid-ldapsdk:7.0.4 - https://github.com/pingidentity/ldapsdk)
 
     GPL-2.0-with-classpath-exception:
 
@@ -294,6 +306,10 @@ List of third-party dependencies grouped by their license type.
     The BSD 2-Clause License:
 
         * Stax2 API (org.codehaus.woodstox:stax2-api:4.2.2 - http://github.com/FasterXML/stax2-api)
+
+    UnboundID LDAP SDK Free Use License:
+
+        * UnboundID LDAP SDK for Java (com.unboundid:unboundid-ldapsdk:7.0.4 - https://github.com/pingidentity/ldapsdk)
 
     Unknown license:
 

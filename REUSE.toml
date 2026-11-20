@@ -116,3 +116,17 @@ path = ".ci/**"
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2026 Zextras <https://www.zextras.com>"
 SPDX-License-Identifier = "AGPL-3.0-only"
+
+[[annotations]]
+path = [
+  "app/src/main/java/com/zextras/carbonio/user_management/ldap/**",
+  "app/src/main/java/com/zextras/carbonio/user_management/record/AccountDirectory.java",
+  "app/src/main/java/com/zextras/carbonio/user_management/rest/AccountResource.java",
+  "app/src/main/java/com/zextras/carbonio/user_management/rest/dto/AccountDirectoryDto.java",
+  "app/src/test/java/com/zextras/carbonio/user_management/ldap/**",
+  "app/src/test/java/com/zextras/carbonio/user_management/rest/AccountResourceTest.java",
+  "app/src/test/resources/ldap/**",
+]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 Zextras <https://www.zextras.com>"
+SPDX-License-Identifier = "AGPL-3.0-only"

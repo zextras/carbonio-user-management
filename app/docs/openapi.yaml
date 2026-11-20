@@ -2,6 +2,15 @@
 openapi: 3.1.0
 components:
   schemas:
+    AccountDirectoryDto:
+      type: object
+      properties:
+        accountId:
+          type: string
+        cosId:
+          type: string
+        domainId:
+          type: string
     MyselfDto:
       type: object
       properties:
@@ -39,6 +48,24 @@ components:
         isGlobalAdmin:
           type: boolean
 paths:
+  /internal/accounts/{accountId}:
+    get:
+      parameters:
+      - name: accountId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccountDirectoryDto"
+      summary: Get Directory
+      tags:
+      - Account Resource
   /internal/users:
     post:
       requestBody:
