@@ -28,8 +28,8 @@ import java.util.function.Supplier;
 @ApplicationScoped
 public class LdapDirectory {
 
-  public static final String CONFIG_DN = "cn=config,cn=zimbra";
-  public static final String GLOBAL_GRANT_DN = "cn=globalgrant,cn=zimbra";
+  static final String CONFIG_DN = "cn=config,cn=zimbra";
+  static final String GLOBAL_GRANT_DN = "cn=globalgrant,cn=zimbra";
   static final Duration SHARED_ENTRY_TTL = Duration.ofSeconds(60);
 
   private final LDAPInterface ldap;
@@ -111,6 +111,10 @@ public class LdapDirectory {
   }
 
   public Optional<Entry> domainByName(String name) {
+    return domainByName(name, Read.CACHED);
+  }
+
+  public Optional<Entry> domainByName(String name, Read read) {
     String ascii = toAsciiDomain(name);
     return shared(
         "domain:name:" + ascii,
@@ -119,10 +123,14 @@ public class LdapDirectory {
                 Filter.createANDFilter(
                     Filter.createEqualityFilter(ZimbraAttributes.DOMAIN_NAME, ascii),
                     Filter.createEqualityFilter(
-                        ZimbraObjectClasses.OBJECT_CLASS, ZimbraObjectClasses.DOMAIN))));
+                        ZimbraObjectClasses.OBJECT_CLASS, ZimbraObjectClasses.DOMAIN))), read);
   }
 
   public Optional<Entry> domainById(String id) {
+    return domainById(id, Read.CACHED);
+  }
+
+  public Optional<Entry> domainById(String id, Read read) {
     return shared(
         "domain:id:" + id,
         () ->
@@ -130,10 +138,14 @@ public class LdapDirectory {
                 Filter.createANDFilter(
                     Filter.createEqualityFilter(ZimbraAttributes.ID, id),
                     Filter.createEqualityFilter(
-                        ZimbraObjectClasses.OBJECT_CLASS, ZimbraObjectClasses.DOMAIN))));
+                        ZimbraObjectClasses.OBJECT_CLASS, ZimbraObjectClasses.DOMAIN))), read);
   }
 
   public Optional<Entry> cosById(String id) {
+    return cosById(id, Read.CACHED);
+  }
+
+  public Optional<Entry> cosById(String id, Read read) {
     return shared(
         "cos:id:" + id,
         () ->
@@ -141,10 +153,14 @@ public class LdapDirectory {
                 Filter.createANDFilter(
                     Filter.createEqualityFilter(ZimbraAttributes.ID, id),
                     Filter.createEqualityFilter(
-                        ZimbraObjectClasses.OBJECT_CLASS, ZimbraObjectClasses.COS))));
+                        ZimbraObjectClasses.OBJECT_CLASS, ZimbraObjectClasses.COS))), read);
   }
 
   public Optional<Entry> cosByName(String name) {
+    return cosByName(name, Read.CACHED);
+  }
+
+  public Optional<Entry> cosByName(String name, Read read) {
     return shared(
         "cos:name:" + name.toLowerCase(Locale.ROOT),
         () ->
@@ -152,7 +168,7 @@ public class LdapDirectory {
                 Filter.createANDFilter(
                     Filter.createEqualityFilter(ZimbraAttributes.COMMON_NAME, name),
                     Filter.createEqualityFilter(
-                        ZimbraObjectClasses.OBJECT_CLASS, ZimbraObjectClasses.COS))));
+                        ZimbraObjectClasses.OBJECT_CLASS, ZimbraObjectClasses.COS))), read);
   }
 
   public Optional<Entry> serverByName(String name) {
@@ -177,8 +193,8 @@ public class LdapDirectory {
     return config.orElseThrow(() -> new DirectoryException("Global config entry not found", null));
   }
 
-  public Optional<Entry> globalGrant() {
-    return shared("globalgrant", () -> entryByDn(GLOBAL_GRANT_DN));
+  public Optional<Entry> globalGrant(Read read) {
+    return shared("globalgrant", () -> entryByDn(GLOBAL_GRANT_DN), read);
   }
 
   private Optional<Entry> readConfig() {
@@ -238,10 +254,21 @@ public class LdapDirectory {
         ZimbraObjectClasses.OBJECT_CLASS, ZimbraObjectClasses.ACCOUNT);
   }
 
+  public enum Read {
+    CACHED,
+    FRESH
+  }
+
   private Optional<Entry> shared(String key, Supplier<Optional<Entry>> loader) {
-    Optional<Entry> cached = sharedEntries.getIfPresent(key);
-    if (cached != null) {
-      return cached;
+    return shared(key, loader, Read.CACHED);
+  }
+
+  private Optional<Entry> shared(String key, Supplier<Optional<Entry>> loader, Read read) {
+    if (read == Read.CACHED) {
+      Optional<Entry> cached = sharedEntries.getIfPresent(key);
+      if (cached != null) {
+        return cached;
+      }
     }
     Optional<Entry> loaded = loader.get();
     sharedEntries.put(key, loaded);

@@ -36,10 +36,6 @@ public record ResolvedAccount(
     return isTrue(account, ZimbraAttributes.IS_ADMIN_ACCOUNT);
   }
 
-  public boolean isDelegatedAdmin() {
-    return isTrue(account, ZimbraAttributes.IS_DELEGATED_ADMIN_ACCOUNT);
-  }
-
   public String accountOrCos(String attribute) {
     String own = account.getAttributeValue(attribute);
     if (own != null) {

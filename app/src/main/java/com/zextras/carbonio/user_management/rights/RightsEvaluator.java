@@ -4,6 +4,7 @@ import com.unboundid.ldap.sdk.Entry;
 import com.zextras.carbonio.user_management.UserManagementServiceConfig.ZimbraAttributes;
 import com.zextras.carbonio.user_management.ldap.AccountResolver;
 import com.zextras.carbonio.user_management.ldap.LdapDirectory;
+import com.zextras.carbonio.user_management.ldap.LdapDirectory.Read;
 import com.zextras.carbonio.user_management.rights.GroupMemberships.Membership;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -21,7 +22,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-// Mirrors mailbox HardRules, CheckPresetRight and CheckAttrRight for admin rights.
+// Mirrors mailbox HardRules, CheckPresetRight and CheckAttrRight; entries with grants are read uncached.
 @ApplicationScoped
 public class RightsEvaluator {
 
@@ -115,7 +116,7 @@ public class RightsEvaluator {
       }
       default -> {}
     }
-    directory.globalGrant().ifPresent(global -> addLevel(levels, aces(global), false));
+    directory.globalGrant(Read.FRESH).ifPresent(global -> addLevel(levels, aces(global), false));
     return levels;
   }
 
@@ -376,7 +377,7 @@ public class RightsEvaluator {
     int dot = name.indexOf('.');
     while (dot >= 0) {
       name = name.substring(dot + 1);
-      directory.domainByName(name).ifPresent(parents::add);
+      directory.domainByName(name, Read.FRESH).ifPresent(parents::add);
       dot = name.indexOf('.');
     }
     return parents;
@@ -384,7 +385,7 @@ public class RightsEvaluator {
 
   private Optional<Entry> domainOfName(String name) {
     int at = name == null ? -1 : name.lastIndexOf('@');
-    return at < 0 ? Optional.empty() : directory.domainByName(name.substring(at + 1));
+    return at < 0 ? Optional.empty() : directory.domainByName(name.substring(at + 1), Read.FRESH);
   }
 
   private static String groupName(Entry group) {

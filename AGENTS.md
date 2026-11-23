@@ -7,13 +7,15 @@ SPDX-License-Identifier: AGPL-3.0-only
 # Carbonio User Management Service
 
 ## Description
-Quarkus microservice that exposes user profile data (UserInfo, UserMyself) via REST and gRPC. Fetches data from Carbonio Mailbox via internal REST API and caches results in Caffeine.
+Quarkus microservice that exposes user profile data (UserInfo, UserMyself) and admin rights checks via REST. Reads everything from LDAP (no mailbox calls) and caches user data in Caffeine.
 
 ## Architecture
-- **Multi-module Maven**: `sdk` (gRPC protobuf stubs), `app` (Quarkus service)
+- **Multi-module Maven**: `sdk` (REST SDK generated from `app/docs/openapi.yaml`), `app` (Quarkus service)
 - **Cache**: Caffeine in-process cache with configurable TTL via Consul KV (`cache.userinfo-ttl`, `cache.usermyself-ttl`)
-- **Upstream**: Mailbox internal REST API (`carbonio-mailbox-internal-api`, port 20001 via Consul mesh)
-- **Endpoints**: REST (`/users/*`) + gRPC (UserManagementService)
+- **Upstream**: LDAP only (UnboundID pool). URL, bind DN and password come from localconfig through `package/carbonio-user-management-ldap-config` (ExecStartPre, written to `/run/carbonio-user-management/ldap.properties`); StartTLS follows mailbox's localconfig rule
+- **Auth tokens**: `/myself` verifies `ZM_AUTH_TOKEN` locally (HmacSHA1 with `zimbraAuthTokenKey`, expiry, `zimbraAuthTokens` registration, validity value)
+- **Rights**: `/internal/rights*` mirrors mailbox carbonio-authz (HardRules, preset and attribute rights, groups, domains, global grant) for account, domain and cos targets; the catalog is the `mailbox-attribute-manager` artifact, keep its version aligned with mailbox
+- **Endpoints**: REST `/internal/users/*`, `/internal/rights*` (mesh-gated, no caller authorization)
 - **Config**: Consul-backed via `carbonio-quarkus-extensions-bootstrap` (`ApplicationConfigService`)
 - **Coalescing**: Concurrent requests for the same key are deduplicated via `ConcurrentHashMap<String, CompletableFuture>` in `UserService`
 
@@ -23,10 +25,13 @@ app/src/main/java/com/zextras/carbonio/user_management/
   UserManagementServiceConfig.java   — config keys, constants
   cache/UserInfoCache.java           — Caffeine cache for UserInfo (by userId + email index)
   cache/UserMyselfCache.java         — Caffeine cache for UserMyself (by token + userId index)
-  service/UserService.java           — orchestration: cache → internal REST API fallback
-  grpc/GrpcHandler.java              — gRPC endpoint
+  service/UserService.java           — orchestration: cache → UserDirectory (LDAP) fallback
+  ldap/LdapDirectory.java            — LDAP reads; domain/COS/config/server entries cached 60 s
+  ldap/UserMapper.java               — effective COS, locale, features, capabilities as mailbox computes them
+  auth/AuthTokenVerifier.java        — local ZM_AUTH_TOKEN verification
+  rights/RightsEvaluator.java        — ACL decisions (mailbox ACLAccessManager semantics)
   rest/UserResource.java             — REST endpoint (myself's token is an explicit @CookieParam)
-  producer/MailboxClientProducer.java — mailbox internal REST API client CDI producer
+  ldap/LdapConnectionPoolProducer.java — LDAP pool (timeouts, StartTLS)
 ```
 
 ## Build & Run
@@ -53,12 +58,11 @@ mvn -pl app quarkus:dev
 - Records for immutable value types (`UserInfo`, `UserMyself`)
 - Conventional commits (`feat:`, `fix:`, `chore:`)
 - Unit tests: plain JUnit5 + Mockito (no CDI container)
-- Integration tests: `@QuarkusIntegrationTest` + `MailboxStackTestResource` (Testcontainers)
+- Integration tests: `@QuarkusIntegrationTest` + `MailboxStackTestResource` (Testcontainers); mailbox runs only to issue tokens and provision LDAP, `RightsIT` compares rights with `zmprov -l checkRight`
 
 ## Things to Know
 - Test and coverage standard (Surefire/Failsafe, JaCoCo, Sonar paths) comes from `carbonio-quarkus-extensions-parent`; do not add skip flags, `<argLine>` or JaCoCo executions. Extra JVM flags for tests and for the app started by `@QuarkusIntegrationTest` go in the `testJvmArgs` property of the root pom
 - Caffeine TTL is read from Consul at insertion time (not at startup), cached for 60s
 - `UserMyselfCache` enforces one-token-per-user via a reverse index
 - Integration tests need a real Carbonio mailbox stack (Docker images from internal registry)
-- Branch `quarkus-refactor-and-cache` is the active development branch
 - `carbonio-quarkus-extensions-bootstrap` is declared explicitly in `app/pom.xml` because removing `carbonio-quarkus-extensions-rate-limit` (which used to pull it in transitively) would otherwise lose `ConfigKey`/`ApplicationConfigService` from compile scope

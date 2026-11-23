@@ -313,6 +313,31 @@ class RightsEvaluatorTest {
   }
 
   @Nested
+  class Freshness {
+
+    @Test
+    void grantChangesOnCachedEntriesAreSeenImmediately() throws Exception {
+      directory.domainByName("d1.io");
+      directory.globalGrant(LdapDirectory.Read.CACHED);
+      assertThat(check(QUOTA_ADMIN, "getDomainQuotaUsage", domain("d1.io"))).isFalse();
+
+      server.modify(
+          domainDn("d1.io"),
+          new Modification(
+              ModificationType.ADD, "zimbraACE", QUOTA_ADMIN + " usr getDomainQuotaUsage"));
+      server.modify(
+          "cn=globalgrant,cn=zimbra",
+          new Modification(ModificationType.ADD, "zimbraACE", QUOTA_ADMIN + " usr getAccountInfo"));
+
+      assertThat(check(QUOTA_ADMIN, "getAccountInfo", account(OTHER_DOMAIN_USER))).isTrue();
+      Target freshDomain =
+          new Target(
+              "domain", directory.domainByName("d1.io", LdapDirectory.Read.FRESH).orElseThrow());
+      assertThat(check(QUOTA_ADMIN, "getDomainQuotaUsage", freshDomain)).isTrue();
+    }
+  }
+
+  @Nested
   class OtherTargets {
 
     @Test

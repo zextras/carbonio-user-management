@@ -1,8 +1,10 @@
 package com.zextras.carbonio.user_management.rights;
 
 import com.unboundid.ldap.sdk.Entry;
+import com.zextras.carbonio.user_management.UserManagementServiceConfig.ZimbraAttributes;
 import com.zextras.carbonio.user_management.auth.AuthTokenVerifier;
 import com.zextras.carbonio.user_management.ldap.LdapDirectory;
+import com.zextras.carbonio.user_management.ldap.LdapDirectory.Read;
 import com.zextras.carbonio.user_management.rights.RightsEvaluator.Target;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -97,10 +99,14 @@ public class RightsService {
         new AccountRights(
             actorId,
             targetId,
-            "TRUE".equalsIgnoreCase(actor.get().getAttributeValue("zimbraIsAdminAccount")),
-            "TRUE".equalsIgnoreCase(actor.get().getAttributeValue("zimbraIsDelegatedAdminAccount")),
+            isTrue(actor.get(), ZimbraAttributes.IS_ADMIN_ACCOUNT),
+            isTrue(actor.get(), ZimbraAttributes.IS_DELEGATED_ADMIN_ACCOUNT),
             evaluator.check(actor.get(), asAdmin, catalogRight(WRITE_RIGHT), account),
             evaluator.check(actor.get(), asAdmin, catalogRight(CONFIGURE_RIGHT), account)));
+  }
+
+  private static boolean isTrue(Entry entry, String attribute) {
+    return "TRUE".equalsIgnoreCase(entry.getAttributeValue(attribute));
   }
 
   private Right catalogRight(String name) {
@@ -143,8 +149,10 @@ public class RightsService {
     Optional<Entry> entry =
         switch (targetType) {
           case "account" -> byName ? directory.accountByEmail(key) : directory.accountById(key);
-          case "domain" -> byName ? directory.domainByName(key) : directory.domainById(key);
-          case "cos" -> byName ? directory.cosByName(key) : directory.cosById(key);
+          case "domain" ->
+              byName ? directory.domainByName(key, Read.FRESH) : directory.domainById(key, Read.FRESH);
+          case "cos" ->
+              byName ? directory.cosByName(key, Read.FRESH) : directory.cosById(key, Read.FRESH);
           default -> throw new InvalidRequestException("Unsupported target type: " + targetType);
         };
     return entry.map(e -> new Target(targetType, e));
