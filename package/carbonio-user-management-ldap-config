@@ -9,7 +9,7 @@ dir=/run/carbonio-user-management
 out="${dir}/ldap.properties"
 
 lc() {
-  if [[ -x ${configd} || -x ${zmlocalconfig} ]]; then
+  if [[ -x ${configd} ]]; then
     "${configd}" localconfig -q -s -x -m nokey "$1" 2>/dev/null || true
   else
     "${zmlocalconfig}" -q -s -x -m nokey "$1" 2>/dev/null || true
