@@ -37,7 +37,8 @@ public final class UserMapper {
         account.isGlobalAdmin());
   }
 
-  public static UserMyself toUserMyself(ResolvedAccount account, Function<String, Optional<Entry>> servers) {
+  public static UserMyself toUserMyself(
+      ResolvedAccount account, Function<String, Optional<Entry>> servers) {
     UserInfo info = toUserInfo(account);
     Map<String, String> inherited = accountInherited(account);
     List<String> features =

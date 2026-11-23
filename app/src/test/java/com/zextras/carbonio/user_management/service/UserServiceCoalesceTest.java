@@ -39,8 +39,7 @@ class UserServiceCoalesceTest {
     userMyselfCache = mock(UserMyselfCache.class);
     when(userInfoCache.isCacheEnabled()).thenReturn(true);
     when(userMyselfCache.isCacheEnabled()).thenReturn(true);
-    userService =
-        new UserService(directory, userInfoCache, userMyselfCache);
+    userService = new UserService(directory, userInfoCache, userMyselfCache);
   }
 
   private UserInfo userInfo(String userId, String email) {

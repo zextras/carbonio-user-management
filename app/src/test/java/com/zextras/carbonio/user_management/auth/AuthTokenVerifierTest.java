@@ -138,8 +138,7 @@ class AuthTokenVerifierTest {
   void ignoresTheValidityValueWhenDisabled() throws Exception {
     server.modify(
         "cn=config,cn=zimbra",
-        new Modification(
-            ModificationType.REPLACE, "zimbraAuthTokenValidityValueEnabled", "FALSE"));
+        new Modification(ModificationType.REPLACE, "zimbraAuthTokenValidityValueEnabled", "FALSE"));
     Map<String, String> claims = claims();
     claims.put("vv", "1");
 
@@ -177,14 +176,24 @@ class AuthTokenVerifierTest {
 
   static String token(String version, String keyHex, Map<String, String> claims) {
     String data = hexData(claims);
-    return version + "_" + AuthTokenVerifier.hmacHex(data, HexFormat.of().parseHex(keyHex)) + "_" + data;
+    return version
+        + "_"
+        + AuthTokenVerifier.hmacHex(data, HexFormat.of().parseHex(keyHex))
+        + "_"
+        + data;
   }
 
   private static String hexData(Map<String, String> claims) {
     StringBuilder encoded = new StringBuilder();
     claims.forEach(
         (name, value) ->
-            encoded.append(name).append('=').append(value.length()).append(':').append(value).append(';'));
+            encoded
+                .append(name)
+                .append('=')
+                .append(value.length())
+                .append(':')
+                .append(value)
+                .append(';'));
     return HexFormat.of().formatHex(encoded.toString().getBytes(StandardCharsets.UTF_8));
   }
 }

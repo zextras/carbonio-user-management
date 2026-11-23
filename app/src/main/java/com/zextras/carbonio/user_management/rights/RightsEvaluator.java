@@ -22,7 +22,8 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-// Mirrors mailbox HardRules, CheckPresetRight and CheckAttrRight; entries with grants are read uncached.
+// Mirrors mailbox HardRules, CheckPresetRight and CheckAttrRight; entries with grants are read
+// uncached.
 @ApplicationScoped
 public class RightsEvaluator {
 
@@ -172,13 +173,17 @@ public class RightsEvaluator {
     return false;
   }
 
-  private boolean preset(Grantee grantee, List<Level> levels, Right.Preset needed, String targetType) {
+  private boolean preset(
+      Grantee grantee, List<Level> levels, Right.Preset needed, String targetType) {
     if (!needed.executableOn(targetType)) {
       return false;
     }
     for (Level level : levels) {
       Boolean individual =
-          presetDecision(level, ace -> Ace.USER.equals(ace.granteeType()) && ace.grantee().equals(grantee.id()), needed);
+          presetDecision(
+              level,
+              ace -> Ace.USER.equals(ace.granteeType()) && ace.grantee().equals(grantee.id()),
+              needed);
       if (individual != null) {
         return individual;
       }
@@ -190,8 +195,7 @@ public class RightsEvaluator {
     return false;
   }
 
-  private Boolean presetDecision(
-      Level level, Predicate<Ace> granteeMatch, Right.Preset needed) {
+  private Boolean presetDecision(Level level, Predicate<Ace> granteeMatch, Right.Preset needed) {
     boolean allow = false;
     for (Ace ace : level.aces()) {
       if (!granteeMatch.test(ace) || !grants(ace, needed)) {
@@ -402,8 +406,7 @@ public class RightsEvaluator {
     if (values == null) {
       return List.of();
     }
-    List<Ace> parsed =
-        Arrays.stream(values).map(Ace::parse).flatMap(Optional::stream).toList();
+    List<Ace> parsed = Arrays.stream(values).map(Ace::parse).flatMap(Optional::stream).toList();
     return Stream.concat(parsed.stream().filter(Ace::deny), parsed.stream().filter(a -> !a.deny()))
         .toList();
   }

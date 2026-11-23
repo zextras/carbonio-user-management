@@ -64,7 +64,11 @@ public class RightsResource {
           boolean allowed =
               isBlank(subject.token())
                   ? rightsService.checkWithAccountId(
-                      subject.accountId(), request.right(), target.type(), target.id(), target.name())
+                      subject.accountId(),
+                      request.right(),
+                      target.type(),
+                      target.id(),
+                      target.name())
                   : rightsService.checkWithToken(
                       subject.token(), request.right(), target.type(), target.id(), target.name());
           return RestResponse.ok(new RightCheckResponse(allowed));

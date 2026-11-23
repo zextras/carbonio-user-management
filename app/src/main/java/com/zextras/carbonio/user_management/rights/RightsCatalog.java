@@ -248,8 +248,10 @@ public class RightsCatalog {
     }
     return switch (type) {
       case "preset" -> new Right.Preset(name, false, targetTypes);
-      case "getAttrs" -> new Right.Attr(name, false, targetTypes, attrs == null ? null : Set.copyOf(attrs));
-      case "setAttrs" -> new Right.Attr(name, true, targetTypes, attrs == null ? null : Set.copyOf(attrs));
+      case "getAttrs" ->
+          new Right.Attr(name, false, targetTypes, attrs == null ? null : Set.copyOf(attrs));
+      case "setAttrs" ->
+          new Right.Attr(name, true, targetTypes, attrs == null ? null : Set.copyOf(attrs));
       case "combo" -> new Right.Combo(name, List.copyOf(members));
       default -> throw new IllegalStateException("Unknown right type " + type + " for " + name);
     };

@@ -109,7 +109,9 @@ public class UserResource {
       return RestResponse.status(Response.Status.BAD_REQUEST);
     }
     return handle(
-        () -> RestResponse.ok(userService.getUsers(userIds).stream().map(UserInfoDto::from).toList()));
+        () ->
+            RestResponse.ok(
+                userService.getUsers(userIds).stream().map(UserInfoDto::from).toList()));
   }
 
   private static <T> RestResponse<T> handle(Supplier<RestResponse<T>> action) {

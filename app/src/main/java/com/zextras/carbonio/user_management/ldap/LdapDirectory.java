@@ -123,7 +123,8 @@ public class LdapDirectory {
                 Filter.createANDFilter(
                     Filter.createEqualityFilter(ZimbraAttributes.DOMAIN_NAME, ascii),
                     Filter.createEqualityFilter(
-                        ZimbraObjectClasses.OBJECT_CLASS, ZimbraObjectClasses.DOMAIN))), read);
+                        ZimbraObjectClasses.OBJECT_CLASS, ZimbraObjectClasses.DOMAIN))),
+        read);
   }
 
   public Optional<Entry> domainById(String id) {
@@ -138,7 +139,8 @@ public class LdapDirectory {
                 Filter.createANDFilter(
                     Filter.createEqualityFilter(ZimbraAttributes.ID, id),
                     Filter.createEqualityFilter(
-                        ZimbraObjectClasses.OBJECT_CLASS, ZimbraObjectClasses.DOMAIN))), read);
+                        ZimbraObjectClasses.OBJECT_CLASS, ZimbraObjectClasses.DOMAIN))),
+        read);
   }
 
   public Optional<Entry> cosById(String id) {
@@ -153,7 +155,8 @@ public class LdapDirectory {
                 Filter.createANDFilter(
                     Filter.createEqualityFilter(ZimbraAttributes.ID, id),
                     Filter.createEqualityFilter(
-                        ZimbraObjectClasses.OBJECT_CLASS, ZimbraObjectClasses.COS))), read);
+                        ZimbraObjectClasses.OBJECT_CLASS, ZimbraObjectClasses.COS))),
+        read);
   }
 
   public Optional<Entry> cosByName(String name) {
@@ -168,7 +171,8 @@ public class LdapDirectory {
                 Filter.createANDFilter(
                     Filter.createEqualityFilter(ZimbraAttributes.COMMON_NAME, name),
                     Filter.createEqualityFilter(
-                        ZimbraObjectClasses.OBJECT_CLASS, ZimbraObjectClasses.COS))), read);
+                        ZimbraObjectClasses.OBJECT_CLASS, ZimbraObjectClasses.COS))),
+        read);
   }
 
   public Optional<Entry> serverByName(String name) {

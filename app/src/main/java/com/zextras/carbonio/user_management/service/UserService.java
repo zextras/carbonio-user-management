@@ -54,9 +54,9 @@ public class UserService {
    *
    * <p>When {@code bypassCache} is true the cached entry is not read, so the token is always
    * re-validated against the directory: this is what a caller asks for when it cannot tolerate a
-   * revoked session surviving in cache for the remaining token lifetime. The freshly fetched
-   * result is still written back to the cache, so a bypass refreshes the entry rather than
-   * disabling caching for everyone else.
+   * revoked session surviving in cache for the remaining token lifetime. The freshly fetched result
+   * is still written back to the cache, so a bypass refreshes the entry rather than disabling
+   * caching for everyone else.
    */
   public Optional<UserMyself> getUserMyself(String token, boolean bypassCache) {
     logger.debug("GetUserMyself requested (bypassCache={})", bypassCache);
@@ -125,8 +125,7 @@ public class UserService {
     }
 
     // Coalesce concurrent lookups for the same userId
-    return coalesce(
-        inflightById, userId, () -> directory.byId(userId).map(this::cacheInfo));
+    return coalesce(inflightById, userId, () -> directory.byId(userId).map(this::cacheInfo));
   }
 
   public Optional<UserInfo> getUserByEmail(String email) {
@@ -138,8 +137,7 @@ public class UserService {
     }
 
     // Coalesce concurrent lookups for the same email
-    return coalesce(
-        inflightByEmail, email, () -> directory.byEmail(email).map(this::cacheInfo));
+    return coalesce(inflightByEmail, email, () -> directory.byEmail(email).map(this::cacheInfo));
   }
 
   public List<UserInfo> getUsers(List<String> userIds) {

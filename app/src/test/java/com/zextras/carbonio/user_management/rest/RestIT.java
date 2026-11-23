@@ -61,9 +61,9 @@ class RestIT extends BaseIT {
   // --- Myself cache bypass ---
 
   /**
-   * Proves {@code bypassCache=true} really skips the cache read and goes back to LDAP: the
-   * account is modified behind the service's back, so only a fresh LDAP read can observe
-   * the new value. A fresh token is used so this test owns its own cache entry.
+   * Proves {@code bypassCache=true} really skips the cache read and goes back to LDAP: the account
+   * is modified behind the service's back, so only a fresh LDAP read can observe the new value. A
+   * fresh token is used so this test owns its own cache entry.
    */
   @Test
   void getMyselfWithBypassCacheRevalidatesAgainstLdap() throws Exception {

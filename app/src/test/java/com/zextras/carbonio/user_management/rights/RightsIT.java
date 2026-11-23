@@ -71,8 +71,16 @@ class RightsIT extends BaseIT {
             "adlm rights-users-admins@" + DOMAIN + " " + USERS_ADMIN + " " + PLAIN,
             "adlm rights-users-admins@" + DOMAIN + " rights-delegated-admins@" + DOMAIN,
             "adlm rights-delegated-admins@" + DOMAIN + " " + QUOTA_ADMIN,
-            "grr domain " + DOMAIN + " grp rights-users-admins@" + DOMAIN + " domainAdminAccountRights",
-            "grr domain " + DOMAIN + " grp rights-delegated-admins@" + DOMAIN + " getDomainQuotaUsage",
+            "grr domain "
+                + DOMAIN
+                + " grp rights-users-admins@"
+                + DOMAIN
+                + " domainAdminAccountRights",
+            "grr domain "
+                + DOMAIN
+                + " grp rights-delegated-admins@"
+                + DOMAIN
+                + " getDomainQuotaUsage",
             "grr domain " + DOMAIN + " grp rights-delegated-admins@" + DOMAIN + " configureQuota",
             "grr account " + TARGET_WITH_DENY + " usr " + USERS_ADMIN + " -set.account.displayName",
             "grr account " + OTHER_TARGET + " usr " + QUOTA_ADMIN + " set.account.zimbraMailHost"));
@@ -147,7 +155,8 @@ class RightsIT extends BaseIT {
             c -> {
               Boolean decision = byCommand.get(c.ckr());
               if (decision == null) {
-                throw new IllegalStateException("No mailbox decision for " + c.ckr() + ":\n" + output);
+                throw new IllegalStateException(
+                    "No mailbox decision for " + c.ckr() + ":\n" + output);
               }
               return decision;
             })
@@ -208,27 +217,63 @@ class RightsIT extends BaseIT {
 
   @Test
   void invalidTokenIs401AndBadRequestsAre400() {
-    post(Map.of("subject", Map.of("token", "0_bad_00"), "right", "getAccount", "target", account(TARGET)))
+    post(Map.of(
+            "subject",
+            Map.of("token", "0_bad_00"),
+            "right",
+            "getAccount",
+            "target",
+            account(TARGET)))
         .then()
         .statusCode(401);
-    post(Map.of("subject", Map.of("accountId", ids.get(GLOBAL)), "right", "noSuchRight", "target", account(TARGET)))
+    post(Map.of(
+            "subject",
+            Map.of("accountId", ids.get(GLOBAL)),
+            "right",
+            "noSuchRight",
+            "target",
+            account(TARGET)))
         .then()
         .statusCode(400);
-    post(Map.of("subject", Map.of("accountId", ids.get(GLOBAL)), "right", "getDomain", "target", account(TARGET)))
+    post(Map.of(
+            "subject",
+            Map.of("accountId", ids.get(GLOBAL)),
+            "right",
+            "getDomain",
+            "target",
+            account(TARGET)))
         .then()
         .statusCode(400);
-    post(Map.of("subject", Map.of("accountId", ids.get(GLOBAL)), "right", "sendAs", "target", account(TARGET)))
+    post(Map.of(
+            "subject",
+            Map.of("accountId", ids.get(GLOBAL)),
+            "right",
+            "sendAs",
+            "target",
+            account(TARGET)))
         .then()
         .statusCode(400);
   }
 
   @Test
   void unknownSubjectOrTargetIsNotAllowed() {
-    post(Map.of("subject", Map.of("accountId", "00000000-0000-0000-0000-000000000000"), "right", "getAccount", "target", account(TARGET)))
+    post(Map.of(
+            "subject",
+            Map.of("accountId", "00000000-0000-0000-0000-000000000000"),
+            "right",
+            "getAccount",
+            "target",
+            account(TARGET)))
         .then()
         .statusCode(200)
         .body("allowed", equalTo(false));
-    post(Map.of("subject", Map.of("accountId", ids.get(GLOBAL)), "right", "getAccount", "target", account("nobody@" + DOMAIN)))
+    post(Map.of(
+            "subject",
+            Map.of("accountId", ids.get(GLOBAL)),
+            "right",
+            "getAccount",
+            "target",
+            account("nobody@" + DOMAIN)))
         .then()
         .statusCode(200)
         .body("allowed", equalTo(false));
@@ -243,7 +288,12 @@ class RightsIT extends BaseIT {
         .then()
         .statusCode(200)
         .body("find { it.name == 'modifyAccount' }.type", equalTo("setAttrs"));
-    given().queryParam("targetType", "server").when().get("/internal/rights").then().statusCode(400);
+    given()
+        .queryParam("targetType", "server")
+        .when()
+        .get("/internal/rights")
+        .then()
+        .statusCode(400);
   }
 
   private static Map<String, String> account(String name) {
@@ -254,25 +304,27 @@ class RightsIT extends BaseIT {
     return given().contentType(ContentType.JSON).body(body).when().post("/internal/rights/check");
   }
 
-  private static boolean umAllows(String actor, String right, String targetType, String targetName) {
-    return post(
-            Map.of(
-                "subject", Map.of("accountId", ids.get(actor)),
-                "right", right,
-                "target", Map.of("type", targetType, "name", targetName)))
+  private static boolean umAllows(
+      String actor, String right, String targetType, String targetName) {
+    return post(Map.of(
+            "subject", Map.of("accountId", ids.get(actor)),
+            "right", right,
+            "target", Map.of("type", targetType, "name", targetName)))
         .then()
         .statusCode(200)
         .extract()
         .path("allowed");
   }
 
-  private static boolean mailboxAllows(String targetType, String target, String actor, String right) {
+  private static boolean mailboxAllows(
+      String targetType, String target, String actor, String right) {
     return mailboxDecisions(List.of(new Case(actor, right, targetType, target))).getFirst();
   }
 
   private static String id(String account) {
     String output = MailboxStackTestResource.zmprov(false, "ga " + account + " zimbraId");
-    return output.lines()
+    return output
+        .lines()
         .filter(line -> line.startsWith("zimbraId: "))
         .map(line -> line.substring("zimbraId: ".length()).trim())
         .findFirst()

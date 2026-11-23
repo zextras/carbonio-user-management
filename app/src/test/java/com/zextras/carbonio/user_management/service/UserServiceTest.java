@@ -20,9 +20,9 @@ import com.github.benmanes.caffeine.cache.Ticker;
 import com.zextras.carbonio.quarkus.extensions.bootstrap.ApplicationConfigService;
 import com.zextras.carbonio.user_management.cache.UserInfoCache;
 import com.zextras.carbonio.user_management.cache.UserMyselfCache;
+import com.zextras.carbonio.user_management.ldap.DirectoryException;
 import com.zextras.carbonio.user_management.record.UserInfo;
 import com.zextras.carbonio.user_management.record.UserMyself;
-import com.zextras.carbonio.user_management.ldap.DirectoryException;
 import com.zextras.carbonio.user_management.service.UserDirectory.AuthenticatedUser;
 import java.time.Clock;
 import java.util.List;
@@ -46,8 +46,7 @@ class UserServiceTest {
     userMyselfCache = mock(UserMyselfCache.class);
     when(userInfoCache.isCacheEnabled()).thenReturn(true);
     when(userMyselfCache.isCacheEnabled()).thenReturn(true);
-    userService =
-        new UserService(directory, userInfoCache, userMyselfCache);
+    userService = new UserService(directory, userInfoCache, userMyselfCache);
   }
 
   private UserInfo sampleUserInfo() {
@@ -513,12 +512,26 @@ class UserServiceTest {
       UserInfo u1 = sampleUserInfo();
       UserInfo u2 =
           new UserInfo(
-              "user-2", "u2@example.com", "Jane", "example.com", "ACTIVE", "INTERNAL", "cos-2",
-              "dom-2", false);
+              "user-2",
+              "u2@example.com",
+              "Jane",
+              "example.com",
+              "ACTIVE",
+              "INTERNAL",
+              "cos-2",
+              "dom-2",
+              false);
       UserInfo u3 =
           new UserInfo(
-              "user-3", "u3@example.com", "Jim", "example.com", "ACTIVE", "INTERNAL", "cos-3",
-              "dom-3", false);
+              "user-3",
+              "u3@example.com",
+              "Jim",
+              "example.com",
+              "ACTIVE",
+              "INTERNAL",
+              "cos-3",
+              "dom-3",
+              false);
       when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.empty());
       when(userInfoCache.getByUserId("user-2")).thenReturn(Optional.of(u2));
       when(userInfoCache.getByUserId("user-3")).thenReturn(Optional.empty());

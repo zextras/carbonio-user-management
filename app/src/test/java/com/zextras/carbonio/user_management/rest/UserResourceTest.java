@@ -193,7 +193,8 @@ class UserResourceTest {
 
     @Test
     void returns401WhenBypassRevalidationFails() {
-      // A session revoked meanwhile: the directory rejects the token, the stale cached entry must not
+      // A session revoked meanwhile: the directory rejects the token, the stale cached entry must
+      // not
       // be used as a fallback.
       when(userService.getUserMyself("token-1", true)).thenReturn(Optional.empty());
 

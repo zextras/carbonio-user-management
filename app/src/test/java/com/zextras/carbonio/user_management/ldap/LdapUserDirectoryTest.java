@@ -202,9 +202,18 @@ class LdapUserDirectoryTest {
 
     @Test
     void findsByPrimaryAliasAndOldAddressIgnoringCase() {
-      assertThat(directory.byEmail("user@example.com")).get().extracting(UserInfo::userId).isEqualTo(USER_ID);
-      assertThat(directory.byEmail("ALIAS@example.com")).get().extracting(UserInfo::userId).isEqualTo(USER_ID);
-      assertThat(directory.byEmail("old@example.com")).get().extracting(UserInfo::userId).isEqualTo(USER_ID);
+      assertThat(directory.byEmail("user@example.com"))
+          .get()
+          .extracting(UserInfo::userId)
+          .isEqualTo(USER_ID);
+      assertThat(directory.byEmail("ALIAS@example.com"))
+          .get()
+          .extracting(UserInfo::userId)
+          .isEqualTo(USER_ID);
+      assertThat(directory.byEmail("old@example.com"))
+          .get()
+          .extracting(UserInfo::userId)
+          .isEqualTo(USER_ID);
     }
 
     @Test

@@ -25,8 +25,10 @@ public class AccountResolver {
     int at = name.lastIndexOf('@');
     Optional<Entry> domain =
         at < 0 ? Optional.empty() : directory.domainByName(name.substring(at + 1));
-    boolean external = ResolvedAccount.isTrue(account, ZimbraAttributes.IS_EXTERNAL_VIRTUAL_ACCOUNT);
-    return new ResolvedAccount(account, name, domain, cos(account, domain, external), directory.config());
+    boolean external =
+        ResolvedAccount.isTrue(account, ZimbraAttributes.IS_EXTERNAL_VIRTUAL_ACCOUNT);
+    return new ResolvedAccount(
+        account, name, domain, cos(account, domain, external), directory.config());
   }
 
   private Optional<Entry> cos(Entry account, Optional<Entry> domain, boolean external) {
@@ -69,7 +71,8 @@ public class AccountResolver {
       for (RDN rdn : new com.unboundid.ldap.sdk.DN(dn).getRDNs()) {
         String attribute = rdn.getAttributeNames()[0];
         String value = rdn.getAttributeValues()[0];
-        if (localPart == null && ("uid".equalsIgnoreCase(attribute) || "cn".equalsIgnoreCase(attribute))) {
+        if (localPart == null
+            && ("uid".equalsIgnoreCase(attribute) || "cn".equalsIgnoreCase(attribute))) {
           localPart = value;
         } else if ("dc".equalsIgnoreCase(attribute)) {
           domainParts.add(value);

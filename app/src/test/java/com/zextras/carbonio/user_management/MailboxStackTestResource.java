@@ -180,9 +180,9 @@ public class MailboxStackTestResource implements QuarkusTestResourceLifecycleMan
   }
 
   /**
-   * Changes the test user's {@code displayName} directly in LDAP via zmprov, behind the application's back.
-   * Used to make a stale cache entry observable: only a new LDAP read can see the new
-   * value.
+   * Changes the test user's {@code displayName} directly in LDAP via zmprov, behind the
+   * application's back. Used to make a stale cache entry observable: only a new LDAP read can see
+   * the new value.
    *
    * @param displayName the new display name; empty string unsets the attribute
    */

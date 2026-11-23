@@ -51,15 +51,15 @@ class RightsEvaluatorTest {
     server = new InMemoryDirectoryServer(config);
     server.startListening();
     server.add("dn: " + BASE, "objectClass: top", "objectClass: domain", "dc: root");
-    server.add("dn: cn=zimbra", "objectClass: top", "objectClass: organizationalRole", "cn: zimbra");
+    server.add(
+        "dn: cn=zimbra", "objectClass: top", "objectClass: organizationalRole", "cn: zimbra");
     server.add("dn: cn=config,cn=zimbra", "objectClass: zimbraGlobalConfig", "cn: config");
     server.add("dn: cn=globalgrant,cn=zimbra", "objectClass: zimbraAclTarget", "cn: globalgrant");
 
     domain("d1.io", D1);
     domain("d2.io", D2);
     domain("sub.d1.io", SUB);
-    server.add(
-        "dn: cn=cos1," + BASE, "objectClass: zimbraCOS", "cn: cos1", "zimbraId: " + COS);
+    server.add("dn: cn=cos1," + BASE, "objectClass: zimbraCOS", "cn: cos1", "zimbraId: " + COS);
 
     account(GLOBAL_ADMIN, "global@d1.io", "zimbraIsAdminAccount: TRUE");
     account(USERS_ADMIN, "usersadmin@d1.io", "zimbraIsDelegatedAdminAccount: TRUE");
@@ -126,7 +126,9 @@ class RightsEvaluatorTest {
     void delegatedAdminCannotActOnGlobalAdmin() {
       assertThat(
               check(
-                  USERS_ADMIN, "setDomainAdminAccountAndCalendarResourceAttrs", account(TARGET_ADMIN)))
+                  USERS_ADMIN,
+                  "setDomainAdminAccountAndCalendarResourceAttrs",
+                  account(TARGET_ADMIN)))
           .isFalse();
     }
 
@@ -287,12 +289,14 @@ class RightsEvaluatorTest {
       addAces("cn=partners," + BASE, "a0000000-0000-0000-0000-00000000000x usr " + ATTR_RIGHT);
 
       assertThat(check(QUOTA_ADMIN, ATTR_RIGHT, account(OTHER_DOMAIN_USER))).isFalse();
-      assertThat(check("a0000000-0000-0000-0000-00000000000x", ATTR_RIGHT, account(OTHER_DOMAIN_USER)))
+      assertThat(
+              check("a0000000-0000-0000-0000-00000000000x", ATTR_RIGHT, account(OTHER_DOMAIN_USER)))
           .isFalse();
 
       addAces(domainDn("d2.io"), D1 + " dom crossDomainAdmin");
       assertThat(check(QUOTA_ADMIN, ATTR_RIGHT, account(OTHER_DOMAIN_USER))).isTrue();
-      assertThat(check("a0000000-0000-0000-0000-00000000000x", ATTR_RIGHT, account(OTHER_DOMAIN_USER)))
+      assertThat(
+              check("a0000000-0000-0000-0000-00000000000x", ATTR_RIGHT, account(OTHER_DOMAIN_USER)))
           .isFalse();
     }
 

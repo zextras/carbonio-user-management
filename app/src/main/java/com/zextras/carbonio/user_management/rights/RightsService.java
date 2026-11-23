@@ -150,7 +150,9 @@ public class RightsService {
         switch (targetType) {
           case "account" -> byName ? directory.accountByEmail(key) : directory.accountById(key);
           case "domain" ->
-              byName ? directory.domainByName(key, Read.FRESH) : directory.domainById(key, Read.FRESH);
+              byName
+                  ? directory.domainByName(key, Read.FRESH)
+                  : directory.domainById(key, Read.FRESH);
           case "cos" ->
               byName ? directory.cosByName(key, Read.FRESH) : directory.cosById(key, Read.FRESH);
           default -> throw new InvalidRequestException("Unsupported target type: " + targetType);
