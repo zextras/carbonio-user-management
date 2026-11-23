@@ -46,7 +46,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
     <!-- Dependencies -->
     <assertj.version>3.27.7</assertj.version>
-    <carbonio-mailbox-sdk.version>1.19.2</carbonio-mailbox-sdk.version>
+    <carbonio-mailbox-sdk.version>1.20.1</carbonio-mailbox-sdk.version>
     <carbonio-quarkus-extensions.version>1.17.0</carbonio-quarkus-extensions.version>
 
     <!-- Plugins -->
