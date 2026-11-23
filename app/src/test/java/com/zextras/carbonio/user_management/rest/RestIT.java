@@ -61,16 +61,16 @@ class RestIT extends BaseIT {
   // --- Myself cache bypass ---
 
   /**
-   * Proves {@code bypassCache=true} really skips the cache read and goes back to mailbox: the
-   * account is modified behind the service's back, so only a fresh mailbox round trip can observe
+   * Proves {@code bypassCache=true} really skips the cache read and goes back to LDAP: the
+   * account is modified behind the service's back, so only a fresh LDAP read can observe
    * the new value. A fresh token is used so this test owns its own cache entry.
    */
   @Test
-  void getMyselfWithBypassCacheRevalidatesAgainstMailbox() throws Exception {
+  void getMyselfWithBypassCacheRevalidatesAgainstLdap() throws Exception {
     String token = soapAuthenticate(TEST_USER_EMAIL, TEST_PASSWORD);
     MailboxStackTestResource.setTestUserDisplayName("Before Bypass");
     try {
-      // Cold cache: mailbox hit #1, result cached under this token
+      // Cold cache: LDAP read #1, result cached under this token
       given()
           .header("ZM_AUTH_TOKEN", token)
           .when()
@@ -81,7 +81,7 @@ class RestIT extends BaseIT {
 
       MailboxStackTestResource.setTestUserDisplayName("After Bypass");
 
-      // No bypass: served from cache, still the stale value -> mailbox was NOT hit
+      // No bypass: served from cache, still the stale value -> LDAP was NOT read
       given()
           .header("ZM_AUTH_TOKEN", token)
           .when()
@@ -90,7 +90,7 @@ class RestIT extends BaseIT {
           .statusCode(200)
           .body("info.fullName", equalTo("Before Bypass"));
 
-      // Bypass: cache read skipped -> mailbox hit #2, fresh value
+      // Bypass: cache read skipped -> LDAP read #2, fresh value
       given()
           .header("ZM_AUTH_TOKEN", token)
           .queryParam("bypassCache", true)

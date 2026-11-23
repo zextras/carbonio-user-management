@@ -7,8 +7,6 @@ Overridable by `/etc/carbonio/user-management/config.properties`
 | Key | Default | If not set |
 | --- | ------- | ---------- |
 | `carbonio.ldap.url` | *(not set)* | Directory endpoints answer 500 |
-| `carbonio.mailbox.internal.host` | `127.78.0.5` |  |
-| `carbonio.mailbox.internal.port` | `20001` |  |
 | `carbonio.service-discover.host` | `127.0.0.1` |  |
 | `carbonio.service-discover.port` | `8500` |  |
 | `carbonio.service.host` | `127.78.0.5` |  |

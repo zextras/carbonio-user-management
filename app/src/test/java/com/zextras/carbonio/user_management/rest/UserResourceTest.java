@@ -7,11 +7,13 @@ package com.zextras.carbonio.user_management.rest;
 import static com.zextras.carbonio.user_management.UserManagementServiceConfig.MAX_BATCH_USER_IDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import com.zextras.carbonio.user_management.ldap.DirectoryException;
 import com.zextras.carbonio.user_management.record.UserInfo;
 import com.zextras.carbonio.user_management.record.UserMyself;
 import com.zextras.carbonio.user_management.rest.dto.MyselfDto;
@@ -94,6 +96,16 @@ class UserResourceTest {
     }
 
     @Test
+    void returns500WhenDirectoryFails() {
+      when(userService.getUserMyself("token-1", false))
+          .thenThrow(new DirectoryException("ldap down", null));
+
+      RestResponse<MyselfDto> response = resource.getMyself("token-1", false);
+
+      assertThat(response.getStatus()).isEqualTo(500);
+    }
+
+    @Test
     void returns401WhenCookieTokenMissing() {
       RestResponse<MyselfDto> response = resource.getMyself(null, false);
 
@@ -120,7 +132,7 @@ class UserResourceTest {
 
   /**
    * {@code bypassCache} is the request-side opt out of the myself cache: the token is re-validated
-   * against mailbox instead of being answered from the cached entry.
+   * against LDAP instead of being answered from the cached entry.
    */
   @Nested
   class GetMyselfBypassCacheTests {
@@ -170,8 +182,18 @@ class UserResourceTest {
     }
 
     @Test
+    void returns500WhenDirectoryFailsDuringBypassRevalidation() {
+      when(userService.getUserMyself("token-1", true))
+          .thenThrow(new DirectoryException("ldap down", null));
+
+      RestResponse<MyselfDto> response = resource.getMyself("token-1", true);
+
+      assertThat(response.getStatus()).isEqualTo(500);
+    }
+
+    @Test
     void returns401WhenBypassRevalidationFails() {
-      // A session revoked meanwhile: mailbox rejects the token, the stale cached entry must not
+      // A session revoked meanwhile: the directory rejects the token, the stale cached entry must not
       // be used as a fallback.
       when(userService.getUserMyself("token-1", true)).thenReturn(Optional.empty());
 
@@ -207,6 +229,15 @@ class UserResourceTest {
 
       assertThat(response.getStatus()).isEqualTo(404);
     }
+
+    @Test
+    void returns500WhenDirectoryFails() {
+      when(userService.getUserById("user-1")).thenThrow(new DirectoryException("ldap down", null));
+
+      RestResponse<UserInfoDto> response = resource.getById("user-1");
+
+      assertThat(response.getStatus()).isEqualTo(500);
+    }
   }
 
   @Nested
@@ -231,6 +262,25 @@ class UserResourceTest {
       RestResponse<UserInfoDto> response = resource.getByEmail("nope@x.com");
 
       assertThat(response.getStatus()).isEqualTo(404);
+    }
+
+    @Test
+    void returns404WhenEmailIsInvalid() {
+      when(userService.getUserByEmail(anyString())).thenThrow(new IllegalArgumentException("bad"));
+
+      RestResponse<UserInfoDto> response = resource.getByEmail("not-an-email");
+
+      assertThat(response.getStatus()).isEqualTo(404);
+    }
+
+    @Test
+    void returns500WhenDirectoryFails() {
+      when(userService.getUserByEmail("user@example.com"))
+          .thenThrow(new DirectoryException("ldap down", null));
+
+      RestResponse<UserInfoDto> response = resource.getByEmail("user@example.com");
+
+      assertThat(response.getStatus()).isEqualTo(500);
     }
   }
 
@@ -264,6 +314,15 @@ class UserResourceTest {
       assertThat(response.getStatus()).isEqualTo(200);
       List<UserInfoDto> dtos = response.getEntity();
       assertThat(dtos).isEmpty();
+    }
+
+    @Test
+    void returns500WhenDirectoryFails() {
+      when(userService.getUsers(anyList())).thenThrow(new DirectoryException("ldap down", null));
+
+      RestResponse<List<UserInfoDto>> response = resource.getUsers(List.of("id-1"));
+
+      assertThat(response.getStatus()).isEqualTo(500);
     }
 
     @Test

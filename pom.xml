@@ -46,7 +46,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
     <!-- Dependencies -->
     <assertj.version>3.27.7</assertj.version>
-    <carbonio-mailbox-sdk.version>1.19.2</carbonio-mailbox-sdk.version>
+    <mailbox-attribute-manager.version>5.7.3</mailbox-attribute-manager.version>
     <carbonio-quarkus-extensions.version>1.17.0</carbonio-quarkus-extensions.version>
 
     <!-- Plugins -->
@@ -65,8 +65,14 @@ SPDX-License-Identifier: AGPL-3.0-only
       <!-- Mailbox -->
       <dependency>
         <groupId>com.zextras</groupId>
-        <artifactId>carbonio-mailbox-sdk</artifactId>
-        <version>${carbonio-mailbox-sdk.version}</version>
+        <artifactId>mailbox-attribute-manager</artifactId>
+        <version>${mailbox-attribute-manager.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>*</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <!-- Test dependencies (not managed by Quarkus BOM) -->

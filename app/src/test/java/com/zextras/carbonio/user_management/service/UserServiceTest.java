@@ -5,6 +5,7 @@
 package com.zextras.carbonio.user_management.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
@@ -21,11 +22,8 @@ import com.zextras.carbonio.user_management.cache.UserInfoCache;
 import com.zextras.carbonio.user_management.cache.UserMyselfCache;
 import com.zextras.carbonio.user_management.record.UserInfo;
 import com.zextras.carbonio.user_management.record.UserMyself;
-import com.zextras.mailbox.client.MailboxClientException;
-import com.zextras.mailbox.client.MailboxServerException;
-import com.zextras.mailbox.client.internal.AccountInfo;
-import com.zextras.mailbox.client.internal.AccountStatus;
-import com.zextras.mailbox.client.internal.MailboxInternalApiClient;
+import com.zextras.carbonio.user_management.ldap.DirectoryException;
+import com.zextras.carbonio.user_management.service.UserDirectory.AuthenticatedUser;
 import java.time.Clock;
 import java.util.List;
 import java.util.Map;
@@ -36,24 +34,20 @@ import org.junit.jupiter.api.Test;
 
 class UserServiceTest {
 
-  private MailboxInternalApiClient internalClient;
+  private UserDirectory directory;
   private UserInfoCache userInfoCache;
   private UserMyselfCache userMyselfCache;
   private UserService userService;
 
   @BeforeEach
   void setUp() {
-    internalClient = mock(MailboxInternalApiClient.class);
+    directory = mock(UserDirectory.class);
     userInfoCache = mock(UserInfoCache.class);
     userMyselfCache = mock(UserMyselfCache.class);
     when(userInfoCache.isCacheEnabled()).thenReturn(true);
     when(userMyselfCache.isCacheEnabled()).thenReturn(true);
     userService =
-        new UserService(
-            internalClient,
-            userInfoCache,
-            userMyselfCache,
-            org.eclipse.microprofile.context.ManagedExecutor.builder().build());
+        new UserService(directory, userInfoCache, userMyselfCache);
   }
 
   private UserInfo sampleUserInfo() {
@@ -89,22 +83,8 @@ class UserServiceTest {
     return System.currentTimeMillis() + 3_600_000L;
   }
 
-  private AccountInfo sampleAccountInfo(String userId, String email) {
-    return new AccountInfo(
-        userId,
-        email,
-        "Test User",
-        "cos-1",
-        "dom-1",
-        "example.com",
-        AccountStatus.active,
-        false,
-        false,
-        false,
-        "en",
-        Map.of("carbonioFeatureFilesEnabled", true),
-        Map.of(),
-        3_600_000L);
+  private AuthenticatedUser sampleAuthenticated() {
+    return new AuthenticatedUser(sampleMyself(), 3_600_000L);
   }
 
   @Nested
@@ -119,19 +99,18 @@ class UserServiceTest {
       Optional<UserMyself> result = userService.getUserMyself("token-1", false);
 
       assertThat(result).contains(myself);
-      verifyNoInteractions(internalClient);
+      verifyNoInteractions(directory);
     }
 
     @Test
-    void cacheMiss_callsInternalApi() throws Exception {
+    void cacheMiss_callsDirectory() throws Exception {
       when(userMyselfCache.getByToken("token-1")).thenReturn(Optional.empty());
-      when(internalClient.getMyAccountInfo("token-1"))
-          .thenThrow(new MailboxClientException("test"));
+      when(directory.byToken("token-1")).thenReturn(Optional.empty());
 
       Optional<UserMyself> result = userService.getUserMyself("token-1", false);
 
       assertThat(result).isEmpty();
-      verify(internalClient).getMyAccountInfo("token-1");
+      verify(directory).byToken("token-1");
     }
 
     @Test
@@ -157,26 +136,10 @@ class UserServiceTest {
     }
 
     @Test
-    void apiSuccess_cachesResultAndReturnsMyself() throws Exception {
+    void directorySuccess_cachesResultAndReturnsMyself() throws Exception {
       when(userMyselfCache.getByToken("token-1")).thenReturn(Optional.empty());
 
-      AccountInfo accountInfo =
-          new AccountInfo(
-              "user-1",
-              "user@example.com",
-              "John Doe",
-              "cos-1",
-              "dom-1",
-              "example.com",
-              AccountStatus.active,
-              false,
-              false,
-              false,
-              "en",
-              Map.of("carbonioFeatureFilesEnabled", true),
-              Map.of(),
-              3_600_000L);
-      when(internalClient.getMyAccountInfo("token-1")).thenReturn(accountInfo);
+      when(directory.byToken("token-1")).thenReturn(Optional.of(sampleAuthenticated()));
       when(userMyselfCache.computeExpiresAt(anyLong())).thenReturn(futureExpiresAt());
       when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.empty());
 
@@ -191,10 +154,9 @@ class UserServiceTest {
     }
 
     @Test
-    void apiFailure_returnsEmpty() throws Exception {
+    void directoryMiss_returnsEmpty() throws Exception {
       when(userMyselfCache.getByToken("token-1")).thenReturn(Optional.empty());
-      when(internalClient.getMyAccountInfo("token-1"))
-          .thenThrow(new MailboxClientException("test"));
+      when(directory.byToken("token-1")).thenReturn(Optional.empty());
 
       Optional<UserMyself> result = userService.getUserMyself("token-1", false);
 
@@ -203,12 +165,11 @@ class UserServiceTest {
     }
 
     @Test
-    void cacheDisabled_apiResultNotCached() throws Exception {
+    void cacheDisabled_directoryResultNotCached() throws Exception {
       when(userMyselfCache.isCacheEnabled()).thenReturn(false);
       when(userInfoCache.isCacheEnabled()).thenReturn(false);
       when(userMyselfCache.getByToken("token-1")).thenReturn(Optional.empty());
-      when(internalClient.getMyAccountInfo("token-1"))
-          .thenThrow(new MailboxClientException("test"));
+      when(directory.byToken("token-1")).thenReturn(Optional.empty());
 
       Optional<UserMyself> result = userService.getUserMyself("token-1", false);
 
@@ -217,10 +178,9 @@ class UserServiceTest {
     }
 
     @Test
-    void bypassCache_ignoresCachedEntryAndRevalidatesAgainstMailbox() throws Exception {
+    void bypassCache_ignoresCachedEntryAndRevalidatesAgainstDirectory() throws Exception {
       when(userMyselfCache.getByToken("token-1")).thenReturn(Optional.of(sampleMyself()));
-      when(internalClient.getMyAccountInfo("token-1"))
-          .thenReturn(sampleAccountInfo("user-1", "user@example.com"));
+      when(directory.byToken("token-1")).thenReturn(Optional.of(sampleAuthenticated()));
       when(userMyselfCache.computeExpiresAt(anyLong())).thenReturn(futureExpiresAt());
       when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.of(sampleUserInfo()));
 
@@ -229,14 +189,13 @@ class UserServiceTest {
       assertThat(result).isPresent();
       assertThat(result.get().userId()).isEqualTo("user-1");
       verify(userMyselfCache, never()).getByToken("token-1");
-      verify(internalClient).getMyAccountInfo("token-1");
+      verify(directory).byToken("token-1");
     }
 
     @Test
     void bypassCache_stillWritesFreshResultBackToCache() throws Exception {
       when(userMyselfCache.getByToken("token-1")).thenReturn(Optional.of(sampleMyself()));
-      when(internalClient.getMyAccountInfo("token-1"))
-          .thenReturn(sampleAccountInfo("user-1", "user@example.com"));
+      when(directory.byToken("token-1")).thenReturn(Optional.of(sampleAuthenticated()));
       when(userMyselfCache.computeExpiresAt(anyLong())).thenReturn(futureExpiresAt());
       when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.of(sampleUserInfo()));
 
@@ -246,12 +205,11 @@ class UserServiceTest {
     }
 
     @Test
-    void bypassCache_returnsEmptyWhenMailboxRejectsTheToken() throws Exception {
+    void bypassCache_returnsEmptyWhenDirectoryRejectsTheToken() throws Exception {
       // A revoked session must stop working immediately for a bypassing caller, even though a
       // stale entry is still cached.
       when(userMyselfCache.getByToken("token-1")).thenReturn(Optional.of(sampleMyself()));
-      when(internalClient.getMyAccountInfo("token-1"))
-          .thenThrow(new MailboxClientException("test"));
+      when(directory.byToken("token-1")).thenReturn(Optional.empty());
 
       Optional<UserMyself> result = userService.getUserMyself("token-1", true);
 
@@ -261,7 +219,7 @@ class UserServiceTest {
 
   /**
    * Same scenario as above but against a real {@link UserMyselfCache}, so the hit/miss accounting
-   * is the production one and the mailbox call count can be asserted end to end.
+   * is the production one and the directory call count can be asserted end to end.
    */
   @Nested
   class GetUserMyselfBypassWithRealCacheTests {
@@ -271,39 +229,33 @@ class UserServiceTest {
       when(configService.get("cache.usermyself-ttl")).thenReturn(Optional.empty());
       UserMyselfCache realCache =
           new UserMyselfCache(configService, Ticker.systemTicker(), Clock.systemUTC());
-      return new UserService(
-          internalClient,
-          userInfoCache,
-          realCache,
-          org.eclipse.microprofile.context.ManagedExecutor.builder().build());
+      return new UserService(directory, userInfoCache, realCache);
     }
 
     @Test
-    void secondCallHitsTheCache_thirdCallBypassesAndHitsMailboxAgain() throws Exception {
+    void secondCallHitsTheCache_thirdCallBypassesAndHitsDirectoryAgain() throws Exception {
       UserService service = serviceWithRealCache();
-      when(internalClient.getMyAccountInfo("token-1"))
-          .thenReturn(sampleAccountInfo("user-1", "user@example.com"));
+      when(directory.byToken("token-1")).thenReturn(Optional.of(sampleAuthenticated()));
       when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.of(sampleUserInfo()));
 
-      service.getUserMyself("token-1", false); // cold: mailbox hit #1
+      service.getUserMyself("token-1", false); // cold: directory hit #1
       service.getUserMyself("token-1", false); // warm: served from cache
-      verify(internalClient, times(1)).getMyAccountInfo("token-1");
+      verify(directory, times(1)).byToken("token-1");
 
-      service.getUserMyself("token-1", true); // bypass: mailbox hit #2
-      verify(internalClient, times(2)).getMyAccountInfo("token-1");
+      service.getUserMyself("token-1", true); // bypass: directory hit #2
+      verify(directory, times(2)).byToken("token-1");
     }
 
     @Test
     void bypassRefreshesTheEntryInsteadOfDisablingTheCache() throws Exception {
       UserService service = serviceWithRealCache();
-      when(internalClient.getMyAccountInfo("token-1"))
-          .thenReturn(sampleAccountInfo("user-1", "user@example.com"));
+      when(directory.byToken("token-1")).thenReturn(Optional.of(sampleAuthenticated()));
       when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.of(sampleUserInfo()));
 
-      service.getUserMyself("token-1", true); // bypass on a cold cache: mailbox hit #1
+      service.getUserMyself("token-1", true); // bypass on a cold cache: directory hit #1
       service.getUserMyself("token-1", false); // must now be served from cache
 
-      verify(internalClient, times(1)).getMyAccountInfo("token-1");
+      verify(directory, times(1)).byToken("token-1");
     }
   }
 
@@ -318,25 +270,24 @@ class UserServiceTest {
       Optional<UserInfo> result = userService.getUserById("user-1");
 
       assertThat(result).contains(userInfo);
-      verifyNoInteractions(internalClient);
+      verifyNoInteractions(directory);
     }
 
     @Test
-    void cacheMiss_callsInternalApi() throws Exception {
+    void cacheMiss_callsDirectory() throws Exception {
       when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.empty());
-      when(internalClient.getAccountInfo("user-1")).thenThrow(new MailboxClientException("test"));
+      when(directory.byId("user-1")).thenReturn(Optional.empty());
 
       Optional<UserInfo> result = userService.getUserById("user-1");
 
       assertThat(result).isEmpty();
-      verify(internalClient).getAccountInfo("user-1");
+      verify(directory).byId("user-1");
     }
 
     @Test
-    void apiSuccess_cachesAndReturnsUserInfo() throws Exception {
+    void directorySuccess_cachesAndReturnsUserInfo() throws Exception {
       when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.empty());
-      when(internalClient.getAccountInfo("user-1"))
-          .thenReturn(sampleAccountInfo("user-1", "user@example.com"));
+      when(directory.byId("user-1")).thenReturn(Optional.of(sampleUserInfo()));
 
       Optional<UserInfo> result = userService.getUserById("user-1");
 
@@ -348,9 +299,9 @@ class UserServiceTest {
     }
 
     @Test
-    void apiFailure_returnsEmpty() throws Exception {
+    void directoryMiss_returnsEmpty() throws Exception {
       when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.empty());
-      when(internalClient.getAccountInfo("user-1")).thenThrow(new MailboxClientException("test"));
+      when(directory.byId("user-1")).thenReturn(Optional.empty());
 
       Optional<UserInfo> result = userService.getUserById("user-1");
 
@@ -359,15 +310,68 @@ class UserServiceTest {
     }
 
     @Test
-    void cacheDisabled_apiResultNotCached() throws Exception {
+    void cacheDisabled_directoryResultNotCached() throws Exception {
       when(userInfoCache.isCacheEnabled()).thenReturn(false);
       when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.empty());
-      when(internalClient.getAccountInfo("user-1")).thenThrow(new MailboxClientException("test"));
+      when(directory.byId("user-1")).thenReturn(Optional.empty());
 
       Optional<UserInfo> result = userService.getUserById("user-1");
 
       assertThat(result).isEmpty();
       verify(userInfoCache, never()).put(any());
+    }
+  }
+
+  @Nested
+  class DirectoryFailureTests {
+
+    @Test
+    void getUserMyself_propagatesDirectoryException() {
+      when(userMyselfCache.getByToken("token-1")).thenReturn(Optional.empty());
+      when(directory.byToken("token-1")).thenThrow(new DirectoryException("ldap down", null));
+
+      assertThatThrownBy(() -> userService.getUserMyself("token-1", false))
+          .isInstanceOf(DirectoryException.class);
+      verify(userMyselfCache, never()).put(any(), any(), any(), anyLong());
+    }
+
+    @Test
+    void getUserMyself_bypassPropagatesDirectoryExceptionInsteadOfServingStaleEntry() {
+      when(userMyselfCache.getByToken("token-1")).thenReturn(Optional.of(sampleMyself()));
+      when(directory.byToken("token-1")).thenThrow(new DirectoryException("ldap down", null));
+
+      assertThatThrownBy(() -> userService.getUserMyself("token-1", true))
+          .isInstanceOf(DirectoryException.class);
+    }
+
+    @Test
+    void getUserById_propagatesDirectoryException() {
+      when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.empty());
+      when(directory.byId("user-1")).thenThrow(new DirectoryException("ldap down", null));
+
+      assertThatThrownBy(() -> userService.getUserById("user-1"))
+          .isInstanceOf(DirectoryException.class);
+      verify(userInfoCache, never()).put(any());
+    }
+
+    @Test
+    void getUserByEmail_propagatesDirectoryException() {
+      when(userInfoCache.getByEmail("user@example.com")).thenReturn(Optional.empty());
+      when(directory.byEmail("user@example.com"))
+          .thenThrow(new DirectoryException("ldap down", null));
+
+      assertThatThrownBy(() -> userService.getUserByEmail("user@example.com"))
+          .isInstanceOf(DirectoryException.class);
+      verify(userInfoCache, never()).put(any());
+    }
+
+    @Test
+    void getUserByEmail_propagatesIllegalArgumentException() {
+      when(userInfoCache.getByEmail("bad")).thenReturn(Optional.empty());
+      when(directory.byEmail("bad")).thenThrow(new IllegalArgumentException("not an email"));
+
+      assertThatThrownBy(() -> userService.getUserByEmail("bad"))
+          .isInstanceOf(IllegalArgumentException.class);
     }
   }
 
@@ -382,26 +386,24 @@ class UserServiceTest {
       Optional<UserInfo> result = userService.getUserByEmail("user@example.com");
 
       assertThat(result).contains(userInfo);
-      verifyNoInteractions(internalClient);
+      verifyNoInteractions(directory);
     }
 
     @Test
-    void cacheMiss_callsInternalApi() throws Exception {
+    void cacheMiss_callsDirectory() throws Exception {
       when(userInfoCache.getByEmail("user@example.com")).thenReturn(Optional.empty());
-      when(internalClient.getAccountByEmail("user@example.com"))
-          .thenThrow(new MailboxClientException("test"));
+      when(directory.byEmail("user@example.com")).thenReturn(Optional.empty());
 
       Optional<UserInfo> result = userService.getUserByEmail("user@example.com");
 
       assertThat(result).isEmpty();
-      verify(internalClient).getAccountByEmail("user@example.com");
+      verify(directory).byEmail("user@example.com");
     }
 
     @Test
-    void apiSuccess_cachesAndReturnsUserInfo() throws Exception {
+    void directorySuccess_cachesAndReturnsUserInfo() throws Exception {
       when(userInfoCache.getByEmail("user@example.com")).thenReturn(Optional.empty());
-      when(internalClient.getAccountByEmail("user@example.com"))
-          .thenReturn(sampleAccountInfo("user-1", "user@example.com"));
+      when(directory.byEmail("user@example.com")).thenReturn(Optional.of(sampleUserInfo()));
 
       Optional<UserInfo> result = userService.getUserByEmail("user@example.com");
 
@@ -413,10 +415,9 @@ class UserServiceTest {
     }
 
     @Test
-    void apiFailure_returnsEmpty() throws Exception {
+    void directoryMiss_returnsEmpty() throws Exception {
       when(userInfoCache.getByEmail("user@example.com")).thenReturn(Optional.empty());
-      when(internalClient.getAccountByEmail("user@example.com"))
-          .thenThrow(new MailboxClientException("test"));
+      when(directory.byEmail("user@example.com")).thenReturn(Optional.empty());
 
       Optional<UserInfo> result = userService.getUserByEmail("user@example.com");
 
@@ -429,7 +430,7 @@ class UserServiceTest {
   class GetUsersTests {
 
     @Test
-    void allCacheHitsSkipsApi() {
+    void allCacheHitsSkipsDirectory() {
       UserInfo u1 = sampleUserInfo();
       UserInfo u2 =
           new UserInfo(
@@ -448,14 +449,13 @@ class UserServiceTest {
       List<UserInfo> result = userService.getUsers(List.of("user-1", "user-2"));
 
       assertThat(result).containsExactly(u1, u2);
-      verifyNoInteractions(internalClient);
+      verifyNoInteractions(directory);
     }
 
     @Test
-    void cacheMiss_usesBatchEndpoint() throws Exception {
+    void cacheMiss_usesBatchLookup() throws Exception {
       when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.empty());
-      when(internalClient.batchGetAccountsByIds(List.of("user-1")))
-          .thenReturn(List.of(sampleAccountInfo("user-1", "user@example.com")));
+      when(directory.byIds(List.of("user-1"))).thenReturn(List.of(sampleUserInfo()));
 
       List<UserInfo> result = userService.getUsers(List.of("user-1"));
 
@@ -468,8 +468,7 @@ class UserServiceTest {
     @Test
     void deduplicatesUserIds() throws Exception {
       when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.empty());
-      when(internalClient.batchGetAccountsByIds(List.of("user-1")))
-          .thenReturn(List.of(sampleAccountInfo("user-1", "user@example.com")));
+      when(directory.byIds(List.of("user-1"))).thenReturn(List.of(sampleUserInfo()));
 
       List<UserInfo> result = userService.getUsers(List.of("user-1", "user-1"));
 
@@ -477,28 +476,31 @@ class UserServiceTest {
     }
 
     @Test
-    void batchFails_fallsBackToIndividualLookups() throws Exception {
+    void batchFailure_propagatesDirectoryException() {
       when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.empty());
-      when(internalClient.batchGetAccountsByIds(any()))
-          .thenThrow(new MailboxServerException("batch error"));
-      when(internalClient.getAccountInfo("user-1"))
-          .thenReturn(sampleAccountInfo("user-1", "user@example.com"));
+      when(directory.byIds(any())).thenThrow(new DirectoryException("ldap down", null));
 
-      List<UserInfo> result = userService.getUsers(List.of("user-1"));
-
-      assertThat(result).hasSize(1);
-      assertThat(result.get(0).userId()).isEqualTo("user-1");
-      verify(internalClient).getAccountInfo("user-1");
+      assertThatThrownBy(() -> userService.getUsers(List.of("user-1")))
+          .isInstanceOf(DirectoryException.class);
+      verify(userInfoCache, never()).put(any());
     }
 
     @Test
-    void returnsOnlyFoundUsers() throws Exception {
+    void onlyMissesAreSentToTheDirectory() {
+      when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.of(sampleUserInfo()));
+      when(userInfoCache.getByUserId("user-2")).thenReturn(Optional.empty());
+      when(directory.byIds(List.of("user-2"))).thenReturn(List.of());
+
+      userService.getUsers(List.of("user-1", "user-2"));
+
+      verify(directory).byIds(List.of("user-2"));
+    }
+
+    @Test
+    void returnsOnlyFoundUsers() {
       when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.of(sampleUserInfo()));
       when(userInfoCache.getByUserId("user-not-found")).thenReturn(Optional.empty());
-      when(internalClient.batchGetAccountsByIds(List.of("user-not-found")))
-          .thenThrow(new MailboxClientException("not found"));
-      when(internalClient.getAccountInfo("user-not-found"))
-          .thenThrow(new MailboxClientException("not found"));
+      when(directory.byIds(List.of("user-not-found"))).thenReturn(List.of());
 
       List<UserInfo> result = userService.getUsers(List.of("user-1", "user-not-found"));
 
@@ -507,10 +509,31 @@ class UserServiceTest {
     }
 
     @Test
+    void keepsRequestOrderAcrossCacheHitsAndDirectoryResults() {
+      UserInfo u1 = sampleUserInfo();
+      UserInfo u2 =
+          new UserInfo(
+              "user-2", "u2@example.com", "Jane", "example.com", "ACTIVE", "INTERNAL", "cos-2",
+              "dom-2", false);
+      UserInfo u3 =
+          new UserInfo(
+              "user-3", "u3@example.com", "Jim", "example.com", "ACTIVE", "INTERNAL", "cos-3",
+              "dom-3", false);
+      when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.empty());
+      when(userInfoCache.getByUserId("user-2")).thenReturn(Optional.of(u2));
+      when(userInfoCache.getByUserId("user-3")).thenReturn(Optional.empty());
+      when(directory.byIds(List.of("user-1", "user-3"))).thenReturn(List.of(u3, u1));
+
+      List<UserInfo> result = userService.getUsers(List.of("user-1", "user-2", "user-3"));
+
+      assertThat(result).containsExactly(u1, u2, u3);
+    }
+
+    @Test
     void emptyInputReturnsEmpty() {
       List<UserInfo> result = userService.getUsers(List.of());
       assertThat(result).isEmpty();
-      verifyNoInteractions(internalClient);
+      verifyNoInteractions(directory);
     }
   }
 }

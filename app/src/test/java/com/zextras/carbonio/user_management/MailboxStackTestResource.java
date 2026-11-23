@@ -23,13 +23,15 @@ import org.testcontainers.lifecycle.Startables;
 
 /**
  * Starts the Carbonio mailbox stack (mailbox + dependencies) and a WireMock container that stubs
- * Consul endpoints for integration tests.
+ * Consul endpoints for integration tests. The service under test reads LDAP directly from the
+ * openldap container; the mailbox is only used by the tests to issue auth tokens and provision
+ * accounts.
  *
  * <p><b>Testing philosophy:</b>
  *
  * <ul>
- *   <li>Mailbox (+ openldap, mariadb, postfix) — real containers: tests exercise the full SOAP
- *       authentication and user lookup flow.
+ *   <li>Mailbox (+ openldap, mariadb, postfix) — real containers: tests exercise the tests obtain
+ *       real auth tokens over SOAP and provision accounts with zmprov.
  *   <li>Consul — WireMock stub: the bootstrap extension reads KV config and registers the service;
  *       a real Consul instance is not needed.
  * </ul>
@@ -108,7 +110,7 @@ public class MailboxStackTestResource implements QuarkusTestResourceLifecycleMan
             .withEnv("MARIADB_ROOT_PASSWORD", "password")
             .withEnv("MARIADB_URL", "carbonio-mariadb")
             .withEnv("MARIADB_PORT", "3306")
-            .withExposedPorts(8080, 10000)
+            .withExposedPorts(8080)
             .dependsOn(openldap, postfix, mariadb)
             .waitingFor(
                 Wait.forHttp("/service/health/ready")
@@ -142,7 +144,6 @@ public class MailboxStackTestResource implements QuarkusTestResourceLifecycleMan
     provisionTestAccounts();
 
     int mailboxPort = mailbox.getMappedPort(8080);
-    int mailboxInternalPort = mailbox.getMappedPort(10000);
     mailboxBaseUrl = "http://localhost:" + mailboxPort;
     log.info("Mailbox available at {}", mailboxBaseUrl);
 
@@ -162,12 +163,12 @@ public class MailboxStackTestResource implements QuarkusTestResourceLifecycleMan
                 String.valueOf(wireMock.getMappedPort(8080))),
             Map.entry(
                 CarbonioServiceConfig.NETWORKING_CONFIG_PREFIX
-                    + UserManagementServiceConfig.NetworkingConfig.MAILBOX_INTERNAL_HOST,
-                "localhost"),
+                    + UserManagementServiceConfig.NetworkingConfig.LDAP_URL,
+                "ldap://" + openldap.getHost() + ":" + openldap.getMappedPort(1389)),
             Map.entry(
-                CarbonioServiceConfig.NETWORKING_CONFIG_PREFIX
-                    + UserManagementServiceConfig.NetworkingConfig.MAILBOX_INTERNAL_PORT,
-                String.valueOf(mailboxInternalPort)));
+                "application-config."
+                    + UserManagementServiceConfig.ApplicationConfig.LDAP_BIND_PASSWORD,
+                "password"));
     started = true;
     return cachedConfig;
   }
@@ -179,8 +180,8 @@ public class MailboxStackTestResource implements QuarkusTestResourceLifecycleMan
   }
 
   /**
-   * Changes the test user's {@code displayName} directly in mailbox, behind the application's back.
-   * Used to make a stale cache entry observable: only a new mailbox round trip can see the new
+   * Changes the test user's {@code displayName} directly in LDAP via zmprov, behind the application's back.
+   * Used to make a stale cache entry observable: only a new LDAP read can see the new
    * value.
    *
    * @param displayName the new display name; empty string unsets the attribute
