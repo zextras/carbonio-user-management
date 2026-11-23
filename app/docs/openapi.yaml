@@ -2,15 +2,21 @@
 openapi: 3.1.0
 components:
   schemas:
-    AccountDirectoryDto:
+    AccountRightsDto:
       type: object
       properties:
-        accountId:
+        actorId:
           type: string
-        cosId:
+        targetId:
           type: string
-        domainId:
-          type: string
+        isGlobalAdmin:
+          type: boolean
+        isDelegatedAdmin:
+          type: boolean
+        canWrite:
+          type: boolean
+        canConfigure:
+          type: boolean
     MyselfDto:
       type: object
       properties:
@@ -26,6 +32,47 @@ components:
           type: object
           additionalProperties:
             type: string
+    RightCheckRequest:
+      type: object
+      properties:
+        subject:
+          $ref: "#/components/schemas/Subject"
+        right:
+          type: string
+        target:
+          $ref: "#/components/schemas/Target"
+    RightCheckResponse:
+      type: object
+      properties:
+        allowed:
+          type: boolean
+    RightInfoDto:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+        userRight:
+          type: boolean
+        description:
+          type: string
+    Subject:
+      type: object
+      properties:
+        token:
+          type: string
+        accountId:
+          type: string
+    Target:
+      type: object
+      properties:
+        type:
+          type: string
+        id:
+          type: string
+        name:
+          type: string
     UserInfoDto:
       type: object
       properties:
@@ -48,12 +95,11 @@ components:
         isGlobalAdmin:
           type: boolean
 paths:
-  /internal/accounts/{accountId}:
+  /internal/rights:
     get:
       parameters:
-      - name: accountId
-        in: path
-        required: true
+      - name: targetType
+        in: query
         schema:
           type: string
       responses:
@@ -62,10 +108,54 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/AccountDirectoryDto"
-      summary: Get Directory
+                type: array
+                items:
+                  $ref: "#/components/schemas/RightInfoDto"
+      summary: List Rights
       tags:
-      - Account Resource
+      - Rights Resource
+  /internal/rights/accounts/{targetId}:
+    get:
+      parameters:
+      - name: targetId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: actorId
+        in: query
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccountRightsDto"
+      summary: Account Rights
+      tags:
+      - Rights Resource
+  /internal/rights/check:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RightCheckRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RightCheckResponse"
+        "400":
+          description: Bad Request
+      summary: Check
+      tags:
+      - Rights Resource
   /internal/users:
     post:
       requestBody:

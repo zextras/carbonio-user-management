@@ -209,6 +209,22 @@ public class MailboxStackTestResource implements QuarkusTestResourceLifecycleMan
     }
   }
 
+  /** Runs a zmprov script inside the mailbox container and returns its standard output. */
+  public static String zmprov(boolean localLdap, String script) {
+    try {
+      var result =
+          mailbox.execInContainer(
+              "sh",
+              "-c",
+              "zmprov " + (localLdap ? "-l " : "") + "2>&1 <<'EOF'\n" + script + "\nEOF");
+      return result.getStdout();
+    } catch (RuntimeException e) {
+      throw e;
+    } catch (Exception e) {
+      throw new RuntimeException("zmprov failed", e);
+    }
+  }
+
   /**
    * Consul WireMock stubs: KV recursive fetch, service registration/deregistration, and service
    * discovery endpoints.
