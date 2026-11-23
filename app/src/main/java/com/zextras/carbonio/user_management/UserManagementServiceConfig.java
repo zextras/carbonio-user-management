@@ -15,6 +15,9 @@ public final class UserManagementServiceConfig {
 
     @ConfigKey(ifNotPresent = "Directory endpoints answer 500")
     public static final String LDAP_URL = "carbonio.ldap.url";
+
+    @ConfigKey(ifNotPresent = "No StartTLS on ldap:// URLs")
+    public static final String LDAP_STARTTLS = "carbonio.ldap.starttls";
   }
 
   public static final class ApplicationConfig {
@@ -36,6 +39,9 @@ public final class UserManagementServiceConfig {
   }
 
   public static final int LDAP_POOL_SIZE = 5;
+  public static final int LDAP_MAX_POOL_SIZE = 20;
+  public static final int LDAP_CONNECT_TIMEOUT_MILLIS = 5_000;
+  public static final long LDAP_RESPONSE_TIMEOUT_MILLIS = 10_000;
   public static final String DEFAULT_LDAP_BIND_DN = "uid=zimbra,cn=admins,cn=zimbra";
 
   public static final String AUTH_TOKEN_KEY = "ZM_AUTH_TOKEN";

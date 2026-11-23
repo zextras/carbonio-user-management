@@ -3,6 +3,7 @@ package com.zextras.carbonio.user_management.ldap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.unboundid.ldap.sdk.LDAPConnectionOptions;
 import com.unboundid.ldap.sdk.FailoverServerSet;
 import com.unboundid.ldap.sdk.ServerSet;
 import com.unboundid.ldap.sdk.SingleServerSet;
@@ -75,5 +76,19 @@ class LdapServersTest {
   @Test
   void rejectsNull() {
     assertThatThrownBy(() -> LdapServers.from(null)).isInstanceOf(IllegalArgumentException.class);
+  }
+
+  @Test
+  void detectsLdapsFromTheFirstUrl() {
+    assertThat(LdapServers.isLdaps("ldaps://a.example.com:636 ldaps://b.example.com")).isTrue();
+    assertThat(LdapServers.isLdaps("ldap://a.example.com,ldap://b.example.com")).isFalse();
+  }
+
+  @Test
+  void appliesConnectionOptions() {
+    LDAPConnectionOptions options = new LDAPConnectionOptions();
+    options.setResponseTimeoutMillis(1234);
+    SingleServerSet set = (SingleServerSet) LdapServers.from("ldap://a.example.com", options);
+    assertThat(set.getConnectionOptions().getResponseTimeoutMillis()).isEqualTo(1234);
   }
 }

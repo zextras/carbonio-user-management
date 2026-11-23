@@ -1,6 +1,7 @@
 package com.zextras.carbonio.user_management.ldap;
 
 import com.unboundid.ldap.sdk.FailoverServerSet;
+import com.unboundid.ldap.sdk.LDAPConnectionOptions;
 import com.unboundid.ldap.sdk.LDAPException;
 import com.unboundid.ldap.sdk.LDAPURL;
 import com.unboundid.ldap.sdk.ServerSet;
@@ -11,6 +12,7 @@ import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.List;
 import javax.net.SocketFactory;
+import javax.net.ssl.SSLContext;
 
 public final class LdapServers {
 
@@ -20,6 +22,10 @@ public final class LdapServers {
   private LdapServers() {}
 
   public static ServerSet from(String urls) {
+    return from(urls, new LDAPConnectionOptions());
+  }
+
+  public static ServerSet from(String urls, LDAPConnectionOptions options) {
     if (urls == null || urls.isBlank()) {
       throw new IllegalArgumentException("No LDAP URL configured");
     }
@@ -36,9 +42,9 @@ public final class LdapServers {
     int[] ports = parsed.stream().mapToInt(LDAPURL::getPort).toArray();
 
     if (hosts.length == 1) {
-      return new SingleServerSet(hosts[0], ports[0], socketFactory);
+      return new SingleServerSet(hosts[0], ports[0], socketFactory, options);
     }
-    return new FailoverServerSet(hosts, ports, socketFactory);
+    return new FailoverServerSet(hosts, ports, socketFactory, options);
   }
 
   private static LDAPURL parse(String url) {
@@ -56,14 +62,22 @@ public final class LdapServers {
     }
   }
 
+  public static boolean isLdaps(String urls) {
+    return LDAPS.equals(parse(urls.trim().split("[\\s,]+")[0]).getScheme());
+  }
+
+  public static SSLContext sslContext() {
+    try {
+      return new SSLUtil(JVMDefaultTrustManager.getInstance()).createSSLContext();
+    } catch (GeneralSecurityException e) {
+      throw new IllegalStateException("Cannot create the LDAP TLS context", e);
+    }
+  }
+
   private static SocketFactory socketFactory(String scheme) {
     if (!LDAPS.equals(scheme)) {
       return SocketFactory.getDefault();
     }
-    try {
-      return new SSLUtil(JVMDefaultTrustManager.getInstance()).createSSLSocketFactory();
-    } catch (GeneralSecurityException e) {
-      throw new IllegalStateException("Cannot create the LDAPS socket factory", e);
-    }
+    return sslContext().getSocketFactory();
   }
 }
