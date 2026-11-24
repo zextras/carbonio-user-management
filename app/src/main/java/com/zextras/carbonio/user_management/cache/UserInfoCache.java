@@ -7,8 +7,10 @@ package com.zextras.carbonio.user_management.cache;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.Expiry;
+import com.github.benmanes.caffeine.cache.RemovalCause;
 import com.github.benmanes.caffeine.cache.Ticker;
 import com.zextras.carbonio.quarkus.extensions.bootstrap.ApplicationConfigService;
+import com.zextras.carbonio.user_management.UserManagementServiceConfig;
 import com.zextras.carbonio.user_management.UserManagementServiceConfig.ApplicationConfig;
 import com.zextras.carbonio.user_management.record.UserInfo;
 import jakarta.inject.Inject;
@@ -27,14 +29,16 @@ import java.util.concurrent.TimeUnit;
  *
  * <p>Caffeine doesn't support multi-key lookup natively. The secondary index ({@code
  * emailToUserId}) is a ConcurrentHashMap kept in sync via Caffeine's {@code removalListener}: when
- * an entry expires or is invalidated, the listener automatically removes the corresponding email
- * mapping.
+ * an entry expires, is evicted or is invalidated, the listener removes the corresponding email
+ * mapping unless the cache already holds a newer entry with that email.
+ *
+ * <p>The cache holds at most {@link UserManagementServiceConfig#CACHE_MAX_ENTRIES} entries and
+ * evicts the ones least likely to be used again.
  */
 @Singleton
 public class UserInfoCache {
 
   private static final long CONFIG_CACHE_SECONDS = 60;
-  private static final long DEFAULT_TTL_SECONDS = 43200; // 12 hours
 
   private final Cache<String, UserInfo> cache;
   private final ConcurrentHashMap<String, String> emailToUserId;
@@ -43,6 +47,10 @@ public class UserInfoCache {
 
   @Inject
   public UserInfoCache(ApplicationConfigService configService, Ticker ticker) {
+    this(configService, ticker, UserManagementServiceConfig.CACHE_MAX_ENTRIES);
+  }
+
+  UserInfoCache(ApplicationConfigService configService, Ticker ticker, long maxEntries) {
     this.configService = configService;
     this.emailToUserId = new ConcurrentHashMap<>();
     this.ttlCache =
@@ -54,15 +62,25 @@ public class UserInfoCache {
     this.cache =
         Caffeine.newBuilder()
             .ticker(ticker)
+            .executor(Runnable::run)
+            .maximumSize(maxEntries)
             .expireAfter(
                 Expiry.<String, UserInfo>creating((k, v) -> Duration.ofNanos(Long.MAX_VALUE)))
             .removalListener(
-                (key, value, cause) -> {
-                  if (value != null && value.email() != null) {
-                    emailToUserId.remove(value.email());
+                (String key, UserInfo value, RemovalCause cause) -> {
+                  if (key != null
+                      && value != null
+                      && value.email() != null
+                      && !holdsEmail(key, value.email())) {
+                    emailToUserId.remove(value.email(), key);
                   }
                 })
             .build();
+  }
+
+  private boolean holdsEmail(String userId, String email) {
+    UserInfo current = cache.policy().getIfPresentQuietly(userId);
+    return current != null && email.equals(current.email());
   }
 
   public Optional<UserInfo> getByUserId(String userId) {
@@ -74,7 +92,8 @@ public class UserInfoCache {
     if (userId == null) {
       return Optional.empty();
     }
-    return Optional.ofNullable(cache.getIfPresent(userId));
+    return Optional.ofNullable(cache.getIfPresent(userId))
+        .filter(userInfo -> email.equals(userInfo.email()));
   }
 
   public void put(UserInfo userInfo) {
@@ -109,6 +128,6 @@ public class UserInfoCache {
             configService
                 .get(ApplicationConfig.CACHE_USERINFO_TTL)
                 .map(Long::parseLong)
-                .orElse(DEFAULT_TTL_SECONDS));
+                .orElse(UserManagementServiceConfig.DEFAULT_CACHE_TTL_SECONDS));
   }
 }

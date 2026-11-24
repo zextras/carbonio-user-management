@@ -8,6 +8,7 @@ import com.zextras.carbonio.user_management.record.UserMyself;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -29,6 +30,7 @@ public final class UserMapper {
       Set.of("active", "maintenance", "locked", "closed", "lockout", "pending");
   private static final String ATTRS_RESOURCE = "/conf/attrs/attrs.xml";
   static final List<String> SETTING_ATTRIBUTES = settingAttributes();
+  private static final Map<String, String> SETTING_NAMES = canonicalNames(SETTING_ATTRIBUTES);
 
   private UserMapper() {}
 
@@ -140,7 +142,7 @@ public final class UserMapper {
     for (Attribute attribute : entry.getAttributes()) {
       String name = attribute.getName();
       if (isSetting(name)) {
-        values.put(name, attribute.getValue());
+        values.put(SETTING_NAMES.getOrDefault(name, name), attribute.getValue());
       }
     }
   }
@@ -148,6 +150,12 @@ public final class UserMapper {
   private static boolean isSetting(String name) {
     return name.startsWith(FEATURE_PREFIX)
         || CAPABILITY_PREFIXES.stream().anyMatch(name::startsWith);
+  }
+
+  private static Map<String, String> canonicalNames(List<String> names) {
+    Map<String, String> canonical = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+    names.forEach(name -> canonical.put(name, name));
+    return Collections.unmodifiableMap(canonical);
   }
 
   static List<String> settingAttributes() {

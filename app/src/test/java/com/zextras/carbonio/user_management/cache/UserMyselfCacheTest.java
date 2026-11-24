@@ -19,6 +19,7 @@ import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import org.junit.jupiter.api.BeforeEach;
@@ -73,6 +74,51 @@ class UserMyselfCacheTest {
   void isCacheEnabled_returnsTrueWhenConfigAbsent() {
     // setUp already sets config to Optional.empty()
     assertThat(cache.isCacheEnabled()).isTrue();
+  }
+
+  @Test
+  void defaultTtlIsFifteenMinutesWhenTheTokenLastsLonger() {
+    long twoDaysMs = TimeUnit.DAYS.toMillis(2);
+    cache.put("token-abc", "user-1", sampleMyself(), twoDaysMs);
+
+    currentTime.set(TimeUnit.SECONDS.toNanos(899));
+    assertThat(cache.getByToken("token-abc")).isPresent();
+
+    currentTime.set(TimeUnit.SECONDS.toNanos(901));
+    assertThat(cache.getByToken("token-abc")).isEmpty();
+  }
+
+  @Test
+  void aLongConfiguredTtlIsStillCappedByTheToken() {
+    when(configService.get("cache.usermyself-ttl")).thenReturn(Optional.of("43200"));
+    UserMyselfCache configCache =
+        new UserMyselfCache(
+            configService, currentTime::get, Clock.fixed(Instant.EPOCH, ZoneOffset.UTC));
+
+    configCache.put("token-abc", "user-1", sampleMyself(), TimeUnit.HOURS.toMillis(1));
+
+    currentTime.set(TimeUnit.MINUTES.toNanos(59));
+    assertThat(configCache.getByToken("token-abc")).isPresent();
+    currentTime.set(TimeUnit.MINUTES.toNanos(61));
+    assertThat(configCache.getByToken("token-abc")).isEmpty();
+  }
+
+  @Test
+  void holdsAtMostTheConfiguredNumberOfEntries() {
+    UserMyselfCache small =
+        new UserMyselfCache(
+            configService, currentTime::get, Clock.fixed(Instant.EPOCH, ZoneOffset.UTC), 2);
+    for (int i = 0; i < 10; i++) {
+      small.put("token-" + i, "user-" + i, sampleMyself(), 30_000L);
+    }
+
+    long held = 0;
+    for (int i = 0; i < 10; i++) {
+      boolean cached = small.getByToken("token-" + i).isPresent();
+      assertThat(small.resolveUserId("token-" + i).isPresent()).isEqualTo(cached);
+      held += cached ? 1 : 0;
+    }
+    assertThat(held).isLessThanOrEqualTo(2);
   }
 
   @Test
@@ -171,6 +217,20 @@ class UserMyselfCacheTest {
 
     assertThat(cache.getByToken("token-A")).contains(sampleMyself());
     assertThat(cache.resolveUserId("token-A")).contains("user-1");
+  }
+
+  @Test
+  void indexesSurviveAReputOfTheSameTokenAfterExpiry() {
+    cache.put("token-A", "user-1", sampleMyself(), 500L);
+    currentTime.set(TimeUnit.MILLISECONDS.toNanos(1000));
+    assertThat(cache.getByToken("token-A")).isEmpty();
+
+    cache.put("token-A", "user-1", sampleMyself(), 30_000L);
+    ForkJoinPool.commonPool().awaitQuiescence(5, TimeUnit.SECONDS);
+    cache.put("token-B", "user-1", sampleMyself(), 30_000L);
+
+    assertThat(cache.resolveUserId("token-B")).contains("user-1");
+    assertThat(cache.getByToken("token-A")).isEmpty();
   }
 
   @Test

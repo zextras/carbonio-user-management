@@ -19,8 +19,8 @@ Overridable by Consul KV
 
 | Key | Default | If not set | Description |
 | --- | ------- | ---------- | ----------- |
-| `carbonio-user-management/cache/userinfo-ttl` | `43200` |  |  |
-| `carbonio-user-management/cache/usermyself-ttl` | *(not set)* | Uses remaining token validity time |  |
+| `carbonio-user-management/cache/userinfo-ttl` | `900` |  | Seconds a user entry stays cached; 0 disables the cache |
+| `carbonio-user-management/cache/usermyself-ttl` | `900` |  | Seconds a /myself entry stays cached, never longer than the remaining token validity; 0 disables the cache |
 | `carbonio-user-management/ldap/base-dn` | *(not set)* | Searches from the root DSE |  |
 | `carbonio-user-management/ldap/bind-dn` | *(not set)* | Uses uid=zimbra,cn=admins,cn=zimbra |  |
 | `carbonio-user-management/ldap/bind-password` | *(not set)* | Directory endpoints answer 500 |  |

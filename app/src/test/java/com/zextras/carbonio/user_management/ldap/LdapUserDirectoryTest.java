@@ -387,6 +387,26 @@ class LdapUserDirectoryTest {
     }
 
     @Test
+    void settingNamesAreSharedAcrossReads() throws Exception {
+      UserMyself first = myself(USER_ID);
+      UserMyself second = myself(USER_ID);
+
+      String capability = key(first, "carbonioWscMaxGroupMembers");
+      assertThat(capability).isSameAs(key(second, "carbonioWscMaxGroupMembers"));
+      assertThat(capability)
+          .isSameAs(
+              UserMapper.SETTING_ATTRIBUTES.stream()
+                  .filter("carbonioWscMaxGroupMembers"::equals)
+                  .findFirst()
+                  .orElseThrow());
+      assertThat(first.features().getFirst()).isSameAs(second.features().getFirst());
+    }
+
+    private String key(UserMyself myself, String name) {
+      return myself.capabilities().keySet().stream().filter(name::equals).findFirst().orElseThrow();
+    }
+
+    @Test
     void localeFollowsTheMailboxChain() throws Exception {
       assertThat(myself(USER_ID).locale()).isEqualTo("de");
       assertThat(myself(EXPLICIT_COS_USER_ID).locale()).isEqualTo("en_US");

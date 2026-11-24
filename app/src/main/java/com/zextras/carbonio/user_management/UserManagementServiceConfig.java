@@ -23,10 +23,14 @@ public final class UserManagementServiceConfig {
   public static final class ApplicationConfig {
     private ApplicationConfig() {}
 
-    @ConfigKey(ifNotPresent = "Uses remaining token validity time")
+    @ConfigKey(
+        description =
+            "Seconds a /myself entry stays cached, never longer than the remaining token validity;"
+                + " 0 disables the cache")
     public static final String CACHE_USERMYSELF_TTL = "cache.usermyself-ttl";
 
-    @ConfigKey public static final String CACHE_USERINFO_TTL = "cache.userinfo-ttl";
+    @ConfigKey(description = "Seconds a user entry stays cached; 0 disables the cache")
+    public static final String CACHE_USERINFO_TTL = "cache.userinfo-ttl";
 
     @ConfigKey(ifNotPresent = "Uses " + DEFAULT_LDAP_BIND_DN)
     public static final String LDAP_BIND_DN = "ldap.bind-dn";
@@ -38,6 +42,8 @@ public final class UserManagementServiceConfig {
     public static final String LDAP_BASE_DN = "ldap.base-dn";
   }
 
+  public static final long DEFAULT_CACHE_TTL_SECONDS = 900;
+  public static final long CACHE_MAX_ENTRIES = 100_000;
   public static final int LDAP_POOL_SIZE = 5;
   public static final int LDAP_MAX_POOL_SIZE = 20;
   public static final int LDAP_CONNECT_TIMEOUT_MILLIS = 5_000;
