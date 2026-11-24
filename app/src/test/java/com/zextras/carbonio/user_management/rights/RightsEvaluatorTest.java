@@ -375,7 +375,7 @@ class RightsEvaluatorTest {
   }
 
   private Entry entry(String id) {
-    return directory.accountById(id).orElseThrow();
+    return directory.accountById(id, LdapDirectory.ACCOUNT_RIGHTS_ATTRIBUTES).orElseThrow();
   }
 
   private Target account(String id) {
@@ -387,7 +387,8 @@ class RightsEvaluatorTest {
   }
 
   private Target cos() {
-    return new Target("cos", directory.cosById(COS).orElseThrow());
+    return new Target(
+        "cos", directory.cosById(COS, LdapDirectory.COS_RIGHTS_ATTRIBUTES).orElseThrow());
   }
 
   private void domain(String name, String id) throws Exception {

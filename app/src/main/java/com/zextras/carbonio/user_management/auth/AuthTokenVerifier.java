@@ -11,8 +11,10 @@ import java.security.MessageDigest;
 import java.time.Clock;
 import java.util.HashMap;
 import java.util.HexFormat;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import org.slf4j.Logger;
@@ -34,7 +36,7 @@ public class AuthTokenVerifier {
     this.clock = clock;
   }
 
-  public Optional<VerifiedToken> verify(String encoded) {
+  public Optional<VerifiedToken> verify(String encoded, List<String> accountAttributes) {
     Entry config = directory.config();
     Optional<AuthTokenClaims> claims = verifySignature(encoded, config);
     if (claims.isEmpty()) {
@@ -48,7 +50,13 @@ public class AuthTokenVerifier {
       logger.debug("Auth token expired");
       return Optional.empty();
     }
-    Optional<Entry> account = directory.accountById(token.accountId());
+    Optional<Entry> account =
+        directory.accountById(
+            token.accountId(),
+            Stream.concat(
+                    accountAttributes.stream(), LdapDirectory.ACCOUNT_TOKEN_ATTRIBUTES.stream())
+                .distinct()
+                .toList());
     if (account.isEmpty()) {
       return Optional.empty();
     }

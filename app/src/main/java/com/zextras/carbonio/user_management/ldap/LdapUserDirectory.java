@@ -31,17 +31,22 @@ public class LdapUserDirectory implements UserDirectory {
 
   @Override
   public Optional<UserInfo> byId(String userId) {
-    return directory.accountById(userId).map(resolver::resolve).map(UserMapper::toUserInfo);
+    return directory
+        .accountById(userId, LdapDirectory.ACCOUNT_INFO_ATTRIBUTES)
+        .map(resolver::resolve).map(UserMapper::toUserInfo);
   }
 
   @Override
   public Optional<UserInfo> byEmail(String email) {
-    return directory.accountByEmail(email).map(resolver::resolve).map(UserMapper::toUserInfo);
+    return directory
+        .accountByEmail(email, LdapDirectory.ACCOUNT_INFO_ATTRIBUTES)
+        .map(resolver::resolve).map(UserMapper::toUserInfo);
   }
 
   @Override
   public List<UserInfo> byIds(List<String> userIds) {
-    return resolver.resolveAll(directory.accountsByIds(userIds)).stream()
+    return resolver.resolveAll(
+            directory.accountsByIds(userIds, LdapDirectory.ACCOUNT_INFO_ATTRIBUTES)).stream()
         .map(UserMapper::toUserInfo)
         .toList();
   }
@@ -49,12 +54,12 @@ public class LdapUserDirectory implements UserDirectory {
   @Override
   public Optional<AuthenticatedUser> byToken(String token) {
     return tokenVerifier
-        .verify(token)
+        .verify(token, LdapDirectory.ACCOUNT_MYSELF_ATTRIBUTES)
         .map(
             verified ->
                 new AuthenticatedUser(
                     UserMapper.toUserMyself(
-                        resolver.resolveWithFullCos(verified.account()), directory::serverByName),
+                        resolver.resolveForMyself(verified.account()), directory::serverByName),
                     verified.expiresAt() - clock.millis()));
   }
 }

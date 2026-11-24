@@ -5,6 +5,9 @@ import com.unboundid.ldap.sdk.Entry;
 import com.zextras.carbonio.user_management.UserManagementServiceConfig.ZimbraAttributes;
 import com.zextras.carbonio.user_management.record.UserInfo;
 import com.zextras.carbonio.user_management.record.UserMyself;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -12,6 +15,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Function;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 
 public final class UserMapper {
 
@@ -20,6 +27,8 @@ public final class UserMapper {
       List.of("carbonioWsc", "carbonioFiles", "carbonioTasks", "carbonioDocs", "carbonioPreview");
   private static final Set<String> ACCOUNT_STATUSES =
       Set.of("active", "maintenance", "locked", "closed", "lockout", "pending");
+  private static final String ATTRS_RESOURCE = "/conf/attrs/attrs.xml";
+  static final List<String> SETTING_ATTRIBUTES = settingAttributes();
 
   private UserMapper() {}
 
@@ -130,10 +139,39 @@ public final class UserMapper {
   private static void putSingleValued(Entry entry, Map<String, String> values) {
     for (Attribute attribute : entry.getAttributes()) {
       String name = attribute.getName();
-      if (name.startsWith(FEATURE_PREFIX)
-          || CAPABILITY_PREFIXES.stream().anyMatch(name::startsWith)) {
+      if (isSetting(name)) {
         values.put(name, attribute.getValue());
       }
+    }
+  }
+
+  private static boolean isSetting(String name) {
+    return name.startsWith(FEATURE_PREFIX)
+        || CAPABILITY_PREFIXES.stream().anyMatch(name::startsWith);
+  }
+
+  static List<String> settingAttributes() {
+    try (InputStream in = UserMapper.class.getResourceAsStream(ATTRS_RESOURCE)) {
+      if (in == null) {
+        throw new IllegalStateException("Attributes resource not found: " + ATTRS_RESOURCE);
+      }
+      XMLInputFactory factory = XMLInputFactory.newFactory();
+      factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+      factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
+      XMLStreamReader reader = factory.createXMLStreamReader(in);
+      List<String> names = new ArrayList<>();
+      while (reader.hasNext()) {
+        if (reader.next() == XMLStreamConstants.START_ELEMENT
+            && "attr".equals(reader.getLocalName())) {
+          String name = reader.getAttributeValue(null, "name");
+          if (name != null && isSetting(name)) {
+            names.add(name);
+          }
+        }
+      }
+      return List.copyOf(names);
+    } catch (IOException | XMLStreamException e) {
+      throw new IllegalStateException("Cannot load " + ATTRS_RESOURCE, e);
     }
   }
 

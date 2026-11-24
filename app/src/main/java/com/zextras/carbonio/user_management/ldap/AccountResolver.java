@@ -31,19 +31,19 @@ public class AccountResolver {
     return accounts.stream().map(lookups::resolve).toList();
   }
 
-  public ResolvedAccount resolveWithFullCos(Entry account) {
-    return new Lookups(LdapDirectory.ALL_ATTRIBUTES).resolve(account);
+  public ResolvedAccount resolveForMyself(Entry account) {
+    return new Lookups(LdapDirectory.COS_MYSELF_ATTRIBUTES).resolve(account);
   }
 
   private final class Lookups {
 
-    private final String[] cosAttributes;
+    private final List<String> cosAttributes;
     private final Map<String, Optional<Entry>> domains = new HashMap<>();
     private final Map<String, Optional<Entry>> cosesById = new HashMap<>();
     private final Map<String, Optional<Entry>> cosesByName = new HashMap<>();
     private Entry config;
 
-    private Lookups(String... cosAttributes) {
+    private Lookups(List<String> cosAttributes) {
       this.cosAttributes = cosAttributes;
     }
 

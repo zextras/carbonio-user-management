@@ -66,7 +66,9 @@ public class RightsService {
       String token, String rightName, String targetType, String targetId, String targetName) {
     Right right = right(rightName, targetType);
     AuthTokenVerifier.VerifiedToken verified =
-        tokenVerifier.verify(token).orElseThrow(InvalidTokenException::new);
+        tokenVerifier
+            .verify(token, LdapDirectory.ACCOUNT_RIGHTS_ATTRIBUTES)
+            .orElseThrow(InvalidTokenException::new);
     return target(targetType, targetId, targetName)
         .map(target -> evaluator.check(verified.account(), verified.anyAdmin(), right, target))
         .orElse(false);
@@ -75,7 +77,7 @@ public class RightsService {
   public boolean checkWithAccountId(
       String accountId, String rightName, String targetType, String targetId, String targetName) {
     Right right = right(rightName, targetType);
-    Optional<Entry> actor = directory.accountById(accountId);
+    Optional<Entry> actor = directory.accountById(accountId, LdapDirectory.ACCOUNT_RIGHTS_ATTRIBUTES);
     if (actor.isEmpty()) {
       return false;
     }
@@ -87,8 +89,8 @@ public class RightsService {
   }
 
   public Optional<AccountRights> accountRights(String actorId, String targetId) {
-    Optional<Entry> actor = directory.accountById(actorId);
-    Optional<Entry> target = directory.accountById(targetId);
+    Optional<Entry> actor = directory.accountById(actorId, LdapDirectory.ACCOUNT_RIGHTS_ATTRIBUTES);
+    Optional<Entry> target = directory.accountById(targetId, LdapDirectory.ACCOUNT_RIGHTS_ATTRIBUTES);
     if (actor.isEmpty() || target.isEmpty()) {
       return Optional.empty();
     }
@@ -147,9 +149,15 @@ public class RightsService {
     }
     Optional<Entry> entry =
         switch (targetType) {
-          case "account" -> byName ? directory.accountByEmail(key) : directory.accountById(key);
+          case "account" ->
+              byName
+                  ? directory.accountByEmail(key, LdapDirectory.ACCOUNT_RIGHTS_ATTRIBUTES)
+                  : directory.accountById(key, LdapDirectory.ACCOUNT_RIGHTS_ATTRIBUTES);
           case "domain" -> byName ? directory.domainByName(key) : directory.domainById(key);
-          case "cos" -> byName ? directory.cosByName(key) : directory.cosById(key);
+          case "cos" ->
+              byName
+                  ? directory.cosByName(key, LdapDirectory.COS_RIGHTS_ATTRIBUTES)
+                  : directory.cosById(key, LdapDirectory.COS_RIGHTS_ATTRIBUTES);
           default -> throw new InvalidRequestException("Unsupported target type: " + targetType);
         };
     return entry.map(e -> new Target(targetType, e));

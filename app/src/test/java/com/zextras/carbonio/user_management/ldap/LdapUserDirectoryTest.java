@@ -99,7 +99,9 @@ class LdapUserDirectoryTest {
         "zimbraMailHost: mbox1.example.com",
         "carbonioFeatureTasksEnabled: FALSE",
         "carbonioWscMaxGroupMembers: 64",
-        "zimbraIsAdminAccount: TRUE");
+        "zimbraIsAdminAccount: TRUE",
+        "userPassword: not-for-user-management",
+        "zimbraAuthTokens: 1234|1999999999999|26.3.0");
     server.add(
         "dn: uid=explicit," + BASE,
         "objectClass: zimbraAccount",
@@ -323,6 +325,32 @@ class LdapUserDirectoryTest {
     }
 
     @Test
+    void accountsAreReadWithOnlyTheAttributesOfTheirUse() throws Exception {
+      LdapDirectory ldap = new LdapDirectory(server.getConnectionPool(1), BASE);
+
+      Entry info = ldap.accountById(USER_ID, LdapDirectory.ACCOUNT_INFO_ATTRIBUTES).orElseThrow();
+      Entry myself =
+          ldap.accountById(USER_ID, LdapDirectory.ACCOUNT_MYSELF_ATTRIBUTES).orElseThrow();
+
+      assertThat(info.hasAttribute("displayName")).isTrue();
+      assertThat(info.hasAttribute("carbonioWscMaxGroupMembers")).isFalse();
+      assertThat(info.hasAttribute("userPassword")).isFalse();
+      assertThat(info.hasAttribute("zimbraAuthTokens")).isFalse();
+      assertThat(myself.hasAttribute("carbonioWscMaxGroupMembers")).isTrue();
+      assertThat(myself.hasAttribute("userPassword")).isFalse();
+    }
+
+    @Test
+    void settingAttributesComeFromTheMailboxCatalog() {
+      assertThat(UserMapper.SETTING_ATTRIBUTES)
+          .contains("carbonioFeatureFilesEnabled", "carbonioWscMaxGroupMembers")
+          .allMatch(
+              name ->
+                  name.startsWith(UserMapper.FEATURE_PREFIX)
+                      || UserMapper.CAPABILITY_PREFIXES.stream().anyMatch(name::startsWith));
+    }
+
+    @Test
     void theGlobalConfigIsReadWithOnlyTheAttributesUserManagementUses() throws Exception {
       Entry config = new LdapDirectory(server.getConnectionPool(1), BASE).config();
 
@@ -336,7 +364,9 @@ class LdapUserDirectoryTest {
 
     private UserMyself myself(String id) throws Exception {
       return UserMapper.toUserMyself(
-          new AccountResolver(ldap()).resolveWithFullCos(ldap().accountById(id).orElseThrow()),
+          new AccountResolver(ldap())
+              .resolveForMyself(
+                  ldap().accountById(id, LdapDirectory.ACCOUNT_MYSELF_ATTRIBUTES).orElseThrow()),
           ldap()::serverByName);
     }
 

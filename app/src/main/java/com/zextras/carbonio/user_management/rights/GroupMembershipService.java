@@ -26,7 +26,8 @@ public class GroupMembershipService {
   }
 
   public Result membership(String accountId, String group) {
-    Optional<Entry> account = directory.accountById(accountId.trim());
+    Optional<Entry> account =
+        directory.accountById(accountId.trim(), LdapDirectory.ACCOUNT_RIGHTS_ATTRIBUTES);
     if (account.isEmpty()) {
       return Result.NOT_MEMBER;
     }
