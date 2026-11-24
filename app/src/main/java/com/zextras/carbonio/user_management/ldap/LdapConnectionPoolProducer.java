@@ -77,7 +77,9 @@ public class LdapConnectionPoolProducer {
             new SimpleBindRequest(bindDn, bindPassword),
             LDAP_POOL_SIZE,
             LDAP_MAX_POOL_SIZE,
-            postConnect);
+            1,
+            postConnect,
+            false);
     pool.setRetryFailedOperationsDueToInvalidConnections(true);
     return pool;
   }

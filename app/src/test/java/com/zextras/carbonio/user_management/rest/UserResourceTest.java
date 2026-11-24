@@ -96,13 +96,13 @@ class UserResourceTest {
     }
 
     @Test
-    void returns500WhenDirectoryFails() {
+    void returns424WhenDirectoryFails() {
       when(userService.getUserMyself("token-1", false))
           .thenThrow(new DirectoryException("ldap down", null));
 
       RestResponse<MyselfDto> response = resource.getMyself("token-1", false);
 
-      assertThat(response.getStatus()).isEqualTo(500);
+      assertThat(response.getStatus()).isEqualTo(424);
     }
 
     @Test
@@ -182,13 +182,13 @@ class UserResourceTest {
     }
 
     @Test
-    void returns500WhenDirectoryFailsDuringBypassRevalidation() {
+    void returns424WhenDirectoryFailsDuringBypassRevalidation() {
       when(userService.getUserMyself("token-1", true))
           .thenThrow(new DirectoryException("ldap down", null));
 
       RestResponse<MyselfDto> response = resource.getMyself("token-1", true);
 
-      assertThat(response.getStatus()).isEqualTo(500);
+      assertThat(response.getStatus()).isEqualTo(424);
     }
 
     @Test
@@ -232,12 +232,12 @@ class UserResourceTest {
     }
 
     @Test
-    void returns500WhenDirectoryFails() {
+    void returns424WhenDirectoryFails() {
       when(userService.getUserById("user-1")).thenThrow(new DirectoryException("ldap down", null));
 
       RestResponse<UserInfoDto> response = resource.getById("user-1");
 
-      assertThat(response.getStatus()).isEqualTo(500);
+      assertThat(response.getStatus()).isEqualTo(424);
     }
   }
 
@@ -275,13 +275,13 @@ class UserResourceTest {
     }
 
     @Test
-    void returns500WhenDirectoryFails() {
+    void returns424WhenDirectoryFails() {
       when(userService.getUserByEmail("user@example.com"))
           .thenThrow(new DirectoryException("ldap down", null));
 
       RestResponse<UserInfoDto> response = resource.getByEmail("user@example.com");
 
-      assertThat(response.getStatus()).isEqualTo(500);
+      assertThat(response.getStatus()).isEqualTo(424);
     }
   }
 
@@ -318,12 +318,12 @@ class UserResourceTest {
     }
 
     @Test
-    void returns500WhenDirectoryFails() {
+    void returns424WhenDirectoryFails() {
       when(userService.getUsers(anyList())).thenThrow(new DirectoryException("ldap down", null));
 
       RestResponse<List<UserInfoDto>> response = resource.getUsers(List.of("id-1"));
 
-      assertThat(response.getStatus()).isEqualTo(500);
+      assertThat(response.getStatus()).isEqualTo(424);
     }
 
     @Test

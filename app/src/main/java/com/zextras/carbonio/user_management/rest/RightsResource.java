@@ -100,7 +100,7 @@ public class RightsResource {
       return RestResponse.status(Response.Status.UNAUTHORIZED);
     } catch (DirectoryException e) {
       logger.error("Directory failure while checking rights", e);
-      return RestResponse.status(Response.Status.INTERNAL_SERVER_ERROR);
+      return RestResponse.status(StatusCodes.FAILED_DEPENDENCY);
     }
   }
 

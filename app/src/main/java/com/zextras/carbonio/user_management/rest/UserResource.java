@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  * straight off the method signature, no {@code @APIResponse}/{@code @Schema} annotations needed.
  * Every method follows the same shape: a typed {@code RestResponse.ok(...)} on success and a
  * bodiless {@code RestResponse.status(...)} for the non-2xx cases - nothing is ever thrown, and no
- * response ever carries an ad hoc error entity. A directory failure is a 500, never a 401 or 404.
+ * response ever carries an ad hoc error entity. A directory failure is a 424, never a 401 or 404.
  */
 @Path("/internal/users")
 @Produces(MediaType.APPLICATION_JSON)
@@ -119,7 +119,7 @@ public class UserResource {
       return action.get();
     } catch (DirectoryException e) {
       logger.error("Directory failure", e);
-      return RestResponse.status(Response.Status.INTERNAL_SERVER_ERROR);
+      return RestResponse.status(StatusCodes.FAILED_DEPENDENCY);
     }
   }
 }
