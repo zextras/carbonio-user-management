@@ -77,7 +77,8 @@ public class RightsService {
   public boolean checkWithAccountId(
       String accountId, String rightName, String targetType, String targetId, String targetName) {
     Right right = right(rightName, targetType);
-    Optional<Entry> actor = directory.accountById(accountId, LdapDirectory.ACCOUNT_RIGHTS_ATTRIBUTES);
+    Optional<Entry> actor =
+        directory.accountById(accountId, LdapDirectory.ACCOUNT_RIGHTS_ATTRIBUTES);
     if (actor.isEmpty()) {
       return false;
     }
@@ -90,7 +91,8 @@ public class RightsService {
 
   public Optional<AccountRights> accountRights(String actorId, String targetId) {
     Optional<Entry> actor = directory.accountById(actorId, LdapDirectory.ACCOUNT_RIGHTS_ATTRIBUTES);
-    Optional<Entry> target = directory.accountById(targetId, LdapDirectory.ACCOUNT_RIGHTS_ATTRIBUTES);
+    Optional<Entry> target =
+        directory.accountById(targetId, LdapDirectory.ACCOUNT_RIGHTS_ATTRIBUTES);
     if (actor.isEmpty() || target.isEmpty()) {
       return Optional.empty();
     }

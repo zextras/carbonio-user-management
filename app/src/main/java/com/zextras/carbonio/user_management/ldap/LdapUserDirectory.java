@@ -33,20 +33,23 @@ public class LdapUserDirectory implements UserDirectory {
   public Optional<UserInfo> byId(String userId) {
     return directory
         .accountById(userId, LdapDirectory.ACCOUNT_INFO_ATTRIBUTES)
-        .map(resolver::resolve).map(UserMapper::toUserInfo);
+        .map(resolver::resolve)
+        .map(UserMapper::toUserInfo);
   }
 
   @Override
   public Optional<UserInfo> byEmail(String email) {
     return directory
         .accountByEmail(email, LdapDirectory.ACCOUNT_INFO_ATTRIBUTES)
-        .map(resolver::resolve).map(UserMapper::toUserInfo);
+        .map(resolver::resolve)
+        .map(UserMapper::toUserInfo);
   }
 
   @Override
   public List<UserInfo> byIds(List<String> userIds) {
-    return resolver.resolveAll(
-            directory.accountsByIds(userIds, LdapDirectory.ACCOUNT_INFO_ATTRIBUTES)).stream()
+    return resolver
+        .resolveAll(directory.accountsByIds(userIds, LdapDirectory.ACCOUNT_INFO_ATTRIBUTES))
+        .stream()
         .map(UserMapper::toUserInfo)
         .toList();
   }

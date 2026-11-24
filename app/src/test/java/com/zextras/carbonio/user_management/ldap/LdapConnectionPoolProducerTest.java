@@ -32,7 +32,8 @@ class LdapConnectionPoolProducerTest {
     try {
       LdapDirectory directory = new LdapDirectory(pool, "dc=root");
 
-      assertThatThrownBy(() -> directory.accountById("any", LdapDirectory.ACCOUNT_INFO_ATTRIBUTES)).isInstanceOf(DirectoryException.class);
+      assertThatThrownBy(() -> directory.accountById("any", LdapDirectory.ACCOUNT_INFO_ATTRIBUTES))
+          .isInstanceOf(DirectoryException.class);
       assertThatThrownBy(directory::config).isInstanceOf(DirectoryException.class);
     } finally {
       producer.close(pool);

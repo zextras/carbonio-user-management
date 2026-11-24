@@ -69,7 +69,8 @@ public class LdapDirectory {
   public static final List<String> ACCOUNT_MYSELF_ATTRIBUTES =
       concat(
           ACCOUNT_INFO_ATTRIBUTES,
-          List.of(ZimbraAttributes.PREF_LOCALE, ZimbraAttributes.LOCALE, ZimbraAttributes.MAIL_HOST),
+          List.of(
+              ZimbraAttributes.PREF_LOCALE, ZimbraAttributes.LOCALE, ZimbraAttributes.MAIL_HOST),
           UserMapper.SETTING_ATTRIBUTES);
   public static final List<String> ACCOUNT_RIGHTS_ATTRIBUTES =
       List.of(
@@ -291,8 +292,7 @@ public class LdapDirectory {
     try {
       return ldap
           .search(
-              new SearchRequest(
-                  baseDn, SearchScope.SUB, filter, attributes.toArray(String[]::new)))
+              new SearchRequest(baseDn, SearchScope.SUB, filter, attributes.toArray(String[]::new)))
           .getSearchEntries()
           .stream()
           .map(SearchResultEntry.class::cast)
