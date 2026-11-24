@@ -9,12 +9,10 @@ import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.time.Clock;
-import java.time.Duration;
 import java.util.HashMap;
 import java.util.HexFormat;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicLong;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import org.slf4j.Logger;
@@ -25,12 +23,10 @@ import org.slf4j.LoggerFactory;
 public class AuthTokenVerifier {
 
   private static final Logger logger = LoggerFactory.getLogger(AuthTokenVerifier.class);
-  static final Duration KEY_RELOAD_INTERVAL = Duration.ofSeconds(10);
   private static final String HMAC_ALGORITHM = "HmacSHA1";
 
   private final LdapDirectory directory;
   private final Clock clock;
-  private final AtomicLong lastKeyReload = new AtomicLong(Long.MIN_VALUE);
 
   @Inject
   public AuthTokenVerifier(LdapDirectory directory, Clock clock) {
@@ -94,18 +90,7 @@ public class AuthTokenVerifier {
   }
 
   private Optional<byte[]> key(String version) {
-    Optional<byte[]> key = Optional.ofNullable(keys(directory.config()).get(version));
-    if (key.isPresent()) {
-      return key;
-    }
-    long now = clock.millis();
-    long last = lastKeyReload.get();
-    boolean recentlyReloaded =
-        last != Long.MIN_VALUE && now - last < KEY_RELOAD_INTERVAL.toMillis();
-    if (recentlyReloaded || !lastKeyReload.compareAndSet(last, now)) {
-      return Optional.empty();
-    }
-    return Optional.ofNullable(keys(directory.freshConfig()).get(version));
+    return Optional.ofNullable(keys(directory.config()).get(version));
   }
 
   static Map<String, byte[]> keys(Entry config) {

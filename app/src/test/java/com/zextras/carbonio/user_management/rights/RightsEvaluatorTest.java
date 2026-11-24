@@ -3,7 +3,6 @@ package com.zextras.carbonio.user_management.rights;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.github.benmanes.caffeine.cache.Ticker;
 import com.unboundid.ldap.listener.InMemoryDirectoryServer;
 import com.unboundid.ldap.listener.InMemoryDirectoryServerConfig;
 import com.unboundid.ldap.sdk.Entry;
@@ -86,7 +85,7 @@ class RightsEvaluatorTest {
   }
 
   private void rebuild() throws Exception {
-    directory = new LdapDirectory(server.getConnectionPool(2), BASE, Ticker.systemTicker());
+    directory = new LdapDirectory(server.getConnectionPool(2), BASE);
     evaluator = new RightsEvaluator(directory, catalog);
   }
 
@@ -320,9 +319,7 @@ class RightsEvaluatorTest {
   class Freshness {
 
     @Test
-    void grantChangesOnCachedEntriesAreSeenImmediately() throws Exception {
-      directory.domainByName("d1.io");
-      directory.globalGrant(LdapDirectory.Read.CACHED);
+    void grantChangesAreSeenImmediately() throws Exception {
       assertThat(check(QUOTA_ADMIN, "getDomainQuotaUsage", domain("d1.io"))).isFalse();
 
       server.modify(
@@ -334,10 +331,7 @@ class RightsEvaluatorTest {
           new Modification(ModificationType.ADD, "zimbraACE", QUOTA_ADMIN + " usr getAccountInfo"));
 
       assertThat(check(QUOTA_ADMIN, "getAccountInfo", account(OTHER_DOMAIN_USER))).isTrue();
-      Target freshDomain =
-          new Target(
-              "domain", directory.domainByName("d1.io", LdapDirectory.Read.FRESH).orElseThrow());
-      assertThat(check(QUOTA_ADMIN, "getDomainQuotaUsage", freshDomain)).isTrue();
+      assertThat(check(QUOTA_ADMIN, "getDomainQuotaUsage", domain("d1.io"))).isTrue();
     }
   }
 

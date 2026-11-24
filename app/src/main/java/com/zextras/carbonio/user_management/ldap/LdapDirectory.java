@@ -1,8 +1,5 @@
 package com.zextras.carbonio.user_management.ldap;
 
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
-import com.github.benmanes.caffeine.cache.Ticker;
 import com.unboundid.ldap.sdk.Entry;
 import com.unboundid.ldap.sdk.Filter;
 import com.unboundid.ldap.sdk.LDAPConnectionPool;
@@ -18,39 +15,28 @@ import com.zextras.carbonio.user_management.UserManagementServiceConfig.ZimbraOb
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import java.net.IDN;
-import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 @ApplicationScoped
 public class LdapDirectory {
 
   static final String CONFIG_DN = "cn=config,cn=zimbra";
   static final String GLOBAL_GRANT_DN = "cn=globalgrant,cn=zimbra";
-  static final Duration SHARED_ENTRY_TTL = Duration.ofSeconds(60);
 
   private final LDAPInterface ldap;
   private final String baseDn;
-  private final Cache<String, Optional<Entry>> sharedEntries;
 
   @Inject
-  public LdapDirectory(
-      LDAPConnectionPool pool, ApplicationConfigService configService, Ticker ticker) {
-    this(pool, configService.get(ApplicationConfig.LDAP_BASE_DN).orElse(""), ticker);
+  public LdapDirectory(LDAPConnectionPool pool, ApplicationConfigService configService) {
+    this(pool, configService.get(ApplicationConfig.LDAP_BASE_DN).orElse(""));
   }
 
-  public LdapDirectory(LDAPInterface ldap, String baseDn, Ticker ticker) {
+  public LdapDirectory(LDAPInterface ldap, String baseDn) {
     this.ldap = ldap;
     this.baseDn = baseDn;
-    this.sharedEntries =
-        Caffeine.newBuilder()
-            .expireAfterWrite(SHARED_ENTRY_TTL)
-            .maximumSize(5_000)
-            .ticker(ticker)
-            .build();
   }
 
   public Optional<Entry> accountById(String id) {
@@ -111,98 +97,53 @@ public class LdapDirectory {
   }
 
   public Optional<Entry> domainByName(String name) {
-    return domainByName(name, Read.CACHED);
-  }
-
-  public Optional<Entry> domainByName(String name, Read read) {
     String ascii = toAsciiDomain(name);
-    return shared(
-        "domain:name:" + ascii,
-        () ->
-            searchOne(
-                Filter.createANDFilter(
-                    Filter.createEqualityFilter(ZimbraAttributes.DOMAIN_NAME, ascii),
-                    Filter.createEqualityFilter(
-                        ZimbraObjectClasses.OBJECT_CLASS, ZimbraObjectClasses.DOMAIN))),
-        read);
+    return searchOne(
+        Filter.createANDFilter(
+            Filter.createEqualityFilter(ZimbraAttributes.DOMAIN_NAME, ascii),
+            Filter.createEqualityFilter(
+                ZimbraObjectClasses.OBJECT_CLASS, ZimbraObjectClasses.DOMAIN)));
   }
 
   public Optional<Entry> domainById(String id) {
-    return domainById(id, Read.CACHED);
-  }
-
-  public Optional<Entry> domainById(String id, Read read) {
-    return shared(
-        "domain:id:" + id,
-        () ->
-            searchOne(
-                Filter.createANDFilter(
-                    Filter.createEqualityFilter(ZimbraAttributes.ID, id),
-                    Filter.createEqualityFilter(
-                        ZimbraObjectClasses.OBJECT_CLASS, ZimbraObjectClasses.DOMAIN))),
-        read);
+    return searchOne(
+        Filter.createANDFilter(
+            Filter.createEqualityFilter(ZimbraAttributes.ID, id),
+            Filter.createEqualityFilter(
+                ZimbraObjectClasses.OBJECT_CLASS, ZimbraObjectClasses.DOMAIN)));
   }
 
   public Optional<Entry> cosById(String id) {
-    return cosById(id, Read.CACHED);
-  }
-
-  public Optional<Entry> cosById(String id, Read read) {
-    return shared(
-        "cos:id:" + id,
-        () ->
-            searchOne(
-                Filter.createANDFilter(
-                    Filter.createEqualityFilter(ZimbraAttributes.ID, id),
-                    Filter.createEqualityFilter(
-                        ZimbraObjectClasses.OBJECT_CLASS, ZimbraObjectClasses.COS))),
-        read);
+    return searchOne(
+        Filter.createANDFilter(
+            Filter.createEqualityFilter(ZimbraAttributes.ID, id),
+            Filter.createEqualityFilter(
+                ZimbraObjectClasses.OBJECT_CLASS, ZimbraObjectClasses.COS)));
   }
 
   public Optional<Entry> cosByName(String name) {
-    return cosByName(name, Read.CACHED);
-  }
-
-  public Optional<Entry> cosByName(String name, Read read) {
-    return shared(
-        "cos:name:" + name.toLowerCase(Locale.ROOT),
-        () ->
-            searchOne(
-                Filter.createANDFilter(
-                    Filter.createEqualityFilter(ZimbraAttributes.COMMON_NAME, name),
-                    Filter.createEqualityFilter(
-                        ZimbraObjectClasses.OBJECT_CLASS, ZimbraObjectClasses.COS))),
-        read);
+    return searchOne(
+        Filter.createANDFilter(
+            Filter.createEqualityFilter(ZimbraAttributes.COMMON_NAME, name),
+            Filter.createEqualityFilter(
+                ZimbraObjectClasses.OBJECT_CLASS, ZimbraObjectClasses.COS)));
   }
 
   public Optional<Entry> serverByName(String name) {
-    return shared(
-        "server:" + name.toLowerCase(Locale.ROOT),
-        () ->
-            searchOne(
-                Filter.createANDFilter(
-                    Filter.createEqualityFilter(ZimbraAttributes.COMMON_NAME, name),
-                    Filter.createEqualityFilter(
-                        ZimbraObjectClasses.OBJECT_CLASS, ZimbraObjectClasses.SERVER))));
+    return searchOne(
+        Filter.createANDFilter(
+            Filter.createEqualityFilter(ZimbraAttributes.COMMON_NAME, name),
+            Filter.createEqualityFilter(
+                ZimbraObjectClasses.OBJECT_CLASS, ZimbraObjectClasses.SERVER)));
   }
 
   public Entry config() {
-    return shared("config", this::readConfig)
+    return entryByDn(CONFIG_DN)
         .orElseThrow(() -> new DirectoryException("Global config entry not found", null));
   }
 
-  public Entry freshConfig() {
-    Optional<Entry> config = readConfig();
-    sharedEntries.put("config", config);
-    return config.orElseThrow(() -> new DirectoryException("Global config entry not found", null));
-  }
-
-  public Optional<Entry> globalGrant(Read read) {
-    return shared("globalgrant", () -> entryByDn(GLOBAL_GRANT_DN), read);
-  }
-
-  private Optional<Entry> readConfig() {
-    return entryByDn(CONFIG_DN);
+  public Optional<Entry> globalGrant() {
+    return entryByDn(GLOBAL_GRANT_DN);
   }
 
   private Optional<Entry> accountByAddress(String address) {
@@ -245,6 +186,16 @@ public class LdapDirectory {
     return address.substring(0, at + 1) + toAsciiDomain(address.substring(at + 1));
   }
 
+  public static String normalizeAddress(String address) {
+    String trimmed = address.trim();
+    int at = trimmed.lastIndexOf('@');
+    String normalized =
+        at < 0
+            ? trimmed
+            : trimmed.substring(0, at + 1) + toAsciiDomain(trimmed.substring(at + 1));
+    return normalized.toLowerCase(Locale.ROOT);
+  }
+
   private static String toAsciiDomain(String domain) {
     try {
       return IDN.toASCII(domain);
@@ -256,27 +207,6 @@ public class LdapDirectory {
   private static Filter accountClass() {
     return Filter.createEqualityFilter(
         ZimbraObjectClasses.OBJECT_CLASS, ZimbraObjectClasses.ACCOUNT);
-  }
-
-  public enum Read {
-    CACHED,
-    FRESH
-  }
-
-  private Optional<Entry> shared(String key, Supplier<Optional<Entry>> loader) {
-    return shared(key, loader, Read.CACHED);
-  }
-
-  private Optional<Entry> shared(String key, Supplier<Optional<Entry>> loader, Read read) {
-    if (read == Read.CACHED) {
-      Optional<Entry> cached = sharedEntries.getIfPresent(key);
-      if (cached != null) {
-        return cached;
-      }
-    }
-    Optional<Entry> loaded = loader.get();
-    sharedEntries.put(key, loaded);
-    return loaded;
   }
 
   private Optional<Entry> entryByDn(String dn) {

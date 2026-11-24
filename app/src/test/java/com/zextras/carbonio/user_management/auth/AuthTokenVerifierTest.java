@@ -2,7 +2,6 @@ package com.zextras.carbonio.user_management.auth;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.github.benmanes.caffeine.cache.Ticker;
 import com.unboundid.ldap.listener.InMemoryDirectoryServer;
 import com.unboundid.ldap.listener.InMemoryDirectoryServerConfig;
 import com.unboundid.ldap.sdk.Modification;
@@ -54,7 +53,7 @@ class AuthTokenVerifierTest {
         "zimbraAuthTokens: 12345|" + (NOW + 3_600_000) + "|carbonio",
         "zimbraAuthTokenValidityValue: 2");
     LdapDirectory directory =
-        new LdapDirectory(server.getConnectionPool(1), BASE, Ticker.systemTicker());
+        new LdapDirectory(server.getConnectionPool(1), BASE);
     verifier =
         new AuthTokenVerifier(directory, Clock.fixed(Instant.ofEpochMilli(NOW), ZoneOffset.UTC));
   }
@@ -153,7 +152,7 @@ class AuthTokenVerifierTest {
   }
 
   @Test
-  void picksUpARotatedKeyOnce() throws Exception {
+  void picksUpARotatedKeyImmediately() throws Exception {
     server.modify(
         "cn=config,cn=zimbra",
         new Modification(

@@ -2,7 +2,6 @@ package com.zextras.carbonio.user_management.ldap;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.github.benmanes.caffeine.cache.Ticker;
 import com.unboundid.ldap.listener.InMemoryDirectoryServer;
 import com.unboundid.ldap.listener.InMemoryDirectoryServerConfig;
 import com.unboundid.ldap.sdk.Modification;
@@ -110,7 +109,7 @@ class LdapUserDirectoryTest {
         "zimbraIsExternalVirtualAccount: TRUE");
 
     LdapDirectory ldap =
-        new LdapDirectory(server.getConnectionPool(2), BASE, Ticker.systemTicker());
+        new LdapDirectory(server.getConnectionPool(2), BASE);
     directory =
         new LdapUserDirectory(
             ldap,
@@ -252,7 +251,7 @@ class LdapUserDirectoryTest {
     }
 
     private LdapDirectory ldap() throws Exception {
-      return new LdapDirectory(server.getConnectionPool(1), BASE, Ticker.systemTicker());
+      return new LdapDirectory(server.getConnectionPool(1), BASE);
     }
 
     @Test

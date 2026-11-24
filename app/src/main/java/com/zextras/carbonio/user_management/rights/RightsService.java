@@ -4,7 +4,6 @@ import com.unboundid.ldap.sdk.Entry;
 import com.zextras.carbonio.user_management.UserManagementServiceConfig.ZimbraAttributes;
 import com.zextras.carbonio.user_management.auth.AuthTokenVerifier;
 import com.zextras.carbonio.user_management.ldap.LdapDirectory;
-import com.zextras.carbonio.user_management.ldap.LdapDirectory.Read;
 import com.zextras.carbonio.user_management.rights.RightsEvaluator.Target;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -150,11 +149,8 @@ public class RightsService {
         switch (targetType) {
           case "account" -> byName ? directory.accountByEmail(key) : directory.accountById(key);
           case "domain" ->
-              byName
-                  ? directory.domainByName(key, Read.FRESH)
-                  : directory.domainById(key, Read.FRESH);
-          case "cos" ->
-              byName ? directory.cosByName(key, Read.FRESH) : directory.cosById(key, Read.FRESH);
+              byName ? directory.domainByName(key) : directory.domainById(key);
+          case "cos" -> byName ? directory.cosByName(key) : directory.cosById(key);
           default -> throw new InvalidRequestException("Unsupported target type: " + targetType);
         };
     return entry.map(e -> new Target(targetType, e));
