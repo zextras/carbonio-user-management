@@ -190,9 +190,7 @@ public class LdapDirectory {
     String trimmed = address.trim();
     int at = trimmed.lastIndexOf('@');
     String normalized =
-        at < 0
-            ? trimmed
-            : trimmed.substring(0, at + 1) + toAsciiDomain(trimmed.substring(at + 1));
+        at < 0 ? trimmed : trimmed.substring(0, at + 1) + toAsciiDomain(trimmed.substring(at + 1));
     return normalized.toLowerCase(Locale.ROOT);
   }
 

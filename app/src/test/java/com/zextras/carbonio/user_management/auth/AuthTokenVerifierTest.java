@@ -52,8 +52,7 @@ class AuthTokenVerifierTest {
         "zimbraMailDeliveryAddress: user@example.com",
         "zimbraAuthTokens: 12345|" + (NOW + 3_600_000) + "|carbonio",
         "zimbraAuthTokenValidityValue: 2");
-    LdapDirectory directory =
-        new LdapDirectory(server.getConnectionPool(1), BASE);
+    LdapDirectory directory = new LdapDirectory(server.getConnectionPool(1), BASE);
     verifier =
         new AuthTokenVerifier(directory, Clock.fixed(Instant.ofEpochMilli(NOW), ZoneOffset.UTC));
   }

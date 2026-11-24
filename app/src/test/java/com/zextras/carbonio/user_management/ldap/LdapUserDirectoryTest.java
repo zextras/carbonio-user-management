@@ -108,8 +108,7 @@ class LdapUserDirectoryTest {
         "zimbraMailDeliveryAddress: guest@example.com",
         "zimbraIsExternalVirtualAccount: TRUE");
 
-    LdapDirectory ldap =
-        new LdapDirectory(server.getConnectionPool(2), BASE);
+    LdapDirectory ldap = new LdapDirectory(server.getConnectionPool(2), BASE);
     directory =
         new LdapUserDirectory(
             ldap,
