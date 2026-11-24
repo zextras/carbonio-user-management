@@ -11,11 +11,11 @@ Quarkus microservice that exposes user profile data (UserInfo, UserMyself) and a
 
 ## Architecture
 - **Multi-module Maven**: `sdk` (REST SDK generated from `app/docs/openapi.yaml`), `app` (Quarkus service)
-- **Cache**: Caffeine in-process cache with configurable TTL via Consul KV (`cache.userinfo-ttl`, `cache.usermyself-ttl`)
+- **Cache**: exactly two Caffeine in-process caches with configurable TTL via Consul KV (`cache.userinfo-ttl`, `cache.usermyself-ttl`); everything else (domain, COS, config, server, grants, groups) is read from LDAP on every request
 - **Upstream**: LDAP only (UnboundID pool). URL, bind DN and password come from localconfig through `package/carbonio-user-management-ldap-config` (ExecStartPre, written to `/run/carbonio-user-management/ldap.properties`); StartTLS follows mailbox's localconfig rule
 - **Auth tokens**: `/myself` verifies `ZM_AUTH_TOKEN` locally (HmacSHA1 with `zimbraAuthTokenKey`, expiry, `zimbraAuthTokens` registration, validity value)
 - **Rights**: `/internal/rights*` mirrors mailbox carbonio-authz (HardRules, preset and attribute rights, groups, domains, global grant) for account, domain and cos targets; the catalog is the `mailbox-attribute-manager` artifact, keep its version aligned with mailbox
-- **Endpoints**: REST `/internal/users/*`, `/internal/rights*` (mesh-gated, no caller authorization)
+- **Endpoints**: REST `/internal/users/*`, `/internal/rights*`, `/internal/groups/membership` (mesh-gated, no caller authorization); an LDAP failure answers 424
 - **Config**: Consul-backed via `carbonio-quarkus-extensions-bootstrap` (`ApplicationConfigService`)
 - **Coalescing**: Concurrent requests for the same key are deduplicated via `ConcurrentHashMap<String, CompletableFuture>` in `UserService`
 
@@ -26,10 +26,11 @@ app/src/main/java/com/zextras/carbonio/user_management/
   cache/UserInfoCache.java           — Caffeine cache for UserInfo (by userId + email index)
   cache/UserMyselfCache.java         — Caffeine cache for UserMyself (by token + userId index)
   service/UserService.java           — orchestration: cache → UserDirectory (LDAP) fallback
-  ldap/LdapDirectory.java            — LDAP reads; domain/COS/config/server entries cached 60 s
+  ldap/LdapDirectory.java            — LDAP reads, uncached (every read goes to LDAP)
   ldap/UserMapper.java               — effective COS, locale, features, capabilities as mailbox computes them
   auth/AuthTokenVerifier.java        — local ZM_AUTH_TOKEN verification
   rights/RightsEvaluator.java        — ACL decisions (mailbox ACLAccessManager semantics)
+  rights/GroupMembershipService.java — is an account in a group (id or address), direct flag
   rest/UserResource.java             — REST endpoint (myself's token is an explicit @CookieParam)
   ldap/LdapConnectionPoolProducer.java — LDAP pool (timeouts, StartTLS)
 ```

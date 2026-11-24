@@ -17,6 +17,13 @@ components:
           type: boolean
         canConfigure:
           type: boolean
+    GroupMembershipResponse:
+      type: object
+      properties:
+        member:
+          type: boolean
+        direct:
+          type: boolean
     MyselfDto:
       type: object
       properties:
@@ -95,6 +102,27 @@ components:
         isGlobalAdmin:
           type: boolean
 paths:
+  /internal/groups/membership:
+    get:
+      parameters:
+      - name: accountId
+        in: query
+        schema:
+          type: string
+      - name: group
+        in: query
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GroupMembershipResponse"
+      summary: Membership
+      tags:
+      - Group Resource
   /internal/rights:
     get:
       parameters:
