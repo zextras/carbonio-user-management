@@ -3,9 +3,18 @@ package com.zextras.carbonio.user_management.ldap;
 import com.unboundid.ldap.sdk.Entry;
 import com.zextras.carbonio.user_management.UserManagementServiceConfig.ZimbraAttributes;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 public record ResolvedAccount(
-    Entry account, String name, Optional<Entry> domain, Optional<Entry> cos, Entry config) {
+    Entry account,
+    String name,
+    Optional<Entry> domain,
+    Optional<Entry> cos,
+    Supplier<Entry> configSource) {
+
+  public Entry config() {
+    return configSource.get();
+  }
 
   public String id() {
     return account.getAttributeValue(ZimbraAttributes.ID);

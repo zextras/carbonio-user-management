@@ -35,7 +35,8 @@ public class AuthTokenVerifier {
   }
 
   public Optional<VerifiedToken> verify(String encoded) {
-    Optional<AuthTokenClaims> claims = verifySignature(encoded);
+    Entry config = directory.config();
+    Optional<AuthTokenClaims> claims = verifySignature(encoded, config);
     if (claims.isEmpty()) {
       return Optional.empty();
     }
@@ -55,14 +56,14 @@ public class AuthTokenVerifier {
       logger.debug("Auth token not registered on account {}", token.accountId());
       return Optional.empty();
     }
-    if (!validityValueMatches(account.get(), token.validityValue())) {
+    if (!validityValueMatches(config, account.get(), token.validityValue())) {
       logger.debug("Auth token validity value mismatch on account {}", token.accountId());
       return Optional.empty();
     }
     return Optional.of(new VerifiedToken(account.get(), token.expiresAt(), token.anyAdmin()));
   }
 
-  Optional<AuthTokenClaims> verifySignature(String encoded) {
+  Optional<AuthTokenClaims> verifySignature(String encoded, Entry config) {
     int first = encoded.indexOf('_');
     int second = first < 0 ? -1 : encoded.indexOf('_', first + 1);
     if (second < 0) {
@@ -72,7 +73,7 @@ public class AuthTokenVerifier {
     String hmac = encoded.substring(first + 1, second);
     String data = encoded.substring(second + 1);
 
-    Optional<byte[]> key = key(version);
+    Optional<byte[]> key = Optional.ofNullable(keys(config).get(version));
     if (key.isEmpty()) {
       logger.debug("Unknown auth token key version {}", version);
       return Optional.empty();
@@ -87,10 +88,6 @@ public class AuthTokenVerifier {
     } catch (IllegalArgumentException e) {
       return Optional.empty();
     }
-  }
-
-  private Optional<byte[]> key(String version) {
-    return Optional.ofNullable(keys(directory.config()).get(version));
   }
 
   static Map<String, byte[]> keys(Entry config) {
@@ -137,9 +134,8 @@ public class AuthTokenVerifier {
     return false;
   }
 
-  private boolean validityValueMatches(Entry account, int tokenValue) {
-    String enabled =
-        directory.config().getAttributeValue(ZimbraAttributes.AUTH_TOKEN_VALIDITY_VALUE_ENABLED);
+  private static boolean validityValueMatches(Entry config, Entry account, int tokenValue) {
+    String enabled = config.getAttributeValue(ZimbraAttributes.AUTH_TOKEN_VALIDITY_VALUE_ENABLED);
     if ("FALSE".equalsIgnoreCase(enabled)) {
       return true;
     }

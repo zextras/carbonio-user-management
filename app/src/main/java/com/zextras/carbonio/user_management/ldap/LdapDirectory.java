@@ -25,6 +25,30 @@ public class LdapDirectory {
 
   static final String CONFIG_DN = "cn=config,cn=zimbra";
   static final String GLOBAL_GRANT_DN = "cn=globalgrant,cn=zimbra";
+  static final String ALL_ATTRIBUTES = "*";
+  static final String[] CONFIG_ATTRIBUTES = {
+    ZimbraAttributes.DEFAULT_DOMAIN_NAME,
+    ZimbraAttributes.LOCALE,
+    ZimbraAttributes.PUBLIC_SERVICE_HOSTNAME,
+    ZimbraAttributes.PUBLIC_SERVICE_PROTOCOL,
+    ZimbraAttributes.AUTH_TOKEN_KEY,
+    ZimbraAttributes.AUTH_TOKEN_VALIDITY_VALUE_ENABLED
+  };
+  static final String[] DOMAIN_ATTRIBUTES = {
+    ZimbraAttributes.ID,
+    ZimbraAttributes.DOMAIN_NAME,
+    ZimbraAttributes.DOMAIN_TYPE,
+    ZimbraAttributes.DOMAIN_STATUS,
+    ZimbraAttributes.DOMAIN_ALIAS_TARGET_ID,
+    ZimbraAttributes.DOMAIN_DEFAULT_COS_ID,
+    ZimbraAttributes.DOMAIN_DEFAULT_EXTERNAL_COS_ID,
+    ZimbraAttributes.PUBLIC_SERVICE_HOSTNAME,
+    ZimbraAttributes.PUBLIC_SERVICE_PROTOCOL,
+    ZimbraAttributes.LOCALE,
+    ZimbraAttributes.ACE
+  };
+  static final String[] COS_ID_ATTRIBUTES = {ZimbraAttributes.ID};
+  static final String[] SERVER_ATTRIBUTES = {ZimbraAttributes.LOCALE};
 
   private final LDAPInterface ldap;
   private final String baseDn;
@@ -102,7 +126,8 @@ public class LdapDirectory {
         Filter.createANDFilter(
             Filter.createEqualityFilter(ZimbraAttributes.DOMAIN_NAME, ascii),
             Filter.createEqualityFilter(
-                ZimbraObjectClasses.OBJECT_CLASS, ZimbraObjectClasses.DOMAIN)));
+                ZimbraObjectClasses.OBJECT_CLASS, ZimbraObjectClasses.DOMAIN)),
+        DOMAIN_ATTRIBUTES);
   }
 
   public Optional<Entry> domainById(String id) {
@@ -110,23 +135,34 @@ public class LdapDirectory {
         Filter.createANDFilter(
             Filter.createEqualityFilter(ZimbraAttributes.ID, id),
             Filter.createEqualityFilter(
-                ZimbraObjectClasses.OBJECT_CLASS, ZimbraObjectClasses.DOMAIN)));
+                ZimbraObjectClasses.OBJECT_CLASS, ZimbraObjectClasses.DOMAIN)),
+        DOMAIN_ATTRIBUTES);
   }
 
   public Optional<Entry> cosById(String id) {
+    return cosById(id, ALL_ATTRIBUTES);
+  }
+
+  public Optional<Entry> cosById(String id, String... attributes) {
     return searchOne(
         Filter.createANDFilter(
             Filter.createEqualityFilter(ZimbraAttributes.ID, id),
             Filter.createEqualityFilter(
-                ZimbraObjectClasses.OBJECT_CLASS, ZimbraObjectClasses.COS)));
+                ZimbraObjectClasses.OBJECT_CLASS, ZimbraObjectClasses.COS)),
+        attributes);
   }
 
   public Optional<Entry> cosByName(String name) {
+    return cosByName(name, ALL_ATTRIBUTES);
+  }
+
+  public Optional<Entry> cosByName(String name, String... attributes) {
     return searchOne(
         Filter.createANDFilter(
             Filter.createEqualityFilter(ZimbraAttributes.COMMON_NAME, name),
             Filter.createEqualityFilter(
-                ZimbraObjectClasses.OBJECT_CLASS, ZimbraObjectClasses.COS)));
+                ZimbraObjectClasses.OBJECT_CLASS, ZimbraObjectClasses.COS)),
+        attributes);
   }
 
   public Optional<Entry> serverByName(String name) {
@@ -134,16 +170,17 @@ public class LdapDirectory {
         Filter.createANDFilter(
             Filter.createEqualityFilter(ZimbraAttributes.COMMON_NAME, name),
             Filter.createEqualityFilter(
-                ZimbraObjectClasses.OBJECT_CLASS, ZimbraObjectClasses.SERVER)));
+                ZimbraObjectClasses.OBJECT_CLASS, ZimbraObjectClasses.SERVER)),
+        SERVER_ATTRIBUTES);
   }
 
   public Entry config() {
-    return entryByDn(CONFIG_DN)
+    return entryByDn(CONFIG_DN, CONFIG_ATTRIBUTES)
         .orElseThrow(() -> new DirectoryException("Global config entry not found", null));
   }
 
   public Optional<Entry> globalGrant() {
-    return entryByDn(GLOBAL_GRANT_DN);
+    return entryByDn(GLOBAL_GRANT_DN, ALL_ATTRIBUTES);
   }
 
   private Optional<Entry> accountByAddress(String address) {
@@ -207,22 +244,30 @@ public class LdapDirectory {
         ZimbraObjectClasses.OBJECT_CLASS, ZimbraObjectClasses.ACCOUNT);
   }
 
-  private Optional<Entry> entryByDn(String dn) {
+  private Optional<Entry> entryByDn(String dn, String... attributes) {
     try {
-      return Optional.ofNullable(ldap.getEntry(dn, "*"));
+      return Optional.ofNullable(ldap.getEntry(dn, attributes));
     } catch (LDAPException e) {
       throw new DirectoryException("LDAP read failed for " + dn, e);
     }
   }
 
   private Optional<Entry> searchOne(Filter filter) {
-    return search(baseDn, filter).stream().findFirst();
+    return searchOne(filter, ALL_ATTRIBUTES);
+  }
+
+  private Optional<Entry> searchOne(Filter filter, String... attributes) {
+    return search(baseDn, filter, attributes).stream().findFirst();
   }
 
   private List<Entry> search(String base, Filter filter) {
+    return search(base, filter, ALL_ATTRIBUTES);
+  }
+
+  private List<Entry> search(String base, Filter filter, String... attributes) {
     try {
       return ldap
-          .search(new SearchRequest(base, SearchScope.SUB, filter, "*"))
+          .search(new SearchRequest(base, SearchScope.SUB, filter, attributes))
           .getSearchEntries()
           .stream()
           .map(SearchResultEntry.class::cast)

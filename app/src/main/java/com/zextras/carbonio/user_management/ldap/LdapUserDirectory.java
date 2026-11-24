@@ -41,8 +41,7 @@ public class LdapUserDirectory implements UserDirectory {
 
   @Override
   public List<UserInfo> byIds(List<String> userIds) {
-    return directory.accountsByIds(userIds).stream()
-        .map(resolver::resolve)
+    return resolver.resolveAll(directory.accountsByIds(userIds)).stream()
         .map(UserMapper::toUserInfo)
         .toList();
   }
@@ -55,7 +54,7 @@ public class LdapUserDirectory implements UserDirectory {
             verified ->
                 new AuthenticatedUser(
                     UserMapper.toUserMyself(
-                        resolver.resolve(verified.account()), directory::serverByName),
+                        resolver.resolveWithFullCos(verified.account()), directory::serverByName),
                     verified.expiresAt() - clock.millis()));
   }
 }

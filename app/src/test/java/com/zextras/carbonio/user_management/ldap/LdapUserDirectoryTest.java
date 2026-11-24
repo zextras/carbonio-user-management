@@ -4,12 +4,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.unboundid.ldap.listener.InMemoryDirectoryServer;
 import com.unboundid.ldap.listener.InMemoryDirectoryServerConfig;
+import com.unboundid.ldap.sdk.Entry;
+import com.unboundid.ldap.sdk.LDAPInterface;
 import com.unboundid.ldap.sdk.Modification;
 import com.unboundid.ldap.sdk.ModificationType;
+import com.unboundid.ldap.sdk.SearchRequest;
 import com.zextras.carbonio.user_management.auth.AuthTokenVerifier;
 import com.zextras.carbonio.user_management.record.UserInfo;
 import com.zextras.carbonio.user_management.record.UserMyself;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Proxy;
 import java.time.Clock;
+import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,6 +34,7 @@ class LdapUserDirectoryTest {
   private static final String USER_ID = "a0000000-0000-0000-0000-000000000001";
   private static final String EXPLICIT_COS_USER_ID = "a0000000-0000-0000-0000-000000000002";
   private static final String GUEST_ID = "a0000000-0000-0000-0000-000000000003";
+  private static final String SECOND_USER_ID = "a0000000-0000-0000-0000-000000000004";
 
   private InMemoryDirectoryServer server;
   private LdapUserDirectory directory;
@@ -45,7 +52,8 @@ class LdapUserDirectoryTest {
         "objectClass: zimbraGlobalConfig",
         "cn: config",
         "zimbraDefaultDomainName: example.com",
-        "zimbraLocale: it");
+        "zimbraLocale: it",
+        "zimbraSSLPrivateKey: not-for-user-management");
     server.add(
         "dn: cn=mbox1.example.com," + BASE,
         "objectClass: zimbraServer",
@@ -107,6 +115,12 @@ class LdapUserDirectoryTest {
         "zimbraId: " + GUEST_ID,
         "zimbraMailDeliveryAddress: guest@example.com",
         "zimbraIsExternalVirtualAccount: TRUE");
+    server.add(
+        "dn: uid=second," + BASE,
+        "objectClass: zimbraAccount",
+        "uid: second",
+        "zimbraId: " + SECOND_USER_ID,
+        "zimbraMailDeliveryAddress: second@example.com");
 
     LdapDirectory ldap = new LdapDirectory(server.getConnectionPool(2), BASE);
     directory =
@@ -190,6 +204,20 @@ class LdapUserDirectoryTest {
     }
 
     @Test
+    void publicHostnameFallsBackToTheGlobalConfig() throws Exception {
+      server.modify(
+          "zimbraDomainName=example.com," + BASE,
+          new Modification(ModificationType.DELETE, "zimbraPublicServiceHostname"));
+      server.modify(
+          "cn=config,cn=zimbra",
+          new Modification(
+              ModificationType.ADD, "zimbraPublicServiceHostname", "global.example.com"));
+
+      assertThat(directory.byId(USER_ID).orElseThrow().domain())
+          .isEqualTo("https://global.example.com");
+    }
+
+    @Test
     void unknownIdIsEmpty() {
       assertThat(directory.byId("nope")).isEmpty();
     }
@@ -241,11 +269,74 @@ class LdapUserDirectoryTest {
   }
 
   @Nested
+  class DirectoryReads {
+
+    private final List<String> reads = new ArrayList<>();
+
+    private LdapDirectory countingLdap() throws Exception {
+      LDAPInterface pool = server.getConnectionPool(1);
+      LDAPInterface counting =
+          (LDAPInterface)
+              Proxy.newProxyInstance(
+                  LDAPInterface.class.getClassLoader(),
+                  new Class<?>[] {LDAPInterface.class},
+                  (proxy, method, args) -> {
+                    if (method.getName().equals("search") && args[0] instanceof SearchRequest r) {
+                      reads.add(r.getFilter().toString());
+                    } else if (method.getName().equals("getEntry")) {
+                      reads.add(String.valueOf(args[0]));
+                    }
+                    try {
+                      return method.invoke(pool, args);
+                    } catch (InvocationTargetException e) {
+                      throw e.getCause();
+                    }
+                  });
+      return new LdapDirectory(counting, BASE);
+    }
+
+    private LdapUserDirectory directoryOver(LdapDirectory ldap) {
+      return new LdapUserDirectory(
+          ldap,
+          new AccountResolver(ldap),
+          new AuthTokenVerifier(ldap, Clock.systemUTC()),
+          Clock.systemUTC());
+    }
+
+    @Test
+    void aBatchReadsEachDomainAndCosOnce() throws Exception {
+      List<UserInfo> users =
+          directoryOver(countingLdap())
+              .byIds(List.of(USER_ID, SECOND_USER_ID, EXPLICIT_COS_USER_ID, GUEST_ID));
+
+      assertThat(users).hasSize(4);
+      assertThat(reads).filteredOn(r -> r.contains("zimbraDomainName=")).hasSize(1);
+      assertThat(reads).filteredOn(r -> r.contains(DOMAIN_COS_ID)).hasSize(1);
+      assertThat(reads).hasSize(5);
+    }
+
+    @Test
+    void theGlobalConfigIsReadOnlyWhenTheDomainDoesNotAnswer() throws Exception {
+      directoryOver(countingLdap()).byIds(List.of(USER_ID, SECOND_USER_ID));
+
+      assertThat(reads).noneMatch(r -> r.equals(LdapDirectory.CONFIG_DN));
+    }
+
+    @Test
+    void theGlobalConfigIsReadWithOnlyTheAttributesUserManagementUses() throws Exception {
+      Entry config = new LdapDirectory(server.getConnectionPool(1), BASE).config();
+
+      assertThat(config.hasAttribute("zimbraLocale")).isTrue();
+      assertThat(config.hasAttribute("zimbraSSLPrivateKey")).isFalse();
+    }
+  }
+
+  @Nested
   class Myself {
 
     private UserMyself myself(String id) throws Exception {
       return UserMapper.toUserMyself(
-          new AccountResolver(ldap()).resolve(ldap().accountById(id).orElseThrow()),
+          new AccountResolver(ldap()).resolveWithFullCos(ldap().accountById(id).orElseThrow()),
           ldap()::serverByName);
     }
 

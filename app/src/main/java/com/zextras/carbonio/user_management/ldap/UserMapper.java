@@ -70,15 +70,14 @@ public final class UserMapper {
   }
 
   static String publicServiceUrl(ResolvedAccount account) {
-    Entry config = account.config();
     Optional<Entry> domain = account.domain();
     if (domain.isPresent()) {
       String hostname =
-          domainInherited(domain.get(), config, ZimbraAttributes.PUBLIC_SERVICE_HOSTNAME);
+          domainInherited(domain.get(), account, ZimbraAttributes.PUBLIC_SERVICE_HOSTNAME);
       if (hostname != null && !hostname.isBlank()) {
         String protocol =
             Optional.ofNullable(
-                    domainInherited(domain.get(), config, ZimbraAttributes.PUBLIC_SERVICE_PROTOCOL))
+                    domainInherited(domain.get(), account, ZimbraAttributes.PUBLIC_SERVICE_PROTOCOL))
                 .orElse("http");
         return protocol + "://" + hostname;
       }
@@ -137,9 +136,9 @@ public final class UserMapper {
     }
   }
 
-  private static String domainInherited(Entry domain, Entry config, String attribute) {
+  private static String domainInherited(Entry domain, ResolvedAccount account, String attribute) {
     String own = domain.getAttributeValue(attribute);
-    return own != null ? own : config.getAttributeValue(attribute);
+    return own != null ? own : account.config().getAttributeValue(attribute);
   }
 
   @SafeVarargs
