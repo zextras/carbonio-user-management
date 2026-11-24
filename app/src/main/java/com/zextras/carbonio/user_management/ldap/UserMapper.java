@@ -77,7 +77,8 @@ public final class UserMapper {
       if (hostname != null && !hostname.isBlank()) {
         String protocol =
             Optional.ofNullable(
-                    domainInherited(domain.get(), account, ZimbraAttributes.PUBLIC_SERVICE_PROTOCOL))
+                    domainInherited(
+                        domain.get(), account, ZimbraAttributes.PUBLIC_SERVICE_PROTOCOL))
                 .orElse("http");
         return protocol + "://" + hostname;
       }

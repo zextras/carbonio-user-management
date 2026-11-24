@@ -147,8 +147,7 @@ public class LdapDirectory {
     return searchOne(
         Filter.createANDFilter(
             Filter.createEqualityFilter(ZimbraAttributes.ID, id),
-            Filter.createEqualityFilter(
-                ZimbraObjectClasses.OBJECT_CLASS, ZimbraObjectClasses.COS)),
+            Filter.createEqualityFilter(ZimbraObjectClasses.OBJECT_CLASS, ZimbraObjectClasses.COS)),
         attributes);
   }
 
@@ -160,8 +159,7 @@ public class LdapDirectory {
     return searchOne(
         Filter.createANDFilter(
             Filter.createEqualityFilter(ZimbraAttributes.COMMON_NAME, name),
-            Filter.createEqualityFilter(
-                ZimbraObjectClasses.OBJECT_CLASS, ZimbraObjectClasses.COS)),
+            Filter.createEqualityFilter(ZimbraObjectClasses.OBJECT_CLASS, ZimbraObjectClasses.COS)),
         attributes);
   }
 
