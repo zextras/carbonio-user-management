@@ -7,7 +7,7 @@ Overridable by `/etc/carbonio/user-management/config.properties`
 | Key | Default | If not set |
 | --- | ------- | ---------- |
 | `carbonio.ldap.starttls` | *(not set)* | No StartTLS on ldap:// URLs |
-| `carbonio.ldap.url` | *(not set)* | Directory endpoints answer 500 |
+| `carbonio.ldap.url` | *(not set)* | The service does not start |
 | `carbonio.service-discover.host` | `127.0.0.1` |  |
 | `carbonio.service-discover.port` | `8500` |  |
 | `carbonio.service.host` | `127.78.0.5` |  |

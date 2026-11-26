@@ -13,7 +13,7 @@ public final class UserManagementServiceConfig {
   public static final class NetworkingConfig {
     private NetworkingConfig() {}
 
-    @ConfigKey(ifNotPresent = "Directory endpoints answer 500")
+    @ConfigKey(ifNotPresent = "The service does not start")
     public static final String LDAP_URL = "carbonio.ldap.url";
 
     @ConfigKey(ifNotPresent = "No StartTLS on ldap:// URLs")
