@@ -38,6 +38,12 @@ if [[ "${SETUP_EXIT_CODE}" != "0" ]]; then
   exit "${SETUP_EXIT_CODE}"
 fi
 
+if ! CONSUL_HTTP_TOKEN="${SETUP_CONSUL_TOKEN}" /usr/libexec/carbonio-user-management/ldap-credentials; then
+  export -n SETUP_CONSUL_TOKEN
+  echo "LDAP credentials setup failed; leaving pending-setup to be retried."
+  exit 1
+fi
+
 # Reload the consul agent with the bootstrap token (consul CLI reads CONSUL_HTTP_TOKEN,
 # not SETUP_CONSUL_TOKEN) before dropping the token from the environment.
 CONSUL_HTTP_TOKEN="${SETUP_CONSUL_TOKEN}" consul reload

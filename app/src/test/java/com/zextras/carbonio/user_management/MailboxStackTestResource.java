@@ -4,6 +4,12 @@
 
 package com.zextras.carbonio.user_management;
 
+import com.unboundid.ldap.sdk.Attribute;
+import com.unboundid.ldap.sdk.Entry;
+import com.unboundid.ldap.sdk.LDAPConnection;
+import com.unboundid.ldap.sdk.LDAPException;
+import com.unboundid.ldap.sdk.ResultCode;
+import com.unboundid.ldap.sdk.extensions.PasswordModifyExtendedRequest;
 import com.zextras.carbonio.quarkus.extensions.bootstrap.CarbonioServiceConfig;
 import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
 import java.net.URI;
@@ -20,6 +26,7 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.lifecycle.Startables;
+import org.testcontainers.utility.MountableFile;
 
 /**
  * Starts the Carbonio mailbox stack (mailbox + dependencies) and a WireMock container that stubs
@@ -50,6 +57,10 @@ public class MailboxStackTestResource implements QuarkusTestResourceLifecycleMan
   /** zimbraId of the test user, resolved via zmprov to avoid warming the application cache. */
   public static volatile String testUserId;
 
+  public static final String USER_MANAGEMENT_DN =
+      "uid=carbonio-user-management,cn=appaccts,cn=zimbra";
+  private static final String USER_MANAGEMENT_PASSWORD = "user-management-test-password";
+
   private static volatile boolean started = false;
   private static Map<String, String> cachedConfig;
 
@@ -78,6 +89,9 @@ public class MailboxStackTestResource implements QuarkusTestResourceLifecycleMan
             .withNetwork(network)
             .withNetworkAliases("carbonio-openldap")
             .withExposedPorts(1389)
+            .withCopyFileToContainer(
+                MountableFile.forClasspathResource("ldap/directory-server-mdb.ldif"),
+                "/opt/zextras/common/etc/openldap/zimbra/config/cn=config/olcDatabase={2}mdb.ldif")
             .waitingFor(Wait.forListeningPort().withStartupTimeout(Duration.ofMinutes(5)));
 
     mariadb =
@@ -140,6 +154,8 @@ public class MailboxStackTestResource implements QuarkusTestResourceLifecycleMan
       throw new RuntimeException("Failed to configure Consul WireMock stubs", e);
     }
 
+    provisionUserManagementIdentity();
+
     // Provision test accounts (only on first start)
     provisionTestAccounts();
 
@@ -166,11 +182,41 @@ public class MailboxStackTestResource implements QuarkusTestResourceLifecycleMan
                     + UserManagementServiceConfig.NetworkingConfig.LDAP_URL,
                 "ldap://" + openldap.getHost() + ":" + openldap.getMappedPort(1389)),
             Map.entry(
-                "application-config."
-                    + UserManagementServiceConfig.ApplicationConfig.LDAP_BIND_PASSWORD,
-                "password"));
+                "application-config." + UserManagementServiceConfig.ApplicationConfig.LDAP_USERNAME,
+                USER_MANAGEMENT_DN),
+            Map.entry(
+                "application-config." + UserManagementServiceConfig.ApplicationConfig.LDAP_PASSWORD,
+                USER_MANAGEMENT_PASSWORD));
     started = true;
     return cachedConfig;
+  }
+
+  private static void provisionUserManagementIdentity() {
+    try (LDAPConnection admin =
+        new LDAPConnection(
+            openldap.getHost(),
+            openldap.getMappedPort(1389),
+            "uid=zimbra,cn=admins,cn=zimbra",
+            "password")) {
+      try {
+        admin.add(
+            new Entry(
+                USER_MANAGEMENT_DN,
+                new Attribute(
+                    "objectClass", "top", "person", "organizationalPerson", "inetOrgPerson"),
+                new Attribute("uid", "carbonio-user-management"),
+                new Attribute("cn", "carbonio-user-management"),
+                new Attribute("sn", "carbonio-user-management")));
+      } catch (LDAPException e) {
+        if (e.getResultCode() != ResultCode.ENTRY_ALREADY_EXISTS) {
+          throw e;
+        }
+      }
+      admin.processExtendedOperation(
+          new PasswordModifyExtendedRequest(USER_MANAGEMENT_DN, null, USER_MANAGEMENT_PASSWORD));
+    } catch (LDAPException e) {
+      throw new IllegalStateException("Cannot provision the user-management LDAP identity", e);
+    }
   }
 
   @Override

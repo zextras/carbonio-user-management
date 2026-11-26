@@ -1,6 +1,5 @@
 package com.zextras.carbonio.user_management.ldap;
 
-import static com.zextras.carbonio.user_management.UserManagementServiceConfig.DEFAULT_LDAP_BIND_DN;
 import static com.zextras.carbonio.user_management.UserManagementServiceConfig.LDAP_CONNECT_TIMEOUT_MILLIS;
 import static com.zextras.carbonio.user_management.UserManagementServiceConfig.LDAP_MAX_POOL_SIZE;
 import static com.zextras.carbonio.user_management.UserManagementServiceConfig.LDAP_POOL_SIZE;
@@ -48,14 +47,13 @@ public class LdapConnectionPoolProducer {
             networkingConfigService.get(NetworkingConfig.LDAP_URL).orElse(null),
             NetworkingConfig.LDAP_URL);
     String bindDn =
-        applicationConfigService
-            .get(ApplicationConfig.LDAP_BIND_DN)
-            .filter(value -> !value.isBlank())
-            .orElse(DEFAULT_LDAP_BIND_DN);
+        required(
+            applicationConfigService.get(ApplicationConfig.LDAP_USERNAME).orElse(null),
+            ApplicationConfig.LDAP_USERNAME);
     String bindPassword =
         required(
-            applicationConfigService.get(ApplicationConfig.LDAP_BIND_PASSWORD).orElse(null),
-            ApplicationConfig.LDAP_BIND_PASSWORD);
+            applicationConfigService.get(ApplicationConfig.LDAP_PASSWORD).orElse(null),
+            ApplicationConfig.LDAP_PASSWORD);
 
     boolean startTls =
         networkingConfigService

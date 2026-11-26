@@ -24,8 +24,9 @@ class LdapConnectionPoolProducerTest {
         .thenReturn(Optional.of("ldap://127.0.0.1:" + closedPort));
     when(networking.get(NetworkingConfig.LDAP_STARTTLS)).thenReturn(Optional.empty());
     ApplicationConfigService application = mock(ApplicationConfigService.class);
-    when(application.get(ApplicationConfig.LDAP_BIND_DN)).thenReturn(Optional.empty());
-    when(application.get(ApplicationConfig.LDAP_BIND_PASSWORD)).thenReturn(Optional.of("secret"));
+    when(application.get(ApplicationConfig.LDAP_USERNAME))
+        .thenReturn(Optional.of("uid=carbonio-user-management,cn=appaccts,cn=zimbra"));
+    when(application.get(ApplicationConfig.LDAP_PASSWORD)).thenReturn(Optional.of("secret"));
 
     LdapConnectionPoolProducer producer = new LdapConnectionPoolProducer(networking, application);
     LDAPConnectionPool pool = producer.ldapConnectionPool();
@@ -42,17 +43,33 @@ class LdapConnectionPoolProducerTest {
 
   @Test
   void missingBindPasswordStaysAnIllegalStateException() {
-    NetworkingConfigService networking = mock(NetworkingConfigService.class);
-    when(networking.get(NetworkingConfig.LDAP_URL)).thenReturn(Optional.of("ldap://127.0.0.1:1"));
-    ApplicationConfigService application = mock(ApplicationConfigService.class);
-    when(application.get(ApplicationConfig.LDAP_BIND_DN)).thenReturn(Optional.empty());
-    when(application.get(ApplicationConfig.LDAP_BIND_PASSWORD)).thenReturn(Optional.empty());
-
-    LdapConnectionPoolProducer producer = new LdapConnectionPoolProducer(networking, application);
+    LdapConnectionPoolProducer producer =
+        producerWithCredentials(
+            Optional.of("uid=carbonio-user-management,cn=appaccts,cn=zimbra"), Optional.empty());
 
     assertThatThrownBy(producer::ldapConnectionPool)
         .isInstanceOf(IllegalStateException.class)
-        .hasMessageContaining(ApplicationConfig.LDAP_BIND_PASSWORD);
+        .hasMessageContaining(ApplicationConfig.LDAP_PASSWORD);
+  }
+
+  @Test
+  void missingBindDnIsAnIllegalStateExceptionInsteadOfTheAdminIdentity() {
+    LdapConnectionPoolProducer producer =
+        producerWithCredentials(Optional.empty(), Optional.of("secret"));
+
+    assertThatThrownBy(producer::ldapConnectionPool)
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessageContaining(ApplicationConfig.LDAP_USERNAME);
+  }
+
+  private static LdapConnectionPoolProducer producerWithCredentials(
+      Optional<String> username, Optional<String> password) {
+    NetworkingConfigService networking = mock(NetworkingConfigService.class);
+    when(networking.get(NetworkingConfig.LDAP_URL)).thenReturn(Optional.of("ldap://127.0.0.1:1"));
+    ApplicationConfigService application = mock(ApplicationConfigService.class);
+    when(application.get(ApplicationConfig.LDAP_USERNAME)).thenReturn(username);
+    when(application.get(ApplicationConfig.LDAP_PASSWORD)).thenReturn(password);
+    return new LdapConnectionPoolProducer(networking, application);
   }
 
   private static int closedPort() throws IOException {

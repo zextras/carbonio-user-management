@@ -21,9 +21,9 @@ Overridable by Consul KV
 | --- | ------- | ---------- | ----------- |
 | `carbonio-user-management/cache/userinfo-ttl` | `900` |  | Seconds a user entry stays cached; 0 disables the cache |
 | `carbonio-user-management/cache/usermyself-ttl` | `900` |  | Seconds a /myself entry stays cached, never longer than the remaining token validity; 0 disables the cache |
+| `carbonio-user-management/ldap-password` | *(not set)* | Directory endpoints answer 500 | LDAP bind password, written by carbonio-user-management-setup |
+| `carbonio-user-management/ldap-username` | *(not set)* | Directory endpoints answer 500 | LDAP bind DN, written by carbonio-user-management-setup |
 | `carbonio-user-management/ldap/base-dn` | *(not set)* | Searches from the root DSE |  |
-| `carbonio-user-management/ldap/bind-dn` | *(not set)* | Uses uid=zimbra,cn=admins,cn=zimbra |  |
-| `carbonio-user-management/ldap/bind-password` | *(not set)* | Directory endpoints answer 500 |  |
 | `carbonio-user-management/server/idle-timeout` | *(not set)* | Quarkus default: 30 minutes | Idle HTTP connection timeout, in seconds |
 | `carbonio-user-management/server/max-connections` | *(not set)* | Quarkus default: no limit | Max concurrent HTTP connections accepted by the server |
 | `carbonio-user-management/server/max-threads` | *(not set)* | Quarkus default: max(8 x CPUs, 200) | Max threads of the Quarkus worker pool that runs blocking HTTP endpoints and GraphQL; service-specific pools are not affected |

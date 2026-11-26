@@ -21,6 +21,7 @@ depends=(
 source=(
   "${pkgname}-legacy.service"
   "${pkgname}-ldap-config"
+  "${pkgname}-ldap-credentials"
   "${pkgname}-setup"
   "${pkgname}-sidecar-legacy.service"
   "${pkgname}-sidecar.service"
@@ -34,8 +35,9 @@ source=(
 )
 sha256sums=(
   '7169786450b93c2faebd136913fcddfd8b84de69d3c01c885a160ac734cd40a9'
-  '84adf51566d480f99c6d5d70916ee14e250c586f05aafda81a0a56786ba1e623'
-  '59eaf6ceef77fae2eb094fcd3f8bacb8cb2e3115ba630625fb8534cfcc07f3ee'
+  '7ef03b1dc92a1da4712ab7c24b670afc033edd2a9e5fede9ced24ebb345cf8f7'
+  'f87b6cfbdef1b254335c95e1a849eb4fc08b8ad86cf27f70152510fdeb9b4df8'
+  'd071e29099ff1a56d62722bb1b72926ba5508913b4047f811f0d19617ac9fe98'
   '1f4a0c07ff93e6c357c2e7895767f4f0d55281a49eb966136dd93202d6bb4403'
   '8e19b44c64ebb9b717d20e38853442c8b99697d71f985cf742bb10e9e66bd733'
   'f68e03d14998aa1828cc2a6c5a4defcc34b5c62215df2172484f8fba55d3e024'
@@ -58,6 +60,8 @@ _package() {
     "${pkgdir}/usr/bin/${pkgname}-setup"
   install -Dm755 "${srcdir}/${pkgname}-ldap-config" \
     "${pkgdir}/usr/libexec/${pkgname}/ldap-config"
+  install -Dm755 "${srcdir}/${pkgname}-ldap-credentials" \
+    "${pkgdir}/usr/libexec/${pkgname}/ldap-credentials"
   install -Dm755 "${srcdir}/${pkgname}.jar" \
     "${pkgdir}/usr/share/carbonio/${pkgname}.jar"
 

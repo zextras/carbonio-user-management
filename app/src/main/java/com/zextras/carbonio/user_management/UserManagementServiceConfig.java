@@ -32,11 +32,15 @@ public final class UserManagementServiceConfig {
     @ConfigKey(description = "Seconds a user entry stays cached; 0 disables the cache")
     public static final String CACHE_USERINFO_TTL = "cache.userinfo-ttl";
 
-    @ConfigKey(ifNotPresent = "Uses " + DEFAULT_LDAP_BIND_DN)
-    public static final String LDAP_BIND_DN = "ldap.bind-dn";
+    @ConfigKey(
+        description = "LDAP bind DN, written by carbonio-user-management-setup",
+        ifNotPresent = "Directory endpoints answer 500")
+    public static final String LDAP_USERNAME = "ldap-username";
 
-    @ConfigKey(ifNotPresent = "Directory endpoints answer 500")
-    public static final String LDAP_BIND_PASSWORD = "ldap.bind-password";
+    @ConfigKey(
+        description = "LDAP bind password, written by carbonio-user-management-setup",
+        ifNotPresent = "Directory endpoints answer 500")
+    public static final String LDAP_PASSWORD = "ldap-password";
 
     @ConfigKey(ifNotPresent = "Searches from the root DSE")
     public static final String LDAP_BASE_DN = "ldap.base-dn";
@@ -48,7 +52,6 @@ public final class UserManagementServiceConfig {
   public static final int LDAP_MAX_POOL_SIZE = 20;
   public static final int LDAP_CONNECT_TIMEOUT_MILLIS = 5_000;
   public static final long LDAP_RESPONSE_TIMEOUT_MILLIS = 10_000;
-  public static final String DEFAULT_LDAP_BIND_DN = "uid=zimbra,cn=admins,cn=zimbra";
 
   public static final String AUTH_TOKEN_KEY = "ZM_AUTH_TOKEN";
 
