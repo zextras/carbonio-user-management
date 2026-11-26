@@ -21,8 +21,8 @@ Overridable by Consul KV
 | --- | ------- | ---------- | ----------- |
 | `carbonio-user-management/cache/userinfo-ttl` | `900` |  | Seconds a user entry stays cached; 0 disables the cache |
 | `carbonio-user-management/cache/usermyself-ttl` | `900` |  | Seconds a /myself entry stays cached, never longer than the remaining token validity; 0 disables the cache |
-| `carbonio-user-management/ldap-password` | *(not set)* | Directory endpoints answer 500 | LDAP bind password, written by carbonio-user-management-setup |
-| `carbonio-user-management/ldap-username` | *(not set)* | Directory endpoints answer 500 | LDAP bind DN, written by carbonio-user-management-setup |
+| `carbonio-user-management/ldap-password` | *(not set)* | The service does not start | LDAP bind password, written by carbonio-user-management-setup |
+| `carbonio-user-management/ldap-username` | *(not set)* | The service does not start | LDAP bind DN, written by carbonio-user-management-setup |
 | `carbonio-user-management/ldap/base-dn` | *(not set)* | Searches from the root DSE |  |
 | `carbonio-user-management/server/idle-timeout` | *(not set)* | Quarkus default: 30 minutes | Idle HTTP connection timeout, in seconds |
 | `carbonio-user-management/server/max-connections` | *(not set)* | Quarkus default: no limit | Max concurrent HTTP connections accepted by the server |

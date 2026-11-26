@@ -34,12 +34,12 @@ public final class UserManagementServiceConfig {
 
     @ConfigKey(
         description = "LDAP bind DN, written by carbonio-user-management-setup",
-        ifNotPresent = "Directory endpoints answer 500")
+        ifNotPresent = "The service does not start")
     public static final String LDAP_USERNAME = "ldap-username";
 
     @ConfigKey(
         description = "LDAP bind password, written by carbonio-user-management-setup",
-        ifNotPresent = "Directory endpoints answer 500")
+        ifNotPresent = "The service does not start")
     public static final String LDAP_PASSWORD = "ldap-password";
 
     @ConfigKey(ifNotPresent = "Searches from the root DSE")
