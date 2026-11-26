@@ -10,6 +10,7 @@ import com.github.benmanes.caffeine.cache.Expiry;
 import com.github.benmanes.caffeine.cache.RemovalCause;
 import com.github.benmanes.caffeine.cache.Ticker;
 import com.zextras.carbonio.quarkus.extensions.bootstrap.ApplicationConfigService;
+import com.zextras.carbonio.user_management.UserManagementServiceConfig;
 import com.zextras.carbonio.user_management.UserManagementServiceConfig.ApplicationConfig;
 import com.zextras.carbonio.user_management.record.UserMyself;
 import jakarta.inject.Inject;
@@ -24,14 +25,17 @@ import java.util.concurrent.TimeUnit;
  * Cache for {@link UserMyself}, keyed by auth token (one entry per user).
  *
  * <p>Each entry's TTL is computed at insertion time as the minimum of the config value ({@code
- * cache.usermyself-ttl}) and the remaining session lifetime from mailbox. If config is absent, the
- * session remaining time is used directly.
+ * cache.usermyself-ttl}, default {@link UserManagementServiceConfig#DEFAULT_CACHE_TTL_SECONDS}) and
+ * the remaining token lifetime, so an entry never outlives its token.
  *
  * <p>A reverse index {@code userIdToToken} enforces one-token-per-user: when a new token is
- * inserted for a userId that already has a cached token, the old entry is invalidated first. The
- * forward index {@code tokenToUserId} provides token-to-userId resolution.
+ * inserted for a userId that already has a cached token, the old entry is invalidated. The forward
+ * index {@code tokenToUserId} provides token-to-userId resolution.
  *
- * <p>Both indexes are kept in sync via Caffeine's {@code removalListener}.
+ * <p>Both indexes are kept in sync via Caffeine's {@code removalListener}, which leaves them alone
+ * when the cache already holds a newer entry for the same token. The cache holds at most {@link
+ * UserManagementServiceConfig#CACHE_MAX_ENTRIES} entries and evicts the ones least likely to be
+ * used again.
  */
 @Singleton
 public class UserMyselfCache {
@@ -47,6 +51,11 @@ public class UserMyselfCache {
 
   @Inject
   public UserMyselfCache(ApplicationConfigService configService, Ticker ticker, Clock clock) {
+    this(configService, ticker, clock, UserManagementServiceConfig.CACHE_MAX_ENTRIES);
+  }
+
+  UserMyselfCache(
+      ApplicationConfigService configService, Ticker ticker, Clock clock, long maxEntries) {
     this.configService = configService;
     this.clock = clock;
     this.tokenToUserId = new ConcurrentHashMap<>();
@@ -60,11 +69,13 @@ public class UserMyselfCache {
     this.cache =
         Caffeine.newBuilder()
             .ticker(ticker)
+            .executor(Runnable::run)
+            .maximumSize(maxEntries)
             .expireAfter(
                 Expiry.<String, UserMyself>creating((k, v) -> Duration.ofNanos(Long.MAX_VALUE)))
             .removalListener(
                 (String key, UserMyself value, RemovalCause cause) -> {
-                  if (key != null && cause != RemovalCause.REPLACED) {
+                  if (key != null && !holdsToken(key)) {
                     String userId = tokenToUserId.remove(key);
                     if (userId != null) {
                       userIdToToken.remove(userId, key);
@@ -72,6 +83,10 @@ public class UserMyselfCache {
                   }
                 })
             .build();
+  }
+
+  private boolean holdsToken(String token) {
+    return cache.policy().getIfPresentQuietly(token) != null;
   }
 
   public Optional<UserMyself> getByToken(String token) {
@@ -85,6 +100,9 @@ public class UserMyselfCache {
   public void put(String token, String userId, UserMyself myself, long expiresAt) {
     long remainingMs = Math.max(0, expiresAt - clock.millis());
     Duration ttl = capTtl(remainingMs);
+
+    cache.policy().expireVariably().orElseThrow().put(token, myself, ttl);
+    tokenToUserId.put(token, userId);
 
     // Atomically update userId→token index; capture displaced token (if different)
     String[] displaced = {null};
@@ -101,10 +119,6 @@ public class UserMyselfCache {
     if (displaced[0] != null) {
       cache.invalidate(displaced[0]);
     }
-
-    // Insert/replace in Caffeine; for REPLACED entries the removal listener is a no-op
-    cache.policy().expireVariably().orElseThrow().put(token, myself, ttl);
-    tokenToUserId.put(token, userId);
   }
 
   public void invalidateByToken(String token) {
@@ -118,15 +132,17 @@ public class UserMyselfCache {
   }
 
   public boolean isCacheEnabled() {
-    long configSeconds =
-        ttlCache.get(
-            "usermyself-ttl",
-            k ->
-                configService
-                    .get(ApplicationConfig.CACHE_USERMYSELF_TTL)
-                    .map(Long::parseLong)
-                    .orElse(TTL_ABSENT_SENTINEL));
-    return configSeconds == TTL_ABSENT_SENTINEL || configSeconds > 0;
+    return readTtlSeconds() > 0;
+  }
+
+  private long readTtlSeconds() {
+    return ttlCache.get(
+        "usermyself-ttl",
+        k ->
+            configService
+                .get(ApplicationConfig.CACHE_USERMYSELF_TTL)
+                .map(Long::parseLong)
+                .orElse(UserManagementServiceConfig.DEFAULT_CACHE_TTL_SECONDS));
   }
 
   /**
@@ -138,22 +154,8 @@ public class UserMyselfCache {
     return clock.millis() + capTtl(sessionRemainingMs).toMillis();
   }
 
-  private static final long TTL_ABSENT_SENTINEL = -1;
-
   private Duration capTtl(long remainingMs) {
-    Duration remaining = Duration.ofMillis(remainingMs);
-    long configSeconds =
-        ttlCache.get(
-            "usermyself-ttl",
-            k ->
-                configService
-                    .get(ApplicationConfig.CACHE_USERMYSELF_TTL)
-                    .map(Long::parseLong)
-                    .orElse(TTL_ABSENT_SENTINEL));
-    if (configSeconds != TTL_ABSENT_SENTINEL) {
-      return min(Duration.ofSeconds(configSeconds), remaining);
-    }
-    return remaining;
+    return min(Duration.ofSeconds(readTtlSeconds()), Duration.ofMillis(remainingMs));
   }
 
   private static Duration min(Duration a, Duration b) {

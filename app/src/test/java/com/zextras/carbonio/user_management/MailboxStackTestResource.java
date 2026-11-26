@@ -4,6 +4,12 @@
 
 package com.zextras.carbonio.user_management;
 
+import com.unboundid.ldap.sdk.Attribute;
+import com.unboundid.ldap.sdk.Entry;
+import com.unboundid.ldap.sdk.LDAPConnection;
+import com.unboundid.ldap.sdk.LDAPException;
+import com.unboundid.ldap.sdk.ResultCode;
+import com.unboundid.ldap.sdk.extensions.PasswordModifyExtendedRequest;
 import com.zextras.carbonio.quarkus.extensions.bootstrap.CarbonioServiceConfig;
 import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
 import java.net.URI;
@@ -20,16 +26,19 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.lifecycle.Startables;
+import org.testcontainers.utility.MountableFile;
 
 /**
  * Starts the Carbonio mailbox stack (mailbox + dependencies) and a WireMock container that stubs
- * Consul endpoints for integration tests.
+ * Consul endpoints for integration tests. The service under test reads LDAP directly from the
+ * openldap container; the mailbox is only used by the tests to issue auth tokens and provision
+ * accounts.
  *
  * <p><b>Testing philosophy:</b>
  *
  * <ul>
- *   <li>Mailbox (+ openldap, mariadb, postfix) — real containers: tests exercise the full SOAP
- *       authentication and user lookup flow.
+ *   <li>Mailbox (+ openldap, mariadb, postfix) — real containers: tests exercise the tests obtain
+ *       real auth tokens over SOAP and provision accounts with zmprov.
  *   <li>Consul — WireMock stub: the bootstrap extension reads KV config and registers the service;
  *       a real Consul instance is not needed.
  * </ul>
@@ -47,6 +56,10 @@ public class MailboxStackTestResource implements QuarkusTestResourceLifecycleMan
 
   /** zimbraId of the test user, resolved via zmprov to avoid warming the application cache. */
   public static volatile String testUserId;
+
+  public static final String USER_MANAGEMENT_DN =
+      "uid=carbonio-user-management,cn=appaccts,cn=zimbra";
+  private static final String USER_MANAGEMENT_PASSWORD = "user-management-test-password";
 
   private static volatile boolean started = false;
   private static Map<String, String> cachedConfig;
@@ -76,6 +89,9 @@ public class MailboxStackTestResource implements QuarkusTestResourceLifecycleMan
             .withNetwork(network)
             .withNetworkAliases("carbonio-openldap")
             .withExposedPorts(1389)
+            .withCopyFileToContainer(
+                MountableFile.forClasspathResource("ldap/directory-server-mdb.ldif"),
+                "/opt/zextras/common/etc/openldap/zimbra/config/cn=config/olcDatabase={2}mdb.ldif")
             .waitingFor(Wait.forListeningPort().withStartupTimeout(Duration.ofMinutes(5)));
 
     mariadb =
@@ -108,7 +124,7 @@ public class MailboxStackTestResource implements QuarkusTestResourceLifecycleMan
             .withEnv("MARIADB_ROOT_PASSWORD", "password")
             .withEnv("MARIADB_URL", "carbonio-mariadb")
             .withEnv("MARIADB_PORT", "3306")
-            .withExposedPorts(8080, 10000)
+            .withExposedPorts(8080)
             .dependsOn(openldap, postfix, mariadb)
             .waitingFor(
                 Wait.forHttp("/service/health/ready")
@@ -138,11 +154,12 @@ public class MailboxStackTestResource implements QuarkusTestResourceLifecycleMan
       throw new RuntimeException("Failed to configure Consul WireMock stubs", e);
     }
 
+    provisionUserManagementIdentity();
+
     // Provision test accounts (only on first start)
     provisionTestAccounts();
 
     int mailboxPort = mailbox.getMappedPort(8080);
-    int mailboxInternalPort = mailbox.getMappedPort(10000);
     mailboxBaseUrl = "http://localhost:" + mailboxPort;
     log.info("Mailbox available at {}", mailboxBaseUrl);
 
@@ -162,14 +179,44 @@ public class MailboxStackTestResource implements QuarkusTestResourceLifecycleMan
                 String.valueOf(wireMock.getMappedPort(8080))),
             Map.entry(
                 CarbonioServiceConfig.NETWORKING_CONFIG_PREFIX
-                    + UserManagementServiceConfig.NetworkingConfig.MAILBOX_INTERNAL_HOST,
-                "localhost"),
+                    + UserManagementServiceConfig.NetworkingConfig.LDAP_URL,
+                "ldap://" + openldap.getHost() + ":" + openldap.getMappedPort(1389)),
             Map.entry(
-                CarbonioServiceConfig.NETWORKING_CONFIG_PREFIX
-                    + UserManagementServiceConfig.NetworkingConfig.MAILBOX_INTERNAL_PORT,
-                String.valueOf(mailboxInternalPort)));
+                "application-config." + UserManagementServiceConfig.ApplicationConfig.LDAP_USERNAME,
+                USER_MANAGEMENT_DN),
+            Map.entry(
+                "application-config." + UserManagementServiceConfig.ApplicationConfig.LDAP_PASSWORD,
+                USER_MANAGEMENT_PASSWORD));
     started = true;
     return cachedConfig;
+  }
+
+  private static void provisionUserManagementIdentity() {
+    try (LDAPConnection admin =
+        new LDAPConnection(
+            openldap.getHost(),
+            openldap.getMappedPort(1389),
+            "uid=zimbra,cn=admins,cn=zimbra",
+            "password")) {
+      try {
+        admin.add(
+            new Entry(
+                USER_MANAGEMENT_DN,
+                new Attribute(
+                    "objectClass", "top", "person", "organizationalPerson", "inetOrgPerson"),
+                new Attribute("uid", "carbonio-user-management"),
+                new Attribute("cn", "carbonio-user-management"),
+                new Attribute("sn", "carbonio-user-management")));
+      } catch (LDAPException e) {
+        if (e.getResultCode() != ResultCode.ENTRY_ALREADY_EXISTS) {
+          throw e;
+        }
+      }
+      admin.processExtendedOperation(
+          new PasswordModifyExtendedRequest(USER_MANAGEMENT_DN, null, USER_MANAGEMENT_PASSWORD));
+    } catch (LDAPException e) {
+      throw new IllegalStateException("Cannot provision the user-management LDAP identity", e);
+    }
   }
 
   @Override
@@ -179,9 +226,9 @@ public class MailboxStackTestResource implements QuarkusTestResourceLifecycleMan
   }
 
   /**
-   * Changes the test user's {@code displayName} directly in mailbox, behind the application's back.
-   * Used to make a stale cache entry observable: only a new mailbox round trip can see the new
-   * value.
+   * Changes the test user's {@code displayName} directly in LDAP via zmprov, behind the
+   * application's back. Used to make a stale cache entry observable: only a new LDAP read can see
+   * the new value.
    *
    * @param displayName the new display name; empty string unsets the attribute
    */
@@ -205,6 +252,22 @@ public class MailboxStackTestResource implements QuarkusTestResourceLifecycleMan
       throw e;
     } catch (Exception e) {
       throw new RuntimeException("Failed to set test user displayName", e);
+    }
+  }
+
+  /** Runs a zmprov script inside the mailbox container and returns its standard output. */
+  public static String zmprov(boolean localLdap, String script) {
+    try {
+      var result =
+          mailbox.execInContainer(
+              "sh",
+              "-c",
+              "zmprov " + (localLdap ? "-l " : "") + "2>&1 <<'EOF'\n" + script + "\nEOF");
+      return result.getStdout();
+    } catch (RuntimeException e) {
+      throw e;
+    } catch (Exception e) {
+      throw new RuntimeException("zmprov failed", e);
     }
   }
 

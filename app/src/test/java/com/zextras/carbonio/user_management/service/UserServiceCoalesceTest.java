@@ -13,10 +13,6 @@ import static org.mockito.Mockito.when;
 import com.zextras.carbonio.user_management.cache.UserInfoCache;
 import com.zextras.carbonio.user_management.cache.UserMyselfCache;
 import com.zextras.carbonio.user_management.record.UserInfo;
-import com.zextras.mailbox.client.internal.AccountInfo;
-import com.zextras.mailbox.client.internal.AccountStatus;
-import com.zextras.mailbox.client.internal.MailboxInternalApiClient;
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
@@ -27,50 +23,32 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Tests for the request coalescing behavior in UserService. Concurrent calls for the same key
- * should result in a single API call.
+ * should result in a single directory call.
  */
 class UserServiceCoalesceTest {
 
-  private MailboxInternalApiClient internalClient;
+  private UserDirectory directory;
   private UserInfoCache userInfoCache;
   private UserMyselfCache userMyselfCache;
   private UserService userService;
 
   @BeforeEach
   void setUp() {
-    internalClient = mock(MailboxInternalApiClient.class);
+    directory = mock(UserDirectory.class);
     userInfoCache = mock(UserInfoCache.class);
     userMyselfCache = mock(UserMyselfCache.class);
     when(userInfoCache.isCacheEnabled()).thenReturn(true);
     when(userMyselfCache.isCacheEnabled()).thenReturn(true);
-    userService =
-        new UserService(
-            internalClient,
-            userInfoCache,
-            userMyselfCache,
-            org.eclipse.microprofile.context.ManagedExecutor.builder().build());
+    userService = new UserService(directory, userInfoCache, userMyselfCache);
   }
 
-  private AccountInfo accountInfo(String userId, String email) {
-    return new AccountInfo(
-        userId,
-        email,
-        "Test User",
-        "cos-1",
-        "dom-1",
-        "example.com",
-        AccountStatus.active,
-        false,
-        false,
-        false,
-        "en",
-        Map.of(),
-        Map.of(),
-        null);
+  private UserInfo userInfo(String userId, String email) {
+    return new UserInfo(
+        userId, email, "Test User", "example.com", "ACTIVE", "INTERNAL", "cos-1", "dom-1", false);
   }
 
   @Test
-  void concurrentGetUserByIdCallsCoalesceIntoSingleApiCall() throws Exception {
+  void concurrentGetUserByIdCallsCoalesceIntoSingleDirectoryCall() throws Exception {
     // Cache miss
     when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.empty());
 
@@ -78,21 +56,21 @@ class UserServiceCoalesceTest {
     CountDownLatch apiProceed = new CountDownLatch(1);
     AtomicInteger apiCallCount = new AtomicInteger(0);
 
-    AccountInfo response = accountInfo("user-1", "u@x.com");
-    when(internalClient.getAccountInfo("user-1"))
+    UserInfo response = userInfo("user-1", "u@x.com");
+    when(directory.byId("user-1"))
         .thenAnswer(
             inv -> {
               apiCallCount.incrementAndGet();
               apiStarted.countDown();
               apiProceed.await(10, TimeUnit.SECONDS);
-              return response;
+              return Optional.of(response);
             });
 
     // Launch first call
     CompletableFuture<Optional<UserInfo>> call1 =
         CompletableFuture.supplyAsync(() -> userService.getUserById("user-1"));
 
-    // Wait for API to be entered by first call
+    // Wait for the directory to be entered by first call
     assertThat(apiStarted.await(10, TimeUnit.SECONDS)).isTrue();
 
     // Launch second call — should coalesce with the first
@@ -102,7 +80,7 @@ class UserServiceCoalesceTest {
     // Give call2 time to reach coalesce and find existing inflight future
     Thread.sleep(200);
 
-    // Release API
+    // Release the directory
     apiProceed.countDown();
 
     // Both calls should complete with a result
@@ -114,7 +92,7 @@ class UserServiceCoalesceTest {
     assertThat(result1.get().userId()).isEqualTo("user-1");
     assertThat(result2.get().userId()).isEqualTo("user-1");
 
-    // API should have been called exactly once
+    // Directory should have been called exactly once
     assertThat(apiCallCount.get()).isEqualTo(1);
   }
 
@@ -124,12 +102,12 @@ class UserServiceCoalesceTest {
     when(userInfoCache.getByUserId("user-1")).thenReturn(Optional.empty());
     when(userInfoCache.getByUserId("user-2")).thenReturn(Optional.empty());
 
-    AccountInfo response1 = accountInfo("user-1", "u1@x.com");
-    AccountInfo response2 = accountInfo("user-2", "u2@x.com");
+    UserInfo response1 = userInfo("user-1", "u1@x.com");
+    UserInfo response2 = userInfo("user-2", "u2@x.com");
 
     AtomicInteger callCount = new AtomicInteger(0);
-    when(internalClient.getAccountInfo("user-1")).thenReturn(response1);
-    when(internalClient.getAccountInfo("user-2")).thenReturn(response2);
+    when(directory.byId("user-1")).thenReturn(Optional.of(response1));
+    when(directory.byId("user-2")).thenReturn(Optional.of(response2));
 
     // Launch both calls in parallel
     CompletableFuture<Optional<UserInfo>> call1 =
@@ -143,8 +121,8 @@ class UserServiceCoalesceTest {
     assertThat(result1).isPresent();
     assertThat(result2).isPresent();
 
-    // Both should have made independent API calls
-    verify(internalClient, times(1)).getAccountInfo("user-1");
-    verify(internalClient, times(1)).getAccountInfo("user-2");
+    // Both should have made independent directory calls
+    verify(directory, times(1)).byId("user-1");
+    verify(directory, times(1)).byId("user-2");
   }
 }

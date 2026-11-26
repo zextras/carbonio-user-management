@@ -24,6 +24,12 @@ if [[ "${EXIT_CODE}" != "0" ]]; then
   exit 1;
 fi
 
+if ! CONSUL_HTTP_TOKEN="${SETUP_CONSUL_TOKEN}" /usr/libexec/carbonio-user-management/ldap-credentials; then
+  export -n SETUP_CONSUL_TOKEN
+  echo "LDAP credentials setup failed; leaving pending-setup to be retried."
+  exit 1
+fi
+
 # Delegate all Consul setup logic to the service jar
 /opt/zextras/common/bin/java \
   -jar /usr/share/carbonio/carbonio-user-management.jar \

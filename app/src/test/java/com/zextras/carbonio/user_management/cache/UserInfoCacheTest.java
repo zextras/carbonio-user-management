@@ -14,6 +14,7 @@ import com.github.benmanes.caffeine.cache.Ticker;
 import com.zextras.carbonio.quarkus.extensions.bootstrap.ApplicationConfigService;
 import com.zextras.carbonio.user_management.record.UserInfo;
 import java.util.Optional;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,7 +22,7 @@ import org.junit.jupiter.api.Test;
 
 class UserInfoCacheTest {
 
-  private static final long DEFAULT_TTL_SECONDS = 43200; // 12 hours
+  private static final long DEFAULT_TTL_SECONDS = 900;
 
   private ApplicationConfigService configService;
   private AtomicLong currentTime;
@@ -72,12 +73,12 @@ class UserInfoCacheTest {
     UserInfo user = sampleUser("user-1", "user@example.com");
     cache.put(user);
 
-    // 12h - 100s → still in cache (both access paths)
+    // TTL - 100s → still in cache (both access paths)
     currentTime.set(TimeUnit.SECONDS.toNanos(DEFAULT_TTL_SECONDS - 100));
     assertThat(cache.getByUserId("user-1")).contains(user);
     assertThat(cache.getByEmail("user@example.com")).contains(user);
 
-    // 12h + 1s → expired (both access paths)
+    // TTL + 1s → expired (both access paths)
     currentTime.set(TimeUnit.SECONDS.toNanos(DEFAULT_TTL_SECONDS + 1));
     assertThat(cache.getByUserId("user-1")).isEmpty();
     assertThat(cache.getByEmail("user@example.com")).isEmpty();
@@ -92,6 +93,44 @@ class UserInfoCacheTest {
     cache.getByUserId("user-1");
 
     assertThat(cache.getByEmail("user@example.com")).isEmpty();
+  }
+
+  @Test
+  void emailIndexSurvivesAReputAfterExpiry() {
+    UserInfo user = sampleUser("user-1", "user@example.com");
+    cache.put(user);
+    currentTime.set(TimeUnit.SECONDS.toNanos(DEFAULT_TTL_SECONDS + 1));
+    assertThat(cache.getByUserId("user-1")).isEmpty();
+
+    cache.put(user);
+    ForkJoinPool.commonPool().awaitQuiescence(5, TimeUnit.SECONDS);
+
+    assertThat(cache.getByEmail("user@example.com")).contains(user);
+  }
+
+  @Test
+  void holdsAtMostTheConfiguredNumberOfEntries() {
+    UserInfoCache small = new UserInfoCache(configService, currentTime::get, 2);
+    for (int i = 0; i < 10; i++) {
+      small.put(sampleUser("user-" + i, "user" + i + "@example.com"));
+    }
+
+    long held = 0;
+    for (int i = 0; i < 10; i++) {
+      boolean byId = small.getByUserId("user-" + i).isPresent();
+      assertThat(small.getByEmail("user" + i + "@example.com").isPresent()).isEqualTo(byId);
+      held += byId ? 1 : 0;
+    }
+    assertThat(held).isLessThanOrEqualTo(2);
+  }
+
+  @Test
+  void renamedUserIsNotFoundByTheOldEmail() {
+    cache.put(sampleUser("user-1", "old@example.com"));
+    cache.put(sampleUser("user-1", "new@example.com"));
+
+    assertThat(cache.getByEmail("old@example.com")).isEmpty();
+    assertThat(cache.getByEmail("new@example.com")).isPresent();
   }
 
   @Test
@@ -114,11 +153,11 @@ class UserInfoCacheTest {
             false);
     cache.put(user1Updated);
 
-    // 12h + 1s from original put, but only 101s from re-put → still alive
+    // TTL + 1s from original put, but only 101s from re-put → still alive
     currentTime.set(TimeUnit.SECONDS.toNanos(DEFAULT_TTL_SECONDS + 1));
     assertThat(cache.getByUserId("user-1")).contains(user1Updated);
 
-    // 24h + 1s from original put, 12h + 101s from re-put → expired
+    // 2 TTL + 1s from original put, TTL + 101s from re-put → expired
     currentTime.set(TimeUnit.SECONDS.toNanos(2 * DEFAULT_TTL_SECONDS + 1));
     assertThat(cache.getByUserId("user-1")).isEmpty();
   }

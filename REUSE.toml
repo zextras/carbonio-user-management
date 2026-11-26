@@ -116,3 +116,28 @@ path = ".ci/**"
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2026 Zextras <https://www.zextras.com>"
 SPDX-License-Identifier = "AGPL-3.0-only"
+
+[[annotations]]
+path = [
+  "app/src/main/java/com/zextras/carbonio/user_management/ldap/**",
+  "app/src/main/java/com/zextras/carbonio/user_management/auth/**",
+  "app/src/main/java/com/zextras/carbonio/user_management/rights/**",
+  "app/src/main/java/com/zextras/carbonio/user_management/rest/RightsResource.java",
+  "app/src/main/java/com/zextras/carbonio/user_management/rest/dto/RightCheckRequest.java",
+  "app/src/main/java/com/zextras/carbonio/user_management/rest/dto/RightCheckResponse.java",
+  "app/src/main/java/com/zextras/carbonio/user_management/rest/dto/RightInfoDto.java",
+  "app/src/main/java/com/zextras/carbonio/user_management/rest/dto/AccountRightsDto.java",
+  "app/src/main/java/com/zextras/carbonio/user_management/rest/GroupResource.java",
+  "app/src/main/java/com/zextras/carbonio/user_management/rest/StatusCodes.java",
+  "app/src/main/java/com/zextras/carbonio/user_management/rest/dto/GroupMembershipResponse.java",
+  "app/src/test/java/com/zextras/carbonio/user_management/rest/GroupResourceTest.java",
+  "app/src/test/java/com/zextras/carbonio/user_management/rest/RightsResourceTest.java",
+  "app/src/main/java/com/zextras/carbonio/user_management/service/UserDirectory.java",
+  "app/src/test/java/com/zextras/carbonio/user_management/ldap/**",
+  "app/src/test/java/com/zextras/carbonio/user_management/auth/**",
+  "app/src/test/java/com/zextras/carbonio/user_management/rights/**",
+  "app/src/test/resources/ldap/**",
+]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 Zextras <https://www.zextras.com>"
+SPDX-License-Identifier = "AGPL-3.0-only"

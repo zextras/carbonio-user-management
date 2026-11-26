@@ -46,16 +46,22 @@ SPDX-License-Identifier: AGPL-3.0-only
       <version>${carbonio-quarkus-extensions.version}</version>
     </dependency>
 
-    <!-- Mailbox SOAP client -->
+    <!-- Rights catalog (conf/rights, conf/attrs) of the mailbox ACL engine -->
     <dependency>
       <groupId>com.zextras</groupId>
-      <artifactId>carbonio-mailbox-sdk</artifactId>
+      <artifactId>mailbox-attribute-manager</artifactId>
     </dependency>
 
     <!-- Cache -->
     <dependency>
       <groupId>com.github.ben-manes.caffeine</groupId>
       <artifactId>caffeine</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.unboundid</groupId>
+      <artifactId>unboundid-ldapsdk</artifactId>
+      <version>7.0.4</version>
     </dependency>
 
     <!-- OpenTelemetry -->
