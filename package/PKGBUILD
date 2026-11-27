@@ -25,7 +25,6 @@ source=(
   "${pkgname}-sidecar-legacy.service"
   "${pkgname}-sidecar.service"
   "${pkgname}-template.hcl"
-  "${pkgname}-hcl"
   "${pkgname}.jar"
   "${pkgname}.service"
   "121-${pkgname}.sh"
@@ -35,11 +34,10 @@ source=(
 )
 sha256sums=(
   '5fca7adbfb5b10dc028b583a9abad85578327cc06e65084efddc0c4ec2c830cd'
-  '48cdabb715b40e7eb542d94080c3d5e05210edcfcd7d428a60db861826ca1225'
+  '716a8b1ce1d9bb8bd4401db4e0de2614f0417b0fa2ccd94d1ae35332acb81131'
   '1f4a0c07ff93e6c357c2e7895767f4f0d55281a49eb966136dd93202d6bb4403'
   '8e19b44c64ebb9b717d20e38853442c8b99697d71f985cf742bb10e9e66bd733'
-  'ea52c4c2758934046680c446fc4f40305378756bab95cc6dfdb7d1f58bbbf326'
-  '53b57b528e74f5a24dd59952c3c53cb74ed20a2aaac9719a2d856f175e0b394d'
+  'ccd1caa5210cacc58c24b0eafd423bf2b2a8fd843abc4f1e2188f1e9ff21883b'
   'SKIP'
   '7b1abb895725fcef0dd56396c2836644b0462ce85a724adcdfac21c431177e75'
   '16ffff744c3ca3e53efce86ad20b321796dfbd24358cbb04636ede4aebcc9a8c'
@@ -61,8 +59,6 @@ _package() {
 
   install -Dm644 "${srcdir}/${pkgname}-template.hcl" \
     "${pkgdir}/etc/zextras/service-discover/templates/${pkgname}-template.hcl"
-  install -Dm755 "${srcdir}/${pkgname}-hcl" \
-    "${pkgdir}/usr/bin/${pkgname}-hcl"
   install -Dm644 "${srcdir}/intentions.json" \
     "${pkgdir}/etc/carbonio/user-management/service-discover/intentions.json"
   install -Dm644 "${srcdir}/policies.json" \
@@ -126,7 +122,11 @@ postinst() {
   fi
 
   if [ "$1" = "configure" ]; then
-    carbonio-user-management-hcl render || echo "WARNING: hcl render failed, run carbonio-user-management-setup"
+    env -i PATH=/usr/bin:/bin bash -c 'set -a; [ -r "$1" ] && . "$1"; exec consul-template -once -template "$2:$3"' _ \
+      /etc/zextras/service-discover/carbonio-user-management.env \
+      /etc/zextras/service-discover/templates/carbonio-user-management-template.hcl \
+      /etc/zextras/service-discover/carbonio-user-management.hcl > /dev/null \
+      || echo "WARNING: cannot render /etc/zextras/service-discover/carbonio-user-management.hcl, run carbonio-user-management-setup"
   fi
 
   echo "======================================================"
@@ -136,7 +136,11 @@ postinst() {
 }
 
 posttrans() {
-  carbonio-user-management-hcl render || echo "WARNING: hcl render failed, run carbonio-user-management-setup"
+  env -i PATH=/usr/bin:/bin bash -c 'set -a; [ -r "$1" ] && . "$1"; exec consul-template -once -template "$2:$3"' _ \
+    /etc/zextras/service-discover/carbonio-user-management.env \
+    /etc/zextras/service-discover/templates/carbonio-user-management-template.hcl \
+    /etc/zextras/service-discover/carbonio-user-management.hcl > /dev/null \
+    || echo "WARNING: cannot render /etc/zextras/service-discover/carbonio-user-management.hcl, run carbonio-user-management-setup"
 }
 
 prerm() {
