@@ -121,26 +121,10 @@ postinst() {
     systemctl enable carbonio-user-management-sidecar.service &>/dev/null || :
   fi
 
-  if [ "$1" = "configure" ]; then
-    env -i PATH=/usr/bin:/bin bash -c 'set -a; [ -r "$1" ] && . "$1"; exec consul-template -once -template "$2:$3"' _ \
-      /etc/zextras/service-discover/carbonio-user-management.env \
-      /etc/zextras/service-discover/templates/carbonio-user-management-template.hcl \
-      /etc/zextras/service-discover/carbonio-user-management.hcl > /dev/null \
-      || echo "WARNING: cannot render /etc/zextras/service-discover/carbonio-user-management.hcl, run carbonio-user-management-setup"
-  fi
-
   echo "======================================================"
   echo "Carbonio User Management installed successfully!"
   echo "You must run pending-setups to configure it correctly."
   echo "======================================================"
-}
-
-posttrans() {
-  env -i PATH=/usr/bin:/bin bash -c 'set -a; [ -r "$1" ] && . "$1"; exec consul-template -once -template "$2:$3"' _ \
-    /etc/zextras/service-discover/carbonio-user-management.env \
-    /etc/zextras/service-discover/templates/carbonio-user-management-template.hcl \
-    /etc/zextras/service-discover/carbonio-user-management.hcl > /dev/null \
-    || echo "WARNING: cannot render /etc/zextras/service-discover/carbonio-user-management.hcl, run carbonio-user-management-setup"
 }
 
 prerm() {
