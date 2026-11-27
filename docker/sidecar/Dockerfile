@@ -9,6 +9,11 @@
 # selects the arch-matched layer, so no target-arch RUN and no QEMU.
 FROM docker.io/library/eclipse-temurin:21-jre-jammy AS jre
 
+FROM --platform=$BUILDPLATFORM docker.io/library/alpine:3.20 AS hcl
+COPY package/carbonio-user-management-template.hcl /carbonio-user-management-template.hcl
+RUN sed -E 's/\{\{ or \(env "[A-Z0-9_]+"\) "([^"]*)" \}\}/\1/g' \
+    /carbonio-user-management-template.hcl > /carbonio-user-management.hcl
+
 FROM registry.dev.zextras.com/dev/carbonio-sidecar:main
 
 # Arch-matched JRE copied from the multi-arch temurin image (QEMU-free).
@@ -17,7 +22,7 @@ ENV JAVA_HOME=/opt/java/openjdk
 ENV PATH="/opt/java/openjdk/bin:${PATH}"
 
 # Service registration
-COPY package/carbonio-user-management.hcl /consul/config/
+COPY --from=hcl /carbonio-user-management.hcl /consul/config/
 
 # Setup files for consul registration
 COPY package/service-protocol.json /etc/carbonio/user-management/service-discover/

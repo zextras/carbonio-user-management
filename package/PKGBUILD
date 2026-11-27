@@ -16,6 +16,7 @@ depends=(
   "pending-setups"
   "service-discover"
   "service-discover-base"
+  "service-discover-template"
   "carbonio-openjdk"
 )
 source=(
@@ -23,7 +24,8 @@ source=(
   "${pkgname}-setup"
   "${pkgname}-sidecar-legacy.service"
   "${pkgname}-sidecar.service"
-  "${pkgname}.hcl"
+  "${pkgname}-template.hcl"
+  "${pkgname}-hcl"
   "${pkgname}.jar"
   "${pkgname}.service"
   "121-${pkgname}.sh"
@@ -33,10 +35,11 @@ source=(
 )
 sha256sums=(
   '5fca7adbfb5b10dc028b583a9abad85578327cc06e65084efddc0c4ec2c830cd'
-  '59eaf6ceef77fae2eb094fcd3f8bacb8cb2e3115ba630625fb8534cfcc07f3ee'
+  '8322ec072e8eb794ea15acdff07e4e9fb769be0fbb730945c263ed16d44ed805'
   '1f4a0c07ff93e6c357c2e7895767f4f0d55281a49eb966136dd93202d6bb4403'
   '8e19b44c64ebb9b717d20e38853442c8b99697d71f985cf742bb10e9e66bd733'
-  'a722c5b8a0a4b273e9b65a51c1de5924d51c091229e7c9f92c14ef0a98f73097'
+  '643d878384a2e99fe79cdfdcc56943c65ce4b13d1a1e4a60baf1c02286926b77'
+  'c65fb6ba02fae817faba07372448244b12f80c9d1a158cb885c3c6a1609cbe1b'
   'SKIP'
   '7b1abb895725fcef0dd56396c2836644b0462ce85a724adcdfac21c431177e75'
   '16ffff744c3ca3e53efce86ad20b321796dfbd24358cbb04636ede4aebcc9a8c'
@@ -45,7 +48,6 @@ sha256sums=(
   '47d5f15e64f822ade45c4ffc963cf7975d89083db6937dd660466b8bdd763cdb'
 )
 backup=(
-  "etc/zextras/service-discover/${pkgname}.hcl"
   "etc/carbonio/user-management/config.properties"
 )
 
@@ -57,8 +59,10 @@ _package() {
   install -Dm755 "${srcdir}/${pkgname}.jar" \
     "${pkgdir}/usr/share/carbonio/${pkgname}.jar"
 
-  install -Dm644 "${srcdir}/${pkgname}.hcl" \
-    "${pkgdir}/etc/zextras/service-discover/${pkgname}.hcl"
+  install -Dm644 "${srcdir}/${pkgname}-template.hcl" \
+    "${pkgdir}/etc/zextras/service-discover/templates/${pkgname}-template.hcl"
+  install -Dm755 "${srcdir}/${pkgname}-hcl" \
+    "${pkgdir}/usr/bin/${pkgname}-hcl"
   install -Dm644 "${srcdir}/intentions.json" \
     "${pkgdir}/etc/carbonio/user-management/service-discover/intentions.json"
   install -Dm644 "${srcdir}/policies.json" \
@@ -121,10 +125,20 @@ postinst() {
     systemctl enable carbonio-user-management-sidecar.service &>/dev/null || :
   fi
 
+  if [ "$1" = "configure" ]; then
+    carbonio-user-management-hcl migrate || echo "WARNING: hcl migration failed, run carbonio-user-management-hcl migrate"
+    carbonio-user-management-hcl render || echo "WARNING: hcl render failed, run carbonio-user-management-setup"
+  fi
+
   echo "======================================================"
   echo "Carbonio User Management installed successfully!"
   echo "You must run pending-setups to configure it correctly."
   echo "======================================================"
+}
+
+posttrans() {
+  carbonio-user-management-hcl migrate || echo "WARNING: hcl migration failed, run carbonio-user-management-hcl migrate"
+  carbonio-user-management-hcl render || echo "WARNING: hcl render failed, run carbonio-user-management-setup"
 }
 
 prerm() {
@@ -150,6 +164,10 @@ postrm() {
   rm -f /etc/carbonio/user-management/service-discover/policies.json
   rm -f /etc/carbonio/user-management/service-discover/service-protocol.json
   rm -f /etc/carbonio/user-management/config.properties
+  rm -f /etc/zextras/service-discover/carbonio-user-management.hcl
+  if [ "$1" = "purge" ]; then
+    rm -f /etc/zextras/service-discover/carbonio-user-management.env /etc/zextras/service-discover/carbonio-user-management.hcl.bak
+  fi
 
   rm -f /etc/systemd/system/carbonio-user-management.service.d/override.conf
   rmdir /etc/systemd/system/carbonio-user-management.service.d/ 2>/dev/null || :
