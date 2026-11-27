@@ -12,7 +12,8 @@ FROM docker.io/library/eclipse-temurin:21-jre-jammy AS jre
 FROM --platform=$BUILDPLATFORM docker.io/library/alpine:3.20 AS hcl
 COPY package/carbonio-user-management-template.hcl /carbonio-user-management-template.hcl
 RUN sed -E 's/\{\{ or \(env "[A-Z0-9_]+"\) "([^"]*)" \}\}/\1/g' \
-    /carbonio-user-management-template.hcl > /carbonio-user-management.hcl
+    /carbonio-user-management-template.hcl > /carbonio-user-management.hcl \
+    && ! grep -q '{{' /carbonio-user-management.hcl
 
 FROM registry.dev.zextras.com/dev/carbonio-sidecar:main
 

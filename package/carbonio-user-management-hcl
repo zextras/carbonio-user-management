@@ -31,6 +31,7 @@ hcl_paths() {
       line = $0
       sub(/^[ \t]+/, "", line)
       sub(/[ \t]+$/, "", line)
+      sub(/"[ \t]*,?[ \t]*(\/\/|#).*$/, "\"", line)
       if (line == "" || line ~ /^\/\// || line ~ /^#/) next
       if (line ~ /^[A-Za-z0-9_]+[ \t]*=[ \t]*".*",?$/) {
         k = line; sub(/[ \t]*=.*/, "", k)
@@ -89,9 +90,10 @@ valid_value() {
 
 declare -A PROVIDED=()
 tmp=""
+trap '[[ -z "${tmp}" ]] || rm -f "${tmp}"' EXIT
 
 load_env() {
-  local quiet="${1:-}" line key val n=0
+  local line key val n=0
   [[ -f "${ENVFILE}" ]] || return 0
   while IFS= read -r line || [[ -n "${line}" ]]; do
     n=$((n + 1))
@@ -99,7 +101,7 @@ load_env() {
     line="${line#"${line%%[![:space:]]*}"}"
     [[ -z "${line}" || "${line}" == \#* ]] && continue
     if [[ ! "${line}" =~ ^([A-Za-z_][A-Za-z0-9_]*)=(.*)$ ]]; then
-      [[ -n "${quiet}" ]] || echo "Warning: ${ENVFILE}:${n}: malformed line ignored: ${line}" >&2
+      echo "Warning: ${ENVFILE}:${n}: malformed line ignored: ${line}" >&2
       continue
     fi
     key="${BASH_REMATCH[1]}"
@@ -108,7 +110,7 @@ load_env() {
       val="${BASH_REMATCH[1]}"
     fi
     if ! index_of "${key}" > /dev/null; then
-      [[ -n "${quiet}" ]] || echo "Warning: ${ENVFILE}:${n}: unknown key ${key} ignored" >&2
+      echo "Warning: ${ENVFILE}:${n}: unknown key ${key} ignored" >&2
       continue
     fi
     PROVIDED["${key}"]="${val}"
@@ -136,20 +138,31 @@ cmd_migrate() {
     fi
   done
   if ((${#collected[@]} > 0)); then
+    tmp="$(mktemp "${SD_DIR}/.${NAME}.env.XXXXXX")"
     {
       echo "# Overrides for ${NAME}.hcl, see ${NAME}-hcl show"
       echo "# Apply with ${NAME}-setup"
       printf '%s\n' "${collected[@]}"
-    } > "${ENVFILE}"
-    chmod 0644 "${ENVFILE}"
+    } > "${tmp}"
+    chmod 0644 "${tmp}"
+    mv -f "${tmp}" "${ENVFILE}"
     for key in "${collected[@]}"; do
       echo "Migrated ${key} from ${source}"
     done
   fi
-  if [[ "${source}" == "${LIVE}" && ! -e "${BAK}" ]]; then
-    cp -p "${LIVE}" "${BAK}"
-    echo "Previous ${LIVE} kept as ${BAK}"
+  if [[ "${source}" == "${LIVE}.rpmsave" && ! -e "${BAK}" ]]; then
+    mv "${source}" "${BAK}"
+    echo "Previous ${source} moved to ${BAK}"
   fi
+}
+
+backup_live() {
+  local dest="${BAK}"
+  [[ -f "${LIVE}" ]] || return 0
+  grep -qF "${MARKER}" "${LIVE}" && return 0
+  [[ -e "${dest}" ]] && dest="${BAK}.$(date +%Y%m%d%H%M%S)"
+  cp -p "${LIVE}" "${dest}"
+  echo "Previous ${LIVE} kept as ${dest}"
 }
 
 cmd_render() {
@@ -164,9 +177,7 @@ cmd_render() {
     fi
     vars+=("${key}=${PROVIDED[${key}]}")
   done
-  # EXIT trap runs after the function returns: tmp must stay global
   tmp="$(mktemp "${SD_DIR}/.${NAME}.hcl.XXXXXX")"
-  trap 'rm -f "${tmp}"' EXIT
   env -i PATH="${PATH}" "${vars[@]}" "${CONSUL_TEMPLATE:-consul-template}" \
     -template "${TEMPLATE}:${tmp}" -once > /dev/null
   if [[ ! -s "${tmp}" ]] || ! grep -qF "${MARKER}" "${tmp}"; then
@@ -174,6 +185,7 @@ cmd_render() {
     exit 1
   fi
   chmod 0644 "${tmp}"
+  backup_live
   mv -f "${tmp}" "${LIVE}"
   echo "Rendered ${LIVE}"
 }
@@ -185,15 +197,19 @@ rep() {
 }
 
 cmd_show() {
-  local i key cur w1=3 w2=7 w3=7
+  local i key cur w1=3 w2=7 w3=7 invalid=0
   local -a cur_vals=()
   discover
-  load_env quiet
+  load_env
   for i in "${!KEYS[@]}"; do
     key="${KEYS[i]}"
     cur="${DEFAULTS[i]}"
-    if [[ -v "PROVIDED[${key}]" ]] && valid_value "${key}" "${DEFAULTS[i]}" "${PROVIDED[${key}]}"; then
+    if [[ -v "PROVIDED[${key}]" ]]; then
       cur="${PROVIDED[${key}]}"
+      if ! valid_value "${key}" "${DEFAULTS[i]}" "${cur}"; then
+        cur="${cur} (invalid, not applied)"
+        invalid=1
+      fi
     fi
     cur_vals[i]="${cur}"
     ((${#key} > w1)) && w1=${#key}
@@ -211,6 +227,7 @@ cmd_show() {
   done
   echo "└─$(rep "${w1}")─┴─$(rep "${w2}")─┴─$(rep "${w3}")─┘"
   echo
+  ((invalid == 0))
 }
 
 case "${1:-}" in

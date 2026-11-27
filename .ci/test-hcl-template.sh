@@ -68,6 +68,7 @@ fresh() {
 }
 hcl() { "${SCRIPT}" "$@"; }
 has() { grep -qE "$1" "$2"; }
+same() { [[ -f "$1" && -f "$2" && "$(< "$1")" == "$(< "$2")" ]]; }
 mode_of() { [[ "$(stat -c %a "$1")" == "644" ]]; }
 edited_fixture() { sed -E "s/^(\s*$1\s*=\s*)\"[^\"]*\"/\1\"$2\"/" "${FIXTURE}"; }
 
@@ -94,11 +95,13 @@ hcl render > /dev/null 2> "${WORK}/err3"
 rc=$?
 check "3 invalid value: exit 1" test "${rc}" -eq 1
 check "3 invalid value: message" grep -q 'Invalid value for CHECK_TIMEOUT' "${WORK}/err3"
-check "3 invalid value: live hcl untouched" cmp -s "${LIVE}" "${WORK}/before3"
+check "3 invalid value: live hcl untouched" same "${LIVE}" "${WORK}/before3"
 
 fresh 4
 CHECK_INTERVAL=9s hcl render > /dev/null 2>&1
 check "4 caller env isolated: interval 5s" has '^\s*interval\s*=\s*"5s"' "${LIVE}"
+
+upgrade() { hcl migrate && hcl render; }
 
 fresh 5
 edited_fixture timeout 4s > "${LIVE}"
@@ -107,36 +110,72 @@ hcl migrate > /dev/null 2>&1
 check "5 migrate: env has CHECK_TIMEOUT=4s" grep -qx 'CHECK_TIMEOUT=4s' "${ENVF}"
 check "5 migrate: exactly one value line" test "$(grep -cvE '^(#|$)' "${ENVF}")" -eq 1
 check "5 migrate: env mode 644" mode_of "${ENVF}"
-check "5 migrate: .bak equals edited live" cmp -s "${BAK}" "${WORK}/edited5"
 hcl render > /dev/null 2>&1
-check "5 migrate then render: timeout 4s" has '^\s*timeout\s*=\s*"4s"' "${LIVE}"
+check "5 render: .bak equals edited live" same "${BAK}" "${WORK}/edited5"
+check "5 render: timeout 4s" has '^\s*timeout\s*=\s*"4s"' "${LIVE}"
 cp "${ENVF}" "${WORK}/env5"
 echo sentinel > "${BAK}"
-out7="$(hcl migrate 2>&1)"
-check "7 second migrate: silent" test -z "${out7}"
-check "7 second migrate: env unchanged" cmp -s "${ENVF}" "${WORK}/env5"
-check "7 second migrate: .bak not rewritten" grep -qx sentinel "${BAK}"
+out7="$(upgrade 2>&1 | grep -v '^Rendered ')"
+check "7 second upgrade: silent" test -z "${out7}"
+check "7 second upgrade: env unchanged" same "${ENVF}" "${WORK}/env5"
+check "7 second upgrade: .bak not rewritten" grep -qx sentinel "${BAK}"
+baks=("${SD_DIR}"/*.bak*)
+check "7 second upgrade: no extra backup" test "${#baks[@]}" -eq 1
 
 fresh 6
 edited_fixture interval 7s > "${LIVE}.rpmsave"
-hcl migrate > /dev/null 2>&1
-check "6 rpmsave migrate: CHECK_INTERVAL=7s" grep -qx 'CHECK_INTERVAL=7s' "${ENVF}"
-check "6 rpmsave migrate: no .bak" test ! -e "${BAK}"
-hcl render > /dev/null 2>&1
-rm -f "${ENVF:?}"
-hcl migrate > /dev/null 2>&1
-check "6 env removed after render: rpmsave not migrated again" test ! -e "${ENVF}"
+cp "${LIVE}.rpmsave" "${WORK}/edited6"
+upgrade > /dev/null 2>&1
+check "6 rpmsave upgrade: CHECK_INTERVAL=7s" grep -qx 'CHECK_INTERVAL=7s' "${ENVF}"
+check "6 rpmsave upgrade: interval 7s" has '^\s*interval\s*=\s*"7s"' "${LIVE}"
+check "6 rpmsave upgrade: .rpmsave moved to .bak" same "${BAK}" "${WORK}/edited6"
+check "6 rpmsave upgrade: no .rpmsave left" test ! -e "${LIVE}.rpmsave"
+rm -f "${ENVF:?}" "${LIVE:?}"
+upgrade > /dev/null 2>&1
+check "6 env removed then erase and reinstall: not migrated again" test ! -e "${ENVF}"
+check "6 env removed then erase and reinstall: interval 5s" has '^\s*interval\s*=\s*"5s"' "${LIVE}"
 
 fresh 8
 cp "${FIXTURE}" "${LIVE}"
-hcl migrate > /dev/null 2>&1
-check "8 unedited migrate: no env file" test ! -e "${ENVF}"
-check "8 unedited migrate: .bak created" test -f "${BAK}"
+upgrade > /dev/null 2>&1
+check "8 unedited upgrade: no env file" test ! -e "${ENVF}"
+check "8 unedited upgrade: .bak equals old hcl" same "${BAK}" "${FIXTURE}"
 
 fresh 9
 echo 'CHECK_TIMEOUT=3s' > "${ENVF}"
 hcl show > "${WORK}/show9" 2>&1
 check "9 show: key" grep -q 'CHECK_TIMEOUT' "${WORK}/show9"
 check "9 show: default and current" grep -qE '│ CHECK_TIMEOUT +│ 1s +│ 3s +│' "${WORK}/show9"
+echo 'CHECK_TIMEOUT=3x' > "${ENVF}"
+hcl show > "${WORK}/show9b" 2>&1
+rc=$?
+check "9 show invalid: exit 1" test "${rc}" -eq 1
+check "9 show invalid: flagged" grep -q '3x (invalid, not applied)' "${WORK}/show9b"
+
+fresh 10
+edited_fixture interval 7s > "${LIVE}"
+cp "${LIVE}" "${WORK}/edited10"
+echo 'CHECK_TIMEOUT=3s' > "${ENVF}"
+upgrade > /dev/null 2>&1
+check "10 env present before upgrade: .bak equals edited live" same "${BAK}" "${WORK}/edited10"
+check "10 env present before upgrade: timeout 3s" has '^\s*timeout\s*=\s*"3s"' "${LIVE}"
+check "10 env present before upgrade: interval 5s" has '^\s*interval\s*=\s*"5s"' "${LIVE}"
+
+fresh 11
+edited_fixture timeout 4s > "${LIVE}"
+cp "${LIVE}" "${WORK}/edited11"
+mkdir -p "${WORK}/failbin"
+printf '#!/bin/sh\nexit 1\n' > "${WORK}/failbin/mktemp"
+chmod 755 "${WORK}/failbin/mktemp"
+PATH="${WORK}/failbin:${PATH}" upgrade > /dev/null 2>&1
+rc=$?
+check "11 migrate failure: upgrade fails" test "${rc}" -ne 0
+check "11 migrate failure: live hcl untouched" same "${LIVE}" "${WORK}/edited11"
+check "11 migrate failure: no env file" test ! -e "${ENVF}"
+
+fresh 12
+sed -E 's/^(\s*timeout\s*=\s*)"[^"]*"/\1"4s" \/\/ tuned/' "${FIXTURE}" > "${LIVE}"
+hcl migrate > /dev/null 2>&1
+check "12 trailing comment: CHECK_TIMEOUT=4s migrated" grep -qx 'CHECK_TIMEOUT=4s' "${ENVF}"
 
 exit "${FAILED}"
