@@ -35,11 +35,11 @@ source=(
 )
 sha256sums=(
   '5fca7adbfb5b10dc028b583a9abad85578327cc06e65084efddc0c4ec2c830cd'
-  '8bbae5991edf58f591edb9ab6234b10914aa2c8cd2d19d7831a3afbba71ce5a7'
+  '48cdabb715b40e7eb542d94080c3d5e05210edcfcd7d428a60db861826ca1225'
   '1f4a0c07ff93e6c357c2e7895767f4f0d55281a49eb966136dd93202d6bb4403'
   '8e19b44c64ebb9b717d20e38853442c8b99697d71f985cf742bb10e9e66bd733'
   'ea52c4c2758934046680c446fc4f40305378756bab95cc6dfdb7d1f58bbbf326'
-  'f15a124aa4193ddbeeb64ad1a12b91c98cdf070973912d30814db5e082c5fb6f'
+  '2110a2c693815b530c322cda9f4636598843f2158c5a2db3960e1f91aeba61fa'
   'SKIP'
   '7b1abb895725fcef0dd56396c2836644b0462ce85a724adcdfac21c431177e75'
   '16ffff744c3ca3e53efce86ad20b321796dfbd24358cbb04636ede4aebcc9a8c'
@@ -126,7 +126,6 @@ postinst() {
   fi
 
   if [ "$1" = "configure" ]; then
-    carbonio-user-management-hcl migrate || :
     carbonio-user-management-hcl render || echo "WARNING: hcl render failed, run carbonio-user-management-setup"
   fi
 
@@ -137,7 +136,6 @@ postinst() {
 }
 
 posttrans() {
-  carbonio-user-management-hcl migrate || :
   carbonio-user-management-hcl render || echo "WARNING: hcl render failed, run carbonio-user-management-setup"
 }
 
