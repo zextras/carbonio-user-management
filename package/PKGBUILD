@@ -39,7 +39,7 @@ sha256sums=(
   '1f4a0c07ff93e6c357c2e7895767f4f0d55281a49eb966136dd93202d6bb4403'
   '8e19b44c64ebb9b717d20e38853442c8b99697d71f985cf742bb10e9e66bd733'
   'ea52c4c2758934046680c446fc4f40305378756bab95cc6dfdb7d1f58bbbf326'
-  '2110a2c693815b530c322cda9f4636598843f2158c5a2db3960e1f91aeba61fa'
+  '53b57b528e74f5a24dd59952c3c53cb74ed20a2aaac9719a2d856f175e0b394d'
   'SKIP'
   '7b1abb895725fcef0dd56396c2836644b0462ce85a724adcdfac21c431177e75'
   '16ffff744c3ca3e53efce86ad20b321796dfbd24358cbb04636ede4aebcc9a8c'
@@ -164,7 +164,7 @@ postrm() {
   rm -f /etc/carbonio/user-management/config.properties
   rm -f /etc/zextras/service-discover/carbonio-user-management.hcl
   if [ "$1" = "purge" ]; then
-    rm -f /etc/zextras/service-discover/carbonio-user-management.env /etc/zextras/service-discover/carbonio-user-management.hcl.bak
+    rm -f /etc/zextras/service-discover/carbonio-user-management.env
   fi
 
   rm -f /etc/systemd/system/carbonio-user-management.service.d/override.conf
