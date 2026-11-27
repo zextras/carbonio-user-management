@@ -4,7 +4,7 @@
 #
 # SPDX-License-Identifier: AGPL-3.0-only
 
-# shellcheck disable=SC2317
+# shellcheck disable=SC2317,SC2329
 set -uo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -122,6 +122,10 @@ edited_fixture interval 7s > "${LIVE}.rpmsave"
 hcl migrate > /dev/null 2>&1
 check "6 rpmsave migrate: CHECK_INTERVAL=7s" grep -qx 'CHECK_INTERVAL=7s' "${ENVF}"
 check "6 rpmsave migrate: no .bak" test ! -e "${BAK}"
+hcl render > /dev/null 2>&1
+rm -f "${ENVF:?}"
+hcl migrate > /dev/null 2>&1
+check "6 env removed after render: rpmsave not migrated again" test ! -e "${ENVF}"
 
 fresh 8
 cp "${FIXTURE}" "${LIVE}"

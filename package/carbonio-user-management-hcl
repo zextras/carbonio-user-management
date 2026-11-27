@@ -119,7 +119,8 @@ cmd_migrate() {
   local source="" i val collected=() key
   [[ -f "${ENVFILE}" ]] && return 0
   discover
-  if [[ -f "${LIVE}" ]] && ! grep -qF "${MARKER}" "${LIVE}"; then
+  if [[ -f "${LIVE}" ]]; then
+    grep -qF "${MARKER}" "${LIVE}" && return 0
     source="${LIVE}"
   elif [[ -f "${LIVE}.rpmsave" ]] && ! grep -qF "${MARKER}" "${LIVE}.rpmsave"; then
     source="${LIVE}.rpmsave"
